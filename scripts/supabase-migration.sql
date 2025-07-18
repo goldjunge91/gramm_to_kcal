@@ -6,6 +6,7 @@ DROP TABLE IF EXISTS ingredients CASCADE;
 DROP TABLE IF EXISTS products CASCADE;
 DROP TABLE IF EXISTS recipes CASCADE;
 DROP TABLE IF EXISTS users CASCADE;
+DROP TABLE IF EXISTS posts CASCADE;
 
 -- Step 2: Drop and recreate sync_status enum
 DROP TYPE IF EXISTS sync_status CASCADE;
@@ -34,6 +35,16 @@ CREATE TABLE recipes (
   name TEXT NOT NULL,
   original_portions INTEGER NOT NULL,
   description TEXT
+);
+
+-- Optional: Create posts_table
+CREATE TABLE posts_table (
+  id SERIAL PRIMARY KEY,
+  title TEXT NOT NULL,
+  content TEXT NOT NULL,
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  created_at TIMESTAMP DEFAULT NOW() NOT NULL,
+  updated_at TIMESTAMP DEFAULT NOW() NOT NULL
 );
 
 -- Step 5: Create products table
@@ -82,6 +93,7 @@ ALTER TABLE users ENABLE ROW LEVEL SECURITY;
 ALTER TABLE products ENABLE ROW LEVEL SECURITY;
 ALTER TABLE recipes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE ingredients ENABLE ROW LEVEL SECURITY;
+ALTER TABLE posts_table ENABLE ROW LEVEL SECURITY;
 
 -- Step 9: Create RLS policies
 -- Users can only see their own data
@@ -106,3 +118,9 @@ CREATE POLICY "Users can view own ingredients" ON ingredients FOR SELECT USING (
 CREATE POLICY "Users can insert own ingredients" ON ingredients FOR INSERT WITH CHECK (auth.uid() = user_id);
 CREATE POLICY "Users can update own ingredients" ON ingredients FOR UPDATE USING (auth.uid() = user_id);
 CREATE POLICY "Users can delete own ingredients" ON ingredients FOR DELETE USING (auth.uid() = user_id);
+
+-- Policies für posts_table
+CREATE POLICY "Users can view own posts" ON posts_table FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Users can insert own posts" ON posts_table FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users can update own posts" ON posts_table FOR UPDATE USING (auth.uid() = user_id);
+CREATE POLICY "Users can delete own posts" ON posts_table FOR DELETE USING (auth.uid() = user_id);
