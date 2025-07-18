@@ -1,8 +1,9 @@
 "use client"
 
-import * as React from "react"
-import * as LabelPrimitive from "@radix-ui/react-label"
+import type * as LabelPrimitive from "@radix-ui/react-label"
+
 import { Slot } from "@radix-ui/react-slot"
+import * as React from "react"
 import {
   Controller,
   FormProvider,
@@ -13,8 +14,8 @@ import {
   type FieldValues,
 } from "react-hook-form"
 
-import { cn } from "@/lib/utils"
 import { Label } from "@/components/ui/label"
+import { cn } from "@/lib/utils"
 
 const Form = FormProvider
 
@@ -113,7 +114,7 @@ function FormControl({ ...props }: React.ComponentProps<typeof Slot>) {
       id={formItemId}
       aria-describedby={
         !error
-          ? `${formDescriptionId}`
+          ? String(formDescriptionId)
           : `${formDescriptionId} ${formMessageId}`
       }
       aria-invalid={!!error}
@@ -156,12 +157,12 @@ function FormMessage({ className, ...props }: React.ComponentProps<"p">) {
 }
 
 export {
-  useFormField,
   Form,
-  FormItem,
-  FormLabel,
   FormControl,
   FormDescription,
-  FormMessage,
   FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  useFormField,
 }

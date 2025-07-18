@@ -1,5 +1,22 @@
-import { Product } from "@/lib/types";
-import { calculateKcalPer100g } from "@/lib/calculations";
+import {
+  createColumnHelper,
+  flexRender,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable,
+  type ColumnFiltersState,
+  type SortingState,
+} from "@tanstack/react-table";
+import { ArrowUpDown, ChevronLeft, ChevronRight } from "lucide-react";
+import { useMemo, useState, type JSX } from "react";
+
+import type { Product } from "@/lib/types";
+
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -8,22 +25,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { JSX, useState, useMemo } from "react";
-import {
-  useReactTable,
-  getCoreRowModel,
-  getSortedRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  flexRender,
-  createColumnHelper,
-  SortingState,
-  ColumnFiltersState,
-} from "@tanstack/react-table";
-import { ArrowUpDown, ChevronLeft, ChevronRight } from "lucide-react";
+import { calculateKcalPer100g } from "@/lib/calculations";
 
 interface ComparisonTableProps {
   products: Product[];

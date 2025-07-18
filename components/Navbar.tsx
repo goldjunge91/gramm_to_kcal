@@ -1,10 +1,11 @@
 "use client";
 
+import { Calculator, ChefHat } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState, JSX } from "react";
+import { useEffect, useState, type JSX } from "react";
+
 import { ThemeToggle } from "./ThemeToggle";
-import { Calculator, ChefHat } from "lucide-react";
 
 /** Navigation bar component for switching between app pages */
 export const Navbar = (): JSX.Element => {

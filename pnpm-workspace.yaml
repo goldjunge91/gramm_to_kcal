@@ -1,2 +1,5 @@
 onlyBuiltDependencies:
+  - '@pkgr/core'
   - esbuild
+  - eslint-config-prettier
+  - synckit

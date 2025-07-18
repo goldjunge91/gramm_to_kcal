@@ -1,8 +1,12 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+
 import { ThemeProvider } from "next-themes";
+import { Geist, Geist_Mono } from "next/font/google";
+
 import { Navbar } from "@/components/Navbar";
 import { Toaster } from "@/components/ui/sonner";
+
+import { Providers } from "./providers";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -18,6 +22,8 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "CalorieTracker - Kalorienvergleich & Rezept-Manager",
   description: "Vergleiche Produkte nach Kaloriendichte und skaliere Rezepte dynamisch",
+  manifest: "/manifest.json",
+  themeColor: "#000000",
 };
 
 export default function RootLayout({
@@ -38,7 +44,11 @@ export default function RootLayout({
         >
           <Navbar />
           {children}
-          <Toaster />
+           <Providers>
+            <Navbar />
+            {children}
+            <Toaster />
+          </Providers>
         </ThemeProvider>
       </body>
     </html>

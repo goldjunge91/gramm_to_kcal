@@ -1,6 +1,10 @@
 "use client";
 
+import type { JSX } from "react";
+
+import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
+
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -8,8 +12,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Moon, Sun } from "lucide-react";
-import { JSX } from "react";
 
 /** Theme toggle component for switching between light, dark, and system themes */
 export const ThemeToggle = (): JSX.Element => {

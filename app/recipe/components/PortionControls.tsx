@@ -1,7 +1,8 @@
+import type { JSX } from "react";
+
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { JSX } from "react";
 
 interface PortionControlsProps {
   originalPortions: number;
@@ -35,7 +36,7 @@ export const PortionControls = ({
               type="number"
               inputMode="numeric"
               value={originalPortions}
-              onChange={(e) => onOriginalPortionsChange(parseFloat(e.target.value) || 1)}
+              onChange={(e) => onOriginalPortionsChange(Number.parseFloat(e.target.value) || 1)}
               min="1"
               step="1"
               placeholder="z.B. 1"
@@ -50,7 +51,7 @@ export const PortionControls = ({
               type="number"
               inputMode="numeric"
               value={desiredPortions}
-              onChange={(e) => onDesiredPortionsChange(parseFloat(e.target.value) || 1)}
+              onChange={(e) => onDesiredPortionsChange(Number.parseFloat(e.target.value) || 1)}
               min="1"
               step="1"
               placeholder="z.B. 2"
@@ -66,7 +67,7 @@ export const PortionControls = ({
               inputMode="decimal"
               value={scaleFactor.toFixed(2)}
               onChange={(e) => {
-                const newScaleFactor = parseFloat(e.target.value) || 1;
+                const newScaleFactor = Number.parseFloat(e.target.value) || 1;
                 onScaleFactorChange(newScaleFactor);
               }}
               min="0.1"

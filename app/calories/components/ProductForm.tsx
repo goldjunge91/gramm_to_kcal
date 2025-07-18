@@ -1,11 +1,13 @@
 "use client";
 
-import { useState, JSX } from "react";
-import { Product } from "@/lib/types";
+import { useState, type JSX } from "react";
+
+import type { Product } from "@/lib/types";
+
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface ProductFormProps {
   onAddProduct: (product: Omit<Product, "id">) => void;
@@ -20,8 +22,8 @@ export const ProductForm = ({ onAddProduct }: ProductFormProps): JSX.Element => 
   const handleSubmit = (event: React.FormEvent): void => {
     event.preventDefault();
     
-    const quantityNum = parseFloat(quantity);
-    const kcalNum = parseFloat(kcal);
+    const quantityNum = Number.parseFloat(quantity);
+    const kcalNum = Number.parseFloat(kcal);
     
     if (!name.trim() || !quantityNum || quantityNum <= 0 || !kcalNum || kcalNum <= 0) {
       return;

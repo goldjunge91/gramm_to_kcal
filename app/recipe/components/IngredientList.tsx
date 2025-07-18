@@ -1,5 +1,34 @@
-import { Ingredient } from "@/lib/types";
+import {
+  closestCenter,
+  DndContext,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import {
+  createColumnHelper,
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+  type Row,
+} from "@tanstack/react-table";
+import { GripVertical, Trash2 } from "lucide-react";
+import { useEffect, useMemo, useState, type JSX } from "react";
+
+import type { Ingredient } from "@/lib/types";
+
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
   Table,
@@ -9,35 +38,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Trash2, GripVertical } from "lucide-react";
-import { JSX, useMemo, useEffect, useState } from "react";
-import {
-  DndContext,
-  closestCenter,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-  DragEndEvent,
-} from "@dnd-kit/core";
-import {
-  arrayMove,
-  SortableContext,
-  sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
-import {
-  useSortable,
-} from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
-import {
-  useReactTable,
-  getCoreRowModel,
-  flexRender,
-  createColumnHelper,
-  Row,
-} from "@tanstack/react-table";
 
 // Drag Handle Component
 const DragHandle = ({ ingredientId }: { ingredientId: string }) => {
@@ -161,8 +161,8 @@ export const IngredientList = ({ ingredients, originalIngredients, onDelete, onQ
                   inputMode="decimal"
                   value={formattedValue}
                   onChange={(e) => {
-                    const newQuantity = parseFloat(e.target.value);
-                    if (!isNaN(newQuantity) && newQuantity > 0) {
+                    const newQuantity = Number.parseFloat(e.target.value);
+                    if (!Number.isNaN(newQuantity) && newQuantity > 0) {
                       onQuantityChange(info.row.original.id, newQuantity);
                     }
                   }}
@@ -184,8 +184,8 @@ export const IngredientList = ({ ingredients, originalIngredients, onDelete, onQ
                       inputMode="decimal"
                       value={ingredientScaleFactor.toFixed(1)}
                       onChange={(e) => {
-                        const newScaleFactor = parseFloat(e.target.value);
-                        if (!isNaN(newScaleFactor) && newScaleFactor > 0) {
+                        const newScaleFactor = Number.parseFloat(e.target.value);
+                        if (!Number.isNaN(newScaleFactor) && newScaleFactor > 0) {
                           onScaleFactorChange(info.row.original.id, newScaleFactor);
                         }
                       }}

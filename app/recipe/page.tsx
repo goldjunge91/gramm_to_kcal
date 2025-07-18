@@ -1,14 +1,14 @@
 "use client";
 
-import { useState, useMemo, JSX } from "react";
-import { Ingredient } from "@/lib/types";
-import { scaleRecipe } from "@/lib/calculations";
-import { IngredientList } from "./components/IngredientList";
-import { PortionControls } from "./components/PortionControls";
+import { useMemo, useState, type JSX } from "react";
+import { toast } from "sonner";
+
+import type { Ingredient } from "@/lib/types";
+
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { 
   Select, 
   SelectContent, 
@@ -16,7 +16,10 @@ import {
   SelectTrigger, 
   SelectValue 
 } from "@/components/ui/select";
-import { toast } from "sonner";
+import { scaleRecipe } from "@/lib/calculations";
+
+import { IngredientList } from "./components/IngredientList";
+import { PortionControls } from "./components/PortionControls";
 
 /** Recipe management page for scaling recipes and adjusting ingredients */
 export default function RecipePage(): JSX.Element {
@@ -43,7 +46,7 @@ export default function RecipePage(): JSX.Element {
   const handleAddIngredient = (event: React.FormEvent): void => {
     event.preventDefault();
     
-    const quantityNum = parseFloat(quantity);
+    const quantityNum = Number.parseFloat(quantity);
     const finalUnit = isCustomUnit ? customUnit.trim() : unit;
     
     if (!name.trim() || !quantityNum || quantityNum <= 0 || !finalUnit) {
@@ -51,7 +54,7 @@ export default function RecipePage(): JSX.Element {
     }
     
     const newIngredient: Ingredient = {
-      id: `ingredient-${ingredients.length + 1}-${name.trim().replace(/\s/g, '').toLowerCase()}`,
+      id: `ingredient-${ingredients.length + 1}-${name.trim().replaceAll(/\s/g, '').toLowerCase()}`,
       name: name.trim(),
       quantity: quantityNum,
       unit: finalUnit
