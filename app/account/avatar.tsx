@@ -1,8 +1,9 @@
+/* eslint-disable no-alert */
 "use client";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 
-import { createClient } from "@/utils/supabase/client";
+import { createClient } from "@/lib/supabase/client";
 
 export default function Avatar({
   uid,

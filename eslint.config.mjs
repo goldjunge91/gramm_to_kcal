@@ -33,7 +33,7 @@ export default sxzz(
         },
       ],
       "unicorn/filename-case": [
-        "warn",
+        "off",
         {
           case: "kebabCase",
           ignore: ["README.md"],

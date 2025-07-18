@@ -9,7 +9,7 @@ import {
   type ColumnFiltersState,
   type SortingState,
 } from "@tanstack/react-table";
-import { ArrowUpDown, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowUpDown, ChevronLeft, ChevronRight, Trash2 } from "lucide-react";
 import { useMemo, useState, type JSX } from "react";
 
 import type { Product } from "@/lib/types";
@@ -30,11 +30,17 @@ import { calculateKcalPer100g } from "@/lib/calculations";
 interface ComparisonTableProps {
   products: Product[];
   onReorder?: (newOrder: Product[]) => void;
+  onDelete?: (id: string) => Promise<void>;
+  isDeleting?: boolean;
+  compact?: boolean;
 }
 
 /** Enhanced table component for displaying product comparison results with sorting, filtering, and pagination */
 export const ComparisonTable = ({
   products,
+  onDelete,
+  isDeleting = false,
+  compact = false,
 }: ComparisonTableProps): JSX.Element => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -124,8 +130,30 @@ export const ComparisonTable = ({
           return a - b;
         },
       }),
+      // Add delete column if onDelete is provided
+      ...(onDelete
+        ? [
+            columnHelper.display({
+              id: "actions",
+              header: () => <div className="text-right">Aktionen</div>,
+              cell: (info) => (
+                <div className="text-right">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => onDelete(info.row.original.id)}
+                    disabled={isDeleting}
+                    aria-label={`${info.row.original.name} löschen`}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              ),
+            }),
+          ]
+        : []),
     ],
-    [columnHelper],
+    [columnHelper, onDelete, isDeleting],
   );
 
   // Initialize table
@@ -146,7 +174,7 @@ export const ComparisonTable = ({
     },
     initialState: {
       pagination: {
-        pageSize: 10,
+        pageSize: compact ? 5 : 10, // Smaller page size on mobile
       },
     },
   });
@@ -160,7 +188,7 @@ export const ComparisonTable = ({
             placeholder="Produkte durchsuchen..."
             value={globalFilter ?? ""}
             onChange={(event) => setGlobalFilter(event.target.value)}
-            className="max-w-sm"
+            className={compact ? "w-full" : "max-w-sm"}
           />
         </div>
       </CardHeader>

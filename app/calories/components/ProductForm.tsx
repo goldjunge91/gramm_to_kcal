@@ -10,18 +10,34 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 interface ProductFormProps {
-  onAddProduct: (product: Omit<Product, "id">) => void;
+  onSubmit: (
+    product: Omit<
+      Product,
+      | "id"
+      | "userId"
+      | "createdAt"
+      | "updatedAt"
+      | "syncStatus"
+      | "version"
+      | "isDeleted"
+      | "lastSyncAt"
+    >,
+  ) => Promise<void>;
+  isLoading?: boolean;
+  compact?: boolean;
 }
 
 /** Form component for adding new products to compare */
 export const ProductForm = ({
-  onAddProduct,
+  onSubmit,
+  isLoading = false,
+  compact = false,
 }: ProductFormProps): JSX.Element => {
   const [name, setName] = useState("");
   const [quantity, setQuantity] = useState("");
   const [kcal, setKcal] = useState("");
 
-  const handleSubmit = (event: React.FormEvent): void => {
+  const handleSubmit = async (event: React.FormEvent): Promise<void> => {
     event.preventDefault();
 
     const quantityNum = Number.parseFloat(quantity);
@@ -37,7 +53,7 @@ export const ProductForm = ({
       return;
     }
 
-    onAddProduct({
+    await onSubmit({
       name: name.trim(),
       quantity: quantityNum,
       kcal: kcalNum,
@@ -56,8 +72,12 @@ export const ProductForm = ({
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-            <div className="space-y-2 sm:col-span-2 md:col-span-1">
+          <div
+            className={`grid gap-4 ${compact ? "grid-cols-1" : "grid-cols-1 sm:grid-cols-2 md:grid-cols-3"}`}
+          >
+            <div
+              className={`space-y-2 ${compact ? "" : "sm:col-span-2 md:col-span-1"}`}
+            >
               <Label htmlFor="name">Produktname</Label>
               <Input
                 id="name"
@@ -66,6 +86,7 @@ export const ProductForm = ({
                 onChange={(e) => setName(e.target.value)}
                 placeholder="z.B. Vollkornbrot"
                 required
+                disabled={isLoading}
               />
             </div>
 
@@ -80,6 +101,7 @@ export const ProductForm = ({
                 min="0"
                 step="0.1"
                 required
+                disabled={isLoading}
               />
             </div>
 
@@ -94,6 +116,7 @@ export const ProductForm = ({
                 min="0"
                 step="0.1"
                 required
+                disabled={isLoading}
               />
             </div>
           </div>
@@ -102,8 +125,9 @@ export const ProductForm = ({
             type="submit"
             className="w-full sm:w-auto"
             aria-label="Produkt zur Vergleichstabelle hinzufügen"
+            disabled={isLoading}
           >
-            Hinzufügen
+            {isLoading ? "Wird hinzugefügt..." : "Hinzufügen"}
           </Button>
         </form>
       </CardContent>

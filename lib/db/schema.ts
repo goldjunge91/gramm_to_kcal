@@ -13,9 +13,12 @@ import {
 } from "drizzle-orm/pg-core";
 
 export const users = pgTable("users", {
-  id: serial("id").primaryKey(),
+  id: uuid("id").primaryKey(), // Match Supabase Auth UUID format
   fullName: text("full_name"),
   phone: varchar("phone", { length: 256 }),
+  email: varchar("email", { length: 256 }).unique(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
 // Sync status enum for offline functionality

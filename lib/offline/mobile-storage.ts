@@ -10,6 +10,10 @@ interface MobileOfflineDB extends DBSchema {
       lastUsed: number; // For LRU cache management
       size: number; // Estimate storage size
     };
+    indexes: {
+      lastUsed: number;
+      userId: string;
+    };
   };
   recipes: {
     key: string;
@@ -17,6 +21,10 @@ interface MobileOfflineDB extends DBSchema {
       localId?: string;
       lastUsed: number;
       ingredientCount: number;
+    };
+    indexes: {
+      lastUsed: number;
+      userId: string;
     };
   };
   ingredients: {
@@ -33,6 +41,10 @@ interface MobileOfflineDB extends DBSchema {
       timestamp: number;
       retryCount: number;
       priority: "high" | "normal" | "low"; // Mobile battery consideration
+    };
+    indexes: {
+      priority: "high" | "normal" | "low";
+      timestamp: number;
     };
   };
   appState: {
@@ -171,15 +183,32 @@ class MobileOfflineStorage {
     const index = tx.store.index("lastUsed");
     const products = await index.getAll();
 
-    // Keep only most recent 300 products
+    // Keep only most recent products up to MAX_PRODUCTS
     const sortedProducts = products.sort(
       (a: { lastUsed: number }, b: { lastUsed: number }) =>
         b.lastUsed - a.lastUsed,
     );
-    const toDelete = sortedProducts.slice(300);
+    const toDelete = sortedProducts.slice(this.MAX_PRODUCTS);
 
     for (const product of toDelete) {
       await tx.store.delete(product.id);
+    }
+
+    // Also cleanup recipes if needed
+    const recipesTx = this.db.transaction("recipes", "readwrite");
+    const recipesIndex = recipesTx.store.index("lastUsed");
+    const recipes = await recipesIndex.getAll();
+
+    if (recipes.length > this.MAX_RECIPES) {
+      const sortedRecipes = recipes.sort(
+        (a: { lastUsed: number }, b: { lastUsed: number }) =>
+          b.lastUsed - a.lastUsed,
+      );
+      const recipesToDelete = sortedRecipes.slice(this.MAX_RECIPES);
+
+      for (const recipe of recipesToDelete) {
+        await recipesTx.store.delete(recipe.id);
+      }
     }
   }
 
@@ -224,9 +253,9 @@ class MobileOfflineStorage {
     const index = tx.store.index("priority");
 
     // Get high priority items first
-    const highPriority = await index.getAll("high");
-    const normalPriority = await index.getAll("normal");
-    const lowPriority = await index.getAll("low");
+    const highPriority = await index.getAll(IDBKeyRange.only("high"));
+    const normalPriority = await index.getAll(IDBKeyRange.only("normal"));
+    const lowPriority = await index.getAll(IDBKeyRange.only("low"));
 
     return [...highPriority, ...normalPriority, ...lowPriority];
   }

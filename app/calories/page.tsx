@@ -3,7 +3,10 @@
 import { Plus, RefreshCw } from "lucide-react";
 import { useState, type JSX } from "react";
 
+import type { Product } from "@/lib/types";
+
 import { useAuth, useMobileOffline } from "@/app/providers";
+import { MobileOfflineStatus } from "@/components/MobileOfflineStatus";
 import { Button } from "@/components/ui/button";
 import {
   Card,

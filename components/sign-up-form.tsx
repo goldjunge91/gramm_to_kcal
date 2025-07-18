@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -34,24 +35,77 @@ export function SignUpForm({
     setIsLoading(true);
     setError(null);
 
+    // Validate passwords match
     if (password !== repeatPassword) {
       setError("Passwords do not match");
+      toast.error("Passwords do not match");
+      setIsLoading(false);
+      return;
+    }
+
+    // Validate password strength
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters long");
+      toast.error("Password must be at least 6 characters long");
       setIsLoading(false);
       return;
     }
 
     try {
-      const { error } = await supabase.auth.signUp({
+      toast.loading("Creating your account...", { id: "signup" });
+
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
           emailRedirectTo: `${window.location.origin}/protected`,
         },
       });
+
       if (error) throw error;
-      router.push("/auth/sign-up-success");
+
+      // Check if user is immediately confirmed (auto-confirm enabled)
+      if (data.user && data.session) {
+        // User is automatically signed in
+        toast.success("Account created and signed in successfully!", {
+          id: "signup",
+          duration: 3000,
+        });
+
+        // Clear form
+        setEmail("");
+        setPassword("");
+        setRepeatPassword("");
+
+        // Redirect to protected area
+        setTimeout(() => {
+          router.push("/calories");
+        }, 1000);
+      } else {
+        // Email confirmation required
+        toast.success(
+          "Account created successfully! Please check your email to confirm.",
+          {
+            id: "signup",
+            duration: 5000,
+          },
+        );
+
+        // Clear form
+        setEmail("");
+        setPassword("");
+        setRepeatPassword("");
+
+        // Navigate to success page
+        setTimeout(() => {
+          router.push("/auth/sign-up-success");
+        }, 1000);
+      }
     } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : "An error occurred");
+      const errorMessage =
+        error instanceof Error ? error.message : "An error occurred";
+      setError(errorMessage);
+      toast.error(errorMessage, { id: "signup" });
     } finally {
       setIsLoading(false);
     }
@@ -76,11 +130,15 @@ export function SignUpForm({
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  disabled={isLoading}
                 />
               </div>
               <div className="grid gap-2">
                 <div className="flex items-center">
                   <Label htmlFor="password">Password</Label>
+                  <span className="ml-auto text-xs text-muted-foreground">
+                    Min. 6 characters
+                  </span>
                 </div>
                 <Input
                   id="password"
@@ -88,6 +146,8 @@ export function SignUpForm({
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  disabled={isLoading}
+                  placeholder="Enter your password"
                 />
               </div>
               <div className="grid gap-2">
@@ -100,11 +160,24 @@ export function SignUpForm({
                   required
                   value={repeatPassword}
                   onChange={(e) => setRepeatPassword(e.target.value)}
+                  disabled={isLoading}
+                  placeholder="Repeat your password"
                 />
               </div>
-              {error && <p className="text-sm text-red-500">{error}</p>}
+              {error && (
+                <div className="rounded-md bg-red-50 p-3 border border-red-200">
+                  <p className="text-sm text-red-600">{error}</p>
+                </div>
+              )}
               <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Creating an account..." : "Sign up"}
+                {isLoading ? (
+                  <>
+                    <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                    Creating account...
+                  </>
+                ) : (
+                  "Create account"
+                )}
               </Button>
             </div>
             <div className="mt-4 text-center text-sm">

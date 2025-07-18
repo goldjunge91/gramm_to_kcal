@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 
 import { ThemeProvider } from "next-themes";
 import { Geist, Geist_Mono } from "next/font/google";
@@ -24,6 +24,9 @@ export const metadata: Metadata = {
   description:
     "Vergleiche Produkte nach Kaloriendichte und skaliere Rezepte dynamisch",
   manifest: "/manifest.json",
+};
+
+export const viewport: Viewport = {
   themeColor: "#000000",
 };
 
@@ -43,8 +46,6 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <Navbar />
-          {children}
           <Providers>
             <Navbar />
             {children}
