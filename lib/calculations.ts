@@ -10,13 +10,13 @@ export const calculateKcalPer100g = (product: Product): number => {
 export const scaleRecipe = (
   ingredients: Ingredient[],
   originalPortions: number,
-  desiredPortions: number
+  desiredPortions: number,
 ): Ingredient[] => {
   if (!originalPortions || originalPortions === 0) return ingredients;
-  
+
   const scaleFactor = desiredPortions / originalPortions;
-  return ingredients.map(ingredient => ({
+  return ingredients.map((ingredient) => ({
     ...ingredient,
-    quantity: ingredient.quantity * scaleFactor
+    quantity: ingredient.quantity * scaleFactor,
   }));
 };

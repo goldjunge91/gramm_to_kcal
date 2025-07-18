@@ -14,27 +14,35 @@ interface ProductFormProps {
 }
 
 /** Form component for adding new products to compare */
-export const ProductForm = ({ onAddProduct }: ProductFormProps): JSX.Element => {
+export const ProductForm = ({
+  onAddProduct,
+}: ProductFormProps): JSX.Element => {
   const [name, setName] = useState("");
   const [quantity, setQuantity] = useState("");
   const [kcal, setKcal] = useState("");
 
   const handleSubmit = (event: React.FormEvent): void => {
     event.preventDefault();
-    
+
     const quantityNum = Number.parseFloat(quantity);
     const kcalNum = Number.parseFloat(kcal);
-    
-    if (!name.trim() || !quantityNum || quantityNum <= 0 || !kcalNum || kcalNum <= 0) {
+
+    if (
+      !name.trim() ||
+      !quantityNum ||
+      quantityNum <= 0 ||
+      !kcalNum ||
+      kcalNum <= 0
+    ) {
       return;
     }
-    
+
     onAddProduct({
       name: name.trim(),
       quantity: quantityNum,
-      kcal: kcalNum
+      kcal: kcalNum,
     });
-    
+
     // Reset form
     setName("");
     setQuantity("");
@@ -60,7 +68,7 @@ export const ProductForm = ({ onAddProduct }: ProductFormProps): JSX.Element => 
                 required
               />
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="quantity">Menge (g)</Label>
               <Input
@@ -74,7 +82,7 @@ export const ProductForm = ({ onAddProduct }: ProductFormProps): JSX.Element => 
                 required
               />
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="kcal">Kalorien (kcal)</Label>
               <Input
@@ -89,8 +97,12 @@ export const ProductForm = ({ onAddProduct }: ProductFormProps): JSX.Element => 
               />
             </div>
           </div>
-          
-          <Button type="submit" className="w-full sm:w-auto" aria-label="Produkt zur Vergleichstabelle hinzufügen">
+
+          <Button
+            type="submit"
+            className="w-full sm:w-auto"
+            aria-label="Produkt zur Vergleichstabelle hinzufügen"
+          >
             Hinzufügen
           </Button>
         </form>

@@ -20,7 +20,8 @@ export const PortionControls = ({
   onDesiredPortionsChange,
   onScaleFactorChange,
 }: PortionControlsProps): JSX.Element => {
-  const scaleFactor = originalPortions > 0 ? desiredPortions / originalPortions : 1;
+  const scaleFactor =
+    originalPortions > 0 ? desiredPortions / originalPortions : 1;
 
   return (
     <Card>
@@ -36,14 +37,16 @@ export const PortionControls = ({
               type="number"
               inputMode="numeric"
               value={originalPortions}
-              onChange={(e) => onOriginalPortionsChange(Number.parseFloat(e.target.value) || 1)}
+              onChange={(e) =>
+                onOriginalPortionsChange(Number.parseFloat(e.target.value) || 1)
+              }
               min="1"
               step="1"
               placeholder="z.B. 1"
               className="text-center"
             />
           </div>
-          
+
           <div className="space-y-2">
             <Label htmlFor="desired-portions">Gewünschte Portionen</Label>
             <Input
@@ -51,14 +54,16 @@ export const PortionControls = ({
               type="number"
               inputMode="numeric"
               value={desiredPortions}
-              onChange={(e) => onDesiredPortionsChange(Number.parseFloat(e.target.value) || 1)}
+              onChange={(e) =>
+                onDesiredPortionsChange(Number.parseFloat(e.target.value) || 1)
+              }
               min="1"
               step="1"
               placeholder="z.B. 2"
               className="text-center"
             />
           </div>
-          
+
           <div className="space-y-2">
             <Label htmlFor="scale-factor">Skalierungsfaktor</Label>
             <Input
@@ -77,11 +82,16 @@ export const PortionControls = ({
             />
           </div>
         </div>
-        
+
         <div className="mt-4 text-center">
           <p className="text-sm text-muted-foreground">
-            Aktueller Skalierungsfaktor: <strong>{scaleFactor.toFixed(2)}x</strong>
-            {scaleFactor > 1 ? " (hochskaliert)" : scaleFactor < 1 ? " (herunterskaliert)" : " (original)"}
+            Aktueller Skalierungsfaktor:{" "}
+            <strong>{scaleFactor.toFixed(2)}x</strong>
+            {scaleFactor > 1
+              ? " (hochskaliert)"
+              : scaleFactor < 1
+                ? " (herunterskaliert)"
+                : " (original)"}
           </p>
         </div>
       </CardContent>

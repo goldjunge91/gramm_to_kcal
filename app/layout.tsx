@@ -21,7 +21,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "CalorieTracker - Kalorienvergleich & Rezept-Manager",
-  description: "Vergleiche Produkte nach Kaloriendichte und skaliere Rezepte dynamisch",
+  description:
+    "Vergleiche Produkte nach Kaloriendichte und skaliere Rezepte dynamisch",
   manifest: "/manifest.json",
   themeColor: "#000000",
 };
@@ -44,7 +45,7 @@ export default function RootLayout({
         >
           <Navbar />
           {children}
-           <Providers>
+          <Providers>
             <Navbar />
             {children}
             <Toaster />

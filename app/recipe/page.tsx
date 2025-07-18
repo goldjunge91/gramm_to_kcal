@@ -9,12 +9,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 import { scaleRecipe } from "@/lib/calculations";
 
@@ -26,7 +26,7 @@ export default function RecipePage(): JSX.Element {
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
   const [originalPortions, setOriginalPortions] = useState<number>(1);
   const [desiredPortions, setDesiredPortions] = useState<number>(1);
-  
+
   // Form state for adding ingredients
   const [name, setName] = useState("");
   const [quantity, setQuantity] = useState("");
@@ -35,34 +35,44 @@ export default function RecipePage(): JSX.Element {
   const [customUnit, setCustomUnit] = useState("");
 
   // Common units for the dropdown
-  const commonUnits = ["g", "ml", "TL", "EL", "Stk", "Prise", "Tasse", "L", "kg"];
+  const commonUnits = [
+    "g",
+    "ml",
+    "TL",
+    "EL",
+    "Stk",
+    "Prise",
+    "Tasse",
+    "L",
+    "kg",
+  ];
 
   // Calculate scaled ingredients
-  const scaledIngredients = useMemo(() => 
-    scaleRecipe(ingredients, originalPortions, desiredPortions),
-    [ingredients, originalPortions, desiredPortions]
+  const scaledIngredients = useMemo(
+    () => scaleRecipe(ingredients, originalPortions, desiredPortions),
+    [ingredients, originalPortions, desiredPortions],
   );
 
   const handleAddIngredient = (event: React.FormEvent): void => {
     event.preventDefault();
-    
+
     const quantityNum = Number.parseFloat(quantity);
     const finalUnit = isCustomUnit ? customUnit.trim() : unit;
-    
+
     if (!name.trim() || !quantityNum || quantityNum <= 0 || !finalUnit) {
       return;
     }
-    
+
     const newIngredient: Ingredient = {
-      id: `ingredient-${ingredients.length + 1}-${name.trim().replaceAll(/\s/g, '').toLowerCase()}`,
+      id: `ingredient-${ingredients.length + 1}-${name.trim().replaceAll(/\s/g, "").toLowerCase()}`,
       name: name.trim(),
       quantity: quantityNum,
-      unit: finalUnit
+      unit: finalUnit,
     };
-    
-    setIngredients(prev => [...prev, newIngredient]);
+
+    setIngredients((prev) => [...prev, newIngredient]);
     toast.success("Zutat hinzugefügt");
-    
+
     // Reset form
     setName("");
     setQuantity("");
@@ -82,7 +92,7 @@ export default function RecipePage(): JSX.Element {
   };
 
   const handleDeleteIngredient = (id: string): void => {
-    setIngredients(prev => prev.filter(ingredient => ingredient.id !== id));
+    setIngredients((prev) => prev.filter((ingredient) => ingredient.id !== id));
   };
 
   const handleScaleFactorChange = (scaleFactor: number): void => {
@@ -93,30 +103,35 @@ export default function RecipePage(): JSX.Element {
 
   const handleQuantityChange = (id: string, newQuantity: number): void => {
     // Update the individual ingredient quantity without affecting the portion calculator
-    setIngredients(prevIngredients => 
-      prevIngredients.map(ingredient => 
-        ingredient.id === id 
+    setIngredients((prevIngredients) =>
+      prevIngredients.map((ingredient) =>
+        ingredient.id === id
           ? { ...ingredient, quantity: newQuantity }
-          : ingredient
-      )
+          : ingredient,
+      ),
     );
     toast.success("Zutat-Menge angepasst");
   };
 
-  const handleIngredientScaleFactorChange = (id: string, newScaleFactor: number): void => {
+  const handleIngredientScaleFactorChange = (
+    id: string,
+    newScaleFactor: number,
+  ): void => {
     // Update the ingredient quantity based on the new scale factor applied to the original quantity
-    setIngredients(prevIngredients => 
-      prevIngredients.map(ingredient => {
+    setIngredients((prevIngredients) =>
+      prevIngredients.map((ingredient) => {
         if (ingredient.id === id) {
           // Find the original ingredient to get the base quantity
-          const originalIngredient = prevIngredients.find(orig => orig.id === id);
+          const originalIngredient = prevIngredients.find(
+            (orig) => orig.id === id,
+          );
           if (originalIngredient) {
             const newQuantity = originalIngredient.quantity * newScaleFactor;
             return { ...ingredient, quantity: newQuantity };
           }
         }
         return ingredient;
-      })
+      }),
     );
     toast.success("Skalierungsfaktor angepasst");
   };
@@ -155,7 +170,7 @@ export default function RecipePage(): JSX.Element {
                   required
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="ingredient-quantity">Menge</Label>
                 <Input
@@ -171,7 +186,7 @@ export default function RecipePage(): JSX.Element {
                   className="text-center"
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="ingredient-unit">Einheit</Label>
                 {isCustomUnit ? (
@@ -213,8 +228,12 @@ export default function RecipePage(): JSX.Element {
                 )}
               </div>
             </div>
-            
-            <Button type="submit" className="w-full sm:w-auto" aria-label="Zutat zur Rezeptliste hinzufügen">
+
+            <Button
+              type="submit"
+              className="w-full sm:w-auto"
+              aria-label="Zutat zur Rezeptliste hinzufügen"
+            >
               Zutat hinzufügen
             </Button>
           </form>

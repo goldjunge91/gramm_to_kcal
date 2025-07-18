@@ -2,7 +2,13 @@ import { Calculator, ChefHat } from "lucide-react";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 export default function Home() {
   return (
@@ -25,9 +31,7 @@ export default function Home() {
           </CardHeader>
           <CardContent>
             <Button asChild className="w-full">
-              <Link href="/calories">
-                Jetzt vergleichen
-              </Link>
+              <Link href="/calories">Jetzt vergleichen</Link>
             </Button>
           </CardContent>
         </Card>
@@ -42,9 +46,7 @@ export default function Home() {
           </CardHeader>
           <CardContent>
             <Button asChild className="w-full">
-              <Link href="/recipe">
-                Rezepte verwalten
-              </Link>
+              <Link href="/recipe">Rezepte verwalten</Link>
             </Button>
           </CardContent>
         </Card>

@@ -10,8 +10,8 @@ import { ThemeToggle } from "./ThemeToggle";
 /** Navigation bar component for switching between app pages */
 export const Navbar = (): JSX.Element => {
   const pathname = usePathname();
-  const [clientPathname, setClientPathname] = useState<string>('');
-  
+  const [clientPathname, setClientPathname] = useState<string>("");
+
   // Set the client pathname after hydration to avoid mismatch
   useEffect(() => {
     setClientPathname(pathname);

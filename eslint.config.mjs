@@ -16,12 +16,7 @@ export default sxzz(
       "**/__tests__/*",
       "**/__mocks__/*",
       "**/ui/*",
-      "**/lib/db/migrations/*",
-      "./src/__tests__/",
-      "./src/__mocks__/",
-      "**/scripts/*",
-      "**/supabase/*"
-      
+      "**/supabase/*",
     ],
   },
   {
@@ -38,21 +33,21 @@ export default sxzz(
         },
       ],
       "unicorn/filename-case": [
-        "off",
+        "warn",
         {
           case: "kebabCase",
           ignore: ["README.md"],
         },
       ],
       "node/prefer-global/buffer": "off",
-      "no-control-regex": "off",
-      "prettier/prettier": "off",
+      "no-control-regex": "error",
+      "prettier/prettier": "error",
     },
   },
   {
-    files: ["lib/types.ts"],
+    files: ["**/types.ts"],
     rules: {
-      "unicorn/filename-case": "off",
+      "unicorn/filename-case": "error",
     },
   },
 );

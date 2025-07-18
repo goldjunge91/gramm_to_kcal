@@ -33,7 +33,9 @@ interface ComparisonTableProps {
 }
 
 /** Enhanced table component for displaying product comparison results with sorting, filtering, and pagination */
-export const ComparisonTable = ({ products }: ComparisonTableProps): JSX.Element => {
+export const ComparisonTable = ({
+  products,
+}: ComparisonTableProps): JSX.Element => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
@@ -42,82 +44,89 @@ export const ComparisonTable = ({ products }: ComparisonTableProps): JSX.Element
   const columnHelper = createColumnHelper<Product>();
 
   // Define columns with TanStack Table
-  const columns = useMemo(() => [
-    columnHelper.accessor("name", {
-      header: ({ column }) => (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="h-8 px-2 lg:px-3"
-        >
-          Produktname
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      ),
-      cell: (info) => (
-        <div className="font-medium">{info.getValue()}</div>
-      ),
-    }),
-    columnHelper.accessor("quantity", {
-      header: ({ column }) => (
-        <div className="text-right">
+  const columns = useMemo(
+    () => [
+      columnHelper.accessor("name", {
+        header: ({ column }) => (
           <Button
             variant="ghost"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
             className="h-8 px-2 lg:px-3"
           >
-            Menge (g)
+            Produktname
             <ArrowUpDown className="ml-2 h-4 w-4" />
           </Button>
-        </div>
-      ),
-      cell: (info) => (
-        <div className="text-right">{info.getValue().toLocaleString()}</div>
-      ),
-    }),
-    columnHelper.accessor("kcal", {
-      header: ({ column }) => (
-        <div className="text-right">
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-            className="h-8 px-2 lg:px-3"
-          >
-            Kalorien (kcal)
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        </div>
-      ),
-      cell: (info) => (
-        <div className="text-right">{info.getValue().toLocaleString()}</div>
-      ),
-    }),
-    columnHelper.display({
-      id: "kcalPer1g",
-      header: ({ column }) => (
-        <div className="text-right">
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-            className="h-8 px-2 lg:px-3"
-          >
-            kcal/1g
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        </div>
-      ),
-      cell: (info) => (
-        <div className="text-right font-semibold">
-          {calculateKcalPer100g(info.row.original).toFixed(1)}
-        </div>
-      ),
-      sortingFn: (rowA, rowB) => {
-        const a = calculateKcalPer100g(rowA.original);
-        const b = calculateKcalPer100g(rowB.original);
-        return a - b;
-      },
-    }),
-  ], [columnHelper]);
+        ),
+        cell: (info) => <div className="font-medium">{info.getValue()}</div>,
+      }),
+      columnHelper.accessor("quantity", {
+        header: ({ column }) => (
+          <div className="text-right">
+            <Button
+              variant="ghost"
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
+              }
+              className="h-8 px-2 lg:px-3"
+            >
+              Menge (g)
+              <ArrowUpDown className="ml-2 h-4 w-4" />
+            </Button>
+          </div>
+        ),
+        cell: (info) => (
+          <div className="text-right">{info.getValue().toLocaleString()}</div>
+        ),
+      }),
+      columnHelper.accessor("kcal", {
+        header: ({ column }) => (
+          <div className="text-right">
+            <Button
+              variant="ghost"
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
+              }
+              className="h-8 px-2 lg:px-3"
+            >
+              Kalorien (kcal)
+              <ArrowUpDown className="ml-2 h-4 w-4" />
+            </Button>
+          </div>
+        ),
+        cell: (info) => (
+          <div className="text-right">{info.getValue().toLocaleString()}</div>
+        ),
+      }),
+      columnHelper.display({
+        id: "kcalPer1g",
+        header: ({ column }) => (
+          <div className="text-right">
+            <Button
+              variant="ghost"
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
+              }
+              className="h-8 px-2 lg:px-3"
+            >
+              kcal/1g
+              <ArrowUpDown className="ml-2 h-4 w-4" />
+            </Button>
+          </div>
+        ),
+        cell: (info) => (
+          <div className="text-right font-semibold">
+            {calculateKcalPer100g(info.row.original).toFixed(1)}
+          </div>
+        ),
+        sortingFn: (rowA, rowB) => {
+          const a = calculateKcalPer100g(rowA.original);
+          const b = calculateKcalPer100g(rowB.original);
+          return a - b;
+        },
+      }),
+    ],
+    [columnHelper],
+  );
 
   // Initialize table
   const table = useReactTable({
@@ -157,7 +166,10 @@ export const ComparisonTable = ({ products }: ComparisonTableProps): JSX.Element
       </CardHeader>
       <CardContent>
         <div className="overflow-x-auto">
-          <Table role="table" aria-label="Produktvergleich mit Sortierung und Filter">
+          <Table
+            role="table"
+            aria-label="Produktvergleich mit Sortierung und Filter"
+          >
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
@@ -167,7 +179,7 @@ export const ComparisonTable = ({ products }: ComparisonTableProps): JSX.Element
                         ? null
                         : flexRender(
                             header.column.columnDef.header,
-                            header.getContext()
+                            header.getContext(),
                           )}
                     </TableHead>
                   ))}
@@ -185,7 +197,7 @@ export const ComparisonTable = ({ products }: ComparisonTableProps): JSX.Element
                       <TableCell key={cell.id}>
                         {flexRender(
                           cell.column.columnDef.cell,
-                          cell.getContext()
+                          cell.getContext(),
                         )}
                       </TableCell>
                     ))}
@@ -193,20 +205,25 @@ export const ComparisonTable = ({ products }: ComparisonTableProps): JSX.Element
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={columns.length} className="h-24 text-center">
-                    Keine Produkte hinzugefügt. Fügen Sie oben ein Produkt hinzu, um den Vergleich zu starten.
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center"
+                  >
+                    Keine Produkte hinzugefügt. Fügen Sie oben ein Produkt
+                    hinzu, um den Vergleich zu starten.
                   </TableCell>
                 </TableRow>
               )}
             </TableBody>
           </Table>
         </div>
-        
+
         {/* Pagination Controls */}
         {products.length > 0 && (
           <div className="flex items-center justify-between space-x-2 py-4">
             <div className="flex-1 text-sm text-muted-foreground">
-              {table.getFilteredRowModel().rows.length} von {products.length} Produkten
+              {table.getFilteredRowModel().rows.length} von {products.length}{" "}
+              Produkten
             </div>
             <div className="flex items-center space-x-2">
               <Button
