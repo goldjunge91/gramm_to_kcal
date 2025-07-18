@@ -17,7 +17,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { syncUserWithDatabase } from "@/lib/actions/auth";
 import { mobileOfflineStorage } from "@/lib/offline/mobile-storage";
 import { mobileSyncManager } from "@/lib/offline/mobile-sync-manager";
-import { createClient } from "@/lib/supabase/client";
+import { createClient } from "@/utils/supabase/client";
 
 // Mobile-optimized Query Client
 const createMobileQueryClient = (): QueryClient =>

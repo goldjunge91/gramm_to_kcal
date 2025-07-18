@@ -1,21 +1,14 @@
-/**
- * Supabase-Client für den Server (Server-Komponenten, API-Routen, Middleware).
- *
- * Darf NUR im Server-Kontext verwendet werden:
- * - Server-Komponenten
- * - API-Routen
- * - Middleware
- * Niemals in Client-Komponenten oder Hooks importieren!
- *
- * Beispiel für Server-Import:
- * import { createClient } from "@/lib/supabase/server";
- */
+// Utility-Funktion für Social Login
+
+import type { Provider, SupabaseClient } from "@supabase/supabase-js";
+
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
+import { getURL } from "@/lib/get-url";
+
 export async function createClient() {
   const cookieStore = await cookies();
-
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -38,4 +31,17 @@ export async function createClient() {
       },
     },
   );
+}
+
+/**
+ * Utility-Funktion für Social Login mit korrektem Provider-Typ
+ */
+export async function signInWithOAuth(
+  client: SupabaseClient,
+  provider: Provider,
+) {
+  return await client.auth.signInWithOAuth({
+    provider,
+    options: { redirectTo: getURL() },
+  });
 }

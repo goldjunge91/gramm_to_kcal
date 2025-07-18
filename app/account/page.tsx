@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 
 import { getUserById } from "@/lib/db/users";
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@/utils/supabase/server";
 
 import AccountForm from "./account-form";
 

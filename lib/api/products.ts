@@ -3,7 +3,7 @@ import { toast } from "sonner";
 
 import { useMobileOffline } from "@/app/providers";
 import { mobileOfflineStorage } from "@/lib/offline/mobile-storage";
-import { createClient } from "@/lib/supabase/client";
+import { createClient } from "@/utils/supabase/client";
 
 import type { NewProduct, Product } from "../db/schema";
 

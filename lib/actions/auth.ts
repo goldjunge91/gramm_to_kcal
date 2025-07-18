@@ -5,8 +5,8 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 
 import { updateUserProfile, upsertUser } from "@/lib/db/users";
-import { createClient } from "@/lib/supabase/server";
 import { getAuthErrorMessage } from "@/lib/utils/auth-errors";
+import { createClient } from "@/utils/supabase/server";
 
 // Rate limiting store (in production, use Redis or database)
 const rateLimitStore = new Map<
