@@ -15,6 +15,7 @@ export default sxzz(
       "**/fixtures",
       "**/__tests__/*",
       "**/__mocks__/*",
+      "**/db/migrations/*",
       "**/ui/*",
       "**/supabase/*",
     ],

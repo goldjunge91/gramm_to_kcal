@@ -3,6 +3,28 @@
 1. **ALWAYS prefer editing existing files in the codebase.**
    NEVER write new files unless explicitly required.
 2. **NEVER use names like `Enhanced*`, `*2`, `*backup`** when creating new files based on old ones — the user will DIE if you do.
+### Important Notes
+- Uses DrizzleAdapter for database integration
+- JWT strategy for edge compatibility
+- Custom email templates for verification
+- Password hashing with unified utilities
+- Edge-compatible JWT signing/verification
+## State Management
+
+### URL-Based State
+- Prefer URL-based state management (query parameters, path parameters)
+- Filters, pagination, and search should be URL-representable
+- Makes state shareable via URLs
+
+## Important Rules
+
+- **Never** use npm or yarn, only pnpm
+- **Never** run `pnpm dev` or `pnpm build` automatically - ask user first
+- **Always** update DrizzleAdapter mapping in `auth.ts` when changing schema
+- **Never** NEVER NEVER NEVER send plain text to server
+- **Always** use existing patterns and components from the codebase
+- **Never** NEVER make NEVER new NEVER files if working on existing ones and breaking them
+- **Never** NEVER make any migrations .sql files, only use DrizzleKit
 
 ---
 
