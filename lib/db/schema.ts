@@ -9,17 +9,43 @@ import {
   text,
   timestamp,
   uuid,
-  varchar,
 } from "drizzle-orm/pg-core";
+
+// export const users = pgTable("users", {
+//   id: uuid("id").primaryKey(), // Match Supabase Auth UUID format
+//   fullName: text("full_name"),
+//   phone: varchar("phone", { length: 256 }),
+//   email: varchar("email", { length: 256 }).unique(),
+//   createdAt: timestamp("created_at").defaultNow().notNull(),
+//   updatedAt: timestamp("updated_at").defaultNow().notNull(),
+// });
 
 export const users = pgTable("users", {
   id: uuid("id").primaryKey(), // Match Supabase Auth UUID format
+  email: text("email").unique(),
   fullName: text("full_name"),
-  phone: varchar("phone", { length: 256 }),
-  email: varchar("email", { length: 256 }).unique(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
+
+export const postsTable = pgTable("posts_table", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  content: text("content").notNull(),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at")
+    .notNull()
+    .$onUpdate(() => new Date()),
+});
+
+export type InsertUser = typeof users.$inferInsert;
+export type SelectUser = typeof users.$inferSelect;
+
+export type InsertPost = typeof postsTable.$inferInsert;
+export type SelectPost = typeof postsTable.$inferSelect;
 
 // Sync status enum for offline functionality
 export const syncStatusEnum = pgEnum("sync_status", [

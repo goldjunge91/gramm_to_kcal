@@ -1,10 +1,9 @@
-/* eslint-disable unused-imports/no-unused-vars */
-import { NextResponse, type NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 
-export function GET(request: NextRequest) {
+export function GET() {
   return NextResponse.json({ message: "Products API endpoint" });
 }
 
-export function POST(request: NextRequest) {
+export function POST() {
   return NextResponse.json({ message: "Product created" });
 }

@@ -29,6 +29,31 @@ export function SignUpForm({
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
+  const getErrorMessage = (error: any): string => {
+    if (!error) return "An unexpected error occurred";
+
+    const message = error.message || error.toString();
+
+    // Map common Supabase auth errors to user-friendly messages
+    if (message.includes("User already registered")) {
+      return "An account with this email already exists. Please sign in instead.";
+    }
+    if (message.includes("Password should be at least")) {
+      return "Password must be at least 6 characters long.";
+    }
+    if (message.includes("Invalid email")) {
+      return "Please enter a valid email address.";
+    }
+    if (message.includes("Signup is disabled")) {
+      return "Account registration is currently disabled. Please contact support.";
+    }
+    if (message.includes("Too many requests")) {
+      return "Too many signup attempts. Please wait a few minutes before trying again.";
+    }
+
+    return message;
+  };
+
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     const supabase = createClient();
@@ -58,7 +83,7 @@ export function SignUpForm({
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/protected`,
+          emailRedirectTo: `${window.location.origin}/calories`,
         },
       });
 
@@ -102,10 +127,10 @@ export function SignUpForm({
         }, 1000);
       }
     } catch (error: unknown) {
-      const errorMessage =
-        error instanceof Error ? error.message : "An error occurred";
+      const errorMessage = getErrorMessage(error);
       setError(errorMessage);
       toast.error(errorMessage, { id: "signup" });
+      console.error("Signup error:", error);
     } finally {
       setIsLoading(false);
     }

@@ -1,3 +1,15 @@
+/**
+ * Supabase-Client für den Server (Server-Komponenten, API-Routen, Middleware).
+ *
+ * Darf NUR im Server-Kontext verwendet werden:
+ * - Server-Komponenten
+ * - API-Routen
+ * - Middleware
+ * Niemals in Client-Komponenten oder Hooks importieren!
+ *
+ * Beispiel für Server-Import:
+ * import { createClient } from "@/lib/supabase/server";
+ */
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 

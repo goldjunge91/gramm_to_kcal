@@ -2,7 +2,7 @@
 
 import { useState, type JSX } from "react";
 
-import type { Product } from "@/lib/types";
+import type { Product } from "@/lib/db/schema";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";

@@ -1,11 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
-import type { NewProduct, Product } from "@/lib/db/schema";
-
 import { useMobileOffline } from "@/app/providers";
 import { mobileOfflineStorage } from "@/lib/offline/mobile-storage";
 import { createClient } from "@/lib/supabase/client";
+
+import type { NewProduct, Product } from "../db/schema";
 
 export const useProducts = (userId: string) => {
   const { isOnline } = useMobileOffline();

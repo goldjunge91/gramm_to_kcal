@@ -111,9 +111,15 @@ export const Navbar = (): JSX.Element => {
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                  <Button
+                    variant="ghost"
+                    className="relative h-8 w-8 rounded-full"
+                  >
                     <Avatar className="h-8 w-8">
-                      <AvatarImage src={user.user_metadata?.avatar_url} alt={user.email || ""} />
+                      <AvatarImage
+                        src={user.user_metadata?.avatar_url}
+                        alt={user.email || ""}
+                      />
                       <AvatarFallback>
                         {getUserInitials(user.email || "U")}
                       </AvatarFallback>
@@ -124,7 +130,8 @@ export const Navbar = (): JSX.Element => {
                   <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
                       <p className="text-sm font-medium leading-none">
-                        {user.user_metadata?.full_name || user.email?.split("@")[0]}
+                        {user.user_metadata?.full_name ||
+                          user.email?.split("@")[0]}
                       </p>
                       <p className="text-xs leading-none text-muted-foreground">
                         {user.email}

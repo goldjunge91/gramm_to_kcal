@@ -1,150 +1,137 @@
-/* eslint-disable no-alert */
 "use client";
+
 import type { User } from "@supabase/supabase-js";
 
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
+import { toast } from "sonner";
 
+import type { SelectUser } from "@/lib/db/schema";
+
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import { updateUserProfileAction } from "@/lib/actions/auth";
 import { createClient } from "@/lib/supabase/client";
 
-import Avatar from "./avatar";
+interface AccountFormProps {
+  user: User | null;
+  dbUser: SelectUser | null;
+}
 
-// ...
-
-export default function AccountForm({ user }: { user: User | null }) {
+export default function AccountForm({ user, dbUser }: AccountFormProps) {
   const supabase = createClient();
-  const [loading, setLoading] = useState(true);
-  const [fullname, setFullname] = useState<string | null>(null);
-  const [username, setUsername] = useState<string | null>(null);
-  const [website, setWebsite] = useState<string | null>(null);
-  const [avatar_url, setAvatarUrl] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [fullName, setFullName] = useState(dbUser?.fullName || "");
 
-  const getProfile = useCallback(async () => {
+  const handleUpdateProfile = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user) return;
+
     try {
       setLoading(true);
 
-      const { data, error, status } = await supabase
-        .from("profiles")
-        .select(`full_name, username, website, avatar_url`)
-        .eq("id", user?.id)
-        .single();
-
-      if (error && status !== 406) {
-        console.log(error);
-        throw error;
-      }
-
-      if (data) {
-        setFullname(data.full_name);
-        setUsername(data.username);
-        setWebsite(data.website);
-        setAvatarUrl(data.avatar_url);
-      }
-    } catch {
-      alert("Error loading user data!");
-    } finally {
-      setLoading(false);
-    }
-  }, [user, supabase]);
-
-  useEffect(() => {
-    getProfile();
-  }, [user, getProfile]);
-
-  async function updateProfile({
-    username,
-    website,
-    avatar_url,
-  }: {
-    username: string | null;
-    fullname: string | null;
-    website: string | null;
-    avatar_url: string | null;
-  }) {
-    try {
-      setLoading(true);
-
-      const { error } = await supabase.from("profiles").upsert({
-        id: user?.id as string,
-        full_name: fullname,
-        username,
-        website,
-        avatar_url,
-        updated_at: new Date().toISOString(),
+      const result = await updateUserProfileAction({
+        fullName: fullName || null,
       });
-      if (error) throw error;
-      alert("Profile updated!");
-    } catch {
-      alert("Error updating the data!");
+
+      if (result.success) {
+        toast.success("Profile updated successfully!");
+      } else {
+        throw new Error(result.error);
+      }
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      toast.error("Failed to update profile");
     } finally {
       setLoading(false);
     }
-  }
+  };
+
+  const handleSignOut = async () => {
+    try {
+      await supabase.auth.signOut();
+      toast.success("Signed out successfully");
+    } catch (error) {
+      console.error("Error signing out:", error);
+      toast.error("Failed to sign out");
+    }
+  };
 
   return (
-    <div className="form-widget">
-      {/* ... */}
-      <div className="form-widget">
-        <Avatar
-          uid={user?.id ?? null}
-          url={avatar_url}
-          size={150}
-          onUpload={(url) => {
-            setAvatarUrl(url);
-            updateProfile({ fullname, username, website, avatar_url: url });
-          }}
-        />
-        <div>
-          <label htmlFor="email">Email</label>
-          <input id="email" type="text" value={user?.email} disabled />
-        </div>
-        <div>
-          <label htmlFor="fullName">Full Name</label>
-          <input
-            id="fullName"
-            type="text"
-            value={fullname || ""}
-            onChange={(e) => setFullname(e.target.value)}
-          />
-        </div>
-        <div>
-          <label htmlFor="username">Username</label>
-          <input
-            id="username"
-            type="text"
-            value={username || ""}
-            onChange={(e) => setUsername(e.target.value)}
-          />
-        </div>
-        <div>
-          <label htmlFor="website">Website</label>
-          <input
-            id="website"
-            type="url"
-            value={website || ""}
-            onChange={(e) => setWebsite(e.target.value)}
-          />
-        </div>
+    <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle>Profile Information</CardTitle>
+          <CardDescription>
+            Update your account details and personal information.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleUpdateProfile} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                value={user?.email || ""}
+                disabled
+                className="bg-muted"
+              />
+              <p className="text-sm text-muted-foreground">
+                Your email address cannot be changed.
+              </p>
+            </div>
 
-        <div>
-          <button
-            className="button primary block"
-            onClick={() =>
-              updateProfile({ fullname, username, website, avatar_url })
-            }
-            disabled={loading}
-          >
-            {loading ? "Loading ..." : "Update"}
-          </button>
-        </div>
+            <div className="space-y-2">
+              <Label htmlFor="fullName">Full Name</Label>
+              <Input
+                id="fullName"
+                type="text"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                placeholder="Enter your full name"
+              />
+            </div>
 
-        <div>
-          <form action="/auth/signout" method="post">
-            <button className="button block" type="submit">
-              Sign out
-            </button>
+            <Button type="submit" disabled={loading}>
+              {loading ? "Updating..." : "Update Profile"}
+            </Button>
           </form>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Account Actions</CardTitle>
+          <CardDescription>
+            Manage your account settings and security.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <Separator />
+            <div className="flex items-center justify-between">
+              <div>
+                <h4 className="font-medium">Sign Out</h4>
+                <p className="text-sm text-muted-foreground">
+                  Sign out of your account on this device.
+                </p>
+              </div>
+              <Button variant="outline" onClick={handleSignOut}>
+                Sign Out
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

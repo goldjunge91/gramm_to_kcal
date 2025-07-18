@@ -14,6 +14,7 @@ import {
 } from "react";
 
 import { useIsMobile } from "@/hooks/use-mobile";
+import { syncUserWithDatabase } from "@/lib/actions/auth";
 import { mobileOfflineStorage } from "@/lib/offline/mobile-storage";
 import { mobileSyncManager } from "@/lib/offline/mobile-sync-manager";
 import { createClient } from "@/lib/supabase/client";
@@ -97,7 +98,15 @@ export function Providers({ children }: { children: ReactNode }): JSX.Element {
     // Get initial session
     supabase.auth
       .getSession()
-      .then(({ data: { session } }) => {
+      .then(async ({ data: { session } }) => {
+        if (session?.user) {
+          // Sync user with database
+          try {
+            await syncUserWithDatabase(session.user.id);
+          } catch (error) {
+            console.error("Error syncing user with database:", error);
+          }
+        }
         setUser(session?.user ?? null);
         setLoading(false);
       })
@@ -106,7 +115,15 @@ export function Providers({ children }: { children: ReactNode }): JSX.Element {
     // Listen for auth changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      if (session?.user) {
+        // Sync user with database on auth state change
+        try {
+          await syncUserWithDatabase(session.user.id);
+        } catch (error) {
+          console.error("Error syncing user with database:", error);
+        }
+      }
       setUser(session?.user ?? null);
       setLoading(false);
     });

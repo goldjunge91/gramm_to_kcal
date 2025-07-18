@@ -25,6 +25,25 @@ export function ForgotPasswordForm({
   const [success, setSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
+  const getErrorMessage = (error: any): string => {
+    if (!error) return "An unexpected error occurred";
+
+    const message = error.message || error.toString();
+
+    // Map common Supabase auth errors to user-friendly messages
+    if (message.includes("Invalid email")) {
+      return "Please enter a valid email address.";
+    }
+    if (message.includes("User not found")) {
+      return "No account found with this email address.";
+    }
+    if (message.includes("Too many requests")) {
+      return "Too many password reset attempts. Please wait a few minutes before trying again.";
+    }
+
+    return message;
+  };
+
   const handleForgotPassword = async (e: React.FormEvent) => {
     e.preventDefault();
     const supabase = createClient();
@@ -39,7 +58,9 @@ export function ForgotPasswordForm({
       if (error) throw error;
       setSuccess(true);
     } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : "An error occurred");
+      const errorMessage = getErrorMessage(error);
+      setError(errorMessage);
+      console.error("Password reset error:", error);
     } finally {
       setIsLoading(false);
     }

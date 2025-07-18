@@ -25,19 +25,48 @@ export function UpdatePasswordForm({
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  const handleForgotPassword = async (e: React.FormEvent) => {
+  const getErrorMessage = (error: any): string => {
+    if (!error) return "An unexpected error occurred";
+
+    const message = error.message || error.toString();
+
+    // Map common Supabase auth errors to user-friendly messages
+    if (message.includes("Password should be at least")) {
+      return "Password must be at least 6 characters long.";
+    }
+    if (message.includes("New password should be different")) {
+      return "Your new password must be different from your current password.";
+    }
+    if (message.includes("Invalid password")) {
+      return "Please enter a valid password.";
+    }
+
+    return message;
+  };
+
+  const handleUpdatePassword = async (e: React.FormEvent) => {
     e.preventDefault();
     const supabase = createClient();
     setIsLoading(true);
     setError(null);
 
+    // Validate password strength
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters long");
+      setIsLoading(false);
+      return;
+    }
+
     try {
       const { error } = await supabase.auth.updateUser({ password });
       if (error) throw error;
-      // Update this route to redirect to an authenticated route. The user already has an active session.
-      router.push("/protected");
+
+      // Redirect to calories page
+      router.push("/calories");
     } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : "An error occurred");
+      const errorMessage = getErrorMessage(error);
+      setError(errorMessage);
+      console.error("Password update error:", error);
     } finally {
       setIsLoading(false);
     }
@@ -53,7 +82,7 @@ export function UpdatePasswordForm({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleForgotPassword}>
+          <form onSubmit={handleUpdatePassword}>
             <div className="flex flex-col gap-6">
               <div className="grid gap-2">
                 <Label htmlFor="password">New password</Label>
