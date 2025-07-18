@@ -1,6 +1,8 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
+
+import type { Ingredient, Product } from '../../lib/types';
+
 import { calculateKcalPer100g, scaleRecipe } from '../../lib/calculations';
-import { Product, Ingredient } from '../../lib/types';
 
 describe('calculateKcalPer100g', () => {
   it('should calculate calories per 1g correctly for normal cases', () => {

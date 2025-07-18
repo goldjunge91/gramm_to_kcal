@@ -50,7 +50,7 @@ export default sxzz(
     },
   },
   {
-    files: ["src/types/**"],
+    files: ["lib/types.ts"],
     rules: {
       "unicorn/filename-case": "off",
     },
