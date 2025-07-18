@@ -10,7 +10,8 @@ export default function CaloriesPage(): JSX.Element {
   const [products, setProducts] = useState<Product[]>([]);
 
   const handleAddProduct = (productData: Omit<Product, "id">): void => {
-    const id = `product-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    // Use counter-based ID to avoid hydration mismatch
+    const id = `product-${products.length + 1}-${productData.name.replace(/\s/g, '').toLowerCase()}`;
     const newProduct = { id, ...productData };
     setProducts(prevProducts => [...prevProducts, newProduct]);
   };

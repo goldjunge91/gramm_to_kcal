@@ -51,7 +51,7 @@ export default function RecipePage(): JSX.Element {
     }
     
     const newIngredient: Ingredient = {
-      id: `ingredient-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      id: `ingredient-${ingredients.length + 1}-${name.trim().replace(/\s/g, '').toLowerCase()}`,
       name: name.trim(),
       quantity: quantityNum,
       unit: finalUnit
@@ -82,19 +82,16 @@ export default function RecipePage(): JSX.Element {
     setIngredients(prev => prev.filter(ingredient => ingredient.id !== id));
   };
 
-  const handleQuantityChange = (id: string, newQuantity: number): void => {
-    // Find the original ingredient
-    const originalIngredient = ingredients.find(ing => ing.id === id);
-    if (!originalIngredient) return;
-
-    // Calculate the scale factor based on the change
-    const scaleFactor = newQuantity / (originalIngredient.quantity * (desiredPortions / originalPortions));
-    
-    // Update the desired portions to reflect the change
+  const handleScaleFactorChange = (scaleFactor: number): void => {
     const newDesiredPortions = originalPortions * scaleFactor;
     setDesiredPortions(newDesiredPortions);
-    
-    toast.info("Portionen automatisch angepasst");
+    toast.info("Skalierungsfaktor angepasst");
+  };
+
+  const handleReorder = (newOrder: Ingredient[]): void => {
+    // Update the ingredients order
+    setIngredients(newOrder);
+    toast.success("Reihenfolge der Zutaten geändert");
   };
 
   return (
@@ -205,13 +202,15 @@ export default function RecipePage(): JSX.Element {
             toast.info("Rezept neu berechnet");
           }
         }}
+        onScaleFactorChange={handleScaleFactorChange}
       />
 
       {/* Ingredient List */}
       <IngredientList
         ingredients={scaledIngredients}
+        originalIngredients={ingredients}
         onDelete={handleDeleteIngredient}
-        onQuantityChange={handleQuantityChange}
+        onReorder={handleReorder}
       />
     </div>
   );

@@ -8,6 +8,7 @@ interface PortionControlsProps {
   desiredPortions: number;
   onOriginalPortionsChange: (value: number) => void;
   onDesiredPortionsChange: (value: number) => void;
+  onScaleFactorChange: (scaleFactor: number) => void;
 }
 
 /** Component for controlling recipe portion scaling */
@@ -16,6 +17,7 @@ export const PortionControls = ({
   desiredPortions,
   onOriginalPortionsChange,
   onDesiredPortionsChange,
+  onScaleFactorChange,
 }: PortionControlsProps): JSX.Element => {
   const scaleFactor = originalPortions > 0 ? desiredPortions / originalPortions : 1;
 
@@ -25,7 +27,7 @@ export const PortionControls = ({
         <CardTitle>Portionsrechner</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="space-y-2">
             <Label htmlFor="original-portions">Ursprüngliche Portionen</Label>
             <Input
@@ -51,16 +53,30 @@ export const PortionControls = ({
               placeholder="z.B. 6"
             />
           </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="scale-factor">Skalierungsfaktor</Label>
+            <Input
+              id="scale-factor"
+              type="number"
+              value={scaleFactor.toFixed(2)}
+              onChange={(e) => {
+                const newScaleFactor = parseFloat(e.target.value) || 1;
+                onScaleFactorChange(newScaleFactor);
+              }}
+              min="0.1"
+              step="0.1"
+              placeholder="z.B. 1.5"
+            />
+          </div>
         </div>
         
-        {scaleFactor !== 1 && (
-          <div className="mt-4 p-3 bg-muted rounded-lg">
-            <p className="text-sm text-muted-foreground">
-              <strong>Skalierungsfaktor:</strong> {scaleFactor.toFixed(2)}x
-              {scaleFactor > 1 ? " (hochskaliert)" : " (herunterskaliert)"}
-            </p>
-          </div>
-        )}
+        <div className="mt-4 text-center">
+          <p className="text-sm text-muted-foreground">
+            Aktueller Skalierungsfaktor: <strong>{scaleFactor.toFixed(2)}x</strong>
+            {scaleFactor > 1 ? " (hochskaliert)" : scaleFactor < 1 ? " (herunterskaliert)" : " (original)"}
+          </p>
+        </div>
       </CardContent>
     </Card>
   );
