@@ -20,3 +20,20 @@ Keep project_status.md up to date with getting started, design tokens, and compo
 Validate all server-side inputs (API routes)
 Use HTTPS-only cookies and CSRF tokens when applicable
 Protect sensitive routes with middleware or session logic
+
+Design Principles
+1. Don't overengineer: Simple beats complex
+2. No fallbacks: One correct path, no alternatives
+3. One way: One way to do things, not many
+4. Clarity over compatibility: Clear code beats backward compatibility
+5. Throw errors: Fail fast when preconditions aren't met
+6. No backups: Trust the primary mechanism
+7. Separation of concerns: Each function should have a single responsibility
+
+Development Methodology
+
+8. Surgical changes only: Make minimal, focused fixes
+9. Evidence-based debugging: Add minimal, targeted logging
+10. Fix root causes: Address the underlying issue, not just symptoms
+11. Simple > Complex: Let TypeScript catch errors instead of excessive runtime checks
+12. Collaborative process: Work with user to identify most efficient solution
