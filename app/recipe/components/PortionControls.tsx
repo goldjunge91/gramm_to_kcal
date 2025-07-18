@@ -33,11 +33,13 @@ export const PortionControls = ({
             <Input
               id="original-portions"
               type="number"
+              inputMode="numeric"
               value={originalPortions}
               onChange={(e) => onOriginalPortionsChange(parseFloat(e.target.value) || 1)}
               min="1"
               step="1"
-              placeholder="z.B. 4"
+              placeholder="z.B. 1"
+              className="text-center"
             />
           </div>
           
@@ -46,11 +48,13 @@ export const PortionControls = ({
             <Input
               id="desired-portions"
               type="number"
+              inputMode="numeric"
               value={desiredPortions}
               onChange={(e) => onDesiredPortionsChange(parseFloat(e.target.value) || 1)}
               min="1"
               step="1"
-              placeholder="z.B. 6"
+              placeholder="z.B. 2"
+              className="text-center"
             />
           </div>
           
@@ -59,6 +63,7 @@ export const PortionControls = ({
             <Input
               id="scale-factor"
               type="number"
+              inputMode="decimal"
               value={scaleFactor.toFixed(2)}
               onChange={(e) => {
                 const newScaleFactor = parseFloat(e.target.value) || 1;
@@ -67,6 +72,7 @@ export const PortionControls = ({
               min="0.1"
               step="0.1"
               placeholder="z.B. 1.5"
+              className="text-center"
             />
           </div>
         </div>

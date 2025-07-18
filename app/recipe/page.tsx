@@ -21,8 +21,8 @@ import { toast } from "sonner";
 /** Recipe management page for scaling recipes and adjusting ingredients */
 export default function RecipePage(): JSX.Element {
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
-  const [originalPortions, setOriginalPortions] = useState<number>(4);
-  const [desiredPortions, setDesiredPortions] = useState<number>(4);
+  const [originalPortions, setOriginalPortions] = useState<number>(1);
+  const [desiredPortions, setDesiredPortions] = useState<number>(1);
   
   // Form state for adding ingredients
   const [name, setName] = useState("");
@@ -88,6 +88,36 @@ export default function RecipePage(): JSX.Element {
     toast.info("Skalierungsfaktor angepasst");
   };
 
+  const handleQuantityChange = (id: string, newQuantity: number): void => {
+    // Update the individual ingredient quantity without affecting the portion calculator
+    setIngredients(prevIngredients => 
+      prevIngredients.map(ingredient => 
+        ingredient.id === id 
+          ? { ...ingredient, quantity: newQuantity }
+          : ingredient
+      )
+    );
+    toast.success("Zutat-Menge angepasst");
+  };
+
+  const handleIngredientScaleFactorChange = (id: string, newScaleFactor: number): void => {
+    // Update the ingredient quantity based on the new scale factor applied to the original quantity
+    setIngredients(prevIngredients => 
+      prevIngredients.map(ingredient => {
+        if (ingredient.id === id) {
+          // Find the original ingredient to get the base quantity
+          const originalIngredient = prevIngredients.find(orig => orig.id === id);
+          if (originalIngredient) {
+            const newQuantity = originalIngredient.quantity * newScaleFactor;
+            return { ...ingredient, quantity: newQuantity };
+          }
+        }
+        return ingredient;
+      })
+    );
+    toast.success("Skalierungsfaktor angepasst");
+  };
+
   const handleReorder = (newOrder: Ingredient[]): void => {
     // Update the ingredients order
     setIngredients(newOrder);
@@ -128,12 +158,14 @@ export default function RecipePage(): JSX.Element {
                 <Input
                   id="ingredient-quantity"
                   type="number"
+                  inputMode="decimal"
                   value={quantity}
                   onChange={(e) => setQuantity(e.target.value)}
                   placeholder="z.B. 500"
-                  min="0"
+                  min="0.1"
                   step="0.1"
                   required
+                  className="text-center"
                 />
               </div>
               
@@ -210,6 +242,8 @@ export default function RecipePage(): JSX.Element {
         ingredients={scaledIngredients}
         originalIngredients={ingredients}
         onDelete={handleDeleteIngredient}
+        onQuantityChange={handleQuantityChange}
+        onScaleFactorChange={handleIngredientScaleFactorChange}
         onReorder={handleReorder}
       />
     </div>

@@ -61,6 +61,7 @@ interface IngredientListProps {
   originalIngredients: Ingredient[];
   onDelete: (id: string) => void;
   onQuantityChange?: (id: string, newQuantity: number) => void;
+  onScaleFactorChange?: (id: string, newScaleFactor: number) => void;
   onReorder?: (newOrder: Ingredient[]) => void;
 }
 
@@ -98,7 +99,7 @@ const DraggableTableRow = ({
 };
 
 /** Enhanced table component for displaying and managing recipe ingredients with drag-and-drop reordering */
-export const IngredientList = ({ ingredients, originalIngredients, onDelete, onQuantityChange, onReorder }: IngredientListProps): JSX.Element => {
+export const IngredientList = ({ ingredients, originalIngredients, onDelete, onQuantityChange, onScaleFactorChange, onReorder }: IngredientListProps): JSX.Element => {
   const [data, setData] = useState<Ingredient[]>(ingredients);
   
   // Update local state when ingredients prop changes
@@ -152,12 +153,53 @@ export const IngredientList = ({ ingredients, originalIngredients, onDelete, onQ
         const formattedValue = currentQuantity % 1 === 0 ? currentQuantity.toString() : currentQuantity.toFixed(1);
         
         return (
-          <div className="text-right space-y-1">
-            <div className="font-medium">
-              {formattedValue}
-            </div>
-            <div className="text-xs text-muted-foreground">
-              {ingredientScaleFactor.toFixed(1)}x
+          <div className="text-right">
+            <div className="flex items-center justify-end space-x-1">
+              {onQuantityChange ? (
+                <Input
+                  type="number"
+                  inputMode="decimal"
+                  value={formattedValue}
+                  onChange={(e) => {
+                    const newQuantity = parseFloat(e.target.value);
+                    if (!isNaN(newQuantity) && newQuantity > 0) {
+                      onQuantityChange(info.row.original.id, newQuantity);
+                    }
+                  }}
+                  className="w-16 text-right text-sm"
+                  step="0.1"
+                  min="0.1"
+                  aria-label={`Skalierte Menge für ${info.row.original.name} bearbeiten`}
+                />
+              ) : (
+                <div className="font-medium">
+                  {formattedValue}
+                </div>
+              )}
+              <div className="text-xs text-muted-foreground">
+                {onScaleFactorChange ? (
+                  <div className="flex items-center">
+                    <Input
+                      type="number"
+                      inputMode="decimal"
+                      value={ingredientScaleFactor.toFixed(1)}
+                      onChange={(e) => {
+                        const newScaleFactor = parseFloat(e.target.value);
+                        if (!isNaN(newScaleFactor) && newScaleFactor > 0) {
+                          onScaleFactorChange(info.row.original.id, newScaleFactor);
+                        }
+                      }}
+                      className="w-10 text-right text-xs border-0 p-0 h-4 bg-transparent"
+                      step="0.1"
+                      min="0.1"
+                      aria-label={`Skalierungsfaktor für ${info.row.original.name} bearbeiten`}
+                    />
+                    <span className="ml-0.5">x</span>
+                  </div>
+                ) : (
+                  <span>{ingredientScaleFactor.toFixed(1)}x</span>
+                )}
+              </div>
             </div>
           </div>
         );
@@ -185,7 +227,7 @@ export const IngredientList = ({ ingredients, originalIngredients, onDelete, onQ
         </div>
       ),
     }),
-  ], [columnHelper, originalIngredients, onDelete]);
+  ], [columnHelper, originalIngredients, onDelete, onQuantityChange, onScaleFactorChange]);
 
   const table = useReactTable({
     data,
