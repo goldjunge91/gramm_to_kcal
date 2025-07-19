@@ -158,23 +158,7 @@ export function BarcodeScanner({
     [],
   );
 
-  // Switch between scan modes
-  const handleModeSwitch = useCallback(
-    (mode: ScanMode) => {
-      if (mode === scanMode) return;
-
-      // Stop camera scanning when switching away from camera mode
-      if (scanMode === "camera") {
-        stopScanning();
-      }
-
-      setScanMode(mode);
-      setError(null);
-      setUploadError(null);
-      setIsLoading(mode === "camera");
-    },
-    [scanMode, stopScanning],
-  );
+  // Note: handleModeSwitch moved after stopScanning definition
 
   // Start scanning with optimal configuration
   const startScanning = useCallback(
@@ -262,6 +246,24 @@ export function BarcodeScanner({
       scannerRef.current = null;
     }
   }, []);
+
+  // Switch between scan modes
+  const handleModeSwitch = useCallback(
+    (mode: ScanMode) => {
+      if (mode === scanMode) return;
+
+      // Stop camera scanning when switching away from camera mode
+      if (scanMode === "camera") {
+        stopScanning();
+      }
+
+      setScanMode(mode);
+      setError(null);
+      setUploadError(null);
+      setIsLoading(mode === "camera");
+    },
+    [scanMode, stopScanning],
+  );
 
   // Start scanning when modal opens and in camera mode
   useEffect(() => {
