@@ -1,11 +1,13 @@
 "use client";
 
 import { Calculator, ChefHat, LogOut, Settings, User } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState, type JSX } from "react";
 
 import { useAuth } from "@/app/providers";
+import { GunterThemeButton } from "@/components/layout/GunterThemeButton";
 import { ThemeSwitcher } from "@/components/layout/ThemeSwitcher";
 /** Navigation bar component for switching between app pages */
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -50,11 +52,17 @@ export const Navbar = (): JSX.Element => {
         <div className="flex h-16 items-center justify-between">
           {/* Logo/Brand */}
           <div className="flex items-center space-x-4">
-            <Link href="/" className="text-xl font-bold">
-              CalorieTracker
+            <Link href="/">
+              <Image
+                src="/gunter.png"
+                alt="Logo"
+                width={64}
+                height={64}
+                style={{ marginRight: "8px" }}
+                priority
+              />
             </Link>
           </div>
-
           {/* Navigation Links */}
           <div className="hidden md:flex items-center space-x-8">
             <Link
@@ -105,7 +113,10 @@ export const Navbar = (): JSX.Element => {
             >
               <ChefHat className="h-5 w-5" />
             </Link>
-            <ThemeSwitcher />
+            <div className="flex items-center gap-2">
+              <ThemeSwitcher />
+              <GunterThemeButton />
+            </div>
 
             {user ? (
               <DropdownMenu>
@@ -168,7 +179,10 @@ export const Navbar = (): JSX.Element => {
 
           {/* User Section */}
           <div className="flex items-center space-x-4">
-            <ThemeSwitcher />
+            <div className="flex items-center gap-2">
+              <ThemeSwitcher />
+              <GunterThemeButton />
+            </div>
 
             {user ? (
               <DropdownMenu>

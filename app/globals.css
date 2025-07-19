@@ -112,6 +112,42 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
+.gunter {
+  /* Gunter's Authentic Color Palette - Inspired by his golden costume and peachy skin */
+  --background: oklch(0.97 0.015 40); /* Soft cream with peachy undertone - like Gunter's skin */
+  --foreground: oklch(0.25 0.02 20); /* Deep warm brown - readable text */
+  --card: oklch(0.98 0.02 45); /* Slightly warmer cream for cards */
+  --card-foreground: oklch(0.25 0.02 20); /* Deep brown text on cards */
+  --popover: oklch(0.98 0.02 45); /* Matching card color */
+  --popover-foreground: oklch(0.25 0.02 20); /* Consistent text */
+  --primary: oklch(0.85 0.12 85); /* Rich golden yellow - Gunter's sparkly costume */
+  --primary-foreground: oklch(0.2 0.02 20); /* Dark text on gold */
+  --secondary: oklch(0.92 0.06 25); /* Warm peachy pink - Gunter's skin tone */
+  --secondary-foreground: oklch(0.25 0.02 20); /* Dark text on peach */
+  --muted: oklch(0.95 0.03 35); /* Very light peachy for muted areas */
+  --muted-foreground: oklch(0.45 0.02 25); /* Muted brown text */
+  --accent: oklch(0.8 0.15 40); /* Coral orange - like pineapple accents */
+  --accent-foreground: oklch(0.2 0.02 20); /* Dark text on coral */
+  --destructive: oklch(0.65 0.15 15); /* Warm red for errors */
+  --destructive-foreground: oklch(0.97 0.01 40); /* Cream text on red */
+  --border: oklch(0.9 0.04 70); /* Soft golden borders */
+  --input: oklch(0.96 0.02 50); /* Light peachy input backgrounds */
+  --ring: oklch(0.8 0.12 85); /* Golden focus rings - sparkly effect */
+  --chart-1: oklch(0.85 0.12 85); /* Golden yellow */
+  --chart-2: oklch(0.8 0.15 40); /* Coral orange */
+  --chart-3: oklch(0.92 0.06 25); /* Peachy pink */
+  --chart-4: oklch(0.75 0.1 110); /* Tropical green */
+  --chart-5: oklch(0.7 0.08 20); /* Warm brown */
+  --sidebar: oklch(0.96 0.02 45); /* Light cream sidebar */
+  --sidebar-foreground: oklch(0.25 0.02 20); /* Dark text */
+  --sidebar-primary: oklch(0.85 0.12 85); /* Golden primary */
+  --sidebar-primary-foreground: oklch(0.2 0.02 20); /* Dark text on gold */
+  --sidebar-accent: oklch(0.8 0.15 40); /* Coral accent */
+  --sidebar-accent-foreground: oklch(0.2 0.02 20); /* Dark text on coral */
+  --sidebar-border: oklch(0.9 0.04 70); /* Soft golden borders */
+  --sidebar-ring: oklch(0.8 0.12 85); /* Golden rings */
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

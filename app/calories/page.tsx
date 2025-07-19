@@ -59,6 +59,9 @@ export default function CaloriesPage(): JSX.Element {
       userId: user.id,
     });
 
+    // Nach dem Hinzufügen: Liste neu laden (besonders auf Mobile)
+    await refetch();
+
     // Close form on mobile after adding
     if (isMobile) {
       setShowForm(false);
@@ -67,6 +70,7 @@ export default function CaloriesPage(): JSX.Element {
 
   const handleDeleteProduct = async (id: string): Promise<void> => {
     await deleteProduct.mutateAsync(id);
+    await refetch();
   };
 
   if (!user) {

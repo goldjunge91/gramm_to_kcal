@@ -69,9 +69,16 @@ export const useCreateProduct = () => {
       }
 
       const supabase = createClient();
+      // Mapping für Supabase: user_id statt userId
+      // Nur user_id an Supabase übergeben, nicht userId
+      const { userId, ...rest } = product;
+      const supabaseProduct = {
+        ...rest,
+        user_id: userId,
+      };
       const { data, error } = await supabase
         .from("products")
-        .insert(product)
+        .insert(supabaseProduct)
         .select()
         .single();
 
@@ -88,8 +95,13 @@ export const useCreateProduct = () => {
         (old: Product[] = []) => [data, ...old],
       );
     },
-    onError: (error) => {
-      toast.error("Failed to create product");
+    onError: (error: any) => {
+      const errorMsg =
+        error?.message ||
+        error?.error_description ||
+        error?.toString() ||
+        "Failed to create product";
+      toast.error(errorMsg);
       console.error("Create product error:", error);
     },
   });

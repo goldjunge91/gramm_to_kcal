@@ -38,6 +38,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useDeferredInput } from "@/hooks/useDeferredInput";
 
 // Drag Handle Component
 const DragHandle = ({ ingredientId }: { ingredientId: string }) => {
@@ -53,6 +54,78 @@ const DragHandle = ({ ingredientId }: { ingredientId: string }) => {
     >
       <GripVertical className="h-4 w-4 text-muted-foreground" />
     </div>
+  );
+};
+
+// Deferred Quantity Input Component
+const DeferredQuantityInput = ({
+  ingredientId,
+  currentQuantity,
+  onQuantityChange,
+  ingredientName,
+}: {
+  ingredientId: string;
+  currentQuantity: number;
+  onQuantityChange: (id: string, newQuantity: number) => void;
+  ingredientName: string;
+}) => {
+  const { displayValue, isDirty, handleChange, handleBlur, handleKeyDown } =
+    useDeferredInput({
+      initialValue: currentQuantity,
+      onCommit: (newValue) => onQuantityChange(ingredientId, newValue),
+      validator: (value) => !Number.isNaN(value) && value > 0,
+      formatter: (value) => Number.parseFloat(value),
+    });
+
+  return (
+    <Input
+      type="number"
+      inputMode="decimal"
+      value={displayValue}
+      onChange={handleChange}
+      onBlur={handleBlur}
+      onKeyDown={handleKeyDown}
+      className={`w-16 text-right text-sm ${isDirty ? "ring-2 ring-blue-200 dark:ring-blue-800" : ""}`}
+      step="0.1"
+      min="0.1"
+      aria-label={`Skalierte Menge für ${ingredientName} bearbeiten`}
+    />
+  );
+};
+
+// Deferred Scale Factor Input Component
+const DeferredScaleFactorInput = ({
+  ingredientId,
+  currentScaleFactor,
+  onScaleFactorChange,
+  ingredientName,
+}: {
+  ingredientId: string;
+  currentScaleFactor: number;
+  onScaleFactorChange: (id: string, newScaleFactor: number) => void;
+  ingredientName: string;
+}) => {
+  const { displayValue, isDirty, handleChange, handleBlur, handleKeyDown } =
+    useDeferredInput({
+      initialValue: currentScaleFactor,
+      onCommit: (newValue) => onScaleFactorChange(ingredientId, newValue),
+      validator: (value) => !Number.isNaN(value) && value > 0,
+      formatter: (value) => Number.parseFloat(value),
+    });
+
+  return (
+    <Input
+      type="number"
+      inputMode="decimal"
+      value={displayValue}
+      onChange={handleChange}
+      onBlur={handleBlur}
+      onKeyDown={handleKeyDown}
+      className={`w-10 text-right text-xs border-0 p-0 h-4 bg-transparent ${isDirty ? "ring-1 ring-blue-200 dark:ring-blue-800" : ""}`}
+      step="0.1"
+      min="0.1"
+      aria-label={`Skalierungsfaktor für ${ingredientName} bearbeiten`}
+    />
   );
 };
 
@@ -171,20 +244,11 @@ export const IngredientList = ({
             <div className="text-right">
               <div className="flex items-center justify-end space-x-1">
                 {onQuantityChange ? (
-                  <Input
-                    type="number"
-                    inputMode="decimal"
-                    value={formattedValue}
-                    onChange={(e) => {
-                      const newQuantity = Number.parseFloat(e.target.value);
-                      if (!Number.isNaN(newQuantity) && newQuantity > 0) {
-                        onQuantityChange(info.row.original.id, newQuantity);
-                      }
-                    }}
-                    className="w-16 text-right text-sm"
-                    step="0.1"
-                    min="0.1"
-                    aria-label={`Skalierte Menge für ${info.row.original.name} bearbeiten`}
+                  <DeferredQuantityInput
+                    ingredientId={info.row.original.id}
+                    currentQuantity={currentQuantity}
+                    onQuantityChange={onQuantityChange}
+                    ingredientName={info.row.original.name}
                   />
                 ) : (
                   <div className="font-medium">{formattedValue}</div>
@@ -192,28 +256,11 @@ export const IngredientList = ({
                 <div className="text-xs text-muted-foreground">
                   {onScaleFactorChange ? (
                     <div className="flex items-center">
-                      <Input
-                        type="number"
-                        inputMode="decimal"
-                        value={ingredientScaleFactor.toFixed(1)}
-                        onChange={(e) => {
-                          const newScaleFactor = Number.parseFloat(
-                            e.target.value,
-                          );
-                          if (
-                            !Number.isNaN(newScaleFactor) &&
-                            newScaleFactor > 0
-                          ) {
-                            onScaleFactorChange(
-                              info.row.original.id,
-                              newScaleFactor,
-                            );
-                          }
-                        }}
-                        className="w-10 text-right text-xs border-0 p-0 h-4 bg-transparent"
-                        step="0.1"
-                        min="0.1"
-                        aria-label={`Skalierungsfaktor für ${info.row.original.name} bearbeiten`}
+                      <DeferredScaleFactorInput
+                        ingredientId={info.row.original.id}
+                        currentScaleFactor={ingredientScaleFactor}
+                        onScaleFactorChange={onScaleFactorChange}
+                        ingredientName={info.row.original.name}
                       />
                       <span className="ml-0.5">x</span>
                     </div>
@@ -289,7 +336,7 @@ export const IngredientList = ({
         <CardTitle>Zutatenliste</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto w-full">
           <DndContext
             sensors={sensors}
             collisionDetection={closestCenter}
@@ -298,6 +345,7 @@ export const IngredientList = ({
             <Table
               role="table"
               aria-label="Zutatenliste mit bearbeitbaren Mengen und Reihenfolgenverfolgung"
+              className="min-w-fit w-full"
             >
               <TableHeader>
                 {table.getHeaderGroups().map((headerGroup) => (
@@ -306,7 +354,9 @@ export const IngredientList = ({
                       <TableHead
                         key={header.id}
                         className={
-                          header.column.id === "dragHandle" ? "w-12" : ""
+                          header.column.id === "dragHandle"
+                            ? "w-12"
+                            : "whitespace-nowrap px-2 py-1 text-xs md:text-sm"
                         }
                       >
                         {header.isPlaceholder
@@ -332,7 +382,9 @@ export const IngredientList = ({
                           <TableCell
                             key={cell.id}
                             className={
-                              cell.column.id === "dragHandle" ? "w-12" : ""
+                              cell.column.id === "dragHandle"
+                                ? "w-12"
+                                : "whitespace-nowrap px-2 py-1 text-xs md:text-sm"
                             }
                           >
                             {flexRender(
@@ -348,7 +400,7 @@ export const IngredientList = ({
                   <TableRow>
                     <TableCell
                       colSpan={columns.length}
-                      className="h-24 text-center"
+                      className="h-24 text-center whitespace-nowrap"
                     >
                       Keine Zutaten hinzugefügt. Fügen Sie oben eine Zutat
                       hinzu, um zu beginnen.
