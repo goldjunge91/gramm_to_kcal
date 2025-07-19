@@ -1,3 +1,4 @@
+/** eslint-disable require-await */
 # Vercel Deployment Guide
 
 ## Environment Variables Setup
@@ -76,6 +77,7 @@ If you continue having issues:
 
 ```typescript
 // pages/api/test-env.ts or app/api/test-env/route.ts
+// eslint-disable-next-line require-await
 export async function GET() {
   return Response.json({
     hasSupabaseUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,

@@ -18,7 +18,7 @@ export function ThemeSwitcher(props: any) {
   // Update local state when theme changes
   useEffect(() => {
     if (!mounted) return;
-    
+
     if (theme === "light") {
       setIsLightMode(true);
     } else if (theme === "dark") {
@@ -45,12 +45,7 @@ export function ThemeSwitcher(props: any) {
   // Show consistent state during SSR/hydration
   if (!mounted) {
     return (
-      <ThemeToggle
-        {...props}
-        checked={true}
-        onToggle={() => {}}
-        className=""
-      />
+      <ThemeToggle {...props} checked={true} onToggle={() => {}} className="" />
     );
   }
 
