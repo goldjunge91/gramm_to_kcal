@@ -1,5 +1,34 @@
-import { Ingredient } from "@/lib/types";
+import {
+  closestCenter,
+  DndContext,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import {
+  createColumnHelper,
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+  type Row,
+} from "@tanstack/react-table";
+import { GripVertical, Trash2 } from "lucide-react";
+import { useEffect, useMemo, useState, type JSX } from "react";
+
+import type { Ingredient } from "@/lib/types";
+
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
   Table,
@@ -9,42 +38,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Trash2, GripVertical } from "lucide-react";
-import { JSX, useMemo, useEffect, useState } from "react";
-import {
-  DndContext,
-  closestCenter,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-  DragEndEvent,
-} from "@dnd-kit/core";
-import {
-  arrayMove,
-  SortableContext,
-  sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
-import {
-  useSortable,
-} from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
-import {
-  useReactTable,
-  getCoreRowModel,
-  flexRender,
-  createColumnHelper,
-  Row,
-} from "@tanstack/react-table";
+import { useDeferredInput } from "@/hooks/useDeferredInput";
 
 // Drag Handle Component
 const DragHandle = ({ ingredientId }: { ingredientId: string }) => {
   const { attributes, listeners } = useSortable({
     id: ingredientId,
   });
-  
+
   return (
     <div
       className="flex items-center justify-center cursor-grab active:cursor-grabbing"
@@ -53,6 +54,78 @@ const DragHandle = ({ ingredientId }: { ingredientId: string }) => {
     >
       <GripVertical className="h-4 w-4 text-muted-foreground" />
     </div>
+  );
+};
+
+// Deferred Quantity Input Component
+const DeferredQuantityInput = ({
+  ingredientId,
+  currentQuantity,
+  onQuantityChange,
+  ingredientName,
+}: {
+  ingredientId: string;
+  currentQuantity: number;
+  onQuantityChange: (id: string, newQuantity: number) => void;
+  ingredientName: string;
+}) => {
+  const { displayValue, isDirty, handleChange, handleBlur, handleKeyDown } =
+    useDeferredInput({
+      initialValue: currentQuantity,
+      onCommit: (newValue) => onQuantityChange(ingredientId, newValue),
+      validator: (value) => !Number.isNaN(value) && value > 0,
+      formatter: (value) => Number.parseFloat(value),
+    });
+
+  return (
+    <Input
+      type="number"
+      inputMode="decimal"
+      value={displayValue}
+      onChange={handleChange}
+      onBlur={handleBlur}
+      onKeyDown={handleKeyDown}
+      className={`w-16 text-right text-sm ${isDirty ? "ring-2 ring-blue-200 dark:ring-blue-800" : ""}`}
+      step="0.1"
+      min="0.1"
+      aria-label={`Skalierte Menge für ${ingredientName} bearbeiten`}
+    />
+  );
+};
+
+// Deferred Scale Factor Input Component
+const DeferredScaleFactorInput = ({
+  ingredientId,
+  currentScaleFactor,
+  onScaleFactorChange,
+  ingredientName,
+}: {
+  ingredientId: string;
+  currentScaleFactor: number;
+  onScaleFactorChange: (id: string, newScaleFactor: number) => void;
+  ingredientName: string;
+}) => {
+  const { displayValue, isDirty, handleChange, handleBlur, handleKeyDown } =
+    useDeferredInput({
+      initialValue: currentScaleFactor,
+      onCommit: (newValue) => onScaleFactorChange(ingredientId, newValue),
+      validator: (value) => !Number.isNaN(value) && value > 0,
+      formatter: (value) => Number.parseFloat(value),
+    });
+
+  return (
+    <Input
+      type="number"
+      inputMode="decimal"
+      value={displayValue}
+      onChange={handleChange}
+      onBlur={handleBlur}
+      onKeyDown={handleKeyDown}
+      className={`w-10 text-right text-xs border-0 p-0 h-4 bg-transparent ${isDirty ? "ring-1 ring-blue-200 dark:ring-blue-800" : ""}`}
+      step="0.1"
+      min="0.1"
+      aria-label={`Skalierungsfaktor für ${ingredientName} bearbeiten`}
+    />
   );
 };
 
@@ -66,19 +139,14 @@ interface IngredientListProps {
 }
 
 // Draggable Row Component
-const DraggableTableRow = ({ 
-  row, 
-  children 
-}: { 
-  row: Row<Ingredient>; 
-  children: React.ReactNode; 
+const DraggableTableRow = ({
+  row,
+  children,
+}: {
+  row: Row<Ingredient>;
+  children: React.ReactNode;
 }) => {
-  const {
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({
+  const { setNodeRef, transform, transition, isDragging } = useSortable({
     id: row.original.id,
   });
 
@@ -99,9 +167,16 @@ const DraggableTableRow = ({
 };
 
 /** Enhanced table component for displaying and managing recipe ingredients with drag-and-drop reordering */
-export const IngredientList = ({ ingredients, originalIngredients, onDelete, onQuantityChange, onScaleFactorChange, onReorder }: IngredientListProps): JSX.Element => {
+export const IngredientList = ({
+  ingredients,
+  originalIngredients,
+  onDelete,
+  onQuantityChange,
+  onScaleFactorChange,
+  onReorder,
+}: IngredientListProps): JSX.Element => {
   const [data, setData] = useState<Ingredient[]>(ingredients);
-  
+
   // Update local state when ingredients prop changes
   useEffect(() => {
     setData(ingredients);
@@ -111,123 +186,122 @@ export const IngredientList = ({ ingredients, originalIngredients, onDelete, onQ
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
-    })
+    }),
   );
 
   const columnHelper = createColumnHelper<Ingredient>();
 
-  const columns = useMemo(() => [
-    columnHelper.display({
-      id: "dragHandle",
-      header: () => <div className="w-12"><GripVertical className="h-4 w-4 text-muted-foreground" /></div>,
-      cell: (info) => <DragHandle ingredientId={info.row.original.id} />,
-    }),
-    columnHelper.accessor("name", {
-      header: "Zutat",
-      cell: (info) => (
-        <div className="font-medium">{info.getValue()}</div>
-      ),
-    }),
-    columnHelper.display({
-      id: "originalQuantity",
-      header: () => <div className="text-right">Urspr. Menge</div>,
-      cell: (info) => {
-        const originalIngredient = originalIngredients.find(orig => orig.id === info.row.original.id);
-        if (!originalIngredient) return <div className="text-right">-</div>;
-        const formattedValue = originalIngredient.quantity % 1 === 0 
-          ? originalIngredient.quantity.toString() 
-          : originalIngredient.quantity.toFixed(1);
-        return (
-          <div className="text-right text-muted-foreground font-medium">
-            {formattedValue}
+  const columns = useMemo(
+    () => [
+      columnHelper.display({
+        id: "dragHandle",
+        header: () => (
+          <div className="w-12">
+            <GripVertical className="h-4 w-4 text-muted-foreground" />
           </div>
-        );
-      },
-    }),
-    columnHelper.accessor("quantity", {
-      header: () => <div className="text-right">Skaliert</div>,
-      cell: (info) => {
-        const currentQuantity = info.getValue();
-        const originalIngredient = originalIngredients.find(orig => orig.id === info.row.original.id);
-        const ingredientScaleFactor = originalIngredient ? currentQuantity / originalIngredient.quantity : 1;
-        const formattedValue = currentQuantity % 1 === 0 ? currentQuantity.toString() : currentQuantity.toFixed(1);
-        
-        return (
-          <div className="text-right">
-            <div className="flex items-center justify-end space-x-1">
-              {onQuantityChange ? (
-                <Input
-                  type="number"
-                  inputMode="decimal"
-                  value={formattedValue}
-                  onChange={(e) => {
-                    const newQuantity = parseFloat(e.target.value);
-                    if (!isNaN(newQuantity) && newQuantity > 0) {
-                      onQuantityChange(info.row.original.id, newQuantity);
-                    }
-                  }}
-                  className="w-16 text-right text-sm"
-                  step="0.1"
-                  min="0.1"
-                  aria-label={`Skalierte Menge für ${info.row.original.name} bearbeiten`}
-                />
-              ) : (
-                <div className="font-medium">
-                  {formattedValue}
-                </div>
-              )}
-              <div className="text-xs text-muted-foreground">
-                {onScaleFactorChange ? (
-                  <div className="flex items-center">
-                    <Input
-                      type="number"
-                      inputMode="decimal"
-                      value={ingredientScaleFactor.toFixed(1)}
-                      onChange={(e) => {
-                        const newScaleFactor = parseFloat(e.target.value);
-                        if (!isNaN(newScaleFactor) && newScaleFactor > 0) {
-                          onScaleFactorChange(info.row.original.id, newScaleFactor);
-                        }
-                      }}
-                      className="w-10 text-right text-xs border-0 p-0 h-4 bg-transparent"
-                      step="0.1"
-                      min="0.1"
-                      aria-label={`Skalierungsfaktor für ${info.row.original.name} bearbeiten`}
-                    />
-                    <span className="ml-0.5">x</span>
-                  </div>
+        ),
+        cell: (info) => <DragHandle ingredientId={info.row.original.id} />,
+      }),
+      columnHelper.accessor("name", {
+        header: "Zutat",
+        cell: (info) => <div className="font-medium">{info.getValue()}</div>,
+      }),
+      columnHelper.display({
+        id: "originalQuantity",
+        header: () => <div className="text-right">Urspr. Menge</div>,
+        cell: (info) => {
+          const originalIngredient = originalIngredients.find(
+            (orig) => orig.id === info.row.original.id,
+          );
+          if (!originalIngredient) return <div className="text-right">-</div>;
+          const formattedValue =
+            originalIngredient.quantity % 1 === 0
+              ? originalIngredient.quantity.toString()
+              : originalIngredient.quantity.toFixed(1);
+          return (
+            <div className="text-right text-muted-foreground font-medium">
+              {formattedValue}
+            </div>
+          );
+        },
+      }),
+      columnHelper.accessor("quantity", {
+        header: () => <div className="text-right">Skaliert</div>,
+        cell: (info) => {
+          const currentQuantity = info.getValue();
+          const originalIngredient = originalIngredients.find(
+            (orig) => orig.id === info.row.original.id,
+          );
+          const ingredientScaleFactor = originalIngredient
+            ? currentQuantity / originalIngredient.quantity
+            : 1;
+          const formattedValue =
+            currentQuantity % 1 === 0
+              ? currentQuantity.toString()
+              : currentQuantity.toFixed(1);
+
+          return (
+            <div className="text-right">
+              <div className="flex items-center justify-end space-x-1">
+                {onQuantityChange ? (
+                  <DeferredQuantityInput
+                    ingredientId={info.row.original.id}
+                    currentQuantity={currentQuantity}
+                    onQuantityChange={onQuantityChange}
+                    ingredientName={info.row.original.name}
+                  />
                 ) : (
-                  <span>{ingredientScaleFactor.toFixed(1)}x</span>
+                  <div className="font-medium">{formattedValue}</div>
                 )}
+                <div className="text-xs text-muted-foreground">
+                  {onScaleFactorChange ? (
+                    <div className="flex items-center">
+                      <DeferredScaleFactorInput
+                        ingredientId={info.row.original.id}
+                        currentScaleFactor={ingredientScaleFactor}
+                        onScaleFactorChange={onScaleFactorChange}
+                        ingredientName={info.row.original.name}
+                      />
+                      <span className="ml-0.5">x</span>
+                    </div>
+                  ) : (
+                    <span>{ingredientScaleFactor.toFixed(1)}x</span>
+                  )}
+                </div>
               </div>
             </div>
+          );
+        },
+      }),
+      columnHelper.accessor("unit", {
+        header: () => <div className="text-right">Einheit</div>,
+        cell: (info) => <div className="text-right">{info.getValue()}</div>,
+      }),
+      columnHelper.display({
+        id: "actions",
+        header: () => <div className="text-right">Aktion</div>,
+        cell: (info) => (
+          <div className="text-right">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => onDelete(info.row.original.id)}
+              aria-label={`${info.row.original.name} löschen`}
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
           </div>
-        );
-      },
-    }),
-    columnHelper.accessor("unit", {
-      header: () => <div className="text-right">Einheit</div>,
-      cell: (info) => (
-        <div className="text-right">{info.getValue()}</div>
-      ),
-    }),
-    columnHelper.display({
-      id: "actions",
-      header: () => <div className="text-right">Aktion</div>,
-      cell: (info) => (
-        <div className="text-right">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => onDelete(info.row.original.id)}
-            aria-label={`${info.row.original.name} löschen`}
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
-        </div>
-      ),
-    }),
-  ], [columnHelper, originalIngredients, onDelete, onQuantityChange, onScaleFactorChange]);
+        ),
+      }),
+    ],
+    [
+      columnHelper,
+      originalIngredients,
+      onDelete,
+      onQuantityChange,
+      onScaleFactorChange,
+    ],
+  );
 
   const table = useReactTable({
     data,
@@ -243,14 +317,14 @@ export const IngredientList = ({ ingredients, originalIngredients, onDelete, onQ
       setData((items) => {
         const oldIndex = items.findIndex((item) => item.id === active.id);
         const newIndex = items.findIndex((item) => item.id === over?.id);
-        
+
         const newOrder = arrayMove(items, oldIndex, newIndex);
-        
+
         // Call the onReorder callback if provided
         if (onReorder) {
           onReorder(newOrder);
         }
-        
+
         return newOrder;
       });
     }
@@ -262,23 +336,34 @@ export const IngredientList = ({ ingredients, originalIngredients, onDelete, onQ
         <CardTitle>Zutatenliste</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto w-full">
           <DndContext
             sensors={sensors}
             collisionDetection={closestCenter}
             onDragEnd={handleDragEnd}
           >
-            <Table role="table" aria-label="Zutatenliste mit bearbeitbaren Mengen und Reihenfolgenverfolgung">
+            <Table
+              role="table"
+              aria-label="Zutatenliste mit bearbeitbaren Mengen und Reihenfolgenverfolgung"
+              className="min-w-fit w-full"
+            >
               <TableHeader>
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>
                     {headerGroup.headers.map((header) => (
-                      <TableHead key={header.id} className={header.column.id === "dragHandle" ? "w-12" : ""}>
+                      <TableHead
+                        key={header.id}
+                        className={
+                          header.column.id === "dragHandle"
+                            ? "w-12"
+                            : "whitespace-nowrap px-2 py-1 text-xs md:text-sm"
+                        }
+                      >
                         {header.isPlaceholder
                           ? null
                           : flexRender(
                               header.column.columnDef.header,
-                              header.getContext()
+                              header.getContext(),
                             )}
                       </TableHead>
                     ))}
@@ -294,10 +379,17 @@ export const IngredientList = ({ ingredients, originalIngredients, onDelete, onQ
                     {table.getRowModel().rows.map((row) => (
                       <DraggableTableRow key={row.id} row={row}>
                         {row.getVisibleCells().map((cell) => (
-                          <TableCell key={cell.id} className={cell.column.id === "dragHandle" ? "w-12" : ""}>
+                          <TableCell
+                            key={cell.id}
+                            className={
+                              cell.column.id === "dragHandle"
+                                ? "w-12"
+                                : "whitespace-nowrap px-2 py-1 text-xs md:text-sm"
+                            }
+                          >
                             {flexRender(
                               cell.column.columnDef.cell,
-                              cell.getContext()
+                              cell.getContext(),
                             )}
                           </TableCell>
                         ))}
@@ -306,8 +398,12 @@ export const IngredientList = ({ ingredients, originalIngredients, onDelete, onQ
                   </SortableContext>
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={columns.length} className="h-24 text-center">
-                      Keine Zutaten hinzugefügt. Fügen Sie oben eine Zutat hinzu, um zu beginnen.
+                    <TableCell
+                      colSpan={columns.length}
+                      className="h-24 text-center whitespace-nowrap"
+                    >
+                      Keine Zutaten hinzugefügt. Fügen Sie oben eine Zutat
+                      hinzu, um zu beginnen.
                     </TableCell>
                   </TableRow>
                 )}

@@ -1,9 +1,17 @@
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calculator, ChefHat } from "lucide-react";
+import Link from "next/link";
+
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 export default function Home() {
+  // Force redeploy to pick up environment variables
   return (
     <div className="container mx-auto p-6">
       <div className="text-center space-y-4 mb-8">
@@ -24,9 +32,7 @@ export default function Home() {
           </CardHeader>
           <CardContent>
             <Button asChild className="w-full">
-              <Link href="/calories">
-                Jetzt vergleichen
-              </Link>
+              <Link href="/calories">Jetzt vergleichen</Link>
             </Button>
           </CardContent>
         </Card>
@@ -41,9 +47,7 @@ export default function Home() {
           </CardHeader>
           <CardContent>
             <Button asChild className="w-full">
-              <Link href="/recipe">
-                Rezepte verwalten
-              </Link>
+              <Link href="/recipe">Rezepte verwalten</Link>
             </Button>
           </CardContent>
         </Card>

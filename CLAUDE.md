@@ -13,10 +13,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Architecture Overview
 
 This is a CalorieTracker application built with Next.js 15 App Router, focused on two main features:
+
 1. **Calorie Comparison**: Compare multiple products by calories per gram or per 100g
 2. **Recipe Management**: Scale recipes and adjust ingredient proportions
 
 ### Tech Stack
+
 - **Framework**: Next.js 15 (App Router)
 - **UI**: shadcn/ui components with Tailwind CSS
 - **Testing**: Vitest with tdd-guard reporter
@@ -26,11 +28,12 @@ This is a CalorieTracker application built with Next.js 15 App Router, focused o
 - **Theming**: next-themes for dark/light mode support
 
 ### Key Data Models
+
 ```typescript
 interface Product {
   id: string;
   name: string;
-  quantity: number;   // in grams
+  quantity: number; // in grams
   kcal: number;
 }
 
@@ -50,6 +53,7 @@ interface Recipe {
 ```
 
 ### Project Structure
+
 - `/app/calories/`: Calorie comparison feature
 - `/app/recipe/`: Recipe management feature
 - `/components/ui/`: shadcn/ui components
@@ -60,6 +64,7 @@ interface Recipe {
 ## Code Conventions (from rules.md)
 
 ### Core Rules
+
 - ALWAYS prefer editing existing files over creating new ones
 - NEVER use names like `Enhanced*`, `*2`, `*backup` for files
 - QueryClient must be set up in `app/layout.tsx`
@@ -68,6 +73,7 @@ interface Recipe {
 - Query keys should be formatted as `['domain', id?]`
 
 ### Style Guidelines
+
 - Use arrow functions everywhere
 - Always specify explicit return types
 - Destructure props: `const MyComp = ({ id, name }: Props) => { ... }`
@@ -75,6 +81,7 @@ interface Recipe {
 - Import order: react → next → external libs → local imports (`@/`) → relative imports (`./`)
 
 ### Security
+
 - All server-side inputs must be validated with Zod
 - Use HttpOnly + Secure flags for cookies
 - Implement CSRF protection where needed
@@ -83,6 +90,7 @@ interface Recipe {
 ## Development Approach
 
 This project follows a **surgical edits** methodology:
+
 - Make minimal, focused changes
 - Use targeted logging for debugging
 - Fix root causes, not symptoms
@@ -92,6 +100,7 @@ This project follows a **surgical edits** methodology:
 ## Mobile-First Design
 
 The application is designed with mobile-first principles:
+
 - Responsive design using Tailwind CSS
 - Touch-friendly interfaces
 - Optimized for various screen sizes
