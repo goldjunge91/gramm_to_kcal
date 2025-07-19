@@ -66,12 +66,23 @@ const createStarVariants = (index: number): Variants => ({
 });
 
 const ThemeToggle = React.forwardRef<HTMLDivElement, DayNightSwitchProps>(
-  ({ className, defaultChecked = true, checked: controlledChecked, onToggle, ...restProps }, ref) => {
+  (
+    {
+      className,
+      defaultChecked = true,
+      checked: controlledChecked,
+      onToggle,
+      ...restProps
+    },
+    ref,
+  ) => {
     const id = React.useId();
-    const [internalChecked, setInternalChecked] = React.useState<boolean>(defaultChecked);
-    
+    const [internalChecked, setInternalChecked] =
+      React.useState<boolean>(defaultChecked);
+
     // Use controlled value if provided, otherwise use internal state
-    const checked = controlledChecked !== undefined ? controlledChecked : internalChecked;
+    const checked =
+      controlledChecked !== undefined ? controlledChecked : internalChecked;
 
     const handleToggle = (newValue: boolean) => {
       // Only update internal state if not controlled
