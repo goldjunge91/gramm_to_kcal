@@ -13,6 +13,7 @@ import {
   type ReactNode,
 } from "react";
 
+import { ThemeProvider } from "@/components/layout/ThemeProvider";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { syncUserWithDatabase } from "@/lib/actions/auth";
 import { mobileOfflineStorage } from "@/lib/offline/mobile-storage";
@@ -191,15 +192,17 @@ export function Providers({ children }: { children: ReactNode }): JSX.Element {
   };
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthContext.Provider value={{ user, loading, signOut }}>
-        <MobileOfflineContext.Provider value={mobileStatus}>
-          {children}
-          {/* Only show dev tools on desktop */}
-          {!isMobile && <ReactQueryDevtools initialIsOpen={false} />}
-        </MobileOfflineContext.Provider>
-      </AuthContext.Provider>
-    </QueryClientProvider>
+    <ThemeProvider>
+      <QueryClientProvider client={queryClient}>
+        <AuthContext.Provider value={{ user, loading, signOut }}>
+          <MobileOfflineContext.Provider value={mobileStatus}>
+            {children}
+            {/* Only show dev tools on desktop */}
+            {!isMobile && <ReactQueryDevtools initialIsOpen={false} />}
+          </MobileOfflineContext.Provider>
+        </AuthContext.Provider>
+      </QueryClientProvider>
+    </ThemeProvider>
   );
 }
 
