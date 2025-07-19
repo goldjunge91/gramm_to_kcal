@@ -1,6 +1,6 @@
 ---
-title: 'PKCE flow'
-subtitle: 'About authenticating with PKCE flow.'
+title: "PKCE flow"
+subtitle: "About authenticating with PKCE flow."
 ---
 
 The Proof Key for Code Exchange (PKCE) flow is one of two ways that a user can authenticate and your app can receive the necessary access and refresh tokens.
@@ -60,23 +60,27 @@ You may also configure the client library to automatically exchange it for a ses
 Putting it all together, your client library initialization may look like this:
 
 ```js
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from "@supabase/supabase-js";
 
 // ---cut---
-const supabase = createClient('https://xyzcompany.supabase.co', 'public-anon-key', {
-  // ...
-  auth: {
+const supabase = createClient(
+  "https://xyzcompany.supabase.co",
+  "public-anon-key",
+  {
     // ...
-    detectSessionInUrl: true,
-    flowType: 'pkce',
-    storage: {
-      getItem: () => Promise.resolve('FETCHED_TOKEN'),
-      setItem: () => {},
-      removeItem: () => {},
+    auth: {
+      // ...
+      detectSessionInUrl: true,
+      flowType: "pkce",
+      storage: {
+        getItem: () => Promise.resolve("FETCHED_TOKEN"),
+        setItem: () => {},
+        removeItem: () => {},
+      },
     },
+    // ...
   },
-  // ...
-})
+);
 ```
 
 ## Limitations

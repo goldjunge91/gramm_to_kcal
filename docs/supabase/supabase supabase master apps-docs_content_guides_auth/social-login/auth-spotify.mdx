@@ -1,7 +1,7 @@
 ---
-id: 'auth-spotify'
-title: 'Login with Spotify'
-description: 'Add Spotify OAuth to your Supabase project'
+id: "auth-spotify"
+title: "Login with Spotify"
+description: "Add Spotify OAuth to your Supabase project"
 ---
 
 To enable Spotify Auth for your project, you need to set up a Spotify OAuth application and add the application credentials to your Supabase Dashboard.
@@ -90,14 +90,14 @@ The following outlines the steps to sign in using Spotify with Supabase Auth.
 When your user signs in, call [`signInWithOAuth()`](/docs/reference/javascript/auth-signinwithoauth) with `spotify` as the `provider`:
 
 ```js
-import { createClient } from '@supabase/supabase-js'
-const supabase = createClient('<your-project-url>', '<your-anon-key>')
+import { createClient } from "@supabase/supabase-js";
+const supabase = createClient("<your-project-url>", "<your-anon-key>");
 
 // ---cut---
 async function signInWithSpotify() {
   const { data, error } = await supabase.auth.signInWithOAuth({
-    provider: 'spotify',
-  })
+    provider: "spotify",
+  });
 }
 ```
 
@@ -145,12 +145,12 @@ suspend fun signInWithSpotify() {
 When your user signs out, call [signOut()](/docs/reference/javascript/auth-signout) to remove them from the browser session and any objects from localStorage:
 
 ```js
-import { createClient } from '@supabase/supabase-js'
-const supabase = createClient('<your-project-url>', '<your-anon-key>')
+import { createClient } from "@supabase/supabase-js";
+const supabase = createClient("<your-project-url>", "<your-anon-key>");
 
 // ---cut---
 async function signOut() {
-  const { error } = await supabase.auth.signOut()
+  const { error } = await supabase.auth.signOut();
 }
 ```
 

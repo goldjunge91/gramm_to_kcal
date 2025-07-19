@@ -1,5 +1,5 @@
 ---
-title: 'User sessions'
+title: "User sessions"
 ---
 
 Supabase Auth provides fine-grained control over your user's sessions.
@@ -128,19 +128,19 @@ If your app uses any client side JavaScript to build a rich user experience, usi
 Because of this, the Supabase JavaScript libraries provide only limited support. You can override the `storage` option when creating the Supabase client **on the server** to store the values in cookies or your preferred storage choice, for example:
 
 ```typescript
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from "@supabase/supabase-js";
 
-const supabase = createClient('SUPABASE_URL', 'SUPABASE_ANON_KEY', {
+const supabase = createClient("SUPABASE_URL", "SUPABASE_ANON_KEY", {
   auth: {
     storage: {
       getItem: () => {
-        return Promise.resolve('FETCHED_COOKIE')
+        return Promise.resolve("FETCHED_COOKIE");
       },
       setItem: () => {},
       removeItem: () => {},
     },
   },
-})
+});
 ```
 
 The `customStorageObject` should implement the `getItem`, `setItem`, and `removeItem` methods from the [`Storage` interface](https://developer.mozilla.org/en-US/docs/Web/API/Storage). Async versions of these methods are also supported.

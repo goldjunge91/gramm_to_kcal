@@ -1,7 +1,7 @@
 ---
-id: 'auth-anonymous'
-title: 'Anonymous Sign-Ins'
-subtitle: 'Create and use anonymous users to authenticate with Supabase'
+id: "auth-anonymous"
+title: "Anonymous Sign-Ins"
+subtitle: "Create and use anonymous users to authenticate with Supabase"
 ---
 
 [Enable Anonymous Sign-Ins](/dashboard/project/_/auth/providers) to build apps which provide users an authenticated experience without requiring users to enter an email address, password, use an OAuth provider or provide any other PII (Personally Identifiable Information). Later, when ready, the user can link an authentication method to their account.
@@ -56,11 +56,14 @@ For self-hosting, you can update your project configuration using the files and 
 Call the [`signInAnonymously()`](/docs/reference/javascript/auth-signinanonymously) method:
 
 ```js
-import { createClient } from '@supabase/supabase-js'
-const supabase = createClient('https://your-project.supabase.co', 'your-anon-key')
+import { createClient } from "@supabase/supabase-js";
+const supabase = createClient(
+  "https://your-project.supabase.co",
+  "your-anon-key",
+);
 
 // ---cut---
-const { data, error } = await supabase.auth.signInAnonymously()
+const { data, error } = await supabase.auth.signInAnonymously();
 ```
 
 </TabPanel>
@@ -120,21 +123,26 @@ Converting an anonymous user to a permanent user requires [linking an identity](
 You can use the [`updateUser()`](/docs/reference/javascript/auth-updateuser) method to link an email or phone identity to the anonymous user. To add a password for the anonymous user, the user's email or phone number needs to be verified first.
 
 ```js
-import { createClient } from '@supabase/supabase-js'
-const supabase = createClient('https://your-project.supabase.co', 'your-anon-key')
+import { createClient } from "@supabase/supabase-js";
+const supabase = createClient(
+  "https://your-project.supabase.co",
+  "your-anon-key",
+);
 
 // ---cut---
-const { data: updateEmailData, error: updateEmailError } = await supabase.auth.updateUser({
-  email: 'valid.email@supabase.io',
-})
+const { data: updateEmailData, error: updateEmailError } =
+  await supabase.auth.updateUser({
+    email: "valid.email@supabase.io",
+  });
 
 // verify the user's email by clicking on the email change link
 // or entering the 6-digit OTP sent to the email address
 
 // once the user has been verified, update the password
-const { data: updatePasswordData, error: updatePasswordError } = await supabase.auth.updateUser({
-  password: 'password',
-})
+const { data: updatePasswordData, error: updatePasswordError } =
+  await supabase.auth.updateUser({
+    password: "password",
+  });
 ```
 
 </TabPanel>
@@ -204,11 +212,16 @@ response = supabase.auth.update_user({
 You can use the [`linkIdentity()`](/docs/reference/javascript/auth-linkidentity) method to link an OAuth identity to the anonymous user.
 
 ```js
-import { createClient } from '@supabase/supabase-js'
-const supabase = createClient('https://your-project.supabase.co', 'your-anon-key')
+import { createClient } from "@supabase/supabase-js";
+const supabase = createClient(
+  "https://your-project.supabase.co",
+  "your-anon-key",
+);
 
 // ---cut---
-const { data, error } = await supabase.auth.linkIdentity({ provider: 'google' })
+const { data, error } = await supabase.auth.linkIdentity({
+  provider: "google",
+});
 ```
 
 </TabPanel>
@@ -286,37 +299,41 @@ In some cases, you may need to link an anonymous user to an existing account rat
 
 ```javascript
 // 1. Sign in anonymously (assuming the user is already signed in anonymously)
-const { data: anonData, error: anonError } = await supabase.auth.getSession()
+const { data: anonData, error: anonError } = await supabase.auth.getSession();
 
 // 2. Attempt to update the user with the existing email
-const { data: updateData, error: updateError } = await supabase.auth.updateUser({
-  email: 'valid.email@supabase.io',
-})
+const { data: updateData, error: updateError } = await supabase.auth.updateUser(
+  {
+    email: "valid.email@supabase.io",
+  },
+);
 
 // 3. Handle the error (since the email belongs to an existing user)
 if (updateError) {
-  console.log('This email belongs to an existing user. Please sign in to that account.')
+  console.log(
+    "This email belongs to an existing user. Please sign in to that account.",
+  );
 
   // 4. Sign in to the existing account
   const {
     data: { user: existingUser },
     error: signInError,
   } = await supabase.auth.signInWithPassword({
-    email: 'valid.email@supabase.io',
-    password: 'user_password',
-  })
+    email: "valid.email@supabase.io",
+    password: "user_password",
+  });
 
   if (existingUser) {
     // 5. Reassign entities tied to the anonymous user
     // This step will vary based on your specific use case and data model
     const { data: reassignData, error: reassignError } = await supabase
-      .from('your_table')
+      .from("your_table")
       .update({ user_id: existingUser.id })
-      .eq('user_id', anonData.session.user.id)
+      .eq("user_id", anonData.session.user.id);
 
     // 6. Implement your chosen conflict resolution strategy
     // This could involve merging data, overwriting, or other custom logic
-    await resolveDataConflicts(anonData.session.user.id, existingUser.id)
+    await resolveDataConflicts(anonData.session.user.id, existingUser.id);
   }
 }
 

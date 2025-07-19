@@ -1,7 +1,7 @@
 ---
-id: 'jwt-fields'
-title: 'JWT Claims Reference'
-subtitle: 'Complete reference for claims appearing in JWTs created by Supabase Auth'
+id: "jwt-fields"
+title: "JWT Claims Reference"
+subtitle: "Complete reference for claims appearing in JWTs created by Supabase Auth"
 ---
 
 This page provides a comprehensive reference for all JWT claims used in Supabase authentication tokens. This information is essential for server-side JWT validation and serialization, especially when implementing authentication in languages like Rust where field names like `ref` are reserved keywords.
@@ -175,26 +175,26 @@ struct JwtClaims {
 
 ```typescript
 interface JwtClaims {
-  iss: string
-  aud: string | string[]
-  exp: number
-  iat: number
-  sub: string
-  role: string
-  aal: 'aal1' | 'aal2'
-  session_id: string
-  email: string
-  phone: string
-  is_anonymous: boolean
-  jti?: string
-  nbf?: number
-  app_metadata?: Record<string, any>
-  user_metadata?: Record<string, any>
+  iss: string;
+  aud: string | string[];
+  exp: number;
+  iat: number;
+  sub: string;
+  role: string;
+  aal: "aal1" | "aal2";
+  session_id: string;
+  email: string;
+  phone: string;
+  is_anonymous: boolean;
+  jti?: string;
+  nbf?: number;
+  app_metadata?: Record<string, any>;
+  user_metadata?: Record<string, any>;
   amr?: Array<{
-    method: string
-    timestamp: number
-  }>
-  ref?: string // Only in anon/service role tokens
+    method: string;
+    timestamp: number;
+  }>;
+  ref?: string; // Only in anon/service role tokens
 }
 ```
 

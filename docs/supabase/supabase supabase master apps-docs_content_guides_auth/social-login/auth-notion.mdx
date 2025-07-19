@@ -1,7 +1,7 @@
 ---
-id: 'auth-notion'
-title: 'Login with Notion'
-description: 'Add Notion OAuth to your Supabase project'
+id: "auth-notion"
+title: "Login with Notion"
+description: "Add Notion OAuth to your Supabase project"
 ---
 
 To enable Notion Auth for your project, you need to set up a Notion Application and add the Application OAuth credentials to your Supabase Dashboard.
@@ -60,14 +60,14 @@ Setting up Notion logins for your application consists of 3 parts:
 When your user signs in, call [`signInWithOAuth()`](/docs/reference/javascript/auth-signinwithoauth) with `notion` as the `provider`:
 
 ```js
-import { createClient } from '@supabase/supabase-js'
-const supabase = createClient('<your-project-url>', '<your-anon-key>')
+import { createClient } from "@supabase/supabase-js";
+const supabase = createClient("<your-project-url>", "<your-anon-key>");
 
 // ---cut---
 async function signInWithNotion() {
   const { data, error } = await supabase.auth.signInWithOAuth({
-    provider: 'notion',
-  })
+    provider: "notion",
+  });
 }
 ```
 
@@ -115,12 +115,12 @@ suspend fun signInWithNotion() {
 When your user signs out, call [signOut()](/docs/reference/javascript/auth-signout) to remove them from the browser session and any objects from localStorage:
 
 ```js
-import { createClient } from '@supabase/supabase-js'
-const supabase = createClient('<your-project-url>', '<your-anon-key>')
+import { createClient } from "@supabase/supabase-js";
+const supabase = createClient("<your-project-url>", "<your-anon-key>");
 
 // ---cut---
 async function signOut() {
-  const { error } = await supabase.auth.signOut()
+  const { error } = await supabase.auth.signOut();
 }
 ```
 

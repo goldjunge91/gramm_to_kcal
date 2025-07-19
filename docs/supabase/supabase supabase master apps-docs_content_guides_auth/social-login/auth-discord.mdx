@@ -1,7 +1,7 @@
 ---
-id: 'auth-discord'
-title: 'Login with Discord'
-description: 'Add Discord OAuth to your Supabase project'
+id: "auth-discord"
+title: "Login with Discord"
+description: "Add Discord OAuth to your Supabase project"
 ---
 
 To enable Discord Auth for your project, you need to set up a Discord Application and add the Application OAuth credentials to your Supabase Dashboard.
@@ -77,14 +77,17 @@ curl -X PATCH "https://api.supabase.com/v1/projects/$PROJECT_REF/config/auth" \
 When your user signs in, call [`signInWithOAuth()`](/docs/reference/javascript/auth-signinwithoauth) with `discord` as the `provider`:
 
 ```js
-import { createClient } from '@supabase/supabase-js'
-const supabase = createClient('https://your-project-id.supabase.co', 'your-anon-key')
+import { createClient } from "@supabase/supabase-js";
+const supabase = createClient(
+  "https://your-project-id.supabase.co",
+  "your-anon-key",
+);
 
 // ---cut---
 async function signInWithDiscord() {
   const { data, error } = await supabase.auth.signInWithOAuth({
-    provider: 'discord',
-  })
+    provider: "discord",
+  });
 }
 ```
 
@@ -134,12 +137,15 @@ If your user is already signed in, Discord prompts the user again for authorizat
 When your user signs out, call [signOut()](/docs/reference/javascript/auth-signout) to remove them from the browser session and any objects from localStorage:
 
 ```js
-import { createClient } from '@supabase/supabase-js'
-const supabase = createClient('https://your-project-id.supabase.co', 'your-anon-key')
+import { createClient } from "@supabase/supabase-js";
+const supabase = createClient(
+  "https://your-project-id.supabase.co",
+  "your-anon-key",
+);
 
 // ---cut---
 async function signOut() {
-  const { error } = await supabase.auth.signOut()
+  const { error } = await supabase.auth.signOut();
 }
 ```
 

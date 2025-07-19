@@ -1,7 +1,7 @@
 ---
-id: 'auth-figma'
-title: 'Login with Figma'
-description: 'Add Figma OAuth to your Supabase project'
+id: "auth-figma"
+title: "Login with Figma"
+description: "Add Figma OAuth to your Supabase project"
 ---
 
 To enable Figma Auth for your project, you need to set up a Figma OAuth application and add the application credentials to your Supabase Dashboard.
@@ -60,14 +60,14 @@ Setting up Figma logins for your application consists of 3 parts:
 When your user signs in, call [`signInWithOAuth()`](/docs/reference/javascript/auth-signinwithoauth) with `figma` as the `provider`:
 
 ```js
-import { createClient } from '@supabase/supabase-js'
-const supabase = createClient('<your-project-url>', '<your-anon-key>')
+import { createClient } from "@supabase/supabase-js";
+const supabase = createClient("<your-project-url>", "<your-anon-key>");
 
 // ---cut---
 async function signInWithFigma() {
   const { data, error } = await supabase.auth.signInWithOAuth({
-    provider: 'figma',
-  })
+    provider: "figma",
+  });
 }
 ```
 
@@ -115,12 +115,12 @@ suspend fun signInWithFigma() {
 When your user signs out, call [signOut()](/docs/reference/javascript/auth-signout) to remove them from the browser session and any objects from localStorage:
 
 ```js
-import { createClient } from '@supabase/supabase-js'
-const supabase = createClient('<your-project-url>', '<your-anon-key>')
+import { createClient } from "@supabase/supabase-js";
+const supabase = createClient("<your-project-url>", "<your-anon-key>");
 
 // ---cut---
 async function signOut() {
-  const { error } = await supabase.auth.signOut()
+  const { error } = await supabase.auth.signOut();
 }
 ```
 

@@ -1,8 +1,8 @@
 ---
-id: 'auth-google'
-title: 'Login with Google'
-description: 'Use Sign in with Google on the web, in native apps or with Chrome extensions'
-tocVideo: 'vojHmGUGUGc'
+id: "auth-google"
+title: "Login with Google"
+description: "Use Sign in with Google on the web, in native apps or with Chrome extensions"
+tocVideo: "vojHmGUGUGc"
 ---
 
 Supabase Auth supports Sign in with Google for the web, native Android applications, and Chrome extensions.
@@ -245,13 +245,13 @@ To use your own application code for the signin button, call the `signInWithOAut
 <$Partial path="create_client_snippet.mdx" />
 
 ```js
-import { createClient } from '@supabase/supabase-js'
-const supabase = createClient('url', 'anonKey')
+import { createClient } from "@supabase/supabase-js";
+const supabase = createClient("url", "anonKey");
 
 // ---cut---
 supabase.auth.signInWithOAuth({
-  provider: 'google',
-})
+  provider: "google",
+});
 ```
 
 For an implicit flow, that's all you need to do. The user will be taken to Google's consent screen, and finally redirected to your app with an access and refresh token pair representing their session.
@@ -269,19 +269,22 @@ On initial login, you can extract the `provider_token` from the session and stor
 Google does not send out a refresh token by default, so you will need to pass parameters like these to `signInWithOAuth()` in order to extract the `provider_refresh_token`:
 
 ```js
-import { createClient } from '@supabase/supabase-js'
-const supabase = createClient('https://your-project.supabase.co', 'your-anon-key')
+import { createClient } from "@supabase/supabase-js";
+const supabase = createClient(
+  "https://your-project.supabase.co",
+  "your-anon-key",
+);
 
 // ---cut---
 const { data, error } = await supabase.auth.signInWithOAuth({
-  provider: 'google',
+  provider: "google",
   options: {
     queryParams: {
-      access_type: 'offline',
-      prompt: 'consent',
+      access_type: "offline",
+      prompt: "consent",
     },
   },
-})
+});
 ```
 
 ### Google pre-built
@@ -330,9 +333,9 @@ Most web apps and websites can utilize Google's [personalized sign-in buttons](h
    ```ts
    async function handleSignInWithGoogle(response) {
      const { data, error } = await supabase.auth.signInWithIdToken({
-       provider: 'google',
+       provider: "google",
        token: response.credential,
-     })
+     });
    }
    ```
 
@@ -341,10 +344,10 @@ Most web apps and websites can utilize Google's [personalized sign-in buttons](h
    ```ts
    async function handleSignInWithGoogle(response) {
      const { data, error } = await supabase.auth.signInWithIdToken({
-       provider: 'google',
+       provider: "google",
        token: response.credential,
-       nonce: '<NONCE>',
-     })
+       nonce: "<NONCE>",
+     });
    }
    ```
 
@@ -355,13 +358,17 @@ Most web apps and websites can utilize Google's [personalized sign-in buttons](h
    ```js
    // Adapted from https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/digest#converting_a_digest_to_a_hex_string
 
-   const nonce = btoa(String.fromCharCode(...crypto.getRandomValues(new Uint8Array(32))))
-   const encoder = new TextEncoder()
-   const encodedNonce = encoder.encode(nonce)
-   crypto.subtle.digest('SHA-256', encodedNonce).then((hashBuffer) => {
-     const hashArray = Array.from(new Uint8Array(hashBuffer))
-     const hashedNonce = hashArray.map((b) => b.toString(16).padStart(2, '0')).join('')
-   })
+   const nonce = btoa(
+     String.fromCharCode(...crypto.getRandomValues(new Uint8Array(32))),
+   );
+   const encoder = new TextEncoder();
+   const encodedNonce = encoder.encode(nonce);
+   crypto.subtle.digest("SHA-256", encodedNonce).then((hashBuffer) => {
+     const hashArray = Array.from(new Uint8Array(hashBuffer));
+     const hashedNonce = hashArray
+       .map((b) => b.toString(16).padStart(2, "0"))
+       .join("");
+   });
 
    // Use 'hashedNonce' when making the authentication request to Google
    // Use 'nonce' when invoking the supabase.auth.signInWithIdToken() method
@@ -372,44 +379,48 @@ Most web apps and websites can utilize Google's [personalized sign-in buttons](h
 If you're integrating Google One-Tap with your Next.js application, you can refer to the example below to get started:
 
 ```tsx
-'use client'
+"use client";
 
-import Script from 'next/script'
-import { createClient } from '@/utils/supabase/client'
-import type { accounts, CredentialResponse } from 'google-one-tap'
-import { useRouter } from 'next/navigation'
+import Script from "next/script";
+import { createClient } from "@/utils/supabase/client";
+import type { accounts, CredentialResponse } from "google-one-tap";
+import { useRouter } from "next/navigation";
 
-declare const google: { accounts: accounts }
+declare const google: { accounts: accounts };
 
 // generate nonce to use for google id token sign-in
 const generateNonce = async (): Promise<string[]> => {
-  const nonce = btoa(String.fromCharCode(...crypto.getRandomValues(new Uint8Array(32))))
-  const encoder = new TextEncoder()
-  const encodedNonce = encoder.encode(nonce)
-  const hashBuffer = await crypto.subtle.digest('SHA-256', encodedNonce)
-  const hashArray = Array.from(new Uint8Array(hashBuffer))
-  const hashedNonce = hashArray.map((b) => b.toString(16).padStart(2, '0')).join('')
+  const nonce = btoa(
+    String.fromCharCode(...crypto.getRandomValues(new Uint8Array(32))),
+  );
+  const encoder = new TextEncoder();
+  const encodedNonce = encoder.encode(nonce);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", encodedNonce);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  const hashedNonce = hashArray
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
 
-  return [nonce, hashedNonce]
-}
+  return [nonce, hashedNonce];
+};
 
 const OneTapComponent = () => {
-  const supabase = createClient()
-  const router = useRouter()
+  const supabase = createClient();
+  const router = useRouter();
 
   const initializeGoogleOneTap = () => {
-    console.log('Initializing Google One Tap')
-    const [nonce, hashedNonce] = await generateNonce()
-    console.log('Nonce: ', nonce, hashedNonce)
+    console.log("Initializing Google One Tap");
+    const [nonce, hashedNonce] = await generateNonce();
+    console.log("Nonce: ", nonce, hashedNonce);
 
     // check if there's already an existing session before initializing the one-tap UI
-    const { data, error } = await supabase.auth.getSession()
+    const { data, error } = await supabase.auth.getSession();
     if (error) {
-      console.error('Error getting session', error)
+      console.error("Error getting session", error);
     }
     if (data.session) {
-      router.push('/')
-      return
+      router.push("/");
+      return;
     }
 
     /* global google */
@@ -419,32 +430,37 @@ const OneTapComponent = () => {
         try {
           // send id token returned in response.credential to supabase
           const { data, error } = await supabase.auth.signInWithIdToken({
-            provider: 'google',
+            provider: "google",
             token: response.credential,
             nonce,
-          })
+          });
 
-          if (error) throw error
-          console.log('Session data: ', data)
-          console.log('Successfully logged in with Google One Tap')
+          if (error) throw error;
+          console.log("Session data: ", data);
+          console.log("Successfully logged in with Google One Tap");
 
           // redirect to protected page
-          router.push('/')
+          router.push("/");
         } catch (error) {
-          console.error('Error logging in with Google One Tap', error)
+          console.error("Error logging in with Google One Tap", error);
         }
       },
       nonce: hashedNonce,
       // with chrome's removal of third-party cookies, we need to use FedCM instead (https://developers.google.com/identity/gsi/web/guides/fedcm-migration)
       use_fedcm_for_prompt: true,
-    })
-    google.accounts.id.prompt() // Display the One Tap UI
-  }
+    });
+    google.accounts.id.prompt(); // Display the One Tap UI
+  };
 
-  return <Script onReady={initializeGoogleOneTap} src="https://accounts.google.com/gsi/client" />
-}
+  return (
+    <Script
+      onReady={initializeGoogleOneTap}
+      src="https://accounts.google.com/gsi/client"
+    />
+  );
+};
 
-export default OneTapComponent
+export default OneTapComponent;
 ```
 
 </TabPanel>
@@ -466,14 +482,14 @@ import {
   GoogleSignin,
   GoogleSigninButton,
   statusCodes,
-} from '@react-native-google-signin/google-signin'
-import { supabase } from '../utils/supabase'
+} from "@react-native-google-signin/google-signin";
+import { supabase } from "../utils/supabase";
 
 export default function () {
   GoogleSignin.configure({
-    scopes: ['https://www.googleapis.com/auth/drive.readonly'],
-    webClientId: 'YOUR CLIENT ID FROM GOOGLE CONSOLE',
-  })
+    scopes: ["https://www.googleapis.com/auth/drive.readonly"],
+    webClientId: "YOUR CLIENT ID FROM GOOGLE CONSOLE",
+  });
 
   return (
     <GoogleSigninButton
@@ -481,16 +497,16 @@ export default function () {
       color={GoogleSigninButton.Color.Dark}
       onPress={async () => {
         try {
-          await GoogleSignin.hasPlayServices()
-          const userInfo = await GoogleSignin.signIn()
+          await GoogleSignin.hasPlayServices();
+          const userInfo = await GoogleSignin.signIn();
           if (userInfo.data.idToken) {
             const { data, error } = await supabase.auth.signInWithIdToken({
-              provider: 'google',
+              provider: "google",
               token: userInfo.data.idToken,
-            })
-            console.log(error, data)
+            });
+            console.log(error, data);
           } else {
-            throw new Error('no ID token present!')
+            throw new Error("no ID token present!");
           }
         } catch (error: any) {
           if (error.code === statusCodes.SIGN_IN_CANCELLED) {
@@ -505,7 +521,7 @@ export default function () {
         }
       }}
     />
-  )
+  );
 }
 ```
 
@@ -760,15 +776,18 @@ First, you need to configure your `manifest.json` file like so:
 Then you should call the [`chrome.identity.launchWebAuthFlow()`](https://developer.chrome.com/docs/extensions/reference/identity/#method-launchWebAuthFlow) function to trigger the sign in flow. On success, call the `supabase.auth.signInWithIdToken()` function to complete sign in with your Supabase project.
 
 ```ts
-const manifest = chrome.runtime.getManifest()
+const manifest = chrome.runtime.getManifest();
 
-const url = new URL('https://accounts.google.com/o/oauth2/auth')
+const url = new URL("https://accounts.google.com/o/oauth2/auth");
 
-url.searchParams.set('client_id', manifest.oauth2.client_id)
-url.searchParams.set('response_type', 'id_token')
-url.searchParams.set('access_type', 'offline')
-url.searchParams.set('redirect_uri', `https://${chrome.runtime.id}.chromiumapp.org`)
-url.searchParams.set('scope', manifest.oauth2.scopes.join(' '))
+url.searchParams.set("client_id", manifest.oauth2.client_id);
+url.searchParams.set("response_type", "id_token");
+url.searchParams.set("access_type", "offline");
+url.searchParams.set(
+  "redirect_uri",
+  `https://${chrome.runtime.id}.chromiumapp.org`,
+);
+url.searchParams.set("scope", manifest.oauth2.scopes.join(" "));
 
 chrome.identity.launchWebAuthFlow(
   {
@@ -780,16 +799,16 @@ chrome.identity.launchWebAuthFlow(
       // auth was not successful
     } else {
       // auth was successful, extract the ID token from the redirectedTo URL
-      const url = new URL(redirectedTo)
-      const params = new URLSearchParams(url.hash)
+      const url = new URL(redirectedTo);
+      const params = new URLSearchParams(url.hash);
 
       const { data, error } = await supabase.auth.signInWithIdToken({
-        provider: 'google',
-        token: params.get('id_token'),
-      })
+        provider: "google",
+        token: params.get("id_token"),
+      });
     }
-  }
-)
+  },
+);
 ```
 
 </TabPanel>

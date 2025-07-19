@@ -1,7 +1,7 @@
 ---
-id: 'auth-mfa-phone'
-title: 'Multi-Factor Authentication (Phone)'
-description: 'Add an additional layer of security with phone (SMS or WhatsApp) multi-factor-authentication.'
+id: "auth-mfa-phone"
+title: "Multi-Factor Authentication (Phone)"
+description: "Add an additional layer of security with phone (SMS or WhatsApp) multi-factor-authentication."
 ---
 
 ## How does phone multi-factor-authentication work?
@@ -15,8 +15,8 @@ Below is a flow chart illustrating how the Enrollment and Verify APIs work in th
 <Image
   alt="Diagram showing the flow of Multi-Factor authentication"
   src={{
-    light: '/docs/img/guides/auth-mfa/auth-mfa-phone-flow.svg',
-    dark: '/docs/img/guides/auth-mfa/auth-mfa-phone-flow.svg',
+    light: "/docs/img/guides/auth-mfa/auth-mfa-phone-flow.svg",
+    dark: "/docs/img/guides/auth-mfa/auth-mfa-phone-flow.svg",
   }}
   containerClassName="max-w-[700px]"
 />
@@ -62,63 +62,63 @@ export function EnrollMFA({
   onEnrolled,
   onCancelled,
 }: {
-  onEnrolled: () => void
-  onCancelled: () => void
+  onEnrolled: () => void;
+  onCancelled: () => void;
 }) {
-  const [phoneNumber, setPhoneNumber] = useState('')
-  const [factorId, setFactorId] = useState('')
-  const [verifyCode, setVerifyCode] = useState('')
-  const [error, setError] = useState('')
-  const [challengeId, setChallengeId] = useState('')
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [factorId, setFactorId] = useState("");
+  const [verifyCode, setVerifyCode] = useState("");
+  const [error, setError] = useState("");
+  const [challengeId, setChallengeId] = useState("");
 
   const onEnableClicked = () => {
-    setError('')
-    ;(async () => {
+    setError("");
+    (async () => {
       const verify = await auth.mfa.verify({
         factorId,
         challengeId,
         code: verifyCode,
-      })
+      });
       if (verify.error) {
-        setError(verify.error.message)
-        throw verify.error
+        setError(verify.error.message);
+        throw verify.error;
       }
 
-      onEnrolled()
-    })()
-  }
+      onEnrolled();
+    })();
+  };
   const onEnrollClicked = async () => {
-    setError('')
+    setError("");
     try {
       const factor = await auth.mfa.enroll({
         phone: phoneNumber,
-        factorType: 'phone',
-      })
+        factorType: "phone",
+      });
       if (factor.error) {
-        setError(factor.error.message)
-        throw factor.error
+        setError(factor.error.message);
+        throw factor.error;
       }
 
-      setFactorId(factor.data.id)
+      setFactorId(factor.data.id);
     } catch (error) {
-      setError('Failed to Enroll the Factor.')
+      setError("Failed to Enroll the Factor.");
     }
-  }
+  };
 
   const onSendOTPClicked = async () => {
-    setError('')
+    setError("");
     try {
-      const challenge = await auth.mfa.challenge({ factorId })
+      const challenge = await auth.mfa.challenge({ factorId });
       if (challenge.error) {
-        setError(challenge.error.message)
-        throw challenge.error
+        setError(challenge.error.message);
+        throw challenge.error;
       }
 
-      setChallengeId(challenge.data.id)
+      setChallengeId(challenge.data.id);
     } catch (error) {
-      setError('Failed to resend the code.')
+      setError("Failed to resend the code.");
     }
-  }
+  };
 
   return (
     <>
@@ -140,7 +140,7 @@ export function EnrollMFA({
       <input type="button" value="Send OTP Code" onClick={onSendOTPClicked} />
       <input type="button" value="Cancel" onClick={onCancelled} />
     </>
-  )
+  );
 }
 ```
 
@@ -169,37 +169,38 @@ This example will wrap this component with logic that will show an MFA challenge
 
 ```tsx
 function AppWithMFA() {
-  const [readyToShow, setReadyToShow] = useState(false)
-  const [showMFAScreen, setShowMFAScreen] = useState(false)
+  const [readyToShow, setReadyToShow] = useState(false);
+  const [showMFAScreen, setShowMFAScreen] = useState(false);
 
   useEffect(() => {
-    ;(async () => {
+    (async () => {
       try {
-        const { data, error } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel()
+        const { data, error } =
+          await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
         if (error) {
-          throw error
+          throw error;
         }
 
-        console.log(data)
+        console.log(data);
 
-        if (data.nextLevel === 'aal2' && data.nextLevel !== data.currentLevel) {
-          setShowMFAScreen(true)
+        if (data.nextLevel === "aal2" && data.nextLevel !== data.currentLevel) {
+          setShowMFAScreen(true);
         }
       } finally {
-        setReadyToShow(true)
+        setReadyToShow(true);
       }
-    })()
-  }, [])
+    })();
+  }, []);
 
   if (readyToShow) {
     if (showMFAScreen) {
-      return <AuthMFA />
+      return <AuthMFA />;
     }
 
-    return <App />
+    return <App />;
   }
 
-  return <></>
+  return <></>;
 }
 ```
 
@@ -217,58 +218,58 @@ Below is the component that implements the challenge and verify logic.
 
 ```tsx
 function AuthMFA() {
-  const [verifyCode, setVerifyCode] = useState('')
-  const [error, setError] = useState('')
-  const [factorId, setFactorId] = useState('')
-  const [challengeId, setChallengeId] = useState('')
-  const [phoneNumber, setPhoneNumber] = useState('')
+  const [verifyCode, setVerifyCode] = useState("");
+  const [error, setError] = useState("");
+  const [factorId, setFactorId] = useState("");
+  const [challengeId, setChallengeId] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
 
   const startChallenge = async () => {
-    setError('')
+    setError("");
     try {
-      const factors = await supabase.auth.mfa.listFactors()
+      const factors = await supabase.auth.mfa.listFactors();
       if (factors.error) {
-        throw factors.error
+        throw factors.error;
       }
 
-      const phoneFactor = factors.data.phone[0]
+      const phoneFactor = factors.data.phone[0];
 
       if (!phoneFactor) {
-        throw new Error('No phone factors found!')
+        throw new Error("No phone factors found!");
       }
 
-      const factorId = phoneFactor.id
-      setFactorId(factorId)
-      setPhoneNumber(phoneFactor.phone)
+      const factorId = phoneFactor.id;
+      setFactorId(factorId);
+      setPhoneNumber(phoneFactor.phone);
 
-      const challenge = await supabase.auth.mfa.challenge({ factorId })
+      const challenge = await supabase.auth.mfa.challenge({ factorId });
       if (challenge.error) {
-        setError(challenge.error.message)
-        throw challenge.error
+        setError(challenge.error.message);
+        throw challenge.error;
       }
 
-      setChallengeId(challenge.data.id)
+      setChallengeId(challenge.data.id);
     } catch (error) {
-      setError(error.message)
+      setError(error.message);
     }
-  }
+  };
 
   const verifyCode = async () => {
-    setError('')
+    setError("");
     try {
       const verify = await supabase.auth.mfa.verify({
         factorId,
         challengeId,
         code: verifyCode,
-      })
+      });
       if (verify.error) {
-        setError(verify.error.message)
-        throw verify.error
+        setError(verify.error.message);
+        throw verify.error;
       }
     } catch (error) {
-      setError(error.message)
+      setError(error.message);
     }
-  }
+  };
 
   return (
     <>
@@ -286,7 +287,7 @@ function AuthMFA() {
         <input type="button" value="Verify Code" onClick={verifyCode} />
       )}
     </>
-  )
+  );
 }
 ```
 

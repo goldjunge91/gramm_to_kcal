@@ -1,7 +1,7 @@
 ---
-id: 'auth-slack'
-title: 'Login with Slack'
-description: 'Add Slack OAuth to your Supabase project'
+id: "auth-slack"
+title: "Login with Slack"
+description: "Add Slack OAuth to your Supabase project"
 ---
 
 To enable Slack Auth for your project, you need to set up a Slack OAuth application and add the application credentials to your Supabase Dashboard.
@@ -96,14 +96,14 @@ curl -X PATCH "https://api.supabase.com/v1/projects/$PROJECT_REF/config/auth" \
 When your user signs in, call [`signInWithOAuth()`](/docs/reference/javascript/auth-signinwithoauth) with `slack_oidc` as the `provider`:
 
 ```js
-import { createClient } from '@supabase/supabase-js'
-const supabase = createClient('<your-project-url>', '<your-anon-key>')
+import { createClient } from "@supabase/supabase-js";
+const supabase = createClient("<your-project-url>", "<your-anon-key>");
 
 // ---cut---
 async function signInWithSlack() {
   const { data, error } = await supabase.auth.signInWithOAuth({
-    provider: 'slack_oidc',
-  })
+    provider: "slack_oidc",
+  });
 }
 ```
 
@@ -151,12 +151,12 @@ suspend fun signInWithSlack() {
 When your user signs out, call [signOut()](/docs/reference/javascript/auth-signout) to remove them from the browser session and any objects from localStorage:
 
 ```js
-import { createClient } from '@supabase/supabase-js'
-const supabase = createClient('<your-project-url>', '<your-anon-key>')
+import { createClient } from "@supabase/supabase-js";
+const supabase = createClient("<your-project-url>", "<your-anon-key>");
 
 // ---cut---
 async function signOut() {
-  const { error } = await supabase.auth.signOut()
+  const { error } = await supabase.auth.signOut();
 }
 ```
 

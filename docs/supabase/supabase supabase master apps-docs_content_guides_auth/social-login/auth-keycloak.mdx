@@ -1,7 +1,7 @@
 ---
-id: 'auth-keycloak'
-title: 'Login with Keycloak'
-description: 'Add Keycloak OAuth to your Supabase project'
+id: "auth-keycloak"
+title: "Login with Keycloak"
+description: "Add Keycloak OAuth to your Supabase project"
 ---
 
 To enable Keycloak Auth for your project, you need to set up an Keycloak OAuth application and add the application credentials to your Supabase Dashboard.
@@ -75,17 +75,17 @@ Since Keycloak version 22, the `openid` scope must be passed. Add this to the [`
 When your user signs in, call [`signInWithOAuth()`](/docs/reference/javascript/auth-signinwithoauth) with `keycloak` as the `provider`:
 
 ```js
-import { createClient } from '@supabase/supabase-js'
-const supabase = createClient('<your-project-url>', '<your-anon-key>')
+import { createClient } from "@supabase/supabase-js";
+const supabase = createClient("<your-project-url>", "<your-anon-key>");
 
 // ---cut---
 async function signInWithKeycloak() {
   const { data, error } = await supabase.auth.signInWithOAuth({
-    provider: 'keycloak',
+    provider: "keycloak",
     options: {
-      scopes: 'openid',
+      scopes: "openid",
     },
-  })
+  });
 }
 ```
 
@@ -136,7 +136,7 @@ When your user signs out, call [signOut()](/docs/reference/javascript/auth-signo
 
 ```js
 async function signOut() {
-  const { error } = await supabase.auth.signOut()
+  const { error } = await supabase.auth.signOut();
 }
 ```
 

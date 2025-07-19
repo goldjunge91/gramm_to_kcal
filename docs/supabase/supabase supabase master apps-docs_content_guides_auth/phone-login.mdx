@@ -1,6 +1,6 @@
 ---
-title: 'Phone Login'
-description: 'Learn about logging in to your platform using SMS one-time passwords.'
+title: "Phone Login"
+description: "Learn about logging in to your platform using SMS one-time passwords."
 ---
 
 Phone Login is a method of authentication that allows users to log in to a website or application without using a password. The user authenticates through a one-time password (OTP) sent via a channel (SMS or WhatsApp).
@@ -47,13 +47,13 @@ With OTP, a user can sign in without setting a password on their account. They n
 <TabPanel id="js" label="JavaScript">
 
 ```js
-import { createClient } from '@supabase/supabase-js'
-const supabase = createClient('url', 'anonKey')
+import { createClient } from "@supabase/supabase-js";
+const supabase = createClient("url", "anonKey");
 
 // ---cut---
 const { data, error } = await supabase.auth.signInWithOtp({
-  phone: '+13334445555',
-})
+  phone: "+13334445555",
+});
 ```
 
 </TabPanel>
@@ -116,18 +116,18 @@ To verify the one-time password (OTP) sent to the user's phone number, call [`ve
 You should present a form to the user so they can input the 6 digit pin, then send it along with the phone number to `verifyOtp`:
 
 ```js
-import { createClient } from '@supabase/supabase-js'
-const supabase = createClient('url', 'anonKey')
+import { createClient } from "@supabase/supabase-js";
+const supabase = createClient("url", "anonKey");
 
 // ---cut---
 const {
   data: { session },
   error,
 } = await supabase.auth.verifyOtp({
-  phone: '13334445555',
-  token: '123456',
-  type: 'sms',
-})
+  phone: "13334445555",
+  token: "123456",
+  type: "sms",
+});
 ```
 
 </TabPanel>
@@ -213,13 +213,13 @@ To update a user's phone number, the user must be logged in. Call [`updateUser()
 <TabPanel id="js" label="JavaScript">
 
 ```js
-import { createClient } from '@supabase/supabase-js'
-const supabase = createClient('url', 'anonKey')
+import { createClient } from "@supabase/supabase-js";
+const supabase = createClient("url", "anonKey");
 
 // ---cut---
 const { data, error } = await supabase.auth.updateUser({
-  phone: '123456789',
-})
+  phone: "123456789",
+});
 ```
 
 </TabPanel>

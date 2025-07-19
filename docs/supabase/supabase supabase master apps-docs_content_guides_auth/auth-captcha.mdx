@@ -1,8 +1,8 @@
 ---
-id: 'auth-captcha'
-title: 'Enable CAPTCHA Protection'
-description: 'Add CAPTCHA Protection to your Supabase project'
-tocVideo: 'em1cpOAXknM'
+id: "auth-captcha"
+title: "Enable CAPTCHA Protection"
+description: "Add CAPTCHA Protection to your Supabase project"
+tocVideo: "em1cpOAXknM"
 ---
 
 Supabase provides you with the option of adding CAPTCHA to your sign-in, sign-up, and password reset forms. This keeps your website safe from bots and malicious scripts. Supabase authentication has support for [hCaptcha](https://www.hcaptcha.com/) and [Cloudflare Turnstile](https://www.cloudflare.com/products/turnstile/).
@@ -68,13 +68,13 @@ npm install @hcaptcha/react-hcaptcha
 Now import the `HCaptcha` component from the `@hcaptcha/react-hcaptcha` library.
 
 ```javascript
-import HCaptcha from '@hcaptcha/react-hcaptcha'
+import HCaptcha from "@hcaptcha/react-hcaptcha";
 ```
 
 Let's create a empty state to store our `captchaToken`
 
 ```jsx
-const [captchaToken, setCaptchaToken] = useState()
+const [captchaToken, setCaptchaToken] = useState();
 ```
 
 Now lets add the `HCaptcha` component to the JSX section of our code
@@ -89,7 +89,7 @@ We will pass it the sitekey we copied from the hCaptcha website as a property al
 <HCaptcha
   sitekey="your-sitekey"
   onVerify={(token) => {
-    setCaptchaToken(token)
+    setCaptchaToken(token);
   }}
 />
 ```
@@ -101,7 +101,7 @@ await supabase.auth.signUp({
   email,
   password,
   options: { captchaToken },
-})
+});
 ```
 
 We will also need to reset the CAPTCHA challenge after we have made a call to the function above.
@@ -109,7 +109,7 @@ We will also need to reset the CAPTCHA challenge after we have made a call to th
 Create a ref to use on our `HCaptcha` component.
 
 ```jsx
-const captcha = useRef()
+const captcha = useRef();
 ```
 
 Let's add a ref attribute on the `HCaptcha` component and assign the `captcha` constant to it.
@@ -119,7 +119,7 @@ Let's add a ref attribute on the `HCaptcha` component and assign the `captcha` c
   ref={captcha}
   sitekey="your-sitekey"
   onVerify={(token) => {
-    setCaptchaToken(token)
+    setCaptchaToken(token);
   }}
 />
 ```
@@ -127,7 +127,7 @@ Let's add a ref attribute on the `HCaptcha` component and assign the `captcha` c
 Reset the `captcha` after the signUp function is called using the following code:
 
 ```jsx
-captcha.current.resetCaptcha()
+captcha.current.resetCaptcha();
 ```
 
 In order to test that this works locally we will need to use something like [ngrok](https://ngrok.com/) or add an entry to your hosts file. You can read more about this in the [hCaptcha docs](https://docs.hcaptcha.com/#local-development).
@@ -147,13 +147,13 @@ npm install @marsidev/react-turnstile
 Now import the Turnstile component from the @marsidev/react-turnstile library.
 
 ```jsx
-import { Turnstile } from '@marsidev/react-turnstile'
+import { Turnstile } from "@marsidev/react-turnstile";
 ```
 
 Let's create an empty state to store our `captchaToken`
 
 ```jsx
-const [captchaToken, setCaptchaToken] = useState()
+const [captchaToken, setCaptchaToken] = useState();
 ```
 
 Now lets add the Cloudflare Turnstile component to the JSX section of our code:
@@ -168,7 +168,7 @@ We will pass it the sitekey we copied from the Cloudflare website as a property 
 <Turnstile
   siteKey="your-sitekey"
   onSuccess={(token) => {
-    setCaptchaToken(token)
+    setCaptchaToken(token);
   }}
 />
 ```
@@ -180,7 +180,7 @@ await supabase.auth.signUp({
   email,
   password,
   options: { captchaToken },
-})
+});
 ```
 
 To test locally, you will need to add localhost to the domain allowlist as per the [Cloudflare docs](https://developers.cloudflare.com/turnstile/reference/testing/)

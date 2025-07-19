@@ -1,7 +1,7 @@
 ---
-id: 'auth-mfa-totp'
-title: 'Multi-Factor Authentication (TOTP)'
-description: 'Add an additional layer of security to your apps with TOTP multi-factor authentication.'
+id: "auth-mfa-totp"
+title: "Multi-Factor Authentication (TOTP)"
+description: "Add an additional layer of security to your apps with TOTP multi-factor authentication."
 ---
 
 ## How does app authenticator multi-factor authentication work?
@@ -15,8 +15,8 @@ Below is a flow chart illustrating how the Enrollment, Challenge, and Verify API
 <Image
   alt="Diagram showing the flow of Multi-Factor authentication"
   src={{
-    light: '/docs/img/guides/auth-mfa/auth-mfa-flow.svg',
-    dark: '/docs/img/guides/auth-mfa/auth-mfa-flow.svg',
+    light: "/docs/img/guides/auth-mfa/auth-mfa-flow.svg",
+    dark: "/docs/img/guides/auth-mfa/auth-mfa-flow.svg",
   }}
   containerClassName="max-w-[700px]"
 />
@@ -84,55 +84,55 @@ export function EnrollMFA({
   onEnrolled,
   onCancelled,
 }: {
-  onEnrolled: () => void
-  onCancelled: () => void
+  onEnrolled: () => void;
+  onCancelled: () => void;
 }) {
-  const [factorId, setFactorId] = useState('')
-  const [qr, setQR] = useState('') // holds the QR code image SVG
-  const [verifyCode, setVerifyCode] = useState('') // contains the code entered by the user
-  const [error, setError] = useState('') // holds an error message
+  const [factorId, setFactorId] = useState("");
+  const [qr, setQR] = useState(""); // holds the QR code image SVG
+  const [verifyCode, setVerifyCode] = useState(""); // contains the code entered by the user
+  const [error, setError] = useState(""); // holds an error message
 
   const onEnableClicked = () => {
-    setError('')
-    ;(async () => {
-      const challenge = await supabase.auth.mfa.challenge({ factorId })
+    setError("");
+    (async () => {
+      const challenge = await supabase.auth.mfa.challenge({ factorId });
       if (challenge.error) {
-        setError(challenge.error.message)
-        throw challenge.error
+        setError(challenge.error.message);
+        throw challenge.error;
       }
 
-      const challengeId = challenge.data.id
+      const challengeId = challenge.data.id;
 
       const verify = await supabase.auth.mfa.verify({
         factorId,
         challengeId,
         code: verifyCode,
-      })
+      });
       if (verify.error) {
-        setError(verify.error.message)
-        throw verify.error
+        setError(verify.error.message);
+        throw verify.error;
       }
 
-      onEnrolled()
-    })()
-  }
+      onEnrolled();
+    })();
+  };
 
   useEffect(() => {
-    ;(async () => {
+    (async () => {
       const { data, error } = await supabase.auth.mfa.enroll({
-        factorType: 'totp',
-      })
+        factorType: "totp",
+      });
       if (error) {
-        throw error
+        throw error;
       }
 
-      setFactorId(data.id)
+      setFactorId(data.id);
 
       // Supabase Auth returns an SVG QR code which you can convert into a data
       // URL that you can place in an <img> tag.
-      setQR(data.totp.qr_code)
-    })()
-  }, [])
+      setQR(data.totp.qr_code);
+    })();
+  }, []);
 
   return (
     <>
@@ -146,7 +146,7 @@ export function EnrollMFA({
       <input type="button" value="Enable" onClick={onEnableClicked} />
       <input type="button" value="Cancel" onClick={onCancelled} />
     </>
-  )
+  );
 }
 ```
 
@@ -175,37 +175,38 @@ This example will wrap this component with logic that will show an MFA challenge
 
 ```tsx
 function AppWithMFA() {
-  const [readyToShow, setReadyToShow] = useState(false)
-  const [showMFAScreen, setShowMFAScreen] = useState(false)
+  const [readyToShow, setReadyToShow] = useState(false);
+  const [showMFAScreen, setShowMFAScreen] = useState(false);
 
   useEffect(() => {
-    ;(async () => {
+    (async () => {
       try {
-        const { data, error } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel()
+        const { data, error } =
+          await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
         if (error) {
-          throw error
+          throw error;
         }
 
-        console.log(data)
+        console.log(data);
 
-        if (data.nextLevel === 'aal2' && data.nextLevel !== data.currentLevel) {
-          setShowMFAScreen(true)
+        if (data.nextLevel === "aal2" && data.nextLevel !== data.currentLevel) {
+          setShowMFAScreen(true);
         }
       } finally {
-        setReadyToShow(true)
+        setReadyToShow(true);
       }
-    })()
-  }, [])
+    })();
+  }, []);
 
   if (readyToShow) {
     if (showMFAScreen) {
-      return <AuthMFA />
+      return <AuthMFA />;
     }
 
-    return <App />
+    return <App />;
   }
 
-  return <></>
+  return <></>;
 }
 ```
 
@@ -223,44 +224,44 @@ Below is the component that implements the challenge and verify logic.
 
 ```tsx
 function AuthMFA() {
-  const [verifyCode, setVerifyCode] = useState('')
-  const [error, setError] = useState('')
+  const [verifyCode, setVerifyCode] = useState("");
+  const [error, setError] = useState("");
 
   const onSubmitClicked = () => {
-    setError('')
-    ;(async () => {
-      const factors = await supabase.auth.mfa.listFactors()
+    setError("");
+    (async () => {
+      const factors = await supabase.auth.mfa.listFactors();
       if (factors.error) {
-        throw factors.error
+        throw factors.error;
       }
 
-      const totpFactor = factors.data.totp[0]
+      const totpFactor = factors.data.totp[0];
 
       if (!totpFactor) {
-        throw new Error('No TOTP factors found!')
+        throw new Error("No TOTP factors found!");
       }
 
-      const factorId = totpFactor.id
+      const factorId = totpFactor.id;
 
-      const challenge = await supabase.auth.mfa.challenge({ factorId })
+      const challenge = await supabase.auth.mfa.challenge({ factorId });
       if (challenge.error) {
-        setError(challenge.error.message)
-        throw challenge.error
+        setError(challenge.error.message);
+        throw challenge.error;
       }
 
-      const challengeId = challenge.data.id
+      const challengeId = challenge.data.id;
 
       const verify = await supabase.auth.mfa.verify({
         factorId,
         challengeId,
         code: verifyCode,
-      })
+      });
       if (verify.error) {
-        setError(verify.error.message)
-        throw verify.error
+        setError(verify.error.message);
+        throw verify.error;
       }
-    })()
-  }
+    })();
+  };
 
   return (
     <>
@@ -273,7 +274,7 @@ function AuthMFA() {
       />
       <input type="button" value="Submit" onClick={onSubmitClicked} />
     </>
-  )
+  );
 }
 ```
 

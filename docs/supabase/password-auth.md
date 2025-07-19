@@ -1,7 +1,6 @@
 Password-based Auth
 Allow users to sign in with a password connected to their email or phone number.
 
-
 Users often expect to sign in to your site with a password. Supabase Auth helps you implement password-based auth safely, using secure configuration options and best practices for storing and verifying passwords.
 
 Users can associate a password with their identity using their email address or a phone number.
@@ -22,12 +21,10 @@ There are two possible flows for email signup: implicit flow and PKCE flow. If y
 
 The instructions in this section assume that email confirmations are enabled.
 
-
 Implicit flow
 
 PKCE flow
 The implicit flow only works for client-only apps. Your site directly receives the access token after the user confirms their email.
-
 
 JavaScript
 
@@ -54,16 +51,15 @@ If you don't specify a redirect URL, the user is automatically redirected to you
 8
 9
 async function signUpNewUser() {
-  const { data, error } = await supabase.auth.signUp({
-    email: 'valid.email@supabase.io',
-    password: 'example-password',
-    options: {
-      emailRedirectTo: 'https://example.com/welcome',
-    },
-  })
+const { data, error } = await supabase.auth.signUp({
+email: 'valid.email@supabase.io',
+password: 'example-password',
+options: {
+emailRedirectTo: 'https://example.com/welcome',
+},
+})
 }
 Signing in with an email and password#
-
 
 JavaScript
 
@@ -83,13 +79,12 @@ When your user signs in, call signInWithPassword() with their email address and 
 5
 6
 async function signInWithEmail() {
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email: 'valid.email@supabase.io',
-    password: 'example-password',
-  })
+const { data, error } = await supabase.auth.signInWithPassword({
+email: 'valid.email@supabase.io',
+password: 'example-password',
+})
 }
 Resetting a password#
-
 
 Implicit flow
 
@@ -99,7 +94,6 @@ Step 1: Create a reset password page#
 Create a reset password page. This page should be publicly accessible.
 
 Collect the user's email address and request a password reset email. Specify the redirect URL, which should point to the URL of a change password page. This URL needs to be configured in your redirect URLs.
-
 
 JavaScript
 
@@ -112,14 +106,13 @@ Python
 2
 3
 await supabase.auth.resetPasswordForEmail('valid.email@supabase.io', {
-  redirectTo: 'http://example.com/account/update-password',
+redirectTo: 'http://example.com/account/update-password',
 })
 Step 2: Create a change password page#
 
 Create a change password page at the URL you specified in the previous step. This page should be accessible only to authenticated users.
 
 Collect the user's new password and call updateUser to update their password.
-
 
 JavaScript
 
@@ -177,7 +170,6 @@ Signing up with a phone number and password#
 
 To sign up the user, call signUp() with their phone number and password:
 
-
 JavaScript
 
 Swift
@@ -192,8 +184,8 @@ HTTP
 3
 4
 const { data, error } = await supabase.auth.signUp({
-  phone: '+13334445555',
-  password: 'some-password',
+phone: '+13334445555',
+password: 'some-password',
 })
 If you have phone verification turned on, the user receives an SMS with a 6-digit pin that you must verify within 60 seconds:
 
@@ -202,18 +194,18 @@ const {
   data: { session },
   error,
 } = await supabase.auth.verifyOtp({
-  phone: '+13334445555',
-  token: '123456',
-  type: 'sms',
-})
-````
+  phone: "+13334445555",
+  token: "123456",
+  type: "sms",
+});
+```
 
 Signing in a with a phone number and password#
 
 Call the function to sign in with the user's phone number and password:
 
-
 JavaScript
+
 ```
 const { data, error } = await supabase.auth.signInWithPassword({
   phone: '+13334445555',

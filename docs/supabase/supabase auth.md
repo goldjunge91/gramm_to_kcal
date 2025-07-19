@@ -11,7 +11,6 @@ It's safe to trust `getUser()` because it sends a request to the Supabase Auth s
 On the server, it basically configures a fetch call. You need to reconfigure the fetch call anew for every request to your server, because you need the cookies from the request.
 On the client, createBrowserClient already uses a singleton pattern, so you only ever create one instance, no matter how many times you call your createClient function.
 
-
 Note that cookies is called before any calls to Supabase, which opts fetch calls out of Next.js's caching. This is important for authenticated data fetches, to ensure that users get access only to their own data.
 See the Next.js docs to learn more about opting out of data caching.
 
@@ -30,10 +29,8 @@ Create a Route Handler for auth/confirm. When a user clicks their confirmation e
 
 Since this is a Router Handler, use the Supabase client from @/utils/supabase/server.ts.
 
-
 Advanced guide
 Details about SSR Auth flows and implementation for advanced users.
-
 
 When a user authenticates with Supabase Auth, two pieces of information are issued by the server:
 

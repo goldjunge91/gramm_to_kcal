@@ -1,7 +1,7 @@
 ---
-id: 'send-email-hook'
-title: 'Send Email Hook'
-subtitle: 'Use a custom email provider to send authentication messages'
+id: "send-email-hook"
+title: "Send Email Hook"
+subtitle: "Use a custom email provider to send authentication messages"
 ---
 
 The Send Email Hook runs before an email is sent and allows for flexibility around email sending. You can use this hook to configure a back-up email provider or add internationalization to your emails.
@@ -282,7 +282,14 @@ Email sending depends on two settings: Email Provider and Auth Hook status.
         },
         "email_action_type": {
           "type": "string",
-          "enum": ["signup", "invite", "magiclink", "recovery", "email_change", "email"]
+          "enum": [
+            "signup",
+            "invite",
+            "magiclink",
+            "recovery",
+            "email_change",
+            "email"
+          ]
         },
         "site_url": {
           "type": "string",
@@ -572,43 +579,43 @@ supabase functions deploy send-email --no-verify-jwt
 Your company is expanding to France and Spain. As part of expansion efforts, the company would like to deliver internationalized email templates to best support local users in their native language. Ensure that you have configured `POSTMARK_SERVER_TOKEN` and `SEND_EMAIL_HOOK_SECRET` in your `.env` file.
 
 ```javascript
-import { Webhook } from 'https://esm.sh/standardwebhooks@1.0.0'
-import { readAll } from 'https://deno.land/std/io/read_all.ts'
+import { Webhook } from "https://esm.sh/standardwebhooks@1.0.0";
+import { readAll } from "https://deno.land/std/io/read_all.ts";
 
-const postmarkEndpoint = 'https://api.postmarkapp.com/email'
+const postmarkEndpoint = "https://api.postmarkapp.com/email";
 // Replace this with your email
-const FROM_EMAIL = 'myemail@gmail.com'
+const FROM_EMAIL = "myemail@gmail.com";
 
 // Email Subjects
 const subjects = {
   en: {
-    signup: 'Confirm Your Email',
-    recovery: 'Reset Your Password',
-    invite: 'You have been invited',
-    magiclink: 'Your Magic Link',
-    email_change: 'Confirm Email Change',
-    email_change_new: 'Confirm New Email Address',
-    reauthentication: 'Confirm Reauthentication',
+    signup: "Confirm Your Email",
+    recovery: "Reset Your Password",
+    invite: "You have been invited",
+    magiclink: "Your Magic Link",
+    email_change: "Confirm Email Change",
+    email_change_new: "Confirm New Email Address",
+    reauthentication: "Confirm Reauthentication",
   },
   es: {
-    signup: 'Confirma tu correo electrónico',
-    recovery: 'Restablece tu contraseña',
-    invite: 'Has sido invitado',
-    magiclink: 'Tu enlace mágico',
-    email_change: 'Confirma el cambio de correo electrónico',
-    email_change_new: 'Confirma la Nueva Dirección de Correo',
-    reauthentication: 'Confirma la reautenticación',
+    signup: "Confirma tu correo electrónico",
+    recovery: "Restablece tu contraseña",
+    invite: "Has sido invitado",
+    magiclink: "Tu enlace mágico",
+    email_change: "Confirma el cambio de correo electrónico",
+    email_change_new: "Confirma la Nueva Dirección de Correo",
+    reauthentication: "Confirma la reautenticación",
   },
   fr: {
-    signup: 'Confirmez votre adresse e-mail',
-    recovery: 'Réinitialisez votre mot de passe',
-    invite: 'Vous avez été invité',
-    magiclink: 'Votre Lien Magique',
-    email_change: 'Confirmez le changement d’adresse e-mail',
-    email_change_new: 'Confirmez la nouvelle adresse e-mail',
-    reauthentication: 'Confirmez la réauthentification',
+    signup: "Confirmez votre adresse e-mail",
+    recovery: "Réinitialisez votre mot de passe",
+    invite: "Vous avez été invité",
+    magiclink: "Votre Lien Magique",
+    email_change: "Confirmez le changement d’adresse e-mail",
+    email_change_new: "Confirmez la nouvelle adresse e-mail",
+    reauthentication: "Confirmez la réauthentification",
   },
-}
+};
 
 // HTML Body
 const templates = {
@@ -639,40 +646,43 @@ const templates = {
     email_change_new: `<h2>Confirmez la nouvelle adresse e-mail</h2><p>Suivez ce lien pour confirmer votre nouvelle adresse e-mail :</p><p><a href="{{confirmation_url}}">Confirmez la nouvelle adresse e-mail</a></p><p>Vous pouvez aussi saisir le code : {{new_token}}</p>`,
     reauthentication: `<h2>Confirmez la réauthentification</h2><p>Saisissez le code : {{token}}</p>`,
   },
-}
+};
 
 function generateConfirmationURL(email_data) {
   // TODO: replace the ref with your project ref
-  return `https://<ref>.supabase.co/auth/v1/verify?token=${email_data.token_hash}&type=${email_data.email_action_type}&redirect_to=${email_data.redirect_to}`
+  return `https://<ref>.supabase.co/auth/v1/verify?token=${email_data.token_hash}&type=${email_data.email_action_type}&redirect_to=${email_data.redirect_to}`;
 }
 
 Deno.serve(async (req) => {
-  const payload = await req.text()
-  const serverToken = Deno.env.get('POSTMARK_SERVER_TOKEN')
-  const headers = Object.fromEntries(req.headers)
-  const base64_secret = Deno.env.get('SEND_EMAIL_HOOK_SECRET').replace('v1,whsec_', '')
-  const wh = new Webhook(base64_secret)
-  const { user, email_data } = wh.verify(payload, headers)
+  const payload = await req.text();
+  const serverToken = Deno.env.get("POSTMARK_SERVER_TOKEN");
+  const headers = Object.fromEntries(req.headers);
+  const base64_secret = Deno.env
+    .get("SEND_EMAIL_HOOK_SECRET")
+    .replace("v1,whsec_", "");
+  const wh = new Webhook(base64_secret);
+  const { user, email_data } = wh.verify(payload, headers);
 
-  const language = (user.user_metadata && user.user_metadata.i18n) || 'en'
-  const subject = subjects[language][email_data.email_action_type] || 'Notification'
+  const language = (user.user_metadata && user.user_metadata.i18n) || "en";
+  const subject =
+    subjects[language][email_data.email_action_type] || "Notification";
 
-  let template = templates[language][email_data.email_action_type]
-  const confirmation_url = generateConfirmationURL(email_data)
+  let template = templates[language][email_data.email_action_type];
+  const confirmation_url = generateConfirmationURL(email_data);
   let htmlBody = template
-    .replace('{{confirmation_url}}', confirmation_url)
-    .replace('{{token}}', email_data.token || '')
-    .replace('{{new_token}}', email_data.new_token || '')
-    .replace('{{site_url}}', email_data.site_url || '')
-    .replace('{{old_email}}', email_data.email || '')
-    .replace('{{new_email}}', email_data.new_email || '')
+    .replace("{{confirmation_url}}", confirmation_url)
+    .replace("{{token}}", email_data.token || "")
+    .replace("{{new_token}}", email_data.new_token || "")
+    .replace("{{site_url}}", email_data.site_url || "")
+    .replace("{{old_email}}", email_data.email || "")
+    .replace("{{new_email}}", email_data.new_email || "");
 
   const requestOptions = {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-      'X-Postmark-Server-Token': serverToken,
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      "X-Postmark-Server-Token": serverToken,
     },
     body: JSON.stringify({
       From: FROM_EMAIL,
@@ -680,24 +690,24 @@ Deno.serve(async (req) => {
       Subject: subject,
       HtmlBody: htmlBody,
     }),
-  }
+  };
 
   try {
-    const response = await fetch(postmarkEndpoint, requestOptions)
+    const response = await fetch(postmarkEndpoint, requestOptions);
     if (!response.ok) {
-      const errorData = await response.json()
-      throw new Error(`Failed to send email: ${errorData.Message}`)
+      const errorData = await response.json();
+      throw new Error(`Failed to send email: ${errorData.Message}`);
     }
     return new Response(
       JSON.stringify({
-        message: 'Email sent successfully.',
+        message: "Email sent successfully.",
       }),
       {
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-      }
-    )
+      },
+    );
   } catch (error) {
     return new Response(
       JSON.stringify({
@@ -706,12 +716,12 @@ Deno.serve(async (req) => {
       {
         status: 500,
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-      }
-    )
+      },
+    );
   }
-})
+});
 ```
 
 </TabPanel>

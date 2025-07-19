@@ -1,7 +1,7 @@
 ---
-id: 'auth-hooks'
-title: 'Auth Hooks'
-subtitle: 'Use HTTP or Postgres Functions to customize your authentication flow'
+id: "auth-hooks"
+title: "Auth Hooks"
+subtitle: "Use HTTP or Postgres Functions to customize your authentication flow"
 ---
 
 ## What is a hook
@@ -114,19 +114,21 @@ There field is expressed in plural rather than singular as there are plans to al
 Use the secret in conjunction with the Standard Webhooks package to verify the payload before processing it:
 
 ```jsx
-import { Webhook } from 'https://esm.sh/standardwebhooks@1.0.0'
+import { Webhook } from "https://esm.sh/standardwebhooks@1.0.0";
 
 Deno.serve(async (req) => {
-  const payload = await req.text()
-  const hookSecret = Deno.env.get('SEND_SMS_HOOK_SECRETS').replace('v1,whsec_', '')
+  const payload = await req.text();
+  const hookSecret = Deno.env
+    .get("SEND_SMS_HOOK_SECRETS")
+    .replace("v1,whsec_", "");
   // Extract headers and security specific fields
-  const headers = Object.fromEntries(req.headers)
-  const wh = new Webhook(hookSecret)
-  const data = wh.verify(payload, headers)
+  const headers = Object.fromEntries(req.headers);
+  const wh = new Webhook(hookSecret);
+  const data = wh.verify(payload, headers);
 
   // Payload data is verified, continue with business logic here
   // ...
-})
+});
 ```
 
 </TabPanel>
@@ -336,8 +338,11 @@ return new Response(
   JSON.stringify({
     error: `Failed to process the request: ${error}`,
   }),
-  { status: 429, headers: { 'Content-Type': 'application/json', 'retry-after': 'true' } }
-)
+  {
+    status: 429,
+    headers: { "Content-Type": "application/json", "retry-after": "true" },
+  },
+);
 ```
 
 Note that all responses, including error responses, need a `Content-Type` of `application/json` - not specifying the appropriate `Content-Type` will result in the function returning an error response. Supabase Auth will in turn return an Internal Server Error.
@@ -354,29 +359,30 @@ Each Hook description contains an example JSON Schema which you can use in conju
 <div className="grid md:grid-cols-12 gap-4 not-prose">
   {[
     {
-      name: 'Custom Access Token',
-      description: 'Customize the access token issued by Supabase Auth',
-      href: '/guides/auth/auth-hooks/custom-access-token-hook',
+      name: "Custom Access Token",
+      description: "Customize the access token issued by Supabase Auth",
+      href: "/guides/auth/auth-hooks/custom-access-token-hook",
     },
     {
-      name: 'Send SMS',
-      description: 'Use a custom SMS provider to send authentication messages',
-      href: '/guides/auth/auth-hooks/send-sms-hook',
+      name: "Send SMS",
+      description: "Use a custom SMS provider to send authentication messages",
+      href: "/guides/auth/auth-hooks/send-sms-hook",
     },
     {
-      name: 'Send Email',
-      description: 'Use a custom email provider to send authentication messages',
-      href: '/guides/auth/auth-hooks/send-email-hook',
+      name: "Send Email",
+      description:
+        "Use a custom email provider to send authentication messages",
+      href: "/guides/auth/auth-hooks/send-email-hook",
     },
     {
-      name: 'MFA Verification',
-      description: 'Add additional checks to the MFA verification flow',
-      href: '/guides/auth/auth-hooks/mfa-verification-hook',
+      name: "MFA Verification",
+      description: "Add additional checks to the MFA verification flow",
+      href: "/guides/auth/auth-hooks/mfa-verification-hook",
     },
     {
-      name: 'Password verification',
-      description: 'Add additional checks to the password verification flow',
-      href: '/guides/auth/auth-hooks/password-verification-hook',
+      name: "Password verification",
+      description: "Add additional checks to the password verification flow",
+      href: "/guides/auth/auth-hooks/password-verification-hook",
     },
   ].map((x) => (
     <div className="col-span-4" key={x.href}>

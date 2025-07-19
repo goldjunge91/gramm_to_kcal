@@ -1,7 +1,7 @@
 ---
-id: 'auth-mfa'
-title: 'Multi-Factor Authentication'
-description: 'Add an additional layer of security to your apps with Supabase Auth multi-factor authentication.'
+id: "auth-mfa"
+title: "Multi-Factor Authentication"
+description: "Add an additional layer of security to your apps with Supabase Auth multi-factor authentication."
 ---
 
 Multi-factor authentication (MFA), sometimes called two-factor authentication (2FA), adds an additional layer of security to your application by verifying their identity through additional verification steps.
@@ -81,11 +81,16 @@ An unenroll flow provides a UI for users to manage and unenroll factors linked t
 When a user unenrolls a factor, call `supabase.auth.mfa.unenroll()` with the ID of the factor. For example, call:
 
 ```js
-import { createClient } from '@supabase/supabase-js'
-const supabase = createClient('https://your-project-id.supabase.co', 'your-anon-key')
+import { createClient } from "@supabase/supabase-js";
+const supabase = createClient(
+  "https://your-project-id.supabase.co",
+  "your-anon-key",
+);
 
 // ---cut---
-supabase.auth.mfa.unenroll({ factorId: 'd30fd651-184e-4748-a928-0a4b9be1d429' })
+supabase.auth.mfa.unenroll({
+  factorId: "d30fd651-184e-4748-a928-0a4b9be1d429",
+});
 ```
 
 to unenroll a factor with ID `d30fd651-184e-4748-a928-0a4b9be1d429`.
@@ -131,20 +136,20 @@ Unenrolling a factor will downgrade the assurance level from `aal2` to `aal1` on
  * the corresponding factor will be unenrolled.
  */
 export function UnenrollMFA() {
-  const [factorId, setFactorId] = useState('')
-  const [factors, setFactors] = useState([])
-  const [error, setError] = useState('') // holds an error message
+  const [factorId, setFactorId] = useState("");
+  const [factors, setFactors] = useState([]);
+  const [error, setError] = useState(""); // holds an error message
 
   useEffect(() => {
-    ;(async () => {
-      const { data, error } = await supabase.auth.mfa.listFactors()
+    (async () => {
+      const { data, error } = await supabase.auth.mfa.listFactors();
       if (error) {
-        throw error
+        throw error;
       }
 
-      setFactors([...data.totp, ...data.phone])
-    })()
-  }, [])
+      setFactors([...data.totp, ...data.phone]);
+    })();
+  }, []);
 
   return (
     <>
@@ -166,10 +171,16 @@ export function UnenrollMFA() {
           </tr>
         ))}
       </tbody>
-      <input type="text" value={verifyCode} onChange={(e) => setFactorId(e.target.value.trim())} />
-      <button onClick={() => supabase.auth.mfa.unenroll({ factorId })}>Unenroll</button>
+      <input
+        type="text"
+        value={verifyCode}
+        onChange={(e) => setFactorId(e.target.value.trim())}
+      />
+      <button onClick={() => supabase.auth.mfa.unenroll({ factorId })}>
+        Unenroll
+      </button>
     </>
-  )
+  );
 }
 ```
 

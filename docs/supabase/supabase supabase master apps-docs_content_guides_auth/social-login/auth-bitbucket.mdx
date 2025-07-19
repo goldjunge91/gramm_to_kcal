@@ -1,7 +1,7 @@
 ---
-id: 'auth-bitbucket'
-title: 'Login with Bitbucket'
-description: 'Add Bitbucket OAuth to your Supabase project'
+id: "auth-bitbucket"
+title: "Login with Bitbucket"
+description: "Add Bitbucket OAuth to your Supabase project"
 ---
 
 To enable Bitbucket Auth for your project, you need to set up a Bitbucket OAuth application and add the application credentials to your Supabase Dashboard.
@@ -60,14 +60,17 @@ Setting up Bitbucket logins for your application consists of 3 parts:
 When your user signs in, call [`signInWithOAuth()`](/docs/reference/javascript/auth-signinwithoauth) with `bitbucket` as the `provider`:
 
 ```js
-import { createClient } from '@supabase/supabase-js'
-const supabase = createClient('https://your-project-id.supabase.co', 'your-anon-key')
+import { createClient } from "@supabase/supabase-js";
+const supabase = createClient(
+  "https://your-project-id.supabase.co",
+  "your-anon-key",
+);
 
 // ---cut---
 async function signInWithBitbucket() {
   const { data, error } = await supabase.auth.signInWithOAuth({
-    provider: 'bitbucket',
-  })
+    provider: "bitbucket",
+  });
 }
 ```
 
@@ -115,12 +118,15 @@ suspend fun signInWithBitbucket() {
 When your user signs out, call [signOut()](/docs/reference/javascript/auth-signout) to remove them from the browser session and any objects from localStorage:
 
 ```js
-import { createClient } from '@supabase/supabase-js'
-const supabase = createClient('https://your-project-id.supabase.co', 'your-anon-key')
+import { createClient } from "@supabase/supabase-js";
+const supabase = createClient(
+  "https://your-project-id.supabase.co",
+  "your-anon-key",
+);
 
 // ---cut---
 async function signOut() {
-  const { error } = await supabase.auth.signOut()
+  const { error } = await supabase.auth.signOut();
 }
 ```
 

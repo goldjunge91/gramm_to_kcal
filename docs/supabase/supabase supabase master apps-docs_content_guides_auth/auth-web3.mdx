@@ -1,7 +1,7 @@
 ---
-id: 'auth-web3'
-title: 'Sign in with Web3'
-subtitle: 'Use your Web3 wallet to authenticate users with Supabase'
+id: "auth-web3"
+title: "Sign in with Web3"
+subtitle: "Use your Web3 wallet to authenticate users with Supabase"
 ---
 
 [Enable Sign In with Web3](/dashboard/project/_/auth/providers) to allow users to sign in to your application using only their Web3 wallet.
@@ -90,9 +90,9 @@ Use the following code to authenticate a user:
 
 ```typescript
 const { data, error } = await supabase.auth.signInWithWeb3({
-  chain: 'solana',
-  statement: 'I accept the Terms of Service at https://example.com/tos',
-})
+  chain: "solana",
+  statement: "I accept the Terms of Service at https://example.com/tos",
+});
 ```
 
 Providing a `statement` is required for most Solana wallets and this message will be shown to the user on the consent dialog. It will also be added to the identity data for your users.
@@ -102,18 +102,18 @@ If you are using a non-standard Solana wallet that does not register the `window
 - To use [Brave Wallet with Solana](https://wallet-docs.brave.com/solana):
   ```typescript
   const { data, error } = await supabase.auth.signInWithWeb3({
-    chain: 'solana',
-    statement: 'I accept the Terms of Service at https://example.com/tos',
+    chain: "solana",
+    statement: "I accept the Terms of Service at https://example.com/tos",
     wallet: window.braveSolana,
-  })
+  });
   ```
 - To use [Phantom with Solana](https://docs.phantom.com/solana/detecting-the-provider):
   ```typescript
   const { data, error } = await supabase.auth.signInWithWeb3({
-    chain: 'solana',
-    statement: 'I accept the Terms of Service at https://example.com/tos',
+    chain: "solana",
+    statement: "I accept the Terms of Service at https://example.com/tos",
     wallet: window.phantom,
-  })
+  });
   ```
 
 </TabPanel>
@@ -128,7 +128,7 @@ Below is a short example on using a `<SignInButton />` component that uses the `
 
 ```tsx
 function SignInButton() {
-  const wallet = useWallet()
+  const wallet = useWallet();
 
   return (
     <>
@@ -136,10 +136,11 @@ function SignInButton() {
         <button
           onClick={() => {
             supabase.auth.signInWithWeb3({
-              chain: 'solana',
-              statement: 'I accept the Terms of Service at https://example.com/tos',
+              chain: "solana",
+              statement:
+                "I accept the Terms of Service at https://example.com/tos",
               wallet,
-            })
+            });
           }}
         >
           Sign in with Solana
@@ -148,12 +149,12 @@ function SignInButton() {
         <WalletMultiButton />
       )}
     </>
-  )
+  );
 }
 
 function App() {
-  const endpoint = clusterApiUrl('devnet')
-  const wallets = useMemo(() => [], [])
+  const endpoint = clusterApiUrl("devnet");
+  const wallets = useMemo(() => [], []);
 
   return (
     <ConnectionProvider endpoint={endpoint}>
@@ -163,7 +164,7 @@ function App() {
         </WalletModalProvider>
       </WalletProvider>
     </ConnectionProvider>
-  )
+  );
 }
 ```
 
