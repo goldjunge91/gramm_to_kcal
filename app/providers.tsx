@@ -62,9 +62,6 @@ interface MobileOfflineContextType {
   isOnline: boolean;
   syncInProgress: boolean;
   lastSyncAt: Date | null;
-  batteryLevel: number;
-  isCharging: boolean;
-  networkType: string;
   storageUsed: number;
   maxStorage: number;
 }
@@ -83,9 +80,6 @@ export function Providers({ children }: { children: ReactNode }): JSX.Element {
     isOnline: true,
     syncInProgress: false,
     lastSyncAt: null as Date | null,
-    batteryLevel: 1,
-    isCharging: false,
-    networkType: "4g",
     storageUsed: 0,
     maxStorage: 50 * 1024 * 1024, // 50MB
   });

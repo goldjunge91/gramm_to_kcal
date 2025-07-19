@@ -1,4 +1,5 @@
-/** eslint-disable require-await */
+/\*_ eslint-disable require-await _/
+
 # Vercel Deployment Guide
 
 ## Environment Variables Setup
@@ -6,6 +7,7 @@
 Your Vercel deployment is failing because environment variables are not configured in Vercel. Follow these steps:
 
 ### 1. Access Vercel Dashboard
+
 1. Go to [vercel.com](https://vercel.com) and sign in
 2. Navigate to your project dashboard
 3. Click on **Settings** tab
@@ -15,12 +17,12 @@ Your Vercel deployment is failing because environment variables are not configur
 
 Add these environment variables with your actual values:
 
-| Variable Name | Example Value | Required |
-|---------------|---------------|----------|
-| `NEXT_PUBLIC_SUPABASE_URL` | `https://your-project.supabase.co` | ✅ Yes |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...` | ✅ Yes |
-| `DATABASE_URL` | `postgresql://postgres:[password]@...` | ⚠️ If using direct DB |
-| `NEXT_PUBLIC_URL` | `https://your-app.vercel.app` | 🔧 Auto-detected |
+| Variable Name                   | Example Value                             | Required              |
+| ------------------------------- | ----------------------------------------- | --------------------- |
+| `NEXT_PUBLIC_SUPABASE_URL`      | `https://your-project.supabase.co`        | ✅ Yes                |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...` | ✅ Yes                |
+| `DATABASE_URL`                  | `postgresql://postgres:[password]@...`    | ⚠️ If using direct DB |
+| `NEXT_PUBLIC_URL`               | `https://your-app.vercel.app`             | 🔧 Auto-detected      |
 
 ### 3. Environment Configuration
 
@@ -38,6 +40,7 @@ Add these environment variables with your actual values:
 ### 5. Redeploy After Adding Variables
 
 After adding environment variables:
+
 1. Go to **Deployments** tab in Vercel
 2. Click **Redeploy** on the latest deployment
 3. Or push a new commit to trigger automatic deployment
@@ -45,6 +48,7 @@ After adding environment variables:
 ### 6. Verify Environment Variables
 
 The app includes environment validation that will:
+
 - Show clear error messages if variables are missing
 - Log variable status in development mode
 - Prevent runtime errors with proper validation

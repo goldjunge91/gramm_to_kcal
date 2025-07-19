@@ -44,6 +44,7 @@ data-loading={isLoading || undefined}
 className="group relative disabled:opacity-100" >
 <span className="group-data-loading:text-transparent">Click me</span>
 {isLoading && (
+
 <div className="absolute inset-0 flex items-center justify-center">
 <LoaderCircleIcon
             className="animate-spin"
@@ -96,6 +97,7 @@ const navigationLinks = [
 
 export default function Component() {
 return (
+
 <header className="border-b px-4 md:px-6">
 <div className="flex h-16 items-center justify-between gap-4">
 {/_ Left side _/}
@@ -265,6 +267,7 @@ id: "name",
 header: "Name",
 accessorKey: "name",
 cell: ({ row }) => (
+
 <div className="truncate font-medium">{row.getValue("name")}</div>
 ),
 sortUndefined: "last",
@@ -365,6 +368,7 @@ return (
       onDragEnd={handleDragEnd}
       sensors={sensors}
     >
+
 <Table>
 <TableHeader>
 {table.getHeaderGroups().map((headerGroup) => (
@@ -463,6 +467,7 @@ header.column.getIsSorted() === "asc"
 ? "descending"
 : "none"
 } >
+
 <div className="flex items-center justify-start gap-0.5">
 <Button
 size="icon"
@@ -599,48 +604,49 @@ onClick: row.getToggleExpandedHandler(),
 size: "icon",
 variant: "ghost",
 }}
->
-{row.getIsExpanded() ? (
-<ChevronUpIcon
-className="opacity-60"
-size={16}
-aria-hidden="true"
-/>
-) : (
-<ChevronDownIcon
-className="opacity-60"
-size={16}
-aria-hidden="true"
-/>
-)}
-</Button>
-) : undefined
-},
-},
-{
-id: "select",
-header: ({ table }) => (
-<Checkbox
-checked={
-table.getIsAllPageRowsSelected() ||
-(table.getIsSomePageRowsSelected() && "indeterminate")
-}
-onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-aria-label="Select all"
-/>
-),
-cell: ({ row }) => (
-<Checkbox
-checked={row.getIsSelected()}
-onCheckedChange={(value) => row.toggleSelected(!!value)}
-aria-label="Select row"
-/>
-),
-},
-{
-header: "Name",
-accessorKey: "name",
-cell: ({ row }) => (
+
+> {row.getIsExpanded() ? (
+> <ChevronUpIcon
+> className="opacity-60"
+> size={16}
+> aria-hidden="true"
+> />
+> ) : (
+> <ChevronDownIcon
+> className="opacity-60"
+> size={16}
+> aria-hidden="true"
+> />
+> )}
+> </Button>
+> ) : undefined
+> },
+> },
+> {
+> id: "select",
+> header: ({ table }) => (
+> <Checkbox
+> checked={
+> table.getIsAllPageRowsSelected() ||
+> (table.getIsSomePageRowsSelected() && "indeterminate")
+> }
+> onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+> aria-label="Select all"
+> />
+> ),
+> cell: ({ row }) => (
+> <Checkbox
+> checked={row.getIsSelected()}
+> onCheckedChange={(value) => row.toggleSelected(!!value)}
+> aria-label="Select row"
+> />
+> ),
+> },
+> {
+> header: "Name",
+> accessorKey: "name",
+> cell: ({ row }) => (
+
 <div className="font-medium">{row.getValue("name")}</div>
 ),
 },
@@ -709,6 +715,7 @@ getExpandedRowModel: getExpandedRowModel(),
 })
 
 return (
+
 <div>
 <Table>
 <TableHeader>

@@ -1,6 +1,13 @@
 "use client";
 
-import { Calculator, ChefHat, LogOut, Settings, User } from "lucide-react";
+import {
+  Accessibility,
+  Calculator,
+  ChefHat,
+  LogOut,
+  Settings,
+  User,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -73,7 +80,7 @@ export const Navbar = (): JSX.Element => {
                   : "text-muted-foreground hover:text-foreground hover:bg-muted"
               }`}
             >
-              <Calculator className="h-4 w-4" />
+              <Calculator className="h-8 w-8" />
               <span>Kalorienvergleich</span>
             </Link>
             <Link
@@ -84,7 +91,7 @@ export const Navbar = (): JSX.Element => {
                   : "text-muted-foreground hover:text-foreground hover:bg-muted"
               }`}
             >
-              <ChefHat className="h-4 w-4" />
+              <ChefHat className="h-8 w-8" />
               <span>Rezept-Manager</span>
             </Link>
           </div>
@@ -151,34 +158,36 @@ export const Navbar = (): JSX.Element => {
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
                     <Link href="/account" className="flex items-center">
-                      <User className="mr-2 h-4 w-4" />
+                      <User className="mr-2 h-8 w-8" />
                       <span>Profile</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <Link href="/account" className="flex items-center">
-                      <Settings className="mr-2 h-4 w-4" />
+                      <Settings className="mr-2 h-8 w-8" />
                       <span>Settings</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleSignOut}>
-                    <LogOut className="mr-2 h-4 w-4" />
+                    <LogOut className="mr-2 h-8 w-8" />
                     <span>Log out</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
               !loading && (
-                <Button variant="ghost" size="sm" asChild>
-                  <Link href="/auth/login">Login</Link>
-                </Button>
+                <div className="flex items-center space-x-2">
+                  <Button size="sm" asChild>
+                    <Link href="/auth/login">Login</Link>
+                  </Button>
+                </div>
               )
             )}
           </div>
 
           {/* User Section */}
-          <div className="flex items-center space-x-4">
+          <div className="hidden md:flex items-center space-x-4">
             <div className="flex items-center gap-2">
               <ThemeSwitcher />
               <GunterThemeButton />
@@ -217,19 +226,19 @@ export const Navbar = (): JSX.Element => {
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
                     <Link href="/account" className="flex items-center">
-                      <User className="mr-2 h-4 w-4" />
+                      <User className="mr-2 h-8 w-8" />
                       <span>Profile</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <Link href="/account" className="flex items-center">
-                      <Settings className="mr-2 h-4 w-4" />
+                      <Settings className="mr-2 h-8 w-8" />
                       <span>Settings</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleSignOut}>
-                    <LogOut className="mr-2 h-4 w-4" />
+                    <LogOut className="mr-2 h-8 w-8" />
                     <span>Log out</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -237,11 +246,11 @@ export const Navbar = (): JSX.Element => {
             ) : (
               !loading && (
                 <div className="flex items-center space-x-2">
-                  <Button variant="ghost" size="sm" asChild>
-                    <Link href="/auth/login">Login</Link>
-                  </Button>
                   <Button size="sm" asChild>
-                    <Link href="/auth/sign-up">Sign up</Link>
+                    <Link href="/auth/login" className="flex items-center">
+                      <Accessibility className="mr-1 h-8 w-8" />
+                      Login
+                    </Link>
                   </Button>
                 </div>
               )
