@@ -8,16 +8,24 @@ import { ThemeToggle } from "@/components/layout/ThemeToggle";
 export function ThemeSwitcher(props: any) {
   const { setTheme, theme } = useTheme();
   const [isLightMode, setIsLightMode] = useState(true);
+  const [mounted, setMounted] = useState(false);
+
+  // Ensure component is mounted before checking theme to prevent hydration mismatch
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Update local state when theme changes
   useEffect(() => {
+    if (!mounted) return;
+    
     if (theme === "light") {
       setIsLightMode(true);
     } else if (theme === "dark") {
       setIsLightMode(false);
     }
     // For gunter theme, we keep the current light/dark state
-  }, [theme]);
+  }, [theme, mounted]);
 
   const handleToggle = (checked: boolean) => {
     // If gunter is active, switching to light/dark should deactivate gunter
@@ -33,6 +41,18 @@ export function ThemeSwitcher(props: any) {
       setTheme(newTheme);
     }
   };
+
+  // Show consistent state during SSR/hydration
+  if (!mounted) {
+    return (
+      <ThemeToggle
+        {...props}
+        checked={true}
+        onToggle={() => {}}
+        className=""
+      />
+    );
+  }
 
   return (
     <ThemeToggle
