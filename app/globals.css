@@ -114,13 +114,17 @@
 
 .gunter {
   /* Gunter's Authentic Color Palette - Inspired by his golden costume and peachy skin */
-  --background: oklch(0.97 0.015 40); /* Soft cream with peachy undertone - like Gunter's skin */
+  --background: oklch(
+    0.97 0.015 40
+  ); /* Soft cream with peachy undertone - like Gunter's skin */
   --foreground: oklch(0.25 0.02 20); /* Deep warm brown - readable text */
   --card: oklch(0.98 0.02 45); /* Slightly warmer cream for cards */
   --card-foreground: oklch(0.25 0.02 20); /* Deep brown text on cards */
   --popover: oklch(0.98 0.02 45); /* Matching card color */
   --popover-foreground: oklch(0.25 0.02 20); /* Consistent text */
-  --primary: oklch(0.85 0.12 85); /* Rich golden yellow - Gunter's sparkly costume */
+  --primary: oklch(
+    0.85 0.12 85
+  ); /* Rich golden yellow - Gunter's sparkly costume */
   --primary-foreground: oklch(0.2 0.02 20); /* Dark text on gold */
   --secondary: oklch(0.92 0.06 25); /* Warm peachy pink - Gunter's skin tone */
   --secondary-foreground: oklch(0.25 0.02 20); /* Dark text on peach */

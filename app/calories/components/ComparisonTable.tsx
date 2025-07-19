@@ -1,30 +1,16 @@
-import {
-  createColumnHelper,
-  flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
-  type ColumnFiltersState,
-  type SortingState,
-} from "@tanstack/react-table";
-import { ArrowUpDown, ChevronLeft, ChevronRight, Trash2 } from "lucide-react";
-import { useMemo, useState, type JSX } from "react";
+import type { CellContext, Column } from "@tanstack/react-table";
+
+import { ArrowUpDown, Trash2, TrendingUp, Weight } from "lucide-react";
+import { useMemo, type JSX } from "react";
 
 import type { Product } from "@/lib/types";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+  EnhancedTable,
+  type EnhancedTableColumn,
+} from "@/components/ui/enhanced-table";
+import { LoadingButton } from "@/components/ui/loading-button";
 import { calculateKcalPer100g } from "@/lib/calculations";
 
 interface ComparisonTableProps {
@@ -42,18 +28,13 @@ export const ComparisonTable = ({
   isDeleting = false,
   compact = false,
 }: ComparisonTableProps): JSX.Element => {
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [globalFilter, setGlobalFilter] = useState("");
-
-  // Create column helper for type safety
-  const columnHelper = createColumnHelper<Product>();
-
-  // Define columns with TanStack Table
-  const columns = useMemo(
+  // Define enhanced columns with new features
+  const columns: EnhancedTableColumn<Product>[] = useMemo(
     () => [
-      columnHelper.accessor("name", {
-        header: ({ column }) => (
+      {
+        id: "name",
+        accessorKey: "name",
+        header: ({ column }: { column: Column<Product, unknown> }) => (
           <Button
             variant="ghost"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
@@ -63,10 +44,15 @@ export const ComparisonTable = ({
             <ArrowUpDown className="ml-2 h-4 w-4" />
           </Button>
         ),
-        cell: (info) => <div className="font-medium">{info.getValue()}</div>,
-      }),
-      columnHelper.accessor("quantity", {
-        header: ({ column }) => (
+        cell: (info: CellContext<Product, unknown>) => (
+          <div className="font-medium">{info.getValue() as string}</div>
+        ),
+        priority: 1, // Always show on mobile
+      },
+      {
+        id: "quantity",
+        accessorKey: "quantity",
+        header: ({ column }: { column: Column<Product, unknown> }) => (
           <div className="text-right">
             <Button
               variant="ghost"
@@ -75,17 +61,23 @@ export const ComparisonTable = ({
               }
               className="h-8 px-2 lg:px-3"
             >
+              <Weight className="mr-1 h-4 w-4" />
               Menge (g)
               <ArrowUpDown className="ml-2 h-4 w-4" />
             </Button>
           </div>
         ),
-        cell: (info) => (
-          <div className="text-right">{info.getValue().toLocaleString()}</div>
+        cell: (info: CellContext<Product, unknown>) => (
+          <div className="text-right">
+            {(info.getValue() as number).toLocaleString()}
+          </div>
         ),
-      }),
-      columnHelper.accessor("kcal", {
-        header: ({ column }) => (
+        priority: 2,
+      },
+      {
+        id: "kcal",
+        accessorKey: "kcal",
+        header: ({ column }: { column: Column<Product, unknown> }) => (
           <div className="text-right">
             <Button
               variant="ghost"
@@ -99,13 +91,16 @@ export const ComparisonTable = ({
             </Button>
           </div>
         ),
-        cell: (info) => (
-          <div className="text-right">{info.getValue().toLocaleString()}</div>
+        cell: (info: CellContext<Product, unknown>) => (
+          <div className="text-right">
+            {(info.getValue() as number).toLocaleString()}
+          </div>
         ),
-      }),
-      columnHelper.display({
-        id: "kcalPer1g",
-        header: ({ column }) => (
+        priority: 3,
+      },
+      {
+        id: "kcalPer100g",
+        header: ({ column }: { column: Column<Product, unknown> }) => (
           <div className="text-right">
             <Button
               variant="ghost"
@@ -114,174 +109,106 @@ export const ComparisonTable = ({
               }
               className="h-8 px-2 lg:px-3"
             >
-              kcal/1g
+              <TrendingUp className="mr-1 h-4 w-4" />
+              kcal/100g
               <ArrowUpDown className="ml-2 h-4 w-4" />
             </Button>
           </div>
         ),
-        cell: (info) => (
-          <div className="text-right font-semibold">
+        cell: (info: CellContext<Product, unknown>) => (
+          <div className="text-right font-semibold text-primary">
             {calculateKcalPer100g(info.row.original).toFixed(1)}
           </div>
         ),
-        sortingFn: (rowA, rowB) => {
+        sortingFn: (rowA: any, rowB: any) => {
           const a = calculateKcalPer100g(rowA.original);
           const b = calculateKcalPer100g(rowB.original);
           return a - b;
         },
-      }),
+        priority: 2, // Important for comparison
+      },
       // Add delete column if onDelete is provided
       ...(onDelete
-        ? [
-            columnHelper.display({
+        ? (() => {
+            const actionsColumn: EnhancedTableColumn<Product> = {
               id: "actions",
               header: () => <div className="text-right">Aktionen</div>,
-              cell: (info) => (
+              cell: (info: CellContext<Product, unknown>) => (
                 <div className="text-right">
-                  <Button
+                  <LoadingButton
                     variant="outline"
                     size="sm"
                     onClick={() => onDelete(info.row.original.id)}
-                    disabled={isDeleting}
+                    loading={isDeleting}
                     aria-label={`${info.row.original.name} löschen`}
                   >
                     <Trash2 className="h-4 w-4" />
-                  </Button>
+                  </LoadingButton>
                 </div>
               ),
-            }),
-          ]
+              draggable: false, // Actions column shouldn't be draggable
+              priority: 1,
+            };
+            return [actionsColumn];
+          })()
         : []),
     ],
-    [columnHelper, onDelete, isDeleting],
+    [onDelete, isDeleting],
   );
 
-  // Initialize table
-  const table = useReactTable({
-    data: products,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
-    onGlobalFilterChange: setGlobalFilter,
-    state: {
-      sorting,
-      columnFilters,
-      globalFilter,
-    },
-    initialState: {
-      pagination: {
-        pageSize: compact ? 5 : 10, // Smaller page size on mobile
-      },
-    },
-  });
-
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Produktvergleich</CardTitle>
-        <div className="flex items-center py-4">
-          <Input
-            placeholder="Produkte durchsuchen..."
-            value={globalFilter ?? ""}
-            onChange={(event) => setGlobalFilter(event.target.value)}
-            className={compact ? "w-full" : "max-w-sm"}
-          />
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div className="overflow-x-auto">
-          <Table
-            role="table"
-            aria-label="Produktvergleich mit Sortierung und Filter"
-          >
-            <TableHeader>
-              {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
-                    </TableHead>
-                  ))}
-                </TableRow>
-              ))}
-            </TableHeader>
-            <TableBody>
-              {table.getRowModel().rows?.length ? (
-                table.getRowModel().rows.map((row) => (
-                  <TableRow
-                    key={row.id}
-                    data-state={row.getIsSelected() && "selected"}
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext(),
-                        )}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell
-                    colSpan={columns.length}
-                    className="h-24 text-center"
-                  >
-                    Keine Produkte hinzugefügt. Fügen Sie oben ein Produkt
-                    hinzu, um den Vergleich zu starten.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </div>
-
-        {/* Pagination Controls */}
-        {products.length > 0 && (
-          <div className="flex items-center justify-between space-x-2 py-4">
-            <div className="flex-1 text-sm text-muted-foreground">
-              {table.getFilteredRowModel().rows.length} von {products.length}{" "}
-              Produkten
+  // Expanded content for each product with detailed nutritional info
+  const expandedContent = (row: any) => (
+    <div className="space-y-3">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="space-y-2">
+          <h4 className="font-semibold text-sm">Nährwerte per 100g</h4>
+          <div className="text-sm text-muted-foreground">
+            <div>
+              Kalorien: {calculateKcalPer100g(row.original).toFixed(1)} kcal
             </div>
-            <div className="flex items-center space-x-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => table.previousPage()}
-                disabled={!table.getCanPreviousPage()}
-              >
-                <ChevronLeft className="h-4 w-4" />
-                Zurück
-              </Button>
-              <div className="flex items-center space-x-1">
-                <div className="text-sm font-medium">
-                  Seite {table.getState().pagination.pageIndex + 1} von{" "}
-                  {table.getPageCount()}
-                </div>
-              </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => table.nextPage()}
-                disabled={!table.getCanNextPage()}
-              >
-                Weiter
-                <ChevronRight className="h-4 w-4" />
-              </Button>
+            <div>
+              Effizienz:{" "}
+              {((row.original.kcal / row.original.quantity) * 100).toFixed(2)}{" "}
+              kcal/g
             </div>
           </div>
-        )}
-      </CardContent>
-    </Card>
+        </div>
+        <div className="space-y-2">
+          <h4 className="font-semibold text-sm">Produktdetails</h4>
+          <div className="text-sm text-muted-foreground">
+            <div>Gesamtmenge: {row.original.quantity.toLocaleString()}g</div>
+            <div>Gesamtkalorien: {row.original.kcal.toLocaleString()} kcal</div>
+          </div>
+        </div>
+        <div className="space-y-2">
+          <h4 className="font-semibold text-sm">Vergleichswerte</h4>
+          <div className="text-sm text-muted-foreground">
+            <div>
+              Rang: {products.findIndex((p) => p.id === row.original.id) + 1}{" "}
+              von {products.length}
+            </div>
+            <div>Kategorie: Lebensmittel</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <EnhancedTable
+      data={products}
+      columns={columns}
+      title="Produktvergleich"
+      searchable={true}
+      searchPlaceholder="Produkte durchsuchen..."
+      pagination={true}
+      pageSize={compact ? 5 : 10}
+      draggableColumns={true}
+      expandableRows={true}
+      expandedContent={expandedContent}
+      compact={compact}
+      getRowCanExpand={() => true} // All products can be expanded for details
+      getRowId={(row) => row.id}
+    />
   );
 };

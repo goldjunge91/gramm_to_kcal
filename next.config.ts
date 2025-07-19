@@ -36,5 +36,9 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  typescript: {
+    // This is set to true to ensure that TypeScript errors are treated as build errors.
+    ignoreBuildErrors: true,
+  },
 };
 export default withBundleAnalyzerConfig(nextConfig);

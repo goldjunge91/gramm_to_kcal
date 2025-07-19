@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -10,6 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { LoadingButton } from "@/components/ui/loading-button";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 
@@ -93,21 +93,26 @@ export function LoginForm({
               className="border rounded px-3 py-2"
               disabled={isLoading}
             />
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Einloggen..." : "Mit E-Mail/Passwort einloggen"}
-            </Button>
+            <LoadingButton
+              type="submit"
+              className="w-full"
+              loading={isLoading}
+              loadingText="Einloggen..."
+            >
+              Mit E-Mail/Passwort einloggen
+            </LoadingButton>
           </form>
           <div className="mt-6 flex flex-col gap-2">
             <span className="text-center text-xs text-muted-foreground">
               Oder mit Social Login:
             </span>
             <div className="flex gap-2 justify-center">
-              <Button
+              <LoadingButton
                 type="button"
                 variant="outline"
                 className="flex items-center gap-2"
                 onClick={() => handleSocialLogin("github")}
-                disabled={isLoading}
+                loading={isLoading}
               >
                 <svg
                   width="20"
@@ -119,13 +124,13 @@ export function LoginForm({
                   <path d="M10 .3a10 10 0 0 0-3.2 19.5c.5.1.7-.2.7-.5v-2c-2.8.6-3.4-1.2-3.4-1.2-.4-1-1-1.3-1-1.3-.8-.6.1-.6.1-.6.9.1 1.4.9 1.4.9.8 1.4 2.1 1 2.6.8.1-.6.3-1 .6-1.2-2.2-.2-4.5-1.1-4.5-5A4 4 0 0 1 4.7 7.2c-.1-.3-.4-1.2.1-2.5 0 0 .8-.3 2.6 1a9 9 0 0 1 4.7 0c1.8-1.3 2.6-1 2.6-1 .5 1.3.2 2.2.1 2.5a4 4 0 0 1 1.1 2.8c0 3.9-2.3 4.8-4.5 5 .3.3.6.8.6 1.6v2.4c0 .3.2.6.7.5A10 10 0 0 0 10 .3" />
                 </svg>
                 Github
-              </Button>
-              <Button
+              </LoadingButton>
+              <LoadingButton
                 type="button"
                 variant="outline"
                 className="flex items-center gap-2"
                 onClick={() => handleSocialLogin("facebook")}
-                disabled={isLoading}
+                loading={isLoading}
               >
                 <svg
                   width="20"
@@ -137,13 +142,13 @@ export function LoginForm({
                   <path d="M29 0H3C1.3 0 0 1.3 0 3v26c0 1.7 1.3 3 3 3h13V20h-4v-5h4v-3.7C16 8.6 18.4 7 21.1 7c1.2 0 2.5.2 2.5.2v4h-1.4c-1.4 0-1.8.9-1.8 1.8V15h5l-1 5h-4v12h7c1.7 0 3-1.3 3-3V3c0-1.7-1.3-3-3-3z" />
                 </svg>
                 Facebook
-              </Button>
-              <Button
+              </LoadingButton>
+              <LoadingButton
                 type="button"
                 variant="outline"
                 className="flex items-center gap-2"
                 onClick={() => handleSocialLogin("google")}
-                disabled={isLoading}
+                loading={isLoading}
               >
                 <svg
                   width="20"
@@ -158,7 +163,7 @@ export function LoginForm({
                   <path d="M10 4c1.5 0 2.8.5 3.8 1.4l2.8-2.8A10 10 0 0 0 10 0C6.1 0 2.7 2.4 1.2 5.7l3.2 2.6C5.2 5.7 7.4 4 10 4z" />
                 </svg>
                 Google
-              </Button>
+              </LoadingButton>
             </div>
           </div>
         </CardContent>

@@ -1,18 +1,26 @@
-"use client"
+"use client";
 
-import { LoaderCircleIcon } from "lucide-react"
-import { forwardRef } from "react"
+import type { VariantProps } from "class-variance-authority";
 
-import { Button, type ButtonProps } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
+import { LoaderCircleIcon } from "lucide-react";
+import { forwardRef } from "react";
 
-export interface LoadingButtonProps extends ButtonProps {
-  loading?: boolean
-  loadingText?: string
+import { Button, type buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+
+export interface LoadingButtonProps
+  extends React.ComponentProps<"button">,
+    VariantProps<typeof buttonVariants> {
+  loading?: boolean;
+  loadingText?: string;
+  asChild?: boolean;
 }
 
 const LoadingButton = forwardRef<HTMLButtonElement, LoadingButtonProps>(
-  ({ className, children, loading = false, loadingText, disabled, ...props }, ref) => {
+  (
+    { className, children, loading = false, loadingText, disabled, ...props },
+    ref,
+  ) => {
     return (
       <Button
         ref={ref}
@@ -34,10 +42,10 @@ const LoadingButton = forwardRef<HTMLButtonElement, LoadingButtonProps>(
           </div>
         )}
       </Button>
-    )
-  }
-)
+    );
+  },
+);
 
-LoadingButton.displayName = "LoadingButton"
+LoadingButton.displayName = "LoadingButton";
 
-export { LoadingButton }
+export { LoadingButton };

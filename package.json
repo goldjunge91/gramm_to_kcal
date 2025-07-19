@@ -10,6 +10,7 @@
     "test": "vitest run",
     "lint": "eslint",
     "lint:fix": "eslint --fix",
+    "typecheck": "tsc --noEmit",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio",
