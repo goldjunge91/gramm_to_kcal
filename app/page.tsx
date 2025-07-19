@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/card";
 
 export default function Home() {
+  // Force redeploy to pick up environment variables
   return (
     <div className="container mx-auto p-6">
       <div className="text-center space-y-4 mb-8">
