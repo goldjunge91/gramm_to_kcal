@@ -6,6 +6,8 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState, type JSX } from "react";
 
 import { useAuth } from "@/app/providers";
+import { ThemeSwitcher } from "@/components/layout/ThemeSwitcher";
+/** Navigation bar component for switching between app pages */
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,9 +19,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import { ThemeToggle } from "./ThemeToggle";
-
-/** Navigation bar component for switching between app pages */
 export const Navbar = (): JSX.Element => {
   const pathname = usePathname();
   const router = useRouter();
@@ -106,7 +105,7 @@ export const Navbar = (): JSX.Element => {
             >
               <ChefHat className="h-5 w-5" />
             </Link>
-            <ThemeToggle />
+            <ThemeSwitcher />
 
             {user ? (
               <DropdownMenu>
@@ -169,7 +168,7 @@ export const Navbar = (): JSX.Element => {
 
           {/* User Section */}
           <div className="flex items-center space-x-4">
-            <ThemeToggle />
+            <ThemeSwitcher />
 
             {user ? (
               <DropdownMenu>
