@@ -17,53 +17,18 @@ interface SyncQueueItem {
 export class MobileSyncManager {
   private isOnline = true;
   private syncInProgress = false;
-  private batteryLevel = 1;
-  private isCharging = false;
-  private networkType: "wifi" | "4g" | "3g" | "slow-2g" = "4g";
   private syncTimeout: NodeJS.Timeout | null = null;
 
   constructor() {
     if (typeof window !== "undefined") {
-      this.initMobileDetection().catch(console.error);
+      this.initMobileDetection();
       this.setupEventListeners();
     }
   }
 
-  private async initMobileDetection(): Promise<void> {
+  private initMobileDetection(): void {
     // Network detection
     this.isOnline = navigator.onLine;
-
-    // Battery API (mobile-specific)
-    if ("getBattery" in navigator) {
-      try {
-        const battery = await (navigator as any).getBattery();
-        this.batteryLevel = battery.level;
-        this.isCharging = battery.charging;
-
-        battery.addEventListener("levelchange", () => {
-          this.batteryLevel = battery.level;
-          this.adjustSyncStrategy();
-        });
-
-        battery.addEventListener("chargingchange", () => {
-          this.isCharging = battery.charging;
-          this.adjustSyncStrategy();
-        });
-      } catch {
-        console.log("Battery API not available");
-      }
-    }
-
-    // Network type detection (mobile-specific)
-    if ("connection" in navigator) {
-      const connection = (navigator as any).connection;
-      this.networkType = connection.effectiveType || "4g";
-
-      connection.addEventListener("change", () => {
-        this.networkType = connection.effectiveType || "4g";
-        this.adjustSyncStrategy();
-      });
-    }
   }
 
   private setupEventListeners(): void {
@@ -99,45 +64,13 @@ export class MobileSyncManager {
     });
   }
 
-  private adjustSyncStrategy(): void {
-    if (!this.isOnline) return;
-
-    // Conservative sync on low battery
-    if (this.batteryLevel < 0.2 && !this.isCharging) {
-      this.pauseSync();
-      toast.info("Sync paused - low battery", { duration: 2000 });
-      return;
-    }
-
-    // Adjust sync frequency based on network type
-    const syncInterval = this.getSyncInterval();
-    this.scheduleMobileSync(syncInterval);
-  }
-
   private getSyncInterval(): number {
-    // Mobile-optimized sync intervals
-    switch (this.networkType) {
-      case "wifi":
-        return 30000; // 30 seconds on WiFi
-      case "4g":
-        return 60000; // 1 minute on 4G
-      case "3g":
-        return 120000; // 2 minutes on 3G
-      case "slow-2g":
-        return 300000; // 5 minutes on slow connection
-      default:
-        return 60000;
-    }
+    // Simple fixed sync interval
+    return 60000; // 1 minute
   }
 
   async startMobileSync(): Promise<void> {
     if (!this.isOnline || this.syncInProgress) return;
-
-    // Check battery and network conditions
-    if (this.batteryLevel < 0.15 && !this.isCharging) {
-      console.log("Sync skipped - critical battery level");
-      return;
-    }
 
     this.syncInProgress = true;
 
@@ -159,12 +92,10 @@ export class MobileSyncManager {
     const queue = await mobileOfflineStorage.getSyncQueue();
     const supabase = createClient();
 
-    // Process high priority items first
-    const highPriorityItems = queue
-      .filter((item) => item.priority === "high")
-      .slice(0, 10);
+    // Process all items up to a reasonable limit
+    const itemsToSync = queue.slice(0, 15);
 
-    for (const item of highPriorityItems) {
+    for (const item of itemsToSync) {
       try {
         await this.syncItem(supabase, item);
         await mobileOfflineStorage.removeSyncQueueItem(item.id);
@@ -174,22 +105,6 @@ export class MobileSyncManager {
 
         if (item.retryCount > 3) {
           await mobileOfflineStorage.removeSyncQueueItem(item.id);
-        }
-      }
-    }
-
-    // Process normal priority items if on WiFi or good connection
-    if (this.networkType === "wifi" || this.networkType === "4g") {
-      const normalItems = queue
-        .filter((item) => item.priority === "normal")
-        .slice(0, 5);
-
-      for (const item of normalItems) {
-        try {
-          await this.syncItem(supabase, item);
-          await mobileOfflineStorage.removeSyncQueueItem(item.id);
-        } catch (error) {
-          console.error(`Failed to sync ${item.table}:`, error);
         }
       }
     }
@@ -303,12 +218,12 @@ export class MobileSyncManager {
     }
   }
 
-  private scheduleMobileSync(interval: number): void {
+  private scheduleMobileSync(): void {
     if (this.syncTimeout) clearTimeout(this.syncTimeout);
 
     this.syncTimeout = setTimeout(() => {
       this.startMobileSync().catch(console.error);
-    }, interval);
+    }, this.getSyncInterval());
   }
 
   private scheduleRetry(): void {
@@ -337,16 +252,10 @@ export class MobileSyncManager {
   // Mobile-specific status methods
   getMobileStatus(): {
     isOnline: boolean;
-    batteryLevel: number;
-    isCharging: boolean;
-    networkType: string;
     syncInProgress: boolean;
   } {
     return {
       isOnline: this.isOnline,
-      batteryLevel: this.batteryLevel,
-      isCharging: this.isCharging,
-      networkType: this.networkType,
       syncInProgress: this.syncInProgress,
     };
   }

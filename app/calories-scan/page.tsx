@@ -25,7 +25,7 @@ import {
 import { ComparisonTable } from "./components/ComparisonTable";
 import { ProductForm } from "./components/ProductForm";
 
-export default function CaloriesPage(): JSX.Element {
+export default function CaloriesScanPage(): JSX.Element {
   const { isOnline, syncInProgress } = useMobileOffline();
   const isMobile = useIsMobile();
   const [showForm, setShowForm] = useState(false);
@@ -67,24 +67,17 @@ export default function CaloriesPage(): JSX.Element {
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="text-lg md:text-xl">
-                Kalorienvergleich
+                <div className="flex items-center gap-2">
+                  <Scan className="h-5 w-5" />
+                  Barcode Scanner (Beta)
+                </div>
               </CardTitle>
               <CardDescription className="text-sm">
-                Vergleiche Produkte nach ihrer Kaloriendichte
+                Scanne Barcodes für automatische Produktdaten
                 {!isAuthenticated && " (Temporäre Sitzung)"}
                 {isAuthenticated && !isOnline && " (Offline-Modus)"}
               </CardDescription>
             </div>
-
-            {/* Beta Link to Barcode Scanner */}
-            {!isMobile && (
-              <Button variant="outline" size="sm" asChild>
-                <Link href="/calories-scan" className="flex items-center gap-2">
-                  <Scan className="h-4 w-4" />
-                  Barcode Scanner (Beta)
-                </Link>
-              </Button>
-            )}
 
             {/* Mobile: Floating Add Button */}
             {isMobile && (
@@ -97,6 +90,13 @@ export default function CaloriesPage(): JSX.Element {
               </Button>
             )}
           </div>
+
+          {/* Link back to original calories page */}
+          <div className="pt-2">
+            <Button variant="outline" size="sm" asChild>
+              <Link href="/calories">← Zurück zur manuellen Eingabe</Link>
+            </Button>
+          </div>
         </CardHeader>
 
         <CardContent className="space-y-4">
@@ -107,6 +107,7 @@ export default function CaloriesPage(): JSX.Element {
                 onSubmit={handleAddProduct}
                 isLoading={isCreating}
                 compact={isMobile} // Mobile-optimized form
+                enableBarcode={true} // Enable barcode scanning
               />
             </div>
           )}
@@ -158,21 +159,6 @@ export default function CaloriesPage(): JSX.Element {
                   ? " Synced"
                   : " Cached offline"}
               {isAuthenticated && syncInProgress && " • Syncing..."}
-            </div>
-          )}
-
-          {/* Mobile: Beta Link to Barcode Scanner */}
-          {isMobile && (
-            <div className="text-center pt-4">
-              <Button variant="outline" size="sm" asChild className="w-full">
-                <Link
-                  href="/calories-scan"
-                  className="flex items-center justify-center gap-2"
-                >
-                  <Scan className="h-4 w-4" />
-                  Barcode Scanner (Beta) ausprobieren
-                </Link>
-              </Button>
             </div>
           )}
         </CardContent>

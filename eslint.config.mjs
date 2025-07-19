@@ -13,8 +13,10 @@ export default sxzz(
     ignores: [
       "**/migrations/*",
       "**/fixtures",
+      "**/tests/*",
       "**/__tests__/*",
       "**/__mocks__/*",
+      "**/scripts/*",
       "**/db/migrations/*",
       "**/ui/*",
       "**/supabase/*",

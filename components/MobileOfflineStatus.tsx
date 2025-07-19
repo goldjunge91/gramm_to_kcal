@@ -2,18 +2,7 @@
 
 import type { JSX } from "react";
 
-import {
-  Battery,
-  BatteryLow,
-  RefreshCw,
-  Signal,
-  SignalHigh,
-  SignalLow,
-  SignalMedium,
-  Smartphone,
-  Wifi,
-  WifiOff,
-} from "lucide-react";
+import { RefreshCw, Smartphone, Wifi, WifiOff } from "lucide-react";
 
 import { useMobileOffline } from "@/app/providers";
 import { Badge } from "@/components/ui/badge";
@@ -22,40 +11,10 @@ import { useIsMobile } from "@/hooks/use-mobile";
 
 export function MobileOfflineStatus(): JSX.Element {
   const isMobile = useIsMobile();
-  const {
-    isOnline,
-    syncInProgress,
-    batteryLevel,
-    isCharging,
-    networkType,
-    storageUsed,
-    maxStorage,
-    lastSyncAt,
-  } = useMobileOffline();
+  const { isOnline, syncInProgress, storageUsed, maxStorage, lastSyncAt } =
+    useMobileOffline();
 
   if (!isMobile) return <></>;
-
-  const getNetworkIcon = (): JSX.Element => {
-    switch (networkType) {
-      case "wifi":
-        return <Wifi className="h-3 w-3" />;
-      case "4g":
-        return <SignalHigh className="h-3 w-3" />;
-      case "3g":
-        return <SignalMedium className="h-3 w-3" />;
-      case "slow-2g":
-        return <SignalLow className="h-3 w-3" />;
-      default:
-        return <Signal className="h-3 w-3" />;
-    }
-  };
-
-  const getBatteryIcon = (): JSX.Element => {
-    if (batteryLevel < 0.2) {
-      return <BatteryLow className="h-3 w-3 text-red-500" />;
-    }
-    return <Battery className="h-3 w-3" />;
-  };
 
   const formatStorageUsed = (): string => {
     const usedMB = (storageUsed / (1024 * 1024)).toFixed(1);
@@ -108,22 +67,6 @@ export function MobileOfflineStatus(): JSX.Element {
             </Badge>
           </div>
 
-          {/* Network Type */}
-          <div className="flex items-center gap-1">
-            {getNetworkIcon()}
-            <span className="text-muted-foreground">
-              {networkType.toUpperCase()}
-            </span>
-          </div>
-
-          {/* Battery Status */}
-          <div className="flex items-center gap-1">
-            {getBatteryIcon()}
-            <span className="text-muted-foreground">
-              {Math.round(batteryLevel * 100)}%{isCharging && " ⚡"}
-            </span>
-          </div>
-
           {/* Storage Usage */}
           <div className="flex items-center gap-1">
             <span className="text-muted-foreground">
@@ -146,13 +89,6 @@ export function MobileOfflineStatus(): JSX.Element {
             )}
           </div>
         </div>
-
-        {/* Low battery warning */}
-        {batteryLevel < 0.2 && !isCharging && (
-          <div className="mt-2 p-2 bg-yellow-50 dark:bg-yellow-900/20 rounded text-xs text-yellow-800 dark:text-yellow-200">
-            ⚠️ Low battery - sync paused to save power
-          </div>
-        )}
       </CardContent>
     </Card>
   );

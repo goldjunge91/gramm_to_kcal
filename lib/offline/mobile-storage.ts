@@ -53,7 +53,6 @@ interface MobileOfflineDB extends DBSchema {
       lastSync: number;
       storageUsed: number;
       maxStorage: number;
-      networkType: "wifi" | "4g" | "3g" | "slow-2g";
     };
   };
 }
@@ -95,19 +94,7 @@ class MobileOfflineStorage {
       lastSync: 0,
       storageUsed: 0,
       maxStorage: this.MAX_STORAGE_MB * 1024 * 1024,
-      networkType: this.detectNetworkType(),
     });
-  }
-
-  private detectNetworkType(): "wifi" | "4g" | "3g" | "slow-2g" {
-    if (typeof navigator !== "undefined" && "connection" in navigator) {
-      const connection = (navigator as any).connection;
-      if (connection) {
-        const effectiveType = connection.effectiveType;
-        return effectiveType || "4g";
-      }
-    }
-    return "4g";
   }
 
   async getProducts(userId: string, limit = 50): Promise<Product[]> {
