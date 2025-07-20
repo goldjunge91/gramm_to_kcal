@@ -10,7 +10,7 @@ import {
 } from "@/lib/rate-limit";
 import { getRedisHealth } from "@/lib/redis";
 import { createClient } from "@/lib/supabase/server";
-import { getAuthRateLimitHealth } from "@/utils/supabase/auth-rate-limit";
+import { getAuthRateLimitHealth } from "@/lib/utils/auth-rate-limit";
 
 export async function GET(request: NextRequest) {
   // Apply light rate limiting to health checks

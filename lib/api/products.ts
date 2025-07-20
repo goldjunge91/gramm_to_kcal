@@ -16,7 +16,7 @@ export const useProducts = (userId: string) => {
         return await mobileOfflineStorage.getProducts(userId);
       }
 
-      const { createRegularClient } = await import("@/utils/supabase/server");
+      const { createRegularClient } = await import("@/lib/supabase/server");
       const supabase = await createRegularClient();
       const { data, error } = await supabase
         .from("products")
@@ -68,7 +68,7 @@ export const useCreateProduct = () => {
         return productWithId;
       }
 
-      const { createRegularClient } = await import("@/utils/supabase/server");
+      const { createRegularClient } = await import("@/lib/supabase/server");
       const supabase = await createRegularClient();
       // Mapping für Supabase: user_id statt userId
       // Nur user_id an Supabase übergeben, nicht userId
@@ -146,7 +146,7 @@ export const useUpdateProduct = () => {
         return updatedProduct;
       }
 
-      const { createRegularClient } = await import("@/utils/supabase/server");
+      const { createRegularClient } = await import("@/lib/supabase/server");
       const supabase = await createRegularClient();
       const { data, error } = await supabase
         .from("products")
@@ -198,7 +198,7 @@ export const useDeleteProduct = () => {
         return;
       }
 
-      const { createRegularClient } = await import("@/utils/supabase/server");
+      const { createRegularClient } = await import("@/lib/supabase/server");
       const supabase = await createRegularClient();
       const { error } = await supabase
         .from("products")

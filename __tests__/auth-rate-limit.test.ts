@@ -11,7 +11,7 @@ import {
   createRateLimitedSupabaseClient,
   getAuthRateLimitHealth,
   SupabaseAuthRateLimiter,
-} from "../utils/supabase/auth-rate-limit";
+} from "../lib/utils/auth-rate-limit";
 
 // Removed local mockRedis definition and vi.mock
 // Use global.mockRedis instead
