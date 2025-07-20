@@ -5,11 +5,20 @@
 
 import { useCallback, useEffect, useState } from "react";
 
-import type { Product, RecentScan } from "@/lib/types/types";
+import type { Product } from "@/lib/types/types";
 
 import { useAuth } from "@/app/providers";
 import { env } from "@/lib/env";
 import { MAX_RECENT_SCANS } from "@/server/config";
+
+export interface RecentScan {
+  id: string;
+  productName: string;
+  barcode?: string;
+  quantity: number;
+  kcal: number;
+  scannedAt: string;
+}
 
 const RECENT_SCANS_KEY = env.RECENT_SCANS_KEY!;
 // const MAX_RECENT_SCANS = 20;

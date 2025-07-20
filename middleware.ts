@@ -1,17 +1,14 @@
 /* eslint-disable unicorn/prefer-string-raw */
 import type { NextRequest } from "next/server";
 
-import { authMiddleware } from "@/lib/middleware/auth-middleware";
 import { rateLimitMiddleware } from "@/lib/middleware/rate-limit-middleware";
+import { updateSession } from "@/lib/supabase/middleware"; // dont change this
 
 /**
  * Main middleware function with multi-layer protection
  * Handles rate limiting, authentication, authorization, and route protection
  */
 export async function middleware(request: NextRequest) {
-  // Enable debug mode in development
-  const debug = process.env.NODE_ENV === "development";
-
   // Layer 1: Rate limiting (DDoS protection)
   const rateLimitResponse = await rateLimitMiddleware(request);
   if (rateLimitResponse && rateLimitResponse.status === 429) {
@@ -19,13 +16,8 @@ export async function middleware(request: NextRequest) {
     return rateLimitResponse;
   }
 
-  // Layer 2: Authentication and authorization
-  const authResponse = await authMiddleware(request, {
-    debug,
-    // Optional: Add API key authentication
-    // apiKeyHeader: "x-api-key",
-    // allowedApiKeys: process.env.API_KEYS?.split(",") || [],
-  });
+  // Layer 2: Authentication and authorization (using original Supabase middleware)
+  const authResponse = await updateSession(request);
 
   // Merge rate limit headers with auth response if both succeeded
   if (rateLimitResponse && authResponse) {

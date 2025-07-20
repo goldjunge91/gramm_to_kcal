@@ -1,5 +1,3 @@
-/* eslint-disable regexp/no-unused-capturing-group */
-/* eslint-disable no-case-declarations */
 /**
  * Comprehensive request validation and sanitization
  * Protects against XSS, injection attacks, and malformed data
@@ -187,7 +185,7 @@ function isValidIP(ip: string): boolean {
     /^(?:(?:25[0-5]|2[0-4]\d|[01]?\d{1,2})\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d{1,2})$/;
 
   // Simple IPv6 validation (basic)
-  const ipv6Regex = /^([0-9a-f]{1,4}:){7}[0-9a-f]{1,4}$/i;
+  const ipv6Regex = /^(?:[0-9a-f]{1,4}:){7}[0-9a-f]{1,4}$/i;
 
   return ipv4Regex.test(ip) || ipv6Regex.test(ip) || ip === "unknown";
 }
@@ -263,7 +261,7 @@ export async function validateRequest<T>(
         }
         break;
 
-      case "query":
+      case "query": {
         const url = new URL(request.url);
         data = Object.fromEntries(url.searchParams.entries());
         // Konvertiere numerische Query-Parameter
@@ -272,6 +270,7 @@ export async function validateRequest<T>(
           data.limit = Number.isNaN(parsed) ? data.limit : parsed;
         }
         break;
+      }
 
       case "params":
         // For params, we'd need to pass them separately

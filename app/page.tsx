@@ -1,4 +1,4 @@
-import { Calculator, ChefHat } from "lucide-react";
+import { Calculator, ChefHat, Combine } from "lucide-react";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/card";
 
 export default function Home() {
-  // Force redeploy to pick up environment variables
   return (
     <div className="container mx-auto p-6">
       <div className="text-center space-y-4 mb-8">
@@ -48,6 +47,21 @@ export default function Home() {
           <CardContent>
             <Button asChild className="w-full">
               <Link href="/recipe">Rezepte verwalten</Link>
+            </Button>
+          </CardContent>
+        </Card>
+
+        <Card className="text-center">
+          <CardHeader>
+            <Combine className="w-12 h-12 mx-auto mb-2 text-primary" />
+            <CardTitle>Einheiten-Umrechner</CardTitle>
+            <CardDescription>
+              Konvertiere Milliliter in Gramm für über 50 Substanzen
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button asChild className="w-full">
+              <Link href="/unit-converter">Einheiten umrechnen</Link>
             </Button>
           </CardContent>
         </Card>

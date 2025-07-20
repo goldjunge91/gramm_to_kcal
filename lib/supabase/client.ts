@@ -8,8 +8,8 @@
  * import { createClient } from "@/lib/supabase/client";
  */
 import { createBrowserClient } from "@supabase/ssr";
-import { env } from "@/lib/env";
 
+import { env } from "@/lib/env";
 import { createRateLimitedSupabaseClient } from "@/lib/utils/auth-rate-limit";
 
 export function createClient() {

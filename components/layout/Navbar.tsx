@@ -7,6 +7,7 @@ import {
   LogOut,
   Settings,
   User,
+  Beaker,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -94,6 +95,17 @@ export const Navbar = (): JSX.Element => {
               <ChefHat className="h-8 w-8" />
               <span>Rezept-Manager</span>
             </Link>
+            <Link
+              href="/unit-converter"
+              className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                clientPathname === "/unit-converter"
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted"
+              }`}
+            >
+              <Beaker className="h-8 w-8" />
+              <span>Unit-Converter</span>
+            </Link>
           </div>
 
           {/* Mobile Navigation Menu */}
@@ -119,6 +131,17 @@ export const Navbar = (): JSX.Element => {
               aria-label="Rezept-Manager"
             >
               <ChefHat className="h-5 w-5" />
+            </Link>
+            <Link
+              href="/unit-converter"
+              className={`p-2 rounded-md ${
+                clientPathname === "/unit-converter"
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted"
+              }`}
+              aria-label="Unit-Converter"
+            >
+              <Beaker className="h-5 w-5" />
             </Link>
             <div className="flex items-center gap-2">
               <ThemeSwitcher />

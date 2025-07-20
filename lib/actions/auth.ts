@@ -5,8 +5,8 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 
 import { updateUserProfile, upsertUser } from "@/lib/db/users";
-import { getAuthErrorMessage } from "@/lib/utils/auth-errors";
 import { createClient } from "@/lib/supabase/server";
+import { getAuthErrorMessage } from "@/lib/utils/auth-errors";
 
 // Rate limiting store (in production, use Redis or database)
 const rateLimitStore = new Map<
@@ -145,7 +145,6 @@ export async function updateUserProfileAction(updates: {
   }
 }
 
-
 /**
  * Server action for secure password reset using Supabase
  */
@@ -280,7 +279,7 @@ export async function loginAction(formData: FormData) {
   try {
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
-      password: password,
+      password,
     });
 
     if (error) {
@@ -346,7 +345,7 @@ export async function signupAction(formData: FormData) {
   try {
     const { data, error } = await supabase.auth.signUp({
       email,
-      password: password,
+      password,
       options: {
         emailRedirectTo: `${process.env.NEXT_PUBLIC_URL || "http://localhost:3000"}/calories`,
       },

@@ -1,6 +1,6 @@
 /**
- * Developer Tools Panel for Barcode Scanner Testing
- * Provides manual testing, presets, diagnostics, and performance monitoring
+ * Entwicklertools-Panel für Barcode Scanner Tests
+ * Bietet manuelle Tests, Voreinstellungen, Diagnose und Leistungsüberwachung
  */
 
 "use client";
@@ -63,13 +63,13 @@ export function DevToolsPanel({
   // Handle manual barcode input
   const handleManualTest = useCallback(() => {
     if (!manualBarcode.trim()) {
-      toast.error("Please enter a barcode");
+      toast.error("Bitte geben Sie einen Barcode ein");
       return;
     }
 
     const validation = validateBarcode(manualBarcode.trim());
     if (!validation.isValid) {
-      toast.error(`Invalid barcode: ${validation.errors.join(", ")}`);
+      toast.error(`Ungültiger Barcode: ${validation.errors.join(", ")}`);
       return;
     }
 
@@ -81,7 +81,7 @@ export function DevToolsPanel({
   const handlePresetTest = useCallback(
     (barcode: string) => {
       onBarcodeTest(barcode);
-      toast.info("Testing preset barcode...");
+      toast.info("Teste vordefinierten Barcode...");
     },
     [onBarcodeTest],
   );
@@ -114,26 +114,28 @@ export function DevToolsPanel({
       <CardHeader className="pb-3">
         <CardTitle className="text-lg flex items-center gap-2">
           <Settings className="h-5 w-5" />
-          Developer Tools
+          Entwicklertools
         </CardTitle>
       </CardHeader>
 
       <CardContent>
         <Tabs defaultValue="testing" className="w-full">
           <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="testing">Testing</TabsTrigger>
-            <TabsTrigger value="history">History</TabsTrigger>
-            <TabsTrigger value="stats">Stats</TabsTrigger>
+            <TabsTrigger value="testing">Tests</TabsTrigger>
+            <TabsTrigger value="history">Verlauf</TabsTrigger>
+            <TabsTrigger value="stats">Statistiken</TabsTrigger>
           </TabsList>
 
           {/* Testing Tab */}
           <TabsContent value="testing" className="space-y-4">
             {/* Manual Barcode Input */}
             <div className="space-y-3">
-              <Label className="text-sm font-medium">Manual Barcode Test</Label>
+              <Label className="text-sm font-medium">
+                Manueller Barcode-Test
+              </Label>
               <div className="flex gap-2">
                 <Input
-                  placeholder="Enter barcode (e.g., 4000417025005)"
+                  placeholder="Barcode eingeben (z.B. 4000417025005)"
                   value={manualBarcode}
                   onChange={(e) => setManualBarcode(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleManualTest()}
@@ -145,7 +147,7 @@ export function DevToolsPanel({
                   size="sm"
                 >
                   <Play className="h-4 w-4 mr-1" />
-                  Test
+                  Testen
                 </Button>
               </div>
 
@@ -171,7 +173,7 @@ export function DevToolsPanel({
                               : "text-red-600"
                           }
                         >
-                          {validation.isValid ? "Valid" : validation.errors[0]}
+                          {validation.isValid ? "Gültig" : validation.errors[0]}
                         </span>
                       </div>
                     );
@@ -186,7 +188,7 @@ export function DevToolsPanel({
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <Label className="text-sm font-medium">
-                  Preset Test Barcodes
+                  Vordefinierte Test-Barcodes
                 </Label>
                 <Select
                   value={selectedCategory}
@@ -198,7 +200,7 @@ export function DevToolsPanel({
                   <SelectContent>
                     {categories.map((category) => (
                       <SelectItem key={category} value={category}>
-                        {category === "all" ? "All" : category}
+                        {category === "all" ? "Alle" : category}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -247,7 +249,7 @@ export function DevToolsPanel({
                           className="ml-2"
                         >
                           <TestTube className="h-3 w-3 mr-1" />
-                          Test
+                          Testen
                         </Button>
                       </div>
                     </Card>
@@ -260,7 +262,7 @@ export function DevToolsPanel({
           {/* History Tab */}
           <TabsContent value="history" className="space-y-4">
             <div className="flex items-center justify-between">
-              <Label className="text-sm font-medium">Scan History</Label>
+              <Label className="text-sm font-medium">Scan-Verlauf</Label>
               <div className="flex gap-2">
                 <Button
                   variant="outline"
@@ -269,7 +271,7 @@ export function DevToolsPanel({
                   disabled={diagnostics.length === 0}
                 >
                   <Download className="h-4 w-4 mr-1" />
-                  Export
+                  Exportieren
                 </Button>
                 <Button
                   variant="outline"
@@ -278,7 +280,7 @@ export function DevToolsPanel({
                   disabled={diagnostics.length === 0}
                 >
                   <Trash2 className="h-4 w-4 mr-1" />
-                  Clear
+                  Löschen
                 </Button>
               </div>
             </div>
@@ -288,7 +290,7 @@ export function DevToolsPanel({
                 {diagnostics.length === 0 ? (
                   <div className="text-center py-8 text-muted-foreground">
                     <Activity className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                    <p>No scans yet</p>
+                    <p>Noch keine Scans</p>
                   </div>
                 ) : (
                   diagnostics
@@ -305,7 +307,9 @@ export function DevToolsPanel({
                                 }
                                 className="text-xs"
                               >
-                                {scan.success ? "Success" : "Failed"}
+                                {scan.success
+                                  ? "Erfolgreich"
+                                  : "Fehlgeschlagen"}
                               </Badge>
                               <Badge variant="outline" className="text-xs">
                                 {scan.scanMode}
@@ -324,12 +328,12 @@ export function DevToolsPanel({
                                 Scan: {formatDuration(scan.scanDuration)}
                               </span>
                               <span>
-                                Lookup: {formatDuration(scan.lookupDuration)}
+                                Suche: {formatDuration(scan.lookupDuration)}
                               </span>
                               {scan.deviceInfo && (
                                 <span>
                                   {scan.deviceInfo.isMobile
-                                    ? "Mobile"
+                                    ? "Mobil"
                                     : "Desktop"}
                                 </span>
                               )}
@@ -337,7 +341,7 @@ export function DevToolsPanel({
 
                             {scan.error && (
                               <div className="text-xs text-red-600 mt-1">
-                                Error: {scan.error}
+                                Fehler: {scan.error}
                               </div>
                             )}
                           </div>
@@ -369,7 +373,7 @@ export function DevToolsPanel({
                 <CardContent className="p-4 text-center">
                   <div className="text-2xl font-bold">{stats.totalScans}</div>
                   <div className="text-xs text-muted-foreground">
-                    Total Scans
+                    Scans gesamt
                   </div>
                 </CardContent>
               </Card>
@@ -380,7 +384,7 @@ export function DevToolsPanel({
                     {successRate}%
                   </div>
                   <div className="text-xs text-muted-foreground">
-                    Success Rate
+                    Erfolgsrate
                   </div>
                 </CardContent>
               </Card>
@@ -393,7 +397,7 @@ export function DevToolsPanel({
                       : "N/A"}
                   </div>
                   <div className="text-xs text-muted-foreground">
-                    Avg Response
+                    Ø Antwortzeit
                   </div>
                 </CardContent>
               </Card>
@@ -406,7 +410,7 @@ export function DevToolsPanel({
                       : "N/A"}
                   </div>
                   <div className="text-xs text-muted-foreground">
-                    Avg Scan Time
+                    Ø Scan-Zeit
                   </div>
                 </CardContent>
               </Card>
@@ -416,7 +420,7 @@ export function DevToolsPanel({
             {stats.topBrands.length > 0 && (
               <div>
                 <Label className="text-sm font-medium mb-2 block">
-                  Top Brands
+                  Top Marken
                 </Label>
                 <div className="space-y-1">
                   {stats.topBrands.slice(0, 5).map((brand) => (
@@ -438,7 +442,7 @@ export function DevToolsPanel({
             {stats.topCategories.length > 0 && (
               <div>
                 <Label className="text-sm font-medium mb-2 block">
-                  Top Categories
+                  Top Kategorien
                 </Label>
                 <div className="space-y-1">
                   {stats.topCategories.slice(0, 5).map((category) => (
@@ -460,21 +464,21 @@ export function DevToolsPanel({
             <div>
               <Label className="text-sm font-medium mb-2 block flex items-center gap-2">
                 <BarChart3 className="h-4 w-4" />
-                Performance Breakdown
+                Leistungsaufschlüsselung
               </Label>
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
-                  <span>Successful Scans:</span>
+                  <span>Erfolgreiche Scans:</span>
                   <span className="text-green-600">
                     {stats.successfulScans}
                   </span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span>Failed Scans:</span>
+                  <span>Fehlgeschlagene Scans:</span>
                   <span className="text-red-600">{stats.failedScans}</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span>Average Response:</span>
+                  <span>Ø Antwortzeit:</span>
                   <span className="font-mono">
                     {stats.averageResponseTime
                       ? formatDuration(stats.averageResponseTime)
@@ -482,7 +486,7 @@ export function DevToolsPanel({
                   </span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span>Average Scan:</span>
+                  <span>Ø Scan-Zeit:</span>
                   <span className="font-mono">
                     {stats.averageScanTime
                       ? formatDuration(stats.averageScanTime)

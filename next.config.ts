@@ -42,6 +42,12 @@ const nextConfig: NextConfig = {
         port: "",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "images.openfoodfacts.org",
+        port: "",
+        pathname: "/**",
+      },
     ],
   },
   typescript: {

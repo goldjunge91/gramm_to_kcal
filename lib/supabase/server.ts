@@ -7,7 +7,6 @@ import { cookies } from "next/headers";
 
 import { env } from "@/lib/env";
 import { getURL } from "@/lib/get-url";
-
 import { createRateLimitedSupabaseClient } from "@/lib/utils/auth-rate-limit";
 
 export async function createClient() {

@@ -1,6 +1,6 @@
 /**
- * Comprehensive Product Detail View for Developer Testing
- * Displays complete OpenFoodFacts data with formatted views
+ * Umfassende Produktdetailansicht für Entwicklertests
+ * Zeigt vollständige OpenFoodFacts-Daten mit formatierten Ansichten an
  */
 
 "use client";
@@ -70,7 +70,7 @@ export function ProductDetailView({
         <CardContent className="flex items-center justify-center h-64">
           <div className="text-center text-muted-foreground">
             <Package className="h-12 w-12 mx-auto mb-4 opacity-50" />
-            <p>Scan a barcode to see detailed product information</p>
+            <p>Scannen Sie einen Barcode, um detaillierte Produktinformationen zu sehen</p>
           </div>
         </CardContent>
       </Card>
@@ -84,14 +84,14 @@ export function ProductDetailView({
           <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>
-              <strong>Lookup Failed:</strong> {result.error}
+              <strong>Suche fehlgeschlagen:</strong> {result.error}
             </AlertDescription>
           </Alert>
 
           {/* Show raw data even on failure if available */}
           {result.enhancedData?.openFoodFacts && (
             <div className="mt-4">
-              <Label className="text-sm font-medium">Raw API Response:</Label>
+              <Label className="text-sm font-medium">Rohe API-Antwort:</Label>
               <ScrollArea className="h-40 mt-2">
                 <pre className="text-xs bg-muted p-2 rounded">
                   {JSON.stringify(result.enhancedData.openFoodFacts, null, 2)}
@@ -109,7 +109,7 @@ export function ProductDetailView({
                 className="mt-2"
               >
                 <Copy className="h-3 w-3 mr-1" />
-                Copy Raw Data
+                Rohdaten kopieren
               </Button>
             </div>
           )}
@@ -158,33 +158,33 @@ export function ProductDetailView({
       <CardContent>
         <Tabs defaultValue="overview" className="w-full">
           <TabsList className="grid w-full grid-cols-5">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="nutrition">Nutrition</TabsTrigger>
-            <TabsTrigger value="images">Images</TabsTrigger>
-            <TabsTrigger value="raw">Raw Data</TabsTrigger>
-            <TabsTrigger value="diagnostics">Diagnostics</TabsTrigger>
+            <TabsTrigger value="overview">Übersicht</TabsTrigger>
+            <TabsTrigger value="nutrition">Nährwerte</TabsTrigger>
+            <TabsTrigger value="images">Bilder</TabsTrigger>
+            <TabsTrigger value="raw">Rohdaten</TabsTrigger>
+            <TabsTrigger value="diagnostics">Diagnose</TabsTrigger>
           </TabsList>
 
           {/* Overview Tab */}
           <TabsContent value="overview" className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label className="text-sm font-medium">Basic Information</Label>
+                <Label className="text-sm font-medium">Grundinformationen</Label>
                 <div className="space-y-2 mt-2">
                   <div className="flex justify-between text-sm">
-                    <span>Calories (100g):</span>
+                    <span>Kalorien (100g):</span>
                     <span className="font-mono">
                       {product?.kcal || "N/A"} kcal
                     </span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span>Quantity:</span>
+                    <span>Menge:</span>
                     <span className="font-mono">
                       {enhancedData?.openFoodFacts.product.quantity || "N/A"}
                     </span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span>Brands:</span>
+                    <span>Marken:</span>
                     <span className="font-mono text-right">
                       {enhancedData?.openFoodFacts.product.brands || "N/A"}
                     </span>
@@ -193,7 +193,7 @@ export function ProductDetailView({
               </div>
 
               <div>
-                <Label className="text-sm font-medium">Categories</Label>
+                <Label className="text-sm font-medium">Kategorien</Label>
                 <div className="flex flex-wrap gap-1 mt-2">
                   {enhancedData?.categories
                     .slice(0, 6)
@@ -202,7 +202,7 @@ export function ProductDetailView({
                         {category}
                       </Badge>
                     )) || (
-                    <span className="text-sm text-muted-foreground">None</span>
+                    <span className="text-sm text-muted-foreground">Keine</span>
                   )}
                 </div>
               </div>
@@ -211,7 +211,7 @@ export function ProductDetailView({
             <Separator />
 
             <div>
-              <Label className="text-sm font-medium">Allergens</Label>
+              <Label className="text-sm font-medium">Allergene</Label>
               <div className="flex flex-wrap gap-1 mt-2">
                 {enhancedData?.allergens.length ? (
                   enhancedData.allergens.map((allergen, index) => (
@@ -225,17 +225,17 @@ export function ProductDetailView({
                   ))
                 ) : (
                   <span className="text-sm text-muted-foreground">
-                    None listed
+                    Keine angegeben
                   </span>
                 )}
               </div>
             </div>
 
             <div>
-              <Label className="text-sm font-medium">Ingredients</Label>
+              <Label className="text-sm font-medium">Zutaten</Label>
               <ScrollArea className="h-20 mt-2">
                 <p className="text-sm leading-relaxed">
-                  {enhancedData?.ingredients.join(", ") || "Not available"}
+                  {enhancedData?.ingredients.join(", ") || "Nicht verfügbar"}
                 </p>
               </ScrollArea>
             </div>
@@ -246,11 +246,11 @@ export function ProductDetailView({
             <div className="grid grid-cols-2 gap-4">
               <Card>
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-sm">Energy</CardTitle>
+                  <CardTitle className="text-sm">Energie</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2">
                   <div className="flex justify-between text-sm">
-                    <span>Calories:</span>
+                    <span>Kalorien:</span>
                     <span className="font-mono">
                       {formatNutrientValue(
                         enhancedData?.openFoodFacts.product.nutriments?.[
@@ -261,7 +261,7 @@ export function ProductDetailView({
                     </span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span>Energy (kJ):</span>
+                    <span>Energie (kJ):</span>
                     <span className="font-mono">
                       {formatNutrientValue(
                         enhancedData?.openFoodFacts.product.nutriments?.[
@@ -276,11 +276,11 @@ export function ProductDetailView({
 
               <Card>
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-sm">Macronutrients</CardTitle>
+                  <CardTitle className="text-sm">Makronährstoffe</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2">
                   <div className="flex justify-between text-sm">
-                    <span>Fat:</span>
+                    <span>Fett:</span>
                     <span className="font-mono">
                       {formatNutrientValue(
                         enhancedData?.openFoodFacts.product.nutriments
@@ -289,7 +289,7 @@ export function ProductDetailView({
                     </span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span>Saturated Fat:</span>
+                    <span>Gesättigte Fettsäuren:</span>
                     <span className="font-mono">
                       {formatNutrientValue(
                         enhancedData?.openFoodFacts.product.nutriments?.[
@@ -299,7 +299,7 @@ export function ProductDetailView({
                     </span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span>Carbohydrates:</span>
+                    <span>Kohlenhydrate:</span>
                     <span className="font-mono">
                       {formatNutrientValue(
                         enhancedData?.openFoodFacts.product.nutriments
@@ -308,7 +308,7 @@ export function ProductDetailView({
                     </span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span>Sugars:</span>
+                    <span>Zucker:</span>
                     <span className="font-mono">
                       {formatNutrientValue(
                         enhancedData?.openFoodFacts.product.nutriments
@@ -317,7 +317,7 @@ export function ProductDetailView({
                     </span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span>Proteins:</span>
+                    <span>Proteine:</span>
                     <span className="font-mono">
                       {formatNutrientValue(
                         enhancedData?.openFoodFacts.product.nutriments
@@ -331,12 +331,12 @@ export function ProductDetailView({
 
             <Card>
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm">Other Nutrients</CardTitle>
+                <CardTitle className="text-sm">Weitere Nährstoffe</CardTitle>
               </CardHeader>
               <CardContent className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
-                    <span>Salt:</span>
+                    <span>Salz:</span>
                     <span className="font-mono">
                       {formatNutrientValue(
                         enhancedData?.openFoodFacts.product.nutriments
@@ -345,7 +345,7 @@ export function ProductDetailView({
                     </span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span>Sodium:</span>
+                    <span>Natrium:</span>
                     <span className="font-mono">
                       {formatNutrientValue(
                         enhancedData?.openFoodFacts.product.nutriments
@@ -356,7 +356,7 @@ export function ProductDetailView({
                 </div>
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
-                    <span>Fiber:</span>
+                    <span>Ballaststoffe:</span>
                     <span className="font-mono">
                       {formatNutrientValue(
                         enhancedData?.openFoodFacts.product.nutriments
@@ -378,7 +378,7 @@ export function ProductDetailView({
                   <CardHeader className="pb-3">
                     <CardTitle className="text-sm flex items-center gap-2">
                       <ImageIcon className="h-4 w-4" />
-                      Product Image
+                      Produktbild
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
@@ -400,7 +400,7 @@ export function ProductDetailView({
                     ) : (
                       <div className="aspect-square bg-muted rounded-lg flex items-center justify-center">
                         <span className="text-sm text-muted-foreground">
-                          Failed to load image
+                          Bild konnte nicht geladen werden
                         </span>
                       </div>
                     )}
@@ -413,7 +413,7 @@ export function ProductDetailView({
                       }
                     >
                       <ExternalLink className="h-3 w-3 mr-1" />
-                      View Full Size
+                      In Originalgröße anzeigen
                     </Button>
                   </CardContent>
                 </Card>
@@ -425,7 +425,7 @@ export function ProductDetailView({
                   <CardHeader className="pb-3">
                     <CardTitle className="text-sm flex items-center gap-2">
                       <Info className="h-4 w-4" />
-                      Nutrition Label
+                      Nährwerttabelle
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
@@ -447,7 +447,7 @@ export function ProductDetailView({
                     ) : (
                       <div className="aspect-square bg-muted rounded-lg flex items-center justify-center">
                         <span className="text-sm text-muted-foreground">
-                          Failed to load image
+                          Bild konnte nicht geladen werden
                         </span>
                       </div>
                     )}
@@ -460,7 +460,7 @@ export function ProductDetailView({
                       }
                     >
                       <ExternalLink className="h-3 w-3 mr-1" />
-                      View Full Size
+                      In Originalgröße anzeigen
                     </Button>
                   </CardContent>
                 </Card>
@@ -472,7 +472,7 @@ export function ProductDetailView({
                   <CardHeader className="pb-3">
                     <CardTitle className="text-sm flex items-center gap-2">
                       <Package className="h-4 w-4" />
-                      Ingredients
+                      Zutaten
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
@@ -494,7 +494,7 @@ export function ProductDetailView({
                     ) : (
                       <div className="aspect-square bg-muted rounded-lg flex items-center justify-center">
                         <span className="text-sm text-muted-foreground">
-                          Failed to load image
+                          Bild konnte nicht geladen werden
                         </span>
                       </div>
                     )}
@@ -507,7 +507,7 @@ export function ProductDetailView({
                       }
                     >
                       <ExternalLink className="h-3 w-3 mr-1" />
-                      View Full Size
+                      In Originalgröße anzeigen
                     </Button>
                   </CardContent>
                 </Card>
@@ -519,7 +519,7 @@ export function ProductDetailView({
               !enhancedData?.images.ingredients && (
                 <div className="text-center py-8 text-muted-foreground">
                   <ImageIcon className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                  <p>No images available for this product</p>
+                  <p>Keine Bilder für dieses Produkt verfügbar</p>
                 </div>
               )}
           </TabsContent>
@@ -528,7 +528,7 @@ export function ProductDetailView({
           <TabsContent value="raw" className="space-y-4">
             <div className="flex justify-between items-center">
               <Label className="text-sm font-medium">
-                Complete OpenFoodFacts Response
+                Vollständige OpenFoodFacts-Antwort
               </Label>
               <Button
                 variant="outline"
@@ -538,7 +538,7 @@ export function ProductDetailView({
                 }
               >
                 <Copy className="h-3 w-3 mr-1" />
-                Copy JSON
+                JSON kopieren
               </Button>
             </div>
 
@@ -550,7 +550,7 @@ export function ProductDetailView({
 
             <div className="flex justify-between items-center">
               <Label className="text-sm font-medium">
-                Enhanced Processing Result
+                Erweiterte Verarbeitungsergebnisse
               </Label>
               <Button
                 variant="outline"
@@ -558,7 +558,7 @@ export function ProductDetailView({
                 onClick={() => copyToClipboard(result, "Complete result")}
               >
                 <Copy className="h-3 w-3 mr-1" />
-                Copy All
+                Alles kopieren
               </Button>
             </div>
 
@@ -574,7 +574,7 @@ export function ProductDetailView({
             <div className="grid grid-cols-2 gap-4">
               <Card>
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-sm">Barcode Validation</CardTitle>
+                  <CardTitle className="text-sm">Barcode-Validierung</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2">
                   <div className="flex items-center gap-2">
@@ -584,7 +584,7 @@ export function ProductDetailView({
                       <AlertCircle className="h-4 w-4 text-red-500" />
                     )}
                     <span className="text-sm font-medium">
-                      {validation.isValid ? "Valid" : "Invalid"}
+                      {validation.isValid ? "Gültig" : "Ungültig"}
                     </span>
                   </div>
                   <div className="space-y-1 text-xs">
@@ -593,11 +593,11 @@ export function ProductDetailView({
                       <Badge variant="outline">{validation.format}</Badge>
                     </div>
                     <div className="flex justify-between">
-                      <span>Length:</span>
+                      <span>Länge:</span>
                       <span className="font-mono">{validation.length}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span>Checksum:</span>
+                      <span>Prüfsumme:</span>
                       <span
                         className={
                           validation.checksum
@@ -605,13 +605,13 @@ export function ProductDetailView({
                             : "text-red-600"
                         }
                       >
-                        {validation.checksum ? "Valid" : "Invalid"}
+                        {validation.checksum ? "Gültig" : "Ungültig"}
                       </span>
                     </div>
                   </div>
                   {validation.errors.length > 0 && (
                     <div className="mt-2">
-                      <Label className="text-xs">Errors:</Label>
+                      <Label className="text-xs">Fehler:</Label>
                       <ul className="text-xs text-red-600 mt-1">
                         {validation.errors.map((error, index) => (
                           <li key={index}>• {error}</li>
@@ -624,12 +624,12 @@ export function ProductDetailView({
 
               <Card>
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-sm">API Performance</CardTitle>
+                  <CardTitle className="text-sm">API-Leistung</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2">
                   <div className="space-y-1 text-xs">
                     <div className="flex justify-between">
-                      <span>Total Time:</span>
+                      <span>Gesamtzeit:</span>
                       <span className="font-mono">
                         {Math.round(
                           metadata.responseTime - metadata.requestTime,
@@ -638,13 +638,13 @@ export function ProductDetailView({
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span>API URL:</span>
+                      <span>API-URL:</span>
                       <span className="font-mono text-right text-muted-foreground">
                         {metadata.apiUrl.split("/").pop()}
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span>User Agent:</span>
+                      <span>User-Agent:</span>
                       <span className="font-mono text-right text-muted-foreground truncate">
                         {metadata.userAgent.split("/")[0]}
                       </span>
@@ -658,7 +658,7 @@ export function ProductDetailView({
                     onClick={() => window.open(metadata.apiUrl, "_blank")}
                   >
                     <ExternalLink className="h-3 w-3 mr-1" />
-                    View API Response
+                    API-Antwort anzeigen
                   </Button>
                 </CardContent>
               </Card>
@@ -666,7 +666,7 @@ export function ProductDetailView({
 
             <Card>
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm">Data Quality</CardTitle>
+                <CardTitle className="text-sm">Datenqualität</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-3 gap-4 text-center">
@@ -675,7 +675,7 @@ export function ProductDetailView({
                       {enhancedData?.completenessScore || 0}%
                     </div>
                     <div className="text-xs text-muted-foreground">
-                      Completeness
+                      Vollständigkeit
                     </div>
                   </div>
                   <div>
@@ -683,7 +683,7 @@ export function ProductDetailView({
                       {enhancedData?.nutritionScore || "N/A"}
                     </div>
                     <div className="text-xs text-muted-foreground">
-                      Nutrition Score
+                      Nährwert-Score
                     </div>
                   </div>
                   <div>
@@ -694,7 +694,7 @@ export function ProductDetailView({
                       )}
                     </div>
                     <div className="text-xs text-muted-foreground">
-                      Last Updated
+                      Zuletzt aktualisiert
                     </div>
                   </div>
                 </div>

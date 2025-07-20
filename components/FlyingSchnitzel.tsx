@@ -1,116 +1,147 @@
 "use client";
-import { motion, useAnimation } from "framer-motion";
 import { useTheme } from "next-themes";
 import { useEffect, useRef, useState } from "react";
 
-// --- Constants ---
-const SCHNITZEL_SIZE = 150;
-const SPEED = 6; // Pixel pro Frame
+// --- Physics Constants ---
+const SCHNITZEL_SIZE = 120;
+const WALL_BOUNCINESS = 0.9; // How much energy is kept after a wall bounce
+const AIR_FRICTION = 0.797; // Slows the schnitzel down over time
+const MOUSE_BOUNCE_SPEED = 10; // The speed the schnitzel gets after a mouse bounce
+const MAX_SPEED = 16; // Maximum speed
 
 export default function FlyingSchnitzel() {
+  const schnitzelRef = useRef<HTMLImageElement>(null);
   const { theme } = useTheme();
   const [mounted, setMounted] = useState(false);
-  const animationControls = useAnimation();
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  // Position und Richtung
-  const posRef = useRef({ x: 100, y: 100 });
-  const dirRef = useRef({ dx: SPEED, dy: SPEED });
+  const mousePos = useRef({ x: -1, y: -1 });
+  // Ref to prevent the schnitzel from getting "stuck" to the mouse
+  const isCollidingWithMouse = useRef(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
+  // Set up the mouse listener once
   useEffect(() => {
-    if (!mounted || !containerRef.current) return;
+    function handleMouseMove(e: MouseEvent) {
+      mousePos.current = { x: e.clientX, y: e.clientY };
+    }
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, []);
 
-    let animationFrame: number;
+  // The main animation loop
+  useEffect(() => {
+    if (!mounted || !schnitzelRef.current) return;
 
-    const animate = () => {
-      const { width, height } = containerRef.current!.getBoundingClientRect();
-      let { x, y } = posRef.current;
-      let { dx, dy } = dirRef.current;
+    // --- Initial State ---
+    let x = Math.random() * (window.innerWidth - SCHNITZEL_SIZE);
+    let y = Math.random() * (window.innerHeight - SCHNITZEL_SIZE);
 
-      // Neue Position berechnen
-      x += dx;
-      y += dy;
+    const startAngle = Math.random() * 2 * Math.PI;
+    const startSpeed = 6;
+    let dx = Math.cos(startAngle) * startSpeed;
+    let dy = Math.sin(startAngle) * startSpeed;
 
-      // Kollision mit den Wänden prüfen und Richtung umkehren
+    let rotation = 0;
+    let animationFrameId: number;
+
+    function move() {
+      if (!schnitzelRef.current) return;
+
+      // --- Physics Calculations ---
+      const schnitzelCenterX = x + SCHNITZEL_SIZE / 2;
+      const schnitzelCenterY = y + SCHNITZEL_SIZE / 2;
+
+      // 1. Mouse Collision (New, Truly Random Logic)
+      const distanceX = schnitzelCenterX - mousePos.current.x;
+      const distanceY = schnitzelCenterY - mousePos.current.y;
+      const distance = Math.hypot(distanceX, distanceY);
+      const collisionRadius = SCHNITZEL_SIZE / 2;
+
+      if (distance < collisionRadius) {
+        if (!isCollidingWithMouse.current) {
+          isCollidingWithMouse.current = true;
+
+          // --- New Random Bounce Logic ---
+          // This logic creates a completely new, random direction on every hit.
+
+          // 1. Generate a new, completely random angle (0 to 360 degrees).
+          const newRandomAngle = Math.random() * 2 * Math.PI;
+
+          // 2. Set the new velocity based on the random angle and a fixed bounce speed.
+          // This ensures a strong, visible change in direction.
+          dx = Math.cos(newRandomAngle) * MOUSE_BOUNCE_SPEED;
+          dy = Math.sin(newRandomAngle) * MOUSE_BOUNCE_SPEED;
+        }
+      } else {
+        isCollidingWithMouse.current = false; // Reset when the mouse is clear
+      }
+
+      // 2. Wall Collision
       if (x <= 0) {
         x = 0;
-        dx = Math.abs(dx);
-      }
-      if (x >= width - SCHNITZEL_SIZE) {
-        x = width - SCHNITZEL_SIZE;
-        dx = -Math.abs(dx);
+        dx = Math.abs(dx) * WALL_BOUNCINESS;
+      } else if (x >= window.innerWidth - SCHNITZEL_SIZE) {
+        x = window.innerWidth - SCHNITZEL_SIZE;
+        dx = -Math.abs(dx) * WALL_BOUNCINESS;
       }
       if (y <= 0) {
         y = 0;
-        dy = Math.abs(dy);
+        dy = Math.abs(dy) * WALL_BOUNCINESS;
+      } else if (y >= window.innerHeight - SCHNITZEL_SIZE) {
+        y = window.innerHeight - SCHNITZEL_SIZE;
+        dy = -Math.abs(dy) * WALL_BOUNCINESS;
       }
-      if (y >= height - SCHNITZEL_SIZE) {
-        y = height - SCHNITZEL_SIZE;
-        dy = -Math.abs(dy);
+
+      // 3. Apply Air Friction & Speed Limits
+      dx *= AIR_FRICTION;
+      dy *= AIR_FRICTION;
+
+      const speed = Math.hypot(dx, dy);
+      if (speed > MAX_SPEED) {
+        dx = (dx / speed) * MAX_SPEED;
+        dy = (dy / speed) * MAX_SPEED;
       }
 
-      posRef.current = { x, y };
-      dirRef.current = { dx, dy };
+      // --- Update Position & Rotation ---
+      x += dx;
+      y += dy;
+      rotation += dx * 0.4; // Spin based on horizontal movement
 
-      animationControls.set({ x, y, rotate: x + y });
+      // --- Apply Styles ---
+      schnitzelRef.current.style.left = `${x}px`;
+      schnitzelRef.current.style.top = `${y}px`;
+      schnitzelRef.current.style.transform = `rotate(${rotation}deg)`;
 
-      animationFrame = requestAnimationFrame(animate);
-    };
+      animationFrameId = requestAnimationFrame(move);
+    }
 
-    animate();
-
-    return () => cancelAnimationFrame(animationFrame);
-  }, [mounted, animationControls]);
+    animationFrameId = requestAnimationFrame(move);
+    return () => cancelAnimationFrame(animationFrameId);
+  }, [mounted]);
 
   if (!mounted || theme !== "gunter") return null;
 
   return (
-    <div
-      ref={containerRef}
-      style={{ position: "fixed", inset: 0, pointerEvents: "none" }}
-    >
+    <>
       <style>{`
-        .debug-circle {
+        #fliegendes-schnitzel {
           position: fixed;
-          top: 0;
-          left: 0;
+          width: ${SCHNITZEL_SIZE}px;
+          height: auto;
+          z-index: 9999;
           pointer-events: none;
+          will-change: transform, left, top;
           border-radius: 50%;
-          z-index: 10000;
         }
       `}</style>
-
-      <motion.div
-        id="schnitzel-container"
-        animate={animationControls}
-        style={{
-          width: SCHNITZEL_SIZE,
-          height: SCHNITZEL_SIZE,
-          position: "absolute",
-          zIndex: 9999,
-        }}
-      >
-        <img
-          src="/wiener_schnitzel.jpg"
-          alt="Ein fliegendes Schnitzel"
-          style={{ width: "100%", height: "100%", borderRadius: "50%" }}
-        />
-        <div
-          className="debug-circle"
-          style={{
-            width: SCHNITZEL_SIZE,
-            height: SCHNITZEL_SIZE,
-            border: "2px solid blue",
-            position: "absolute",
-            top: 0,
-            left: 0,
-          }}
-        />
-      </motion.div>
-    </div>
+      <img
+        src="/wiener_schnitzel.jpg"
+        id="fliegendes-schnitzel"
+        alt="Ein fliegendes Schnitzel"
+        ref={schnitzelRef}
+      />
+    </>
   );
 }

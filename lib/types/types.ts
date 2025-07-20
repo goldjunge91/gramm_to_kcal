@@ -22,6 +22,20 @@ export interface Ingredient {
   unit: "g" | "ml" | "TL" | "EL" | string;
 }
 
+/** Extended unit types for unit conversion */
+export type VolumeUnit = "ml" | "l" | "cl" | "dl";
+export type WeightUnit = "g" | "kg" | "mg";
+export type CookingUnit = "TL" | "EL" | "Tasse" | "Prise";
+export type AllUnits = VolumeUnit | WeightUnit | CookingUnit | string;
+
+/** Unit conversion context */
+export interface UnitConversionContext {
+  substance?: string;
+  density?: number;
+  temperature?: number;
+  precision?: number;
+}
+
 /** Recipe interface for complete recipe data */
 export interface Recipe {
   id: string;

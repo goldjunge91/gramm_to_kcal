@@ -93,18 +93,18 @@ class OpenFoodFactsRateLimiter {
     }
   }
 
-  checkProductLookup(clientIP: string): Promise<RateLimitInfo> {
+  async checkProductLookup(clientIP: string): Promise<RateLimitInfo> {
     const key = `openfoodfacts:product:${clientIP}`;
-    return this.checkRateLimit(
+    return await this.checkRateLimit(
       key,
       RATE_LIMITS.PRODUCT_LOOKUP.requests,
       RATE_LIMITS.PRODUCT_LOOKUP.window,
     );
   }
 
-  checkSearch(clientIP: string): Promise<RateLimitInfo> {
+  async checkSearch(clientIP: string): Promise<RateLimitInfo> {
     const key = `openfoodfacts:search:${clientIP}`;
-    return this.checkRateLimit(
+    return await this.checkRateLimit(
       key,
       RATE_LIMITS.SEARCH.requests,
       RATE_LIMITS.SEARCH.window,

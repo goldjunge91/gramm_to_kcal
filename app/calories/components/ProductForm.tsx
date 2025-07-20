@@ -1,16 +1,25 @@
 "use client";
 
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Scale } from "lucide-react";
 import { useState, type JSX } from "react";
 import { toast } from "sonner";
 
 import type { Product } from "@/lib/db/schema";
 
+import { MlToGramConverter } from "@/components/unit-converter/MlToGramConverter";
 import { RecentScansDropdown } from "@/components/dev/RecentScansDropdown";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { 
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { useRecentScans } from "@/hooks/use-recent-scans";
 
 interface ProductFormProps {
@@ -40,6 +49,7 @@ export const ProductForm = ({
   const [name, setName] = useState("");
   const [quantity, setQuantity] = useState("");
   const [kcal, setKcal] = useState("");
+  const [converterOpen, setConverterOpen] = useState(false);
 
   // Recent scans for authenticated users
   const { recentScans, addRecentScan, removeRecentScan, isAuthenticated } =
@@ -141,17 +151,52 @@ export const ProductForm = ({
 
             <div className="space-y-2">
               <Label htmlFor="quantity">Menge (g)</Label>
-              <Input
-                id="quantity"
-                type="number"
-                value={quantity}
-                onChange={(e) => setQuantity(e.target.value)}
-                placeholder="z.B. 100"
-                min="0"
-                step="0.1"
-                required
-                disabled={isLoading}
-              />
+              <div className="relative">
+                <Input
+                  id="quantity"
+                  type="number"
+                  value={quantity}
+                  onChange={(e) => setQuantity(e.target.value)}
+                  placeholder="z.B. 100"
+                  min="0"
+                  step="0.1"
+                  required
+                  disabled={isLoading}
+                  className="pr-10"
+                />
+                <Dialog open={converterOpen} onOpenChange={setConverterOpen}>
+                  <DialogTrigger asChild>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 p-0 hover:bg-muted"
+                      disabled={isLoading}
+                      title="ML zu Gramm Umrechner"
+                    >
+                      <Scale className="h-4 w-4" />
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-2xl">
+                    <DialogHeader>
+                      <DialogTitle>ML zu Gramm Umrechner</DialogTitle>
+                      <DialogDescription>
+                        Konvertieren Sie Milliliter in Gramm für verschiedene Substanzen
+                      </DialogDescription>
+                    </DialogHeader>
+                    <MlToGramConverter 
+                      compact={true}
+                      onConversionChange={(result) => {
+                        if (result.success && result.unit === 'g') {
+                          setQuantity(result.value.toString());
+                          toast.success(`${result.originalValue} ml = ${result.value} g`);
+                          setConverterOpen(false);
+                        }
+                      }}
+                    />
+                  </DialogContent>
+                </Dialog>
+              </div>
             </div>
 
             <div className="space-y-2">

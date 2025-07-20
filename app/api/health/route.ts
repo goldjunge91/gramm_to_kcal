@@ -9,7 +9,7 @@ import {
   rateLimiters,
 } from "@/lib/rate-limit";
 import { getRedisHealth } from "@/lib/redis";
-import { createClient } from "@/lib/supabase/server";
+import { createRegularClient } from "@/lib/supabase/server";
 import { getAuthRateLimitHealth } from "@/lib/utils/auth-rate-limit";
 
 export async function GET(request: NextRequest) {
@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const supabase = await createClient();
+    const supabase = await createRegularClient();
 
     // Test database connection
     const { error } = await supabase.from("products").select("count").limit(1);

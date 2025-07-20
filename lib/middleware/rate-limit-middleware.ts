@@ -1,4 +1,3 @@
-/* eslint-disable unused-imports/no-unused-vars */
 import { NextResponse, type NextRequest } from "next/server";
 
 import {
@@ -56,19 +55,13 @@ for (const [key, config] of Object.entries(RATE_LIMIT_CONFIGS)) {
   rateLimiters.set(key as RateLimitConfigKey, new RateLimiter(config));
 }
 
-// Initialize Redis storage when available
-export function initializeRateLimitRedis(redis: any) {
-  // This will be called from your app initialization
-  // The rate-limit.ts file handles the Redis integration
-}
-
 // Determine which rate limiter to use based on the route
 function getRateLimiterForRoute(pathname: string): RateLimiter | null {
   // Skip rate limiting for static assets and internal Next.js routes
   if (
     pathname.startsWith("/_next/") ||
     pathname.startsWith("/favicon.ico") ||
-    /\.(?:png|jpg|jpeg|gif|svg|webp|ico)$/.test(pathname) ||
+    /\.(?:png|jpg|jpeg|gif|svg|webp|ico)$/i.test(pathname) ||
     pathname.startsWith("/__")
   ) {
     return null;

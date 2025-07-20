@@ -1,6 +1,6 @@
 /**
- * Enhanced Barcode Scanner for Developer Testing
- * Includes diagnostics, performance metrics, and device information
+ * Erweiterte Barcode Scanner für Entwicklertests
+ * Enthält Diagnose, Leistungsmetriken und Geräteinformationen
  */
 
 "use client";
@@ -396,10 +396,10 @@ export function DevBarcodeScanner({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Activity className="h-5 w-5" />
-            Developer Barcode Scanner
+            Entwickler Barcode Scanner
           </DialogTitle>
           <DialogDescription>
-            Enhanced scanner with performance diagnostics and device information
+            Erweiterte Scanner mit Leistungsdiagnostik und Geräteinformationen
           </DialogDescription>
         </DialogHeader>
 
@@ -409,28 +409,28 @@ export function DevBarcodeScanner({
             <CardHeader className="pb-3">
               <CardTitle className="text-sm flex items-center gap-2">
                 <Smartphone className="h-4 w-4" />
-                Device Information
+                Geräteinformationen
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-0">
               <div className="grid grid-cols-2 gap-2 text-xs">
                 <div className="flex justify-between">
-                  <span>Platform:</span>
+                  <span>Plattform:</span>
                   <Badge variant="outline" className="text-xs">
                     {deviceInfo.platform}
                   </Badge>
                 </div>
                 <div className="flex justify-between">
-                  <span>Mobile:</span>
+                  <span>Mobil:</span>
                   <Badge
                     variant={deviceInfo.isMobile ? "default" : "secondary"}
                     className="text-xs"
                   >
-                    {deviceInfo.isMobile ? "Yes" : "No"}
+                    {deviceInfo.isMobile ? "Ja" : "Nein"}
                   </Badge>
                 </div>
                 <div className="flex justify-between">
-                  <span>Cameras:</span>
+                  <span>Kameras:</span>
                   <Badge variant="outline" className="text-xs">
                     {deviceInfo.cameraCount}
                   </Badge>
@@ -455,7 +455,7 @@ export function DevBarcodeScanner({
             disabled={isLoading || isProcessingFile}
           >
             <Camera className="h-4 w-4 mr-2" />
-            Camera Scan
+            Kamera Scannen
           </Button>
           <Button
             variant={scanMode === "upload" ? "default" : "outline"}
@@ -464,7 +464,7 @@ export function DevBarcodeScanner({
             disabled={isLoading || isProcessingFile}
           >
             <Upload className="h-4 w-4 mr-2" />
-            Upload Image
+            Bild hochladen
           </Button>
         </div>
 
@@ -473,11 +473,11 @@ export function DevBarcodeScanner({
           <div className="mb-4">
             <div className="flex items-center gap-2 mb-2">
               <Clock className="h-4 w-4" />
-              <span className="text-sm">Scanner Status</span>
+              <span className="text-sm">Scanner-Status</span>
             </div>
             <Progress value={scanProgress} className="w-full" />
             <div className="flex justify-between text-xs text-muted-foreground mt-1">
-              <span>{isLoading ? "Initializing..." : "Ready"}</span>
+              <span>{isLoading ? "Initialisiere..." : "Bereit"}</span>
               <span>{scanProgress}%</span>
             </div>
           </div>
@@ -489,7 +489,7 @@ export function DevBarcodeScanner({
             <CardHeader className="pb-3">
               <CardTitle className="text-sm flex items-center gap-2">
                 <Settings className="h-4 w-4" />
-                Scanner Configuration
+                Scanner-Konfiguration
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-0">
@@ -502,13 +502,13 @@ export function DevBarcodeScanner({
                   <div className="font-medium">
                     {scannerSettings.qrbox.width}×{scannerSettings.qrbox.height}
                   </div>
-                  <div className="text-muted-foreground">Scan Area</div>
+                  <div className="text-muted-foreground">Scanbereich</div>
                 </div>
                 <div className="text-center">
                   <div className="font-medium">
                     {scannerSettings.aspectRatio}
                   </div>
-                  <div className="text-muted-foreground">Aspect Ratio</div>
+                  <div className="text-muted-foreground">Seitenverhältnis</div>
                 </div>
               </div>
             </CardContent>
@@ -555,7 +555,7 @@ export function DevBarcodeScanner({
                 <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-lg">
                   <div className="text-center text-white">
                     <Loader2 className="h-8 w-8 animate-spin mx-auto mb-2" />
-                    <p>Starting camera...</p>
+                    <p>Starte Kamera...</p>
                   </div>
                 </div>
               )}
@@ -570,17 +570,17 @@ export function DevBarcodeScanner({
               {isProcessingFile ? (
                 <div className="text-center">
                   <Loader2 className="h-8 w-8 animate-spin mx-auto mb-2" />
-                  <p>Processing image...</p>
+                  <p>Verarbeite Bild...</p>
                 </div>
               ) : (
                 <div className="text-center">
                   <Upload className="h-8 w-8 mx-auto mb-2 text-gray-400" />
-                  <p className="text-lg font-medium">Upload Barcode Image</p>
+                  <p className="text-lg font-medium">Barcode-Bild hochladen</p>
                   <p className="text-sm text-gray-500 mt-1">
-                    Click to select or drag and drop an image
+                    Klicken zum Auswählen oder Bild hierher ziehen
                   </p>
                   <p className="text-xs text-gray-400 mt-2">
-                    Supports: JPG, PNG, GIF, WebP
+                    Unterstützt: JPG, PNG, GIF, WebP
                   </p>
                 </div>
               )}
@@ -607,7 +607,7 @@ export function DevBarcodeScanner({
         {/* Action Buttons */}
         <div className="flex justify-end gap-2">
           <Button variant="outline" onClick={onClose}>
-            Cancel
+            Abbrechen
           </Button>
         </div>
       </DialogContent>
