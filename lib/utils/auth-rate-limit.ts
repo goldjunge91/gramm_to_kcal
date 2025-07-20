@@ -269,10 +269,7 @@ export function createRateLimitedSupabaseClient(supabase: SupabaseClient) {
   const rateLimitedAuth = {
     ...originalAuth, // Übernimmt alle ursprünglichen Auth-Methoden
 
-    async signInWithPassword(credentials: {
-      email: string;
-      password: string;
-    }) {
+    async signInWithPassword(credentials: { email: string; password: string }) {
       const rateLimit = await checkSignInRateLimit(credentials.email);
       if (!rateLimit.allowed) {
         throw new Error(
