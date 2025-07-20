@@ -6,6 +6,7 @@ import {
   Book,
   Calculator,
   ChefHat,
+  Cookie,
   LogOut,
   Settings,
   User,
@@ -152,6 +153,17 @@ export const Navbar = (): JSX.Element => {
                   : "text-muted-foreground hover:text-foreground hover:bg-muted"
               }`}
               aria-label="Unit-Converter"
+            >
+              <Cookie className="h-5 w-5" />
+            </Link>
+            <Link
+              href="/anleitungsgenerator"
+              className={`p-2 rounded-md ${
+                clientPathname === "/anleitungsgenerator"
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted"
+              }`}
+              aria-label="Anleitungsgenerator"
             >
               <Beaker className="h-5 w-5" />
             </Link>
