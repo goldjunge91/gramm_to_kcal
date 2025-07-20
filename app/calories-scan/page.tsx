@@ -23,7 +23,7 @@ import {
 } from "@/hooks/use-products-unified";
 
 import { ComparisonTable } from "./components/ComparisonTable";
-import { ProductForm } from "./components/product-form-v2";
+import { ProductForm } from "./components/product-form";
 
 export default function CaloriesScanPage(): JSX.Element {
   const { isOnline, syncInProgress } = useMobileOffline();
@@ -102,16 +102,28 @@ export default function CaloriesScanPage(): JSX.Element {
         <CardContent className="space-y-4">
           {/* Desktop: Always show form, Mobile: Toggle */}
           {(!isMobile || showForm) && (
+            // <>
             <div className={isMobile ? "border rounded-lg p-4" : ""}>
               <ProductForm
                 onSubmit={handleAddProduct}
                 isLoading={isCreating}
                 compact={isMobile}
                 enableBarcode={true}
-                enableBarcode2={true}
+                // enableBarcode2={true}
               />
             </div>
           )}
+          {/* <div className={isMobile ? "border rounded-lg p-4" : ""}>
+                <ProductFormV2
+                  onSubmit={handleAddProduct}
+                  isLoading={isCreating}
+                  compact={isMobile}
+                  enableBarcode={true}
+                  enableBarcode2={true}
+                />
+              </div> */}
+          {/* // </> */}
+          {/* )} */}
 
           {/* Mobile: Manual refresh button when offline (only for authenticated users) */}
           {isMobile && isAuthenticated && !isOnline && (
