@@ -30,9 +30,7 @@ describe("SupabaseAuthRateLimiter", () => {
 
   it("should allow if redis is not configured", async () => {
     // Simulate no redis
-    vi.mocked(mockRedis.get).mockReturnValueOnce(undefined);
-    // limiter.redis = undefined as any;
-    limiter.setRedis(mockRedis);
+    limiter.setRedis(undefined);
     const result = await limiter.checkRateLimit("SIGN_IN", identifier);
     expect(result.allowed).toBe(true);
     expect(result.blocked).toBe(false);

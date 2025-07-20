@@ -264,90 +264,103 @@ export async function checkEmailVerifyRateLimit(
 
 // Enhanced Supabase client wrapper with rate limiting
 export function createRateLimitedSupabaseClient(supabase: SupabaseClient) {
+  const originalAuth = supabase.auth;
+
+  const rateLimitedAuth = {
+    ...originalAuth, // Übernimmt alle ursprünglichen Auth-Methoden
+
+    async signInWithPassword(credentials: {
+      email: string;
+      password: string;
+    }) {
+      const rateLimit = await checkSignInRateLimit(credentials.email);
+      if (!rateLimit.allowed) {
+        throw new Error(
+          `Too many sign-in attempts. ${
+            rateLimit.blocked
+              ? "Account temporarily blocked."
+              : "Please try again later."
+          }`,
+        );
+      }
+      return originalAuth.signInWithPassword(credentials);
+    },
+
+    async signUp(credentials: {
+      email: string;
+      password: string;
+      options?: any;
+    }) {
+      const rateLimit = await checkSignUpRateLimit(credentials.email);
+      if (!rateLimit.allowed) {
+        throw new Error(
+          `Too many sign-up attempts. ${
+            rateLimit.blocked
+              ? "Account temporarily blocked."
+              : "Please try again later."
+          }`,
+        );
+      }
+      return originalAuth.signUp(credentials);
+    },
+
+    async resetPasswordForEmail(email: string, options?: any) {
+      const rateLimit = await checkPasswordResetRateLimit(email);
+      if (!rateLimit.allowed) {
+        throw new Error(
+          `Too many password reset attempts. ${
+            rateLimit.blocked
+              ? "Account temporarily blocked."
+              : "Please try again later."
+          }`,
+        );
+      }
+      return originalAuth.resetPasswordForEmail(email, options);
+    },
+
+    async resend(credentials: {
+      type: "signup" | "email_change";
+      email: string;
+      options?: any;
+    }) {
+      const rateLimit = await checkEmailVerifyRateLimit(credentials.email);
+      if (!rateLimit.allowed) {
+        throw new Error(
+          `Too many verification attempts. ${
+            rateLimit.blocked
+              ? "Account temporarily blocked."
+              : "Please try again later."
+          }`,
+        );
+      }
+      return originalAuth.resend(credentials);
+    },
+
+    async updateUser(attributes: {
+      password?: string;
+      email?: string;
+      data?: object;
+    }) {
+      const rateLimit = await authRateLimiter.checkRateLimit(
+        "GENERAL",
+        "user-update",
+      );
+      if (!rateLimit.allowed) {
+        throw new Error(
+          `Too many update attempts. ${
+            rateLimit.blocked
+              ? "Account temporarily blocked."
+              : "Please try again later."
+          }`,
+        );
+      }
+      return originalAuth.updateUser(attributes);
+    },
+  };
+
   return {
     ...supabase,
-
-    auth: {
-      ...supabase.auth,
-
-      async signInWithPassword(credentials: {
-        email: string;
-        password: string;
-      }) {
-        const rateLimit = await checkSignInRateLimit(credentials.email);
-
-        if (!rateLimit.allowed) {
-          throw new Error(
-            `Too many sign-in attempts. ${rateLimit.blocked ? "Account temporarily blocked." : "Please try again later."}`,
-          );
-        }
-
-        return supabase.auth.signInWithPassword(credentials);
-      },
-
-      async signUp(credentials: {
-        email: string;
-        password: string;
-        options?: any;
-      }) {
-        const rateLimit = await checkSignUpRateLimit(credentials.email);
-
-        if (!rateLimit.allowed) {
-          throw new Error(
-            `Too many sign-up attempts. ${rateLimit.blocked ? "Account temporarily blocked." : "Please try again later."}`,
-          );
-        }
-
-        return supabase.auth.signUp(credentials);
-      },
-
-      async resetPasswordForEmail(email: string, options?: any) {
-        const rateLimit = await checkPasswordResetRateLimit(email);
-
-        if (!rateLimit.allowed) {
-          throw new Error(
-            `Too many password reset attempts. ${rateLimit.blocked ? "Account temporarily blocked." : "Please try again later."}`,
-          );
-        }
-
-        return supabase.auth.resetPasswordForEmail(email, options);
-      },
-
-      async resend(credentials: {
-        type: "signup" | "email_change";
-        email: string;
-        options?: any;
-      }) {
-        const rateLimit = await checkEmailVerifyRateLimit(credentials.email);
-
-        if (!rateLimit.allowed) {
-          throw new Error(
-            `Too many verification attempts. ${rateLimit.blocked ? "Account temporarily blocked." : "Please try again later."}`,
-          );
-        }
-
-        return supabase.auth.resend(credentials);
-      },
-
-      async updateUser(attributes: {
-        password?: string;
-        email?: string;
-        data?: object;
-      }) {
-        const rateLimit = await authRateLimiter.checkRateLimit(
-          "GENERAL",
-          "user-update",
-        );
-
-        if (!rateLimit.allowed) {
-          throw new Error(
-            `Too many update attempts. ${rateLimit.blocked ? "Account temporarily blocked." : "Please try again later."}`,
-          );
-        }
-
-        return supabase.auth.updateUser(attributes);
-      },
-    },
+    auth: rateLimitedAuth,
   };
 }
 
