@@ -353,11 +353,26 @@ export function createRateLimitedSupabaseClient(supabase: SupabaseClient) {
       }
       return originalAuth.updateUser(attributes);
     },
+
+    async signOut() {
+      // Optionally, add rate limiting here if needed
+      return await originalAuth.signOut();
+    },
+
+    async getUser() {
+      return await originalAuth.getUser();
+    },
+
+    async getSession() {
+      return await originalAuth.getSession();
+    },
   };
 
   return {
     ...supabase,
     auth: rateLimitedAuth,
+    from: (table: string) => supabase.from(table),
+    // from: (...args) => supabase.from(...args),
   };
 }
 
