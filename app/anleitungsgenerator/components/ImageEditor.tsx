@@ -1,10 +1,11 @@
 import type { JSX } from "react";
+
 import type { ImageSettings } from "@/lib/types/types";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Slider } from "@/components/ui/slider";
-import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Slider } from "@/components/ui/slider";
 
 interface ImageEditorProps {
   image?: string;
@@ -13,10 +14,10 @@ interface ImageEditorProps {
 }
 
 /** Image editor component for adjusting size, position and quality */
-export const ImageEditor = ({ 
-  image, 
-  settings, 
-  onSettingsChange 
+export const ImageEditor = ({
+  image,
+  settings,
+  onSettingsChange,
 }: ImageEditorProps): JSX.Element => {
   const handleWidthChange = (values: number[]): void => {
     onSettingsChange({ ...settings, width: values[0] });
@@ -30,7 +31,9 @@ export const ImageEditor = ({
     onSettingsChange({ ...settings, quality: values[0] });
   };
 
-  const handlePositionChange = (position: 'left' | 'center' | 'right'): void => {
+  const handlePositionChange = (
+    position: "left" | "center" | "right",
+  ): void => {
     onSettingsChange({ ...settings, position });
   };
 
@@ -38,7 +41,7 @@ export const ImageEditor = ({
     onSettingsChange({
       width: 200,
       height: 150,
-      position: 'center',
+      position: "center",
       quality: 80,
     });
   };
@@ -72,18 +75,25 @@ export const ImageEditor = ({
         <div className="space-y-2">
           <Label>Vorschau</Label>
           <div className="border rounded-lg p-4 bg-muted/30">
-            <div 
+            <div
               className="flex"
-              style={{ justifyContent: settings.position === 'left' ? 'flex-start' : settings.position === 'right' ? 'flex-end' : 'center' }}
+              style={{
+                justifyContent:
+                  settings.position === "left"
+                    ? "flex-start"
+                    : settings.position === "right"
+                      ? "flex-end"
+                      : "center",
+              }}
             >
               <img
                 src={image}
                 alt="Schritt-Bild"
-                style={{ 
-                  width: `${settings.width}px`, 
+                style={{
+                  width: `${settings.width}px`,
                   height: `${settings.height}px`,
-                  objectFit: 'cover',
-                  filter: `contrast(${settings.quality}%)`
+                  objectFit: "cover",
+                  filter: `contrast(${settings.quality}%)`,
                 }}
                 className="rounded border"
               />
@@ -122,9 +132,9 @@ export const ImageEditor = ({
           <Label>Position</Label>
           <div className="flex gap-2">
             {[
-              { value: 'left' as const, label: '⬅️ Links' },
-              { value: 'center' as const, label: '⬆️ Mitte' },
-              { value: 'right' as const, label: '➡️ Rechts' },
+              { value: "left" as const, label: "⬅️ Links" },
+              { value: "center" as const, label: "⬆️ Mitte" },
+              { value: "right" as const, label: "➡️ Rechts" },
             ].map(({ value, label }) => (
               <Button
                 key={value}

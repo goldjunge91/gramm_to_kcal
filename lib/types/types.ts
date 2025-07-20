@@ -57,7 +57,7 @@ export interface RecentScan {
 export interface ImageSettings {
   width: number;
   height: number;
-  position: 'left' | 'center' | 'right';
+  position: "left" | "center" | "right";
   quality: number;
 }
 

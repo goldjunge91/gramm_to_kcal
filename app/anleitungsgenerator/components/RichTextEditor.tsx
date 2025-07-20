@@ -1,7 +1,6 @@
 "use client";
 
-import type { JSX } from "react";
-import { useRef, useCallback } from "react";
+import { useCallback, useRef, type JSX } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,19 +12,22 @@ interface RichTextEditorProps {
 }
 
 /** Rich text editor component with formatting toolbar */
-export const RichTextEditor = ({ 
-  value, 
-  onChange, 
-  placeholder = "Schritt-Anleitung eingeben..."
+export const RichTextEditor = ({
+  value,
+  onChange,
+  placeholder = "Schritt-Anleitung eingeben...",
 }: RichTextEditorProps): JSX.Element => {
   const editorRef = useRef<HTMLDivElement>(null);
 
-  const executeCommand = useCallback((command: string, value?: string): void => {
-    document.execCommand(command, false, value);
-    if (editorRef.current) {
-      onChange(editorRef.current.innerHTML);
-    }
-  }, [onChange]);
+  const executeCommand = useCallback(
+    (command: string, value?: string): void => {
+      document.execCommand(command, false, value);
+      if (editorRef.current) {
+        onChange(editorRef.current.innerHTML);
+      }
+    },
+    [onChange],
+  );
 
   const handleInput = useCallback((): void => {
     if (editorRef.current) {
@@ -33,42 +35,45 @@ export const RichTextEditor = ({
     }
   }, [onChange]);
 
-  const handleKeyDown = useCallback((event: React.KeyboardEvent): void => {
-    // Handle keyboard shortcuts
-    if (event.ctrlKey || event.metaKey) {
-      switch (event.key) {
-        case 'b':
-          event.preventDefault();
-          executeCommand('bold');
-          break;
-        case 'i':
-          event.preventDefault();
-          executeCommand('italic');
-          break;
-        case 'u':
-          event.preventDefault();
-          executeCommand('underline');
-          break;
-        case 'z':
-          event.preventDefault();
-          executeCommand('undo');
-          break;
-        case 'y':
-          event.preventDefault();
-          executeCommand('redo');
-          break;
+  const handleKeyDown = useCallback(
+    (event: React.KeyboardEvent): void => {
+      // Handle keyboard shortcuts
+      if (event.ctrlKey || event.metaKey) {
+        switch (event.key) {
+          case "b":
+            event.preventDefault();
+            executeCommand("bold");
+            break;
+          case "i":
+            event.preventDefault();
+            executeCommand("italic");
+            break;
+          case "u":
+            event.preventDefault();
+            executeCommand("underline");
+            break;
+          case "z":
+            event.preventDefault();
+            executeCommand("undo");
+            break;
+          case "y":
+            event.preventDefault();
+            executeCommand("redo");
+            break;
+        }
       }
-    }
-  }, [executeCommand]);
+    },
+    [executeCommand],
+  );
 
   const formatButtons = [
-    { command: 'bold', icon: '𝐁', title: 'Fett (Strg+B)' },
-    { command: 'italic', icon: '𝐼', title: 'Kursiv (Strg+I)' },
-    { command: 'underline', icon: '𝐔', title: 'Unterstrichen (Strg+U)' },
-    { command: 'insertUnorderedList', icon: '•', title: 'Aufzählung' },
-    { command: 'insertOrderedList', icon: '1.', title: 'Nummerierte Liste' },
-    { command: 'undo', icon: '↶', title: 'Rückgängig (Strg+Z)' },
-    { command: 'redo', icon: '↷', title: 'Wiederholen (Strg+Y)' },
+    { command: "bold", icon: "𝐁", title: "Fett (Strg+B)" },
+    { command: "italic", icon: "𝐼", title: "Kursiv (Strg+I)" },
+    { command: "underline", icon: "𝐔", title: "Unterstrichen (Strg+U)" },
+    { command: "insertUnorderedList", icon: "•", title: "Aufzählung" },
+    { command: "insertOrderedList", icon: "1.", title: "Nummerierte Liste" },
+    { command: "undo", icon: "↶", title: "Rückgängig (Strg+Z)" },
+    { command: "redo", icon: "↷", title: "Wiederholen (Strg+Y)" },
   ];
 
   return (
@@ -104,16 +109,17 @@ export const RichTextEditor = ({
           onKeyDown={handleKeyDown}
           dangerouslySetInnerHTML={{ __html: value }}
           className="min-h-[120px] p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-ring bg-background"
-          style={{ 
-            lineHeight: '1.6',
-            fontSize: '14px'
+          style={{
+            lineHeight: "1.6",
+            fontSize: "14px",
           }}
           data-placeholder={placeholder}
         />
 
         {/* Helper Text */}
         <div className="text-xs text-muted-foreground">
-          💡 Tipp: Verwenden Sie die Toolbar oder Tastenkürzel (Strg+B, Strg+I, etc.) zum Formatieren
+          💡 Tipp: Verwenden Sie die Toolbar oder Tastenkürzel (Strg+B, Strg+I,
+          etc.) zum Formatieren
         </div>
       </CardContent>
     </Card>

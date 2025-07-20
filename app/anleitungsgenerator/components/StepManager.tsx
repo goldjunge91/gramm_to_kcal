@@ -1,8 +1,9 @@
 import type { JSX } from "react";
+
 import type { RecipeStep } from "@/lib/types/types";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 import { StepImageUpload } from "./StepImageUpload";
 
@@ -12,10 +13,16 @@ interface StepManagerProps {
 }
 
 /** Component for managing recipe steps with images */
-export const StepManager = ({ steps, onStepsChange }: StepManagerProps): JSX.Element => {
-  const handleImageChange = (stepId: string, image: string | undefined): void => {
-    const updatedSteps = steps.map(step =>
-      step.id === stepId ? { ...step, image } : step
+export const StepManager = ({
+  steps,
+  onStepsChange,
+}: StepManagerProps): JSX.Element => {
+  const handleImageChange = (
+    stepId: string,
+    image: string | undefined,
+  ): void => {
+    const updatedSteps = steps.map((step) =>
+      step.id === stepId ? { ...step, image } : step,
     );
     onStepsChange(updatedSteps);
   };
@@ -39,7 +46,7 @@ export const StepManager = ({ steps, onStepsChange }: StepManagerProps): JSX.Ele
                   {step.instruction}
                 </p>
               </div>
-              
+
               <StepImageUpload
                 stepId={step.id}
                 currentImage={step.image}
@@ -48,7 +55,7 @@ export const StepManager = ({ steps, onStepsChange }: StepManagerProps): JSX.Ele
             </div>
           ))}
         </div>
-        
+
         {steps.length === 0 && (
           <p className="text-muted-foreground text-center py-4">
             Keine Schritte gefunden. Bitte parsen Sie zuerst ein Rezept.

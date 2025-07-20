@@ -89,42 +89,74 @@ const parseIngredients = (
       const name = match[1].trim();
       const quantityAndUnit = match[2].trim();
 
-      // Extract number and unit - improved regex to handle fractions like 1⅔
-      const quantityMatch = quantityAndUnit.match(
-        /(\d+(?:[.,]\d+)?[⅛⅙⅕¼⅓⅜⅖½⅗⅔⅝¾⅘⅚⅞]?|[⅛⅙⅕¼⅓⅜⅖½⅗⅔⅝¾⅘⅚⅞])\s*(.+)/,
+      let quantityMatch = null;
+      // Zuerst gemischte Zahl mit Bruch: z.B. 1 ⅔
+      quantityMatch = quantityAndUnit.match(
+        /^(\d+(?:[.,]\d+)?) ?([⅛⅙⅕¼⅓⅜⅖½⅗⅔⅝¾⅘⅚⅞])\s+(\S.*)$/,
       );
+      // Dann nur Zahl: z.B. 1.5
+      if (!quantityMatch)
+        quantityMatch = quantityAndUnit.match(/^(\d+(?:[.,]\d+)?)\s+(\S.*)$/);
+      // Dann nur Bruch: z.B. ⅔
+      if (!quantityMatch)
+        quantityMatch = quantityAndUnit.match(/^([⅛⅙⅕¼⅓⅜⅖½⅗⅔⅝¾⅘⅚⅞])\s+(\S.*)$/);
 
       if (quantityMatch) {
-        let quantity = quantityMatch[1];
-
-        // Convert fractions to decimal
-        quantity = quantity
-          .replace("⅛", "0.125")
-          .replace("⅙", "0.167")
-          .replace("⅕", "0.2")
-          .replace("¼", "0.25")
-          .replace("⅓", "0.333")
-          .replace("⅜", "0.375")
-          .replace("⅖", "0.4")
-          .replace("½", "0.5")
-          .replace("⅗", "0.6")
-          .replace("⅔", "0.667")
-          .replace("⅝", "0.625")
-          .replace("¾", "0.75")
-          .replace("⅘", "0.8")
-          .replace("⅚", "0.833")
-          .replace("⅞", "0.875");
-
-        // Handle mixed numbers like "1⅔"
-        const mixedMatch = quantity.match(/(\d+)([0-9.]+)/);
-        if (mixedMatch) {
-          quantity = (
-            Number.parseFloat(mixedMatch[1]) + Number.parseFloat(mixedMatch[2])
-          ).toString();
+        let quantity = "";
+        let unit = "";
+        if (quantityMatch.length === 4) {
+          // gemischte Zahl mit Bruch
+          quantity = quantityMatch[1];
+          if (quantityMatch[2]) {
+            const fraction = quantityMatch[2]
+              .replace("⅛", "0.125")
+              .replace("⅙", "0.167")
+              .replace("⅕", "0.2")
+              .replace("¼", "0.25")
+              .replace("⅓", "0.333")
+              .replace("⅜", "0.375")
+              .replace("⅖", "0.4")
+              .replace("½", "0.5")
+              .replace("⅗", "0.6")
+              .replace("⅔", "0.667")
+              .replace("⅝", "0.625")
+              .replace("¾", "0.75")
+              .replace("⅘", "0.8")
+              .replace("⅚", "0.833")
+              .replace("⅞", "0.875");
+            quantity = (
+              Number.parseFloat(quantity.replace(",", ".")) +
+              Number.parseFloat(fraction)
+            ).toString();
+          }
+          unit = quantityMatch.at(-1)?.trim() ?? "";
+        } else if (
+          quantityMatch.length === 3 &&
+          /[⅛⅙⅕¼⅓⅜⅖½⅗⅔⅝¾⅘⅚⅞]/.test(quantityMatch[1])
+        ) {
+          // nur Bruch
+          quantity = quantityMatch[1]
+            .replace("⅛", "0.125")
+            .replace("⅙", "0.167")
+            .replace("⅕", "0.2")
+            .replace("¼", "0.25")
+            .replace("⅓", "0.333")
+            .replace("⅜", "0.375")
+            .replace("⅖", "0.4")
+            .replace("½", "0.5")
+            .replace("⅗", "0.6")
+            .replace("⅔", "0.667")
+            .replace("⅝", "0.625")
+            .replace("¾", "0.75")
+            .replace("⅘", "0.8")
+            .replace("⅚", "0.833")
+            .replace("⅞", "0.875");
+          unit = quantityMatch.at(-1)?.trim() ?? "";
+        } else if (quantityMatch.length === 3) {
+          // nur Zahl
+          quantity = quantityMatch[1];
+          unit = quantityMatch.at(-1)?.trim() ?? "";
         }
-
-        const unit = quantityMatch[2].trim();
-
         ingredients.push({
           id: `ingredient-${index + 1}`,
           name,
@@ -133,7 +165,7 @@ const parseIngredients = (
         });
       }
     } else if (trimmed.length > 2) {
-      // Fallback for ingredients without clear quantity format
+      // Fallback für Zutaten ohne Mengenangabe
       ingredients.push({
         id: `ingredient-${index + 1}`,
         name: trimmed,

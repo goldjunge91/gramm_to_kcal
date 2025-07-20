@@ -1,16 +1,17 @@
 "use client";
 
-import type { JSX } from "react";
-import { useState } from "react";
-import type { RecipeStep, ImageSettings } from "@/lib/types/types";
+import { useState, type JSX } from "react";
 
+// import { useState } from "react";
+import type { ImageSettings, RecipeStep } from "@/lib/types/types";
+
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 
-import { RichTextEditor } from "./RichTextEditor";
 import { ImageEditor } from "./ImageEditor";
+import { RichTextEditor } from "./RichTextEditor";
 import { StepImageUpload } from "./StepImageUpload";
 
 interface AdvancedStepManagerProps {
@@ -19,45 +20,48 @@ interface AdvancedStepManagerProps {
 }
 
 /** Advanced step manager with rich text editing and image controls */
-export const AdvancedStepManager = ({ 
-  steps, 
-  onStepsChange 
+export const AdvancedStepManager = ({
+  steps,
+  onStepsChange,
 }: AdvancedStepManagerProps): JSX.Element => {
-  const [selectedStepId, setSelectedStepId] = useState<string>(steps[0]?.id || '');
+  const [selectedStepId, setSelectedStepId] = useState<string>(
+    steps[0]?.id || "",
+  );
 
-  const selectedStep = steps.find(step => step.id === selectedStepId);
+  const selectedStep = steps.find((step) => step.id === selectedStepId);
 
   const handleTextChange = (formattedText: string): void => {
     if (!selectedStep) return;
-    
-    const updatedSteps = steps.map(step =>
-      step.id === selectedStepId 
-        ? { ...step, formattedText }
-        : step
+
+    const updatedSteps = steps.map((step) =>
+      step.id === selectedStepId ? { ...step, formattedText } : step,
     );
     onStepsChange(updatedSteps);
   };
 
-  const handleImageChange = (stepId: string, image: string | undefined): void => {
-    const updatedSteps = steps.map(step =>
-      step.id === stepId 
-        ? { 
-            ...step, 
+  const handleImageChange = (
+    stepId: string,
+    image: string | undefined,
+  ): void => {
+    const updatedSteps = steps.map((step) =>
+      step.id === stepId
+        ? {
+            ...step,
             image,
-            imageSettings: image ? (step.imageSettings || getDefaultImageSettings()) : undefined
+            imageSettings: image
+              ? step.imageSettings || getDefaultImageSettings()
+              : undefined,
           }
-        : step
+        : step,
     );
     onStepsChange(updatedSteps);
   };
 
   const handleImageSettingsChange = (imageSettings: ImageSettings): void => {
     if (!selectedStep) return;
-    
-    const updatedSteps = steps.map(step =>
-      step.id === selectedStepId 
-        ? { ...step, imageSettings }
-        : step
+
+    const updatedSteps = steps.map((step) =>
+      step.id === selectedStepId ? { ...step, imageSettings } : step,
     );
     onStepsChange(updatedSteps);
   };
@@ -65,12 +69,12 @@ export const AdvancedStepManager = ({
   const getDefaultImageSettings = (): ImageSettings => ({
     width: 200,
     height: 150,
-    position: 'center',
+    position: "center",
     quality: 80,
   });
 
   const duplicateStep = (stepId: string): void => {
-    const stepToDuplicate = steps.find(step => step.id === stepId);
+    const stepToDuplicate = steps.find((step) => step.id === stepId);
     if (!stepToDuplicate) return;
 
     const newStep: RecipeStep = {
@@ -84,35 +88,38 @@ export const AdvancedStepManager = ({
 
   const deleteStep = (stepId: string): void => {
     if (steps.length <= 1) return; // Don't delete the last step
-    
+
     const updatedSteps = steps
-      .filter(step => step.id !== stepId)
+      .filter((step) => step.id !== stepId)
       .map((step, index) => ({ ...step, order: index + 1 }));
-    
+
     onStepsChange(updatedSteps);
-    
+
     // Select next available step
     if (selectedStepId === stepId) {
-      setSelectedStepId(updatedSteps[0]?.id || '');
+      setSelectedStepId(updatedSteps[0]?.id || "");
     }
   };
 
-  const moveStep = (stepId: string, direction: 'up' | 'down'): void => {
-    const currentIndex = steps.findIndex(step => step.id === stepId);
+  const moveStep = (stepId: string, direction: "up" | "down"): void => {
+    const currentIndex = steps.findIndex((step) => step.id === stepId);
     if (currentIndex === -1) return;
-    
-    const newIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
+
+    const newIndex = direction === "up" ? currentIndex - 1 : currentIndex + 1;
     if (newIndex < 0 || newIndex >= steps.length) return;
-    
+
     const newSteps = [...steps];
-    [newSteps[currentIndex], newSteps[newIndex]] = [newSteps[newIndex], newSteps[currentIndex]];
-    
+    [newSteps[currentIndex], newSteps[newIndex]] = [
+      newSteps[newIndex],
+      newSteps[currentIndex],
+    ];
+
     // Update order numbers
-    const updatedSteps = newSteps.map((step, index) => ({ 
-      ...step, 
-      order: index + 1 
+    const updatedSteps = newSteps.map((step, index) => ({
+      ...step,
+      order: index + 1,
     }));
-    
+
     onStepsChange(updatedSteps);
   };
 
@@ -153,7 +160,7 @@ export const AdvancedStepManager = ({
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => moveStep(step.id, 'up')}
+                    onClick={() => moveStep(step.id, "up")}
                     disabled={step.order === 1}
                     className="w-6 h-6 p-0"
                     title="Nach oben"
@@ -163,7 +170,7 @@ export const AdvancedStepManager = ({
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => moveStep(step.id, 'down')}
+                    onClick={() => moveStep(step.id, "down")}
                     disabled={step.order === steps.length}
                     className="w-6 h-6 p-0"
                     title="Nach unten"
@@ -217,11 +224,13 @@ export const AdvancedStepManager = ({
                 currentImage={selectedStep.image}
                 onImageChange={handleImageChange}
               />
-              
+
               {selectedStep.image && (
                 <ImageEditor
                   image={selectedStep.image}
-                  settings={selectedStep.imageSettings || getDefaultImageSettings()}
+                  settings={
+                    selectedStep.imageSettings || getDefaultImageSettings()
+                  }
                   onSettingsChange={handleImageSettingsChange}
                 />
               )}
@@ -231,37 +240,42 @@ export const AdvancedStepManager = ({
               <Card>
                 <CardHeader>
                   <CardTitle className="text-lg flex items-center gap-2">
-                    <Badge variant="outline">Schritt {selectedStep.order}</Badge>
+                    <Badge variant="outline">
+                      Schritt {selectedStep.order}
+                    </Badge>
                     Vorschau
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    <div 
+                    <div
                       className="prose prose-sm max-w-none"
-                      dangerouslySetInnerHTML={{ 
-                        __html: selectedStep.formattedText || selectedStep.instruction 
+                      dangerouslySetInnerHTML={{
+                        __html:
+                          selectedStep.formattedText ||
+                          selectedStep.instruction,
                       }}
                     />
                     {selectedStep.image && (
-                      <div 
+                      <div
                         className="flex"
-                        style={{ 
-                          justifyContent: selectedStep.imageSettings?.position === 'left' 
-                            ? 'flex-start' 
-                            : selectedStep.imageSettings?.position === 'right' 
-                            ? 'flex-end' 
-                            : 'center' 
+                        style={{
+                          justifyContent:
+                            selectedStep.imageSettings?.position === "left"
+                              ? "flex-start"
+                              : selectedStep.imageSettings?.position === "right"
+                                ? "flex-end"
+                                : "center",
                         }}
                       >
                         <img
                           src={selectedStep.image}
                           alt={`Schritt ${selectedStep.order}`}
-                          style={{ 
-                            width: `${selectedStep.imageSettings?.width || 200}px`, 
+                          style={{
+                            width: `${selectedStep.imageSettings?.width || 200}px`,
                             height: `${selectedStep.imageSettings?.height || 150}px`,
-                            objectFit: 'cover',
-                            filter: `contrast(${selectedStep.imageSettings?.quality || 80}%)`
+                            objectFit: "cover",
+                            filter: `contrast(${selectedStep.imageSettings?.quality || 80}%)`,
                           }}
                           className="rounded border"
                         />

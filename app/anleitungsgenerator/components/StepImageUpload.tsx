@@ -1,5 +1,5 @@
-import type { JSX } from "react";
-import { useRef } from "react";
+/* eslint-disable no-alert */
+import { useRef, type JSX } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,41 +11,43 @@ interface StepImageUploadProps {
 }
 
 /** Component for uploading images to recipe steps */
-export const StepImageUpload = ({ 
-  stepId, 
-  currentImage, 
-  onImageChange 
+export const StepImageUpload = ({
+  stepId,
+  currentImage,
+  onImageChange,
 }: StepImageUploadProps): JSX.Element => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>): void => {
+  const handleFileSelect = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ): void => {
     const file = event.target.files?.[0];
     if (!file) return;
 
     // Validate file type
-    if (!file.type.startsWith('image/')) {
-      alert('Bitte wählen Sie eine Bilddatei aus.');
+    if (!file.type.startsWith("image/")) {
+      alert("Bitte wählen Sie eine Bilddatei aus.");
       return;
     }
 
     // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
-      alert('Bild ist zu groß. Maximal 5MB erlaubt.');
+      alert("Bild ist zu groß. Maximal 5MB erlaubt.");
       return;
     }
 
     const reader = new FileReader();
-    reader.onload = (e) => {
+    reader.addEventListener("load", (e) => {
       const result = e.target?.result as string;
       onImageChange(stepId, result);
-    };
+    });
     reader.readAsDataURL(file);
   };
 
   const handleRemoveImage = (): void => {
     onImageChange(stepId, undefined);
     if (fileInputRef.current) {
-      fileInputRef.current.value = '';
+      fileInputRef.current.value = "";
     }
   };
 
@@ -62,7 +64,7 @@ export const StepImageUpload = ({
         onChange={handleFileSelect}
         className="hidden"
       />
-      
+
       {currentImage ? (
         <div className="space-y-2">
           <div className="relative">

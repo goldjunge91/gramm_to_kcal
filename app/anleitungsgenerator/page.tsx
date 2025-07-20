@@ -9,11 +9,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { parseRecipeText } from "@/lib/parsing/recipeParser";
 
+import { AdvancedStepManager } from "./components/AdvancedStepManager";
 import { RecipeCard } from "./components/RecipeCard";
+import { RecipePreview } from "./components/RecipePreview";
 import { RecipeTextInput } from "./components/RecipeTextInput";
 import { StepManager } from "./components/StepManager";
-import { AdvancedStepManager } from "./components/AdvancedStepManager";
-import { RecipePreview } from "./components/RecipePreview";
 
 /** Anleitungsgenerator page for converting recipe text to A4 formatted cards */
 export default function AnleitungsgeneratorPage(): JSX.Element {
@@ -23,7 +23,7 @@ export default function AnleitungsgeneratorPage(): JSX.Element {
   const [showStepManager, setShowStepManager] = useState<boolean>(false);
   const [showAdvancedEditor, setShowAdvancedEditor] = useState<boolean>(false);
   const [showPreviewPanel, setShowPreviewPanel] = useState<boolean>(false);
-  const [previewMode, setPreviewMode] = useState<'compact' | 'full'>('compact');
+  const [previewMode, setPreviewMode] = useState<"compact" | "full">("compact");
 
   const handleParseRecipe = (): void => {
     if (!inputText.trim()) {
@@ -116,26 +116,26 @@ export default function AnleitungsgeneratorPage(): JSX.Element {
               <Button onClick={handlePrint} variant="default">
                 🖨️ Drucken
               </Button>
-              <Button 
-                onClick={() => setShowPreviewPanel(!showPreviewPanel)} 
+              <Button
+                onClick={() => setShowPreviewPanel(!showPreviewPanel)}
                 variant={showPreviewPanel ? "default" : "outline"}
               >
                 👁️ Live-Vorschau
               </Button>
-              <Button 
+              <Button
                 onClick={() => {
                   setShowAdvancedEditor(!showAdvancedEditor);
                   setShowStepManager(false);
-                }} 
+                }}
                 variant={showAdvancedEditor ? "default" : "outline"}
               >
                 🎨 Erweitert bearbeiten
               </Button>
-              <Button 
+              <Button
                 onClick={() => {
                   setShowStepManager(!showStepManager);
                   setShowAdvancedEditor(false);
-                }} 
+                }}
                 variant={showStepManager ? "default" : "outline"}
               >
                 📸 Einfache Bilder
@@ -147,20 +147,20 @@ export default function AnleitungsgeneratorPage(): JSX.Element {
                 🔄 Neu beginnen
               </Button>
             </div>
-            
+
             {/* Preview Mode Toggle */}
             {showPreviewPanel && (
               <div className="flex gap-2 justify-center">
-                <Button 
-                  onClick={() => setPreviewMode('compact')} 
-                  variant={previewMode === 'compact' ? "default" : "outline"}
+                <Button
+                  onClick={() => setPreviewMode("compact")}
+                  variant={previewMode === "compact" ? "default" : "outline"}
                   size="sm"
                 >
                   📱 Kompakt
                 </Button>
-                <Button 
-                  onClick={() => setPreviewMode('full')} 
-                  variant={previewMode === 'full' ? "default" : "outline"}
+                <Button
+                  onClick={() => setPreviewMode("full")}
+                  variant={previewMode === "full" ? "default" : "outline"}
                   size="sm"
                 >
                   📄 A4-Format
@@ -171,7 +171,7 @@ export default function AnleitungsgeneratorPage(): JSX.Element {
 
           {/* Advanced Step Manager */}
           {showAdvancedEditor && parsedRecipe?.steps && (
-            <AdvancedStepManager 
+            <AdvancedStepManager
               steps={parsedRecipe.steps}
               onStepsChange={handleStepsChange}
             />
@@ -179,7 +179,7 @@ export default function AnleitungsgeneratorPage(): JSX.Element {
 
           {/* Simple Step Manager */}
           {showStepManager && parsedRecipe?.steps && (
-            <StepManager 
+            <StepManager
               steps={parsedRecipe.steps}
               onStepsChange={handleStepsChange}
             />
@@ -187,14 +187,16 @@ export default function AnleitungsgeneratorPage(): JSX.Element {
 
           {/* Live Preview Panel */}
           {showPreviewPanel && parsedRecipe && (
-            <RecipePreview 
+            <RecipePreview
               recipe={parsedRecipe}
-              showFullCard={previewMode === 'full'}
+              showFullCard={previewMode === "full"}
             />
           )}
 
           {/* Recipe Card Display - Final Output */}
-          {parsedRecipe && !showPreviewPanel && <RecipeCard recipe={parsedRecipe} />}
+          {parsedRecipe && !showPreviewPanel && (
+            <RecipeCard recipe={parsedRecipe} />
+          )}
         </>
       )}
     </div>
