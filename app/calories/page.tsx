@@ -4,7 +4,7 @@ import { Plus, RefreshCw, Scan } from "lucide-react";
 import Link from "next/link";
 import { useState, type JSX } from "react";
 
-import type { Product } from "@/lib/types";
+import type { Product } from "@/lib/types/types";
 
 import { useMobileOffline } from "@/app/providers";
 // import { MobileOfflineStatus } from "@/components/MobileOfflineStatus";

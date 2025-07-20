@@ -1,13 +1,16 @@
 /**
  * Local storage hook for managing products without authentication
- * Used for temporary session-only data storage
+ * Uses sessionStorage for temporary session-only data storage
+ * Data is automatically cleared when browser session ends or page reloads
  */
 
 import { useCallback, useEffect, useState } from "react";
 
-import type { Product } from "@/lib/types";
+import type { Product } from "@/lib/types/types";
 
-const STORAGE_KEY = "calorie-tracker-products";
+import { env } from "@/lib/env";
+
+const STORAGE_KEY = env.STORAGE_KEY!;
 
 interface LocalProduct extends Omit<Product, "id"> {
   id: string;
@@ -22,36 +25,37 @@ const generateLocalId = (): string => {
 };
 
 /**
- * Hook for managing products in localStorage
+ * Hook for managing products in sessionStorage for unauthenticated users
  * Provides the same interface as the database hook for consistency
+ * Uses sessionStorage so data is cleared on page reload/session end
  */
 export function useLocalProducts() {
   const [products, setProducts] = useState<LocalProduct[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Load products from localStorage on mount
+  // Load products from sessionStorage on mount
   useEffect(() => {
     try {
-      const stored = localStorage.getItem(STORAGE_KEY);
+      const stored = sessionStorage.getItem(STORAGE_KEY);
       if (stored) {
         const parsedProducts = JSON.parse(stored) as LocalProduct[];
         setProducts(parsedProducts);
       }
     } catch (error) {
-      console.warn("Failed to load products from localStorage:", error);
+      console.warn("Failed to load products from sessionStorage:", error);
       setProducts([]);
     } finally {
       setIsLoading(false);
     }
   }, []);
 
-  // Save products to localStorage whenever they change
+  // Save products to sessionStorage whenever they change
   const saveToStorage = useCallback((newProducts: LocalProduct[]) => {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(newProducts));
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(newProducts));
       setProducts(newProducts);
     } catch (error) {
-      console.error("Failed to save products to localStorage:", error);
+      console.error("Failed to save products to sessionStorage:", error);
     }
   }, []);
 
@@ -94,10 +98,10 @@ export function useLocalProducts() {
   // Clear all products
   const clearProducts = useCallback(() => {
     try {
-      localStorage.removeItem(STORAGE_KEY);
+      sessionStorage.removeItem(STORAGE_KEY);
       setProducts([]);
     } catch (error) {
-      console.error("Failed to clear products from localStorage:", error);
+      console.error("Failed to clear products from sessionStorage:", error);
     }
   }, []);
 

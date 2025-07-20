@@ -1,11 +1,6 @@
 /**
  * Barcode Scanner Component
  * Uses html5-qrcode for better iOS Safari compatibility
- *
- * Key improvements for iOS:
- * - Better camera access handling
- * - Built-in device enumeration
- * - iOS-specific optimizations
  */
 
 "use client";
@@ -13,6 +8,8 @@
 import { Html5Qrcode, Html5QrcodeScannerState } from "html5-qrcode";
 import { Camera, Loader2, Upload, X } from "lucide-react";
 import { useCallback, useEffect, useRef, useState, type JSX } from "react";
+
+import type { BarcodeScannerProps, ScanMode } from "@/lib/types/scanner-types";
 
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -24,15 +21,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-interface BarcodeScannerProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onScan: (barcode: string) => void;
-  onError?: (error: string) => void;
-}
-
-type ScanMode = "camera" | "upload";
-
 export function BarcodeScanner({
   isOpen,
   onClose,
@@ -42,6 +30,7 @@ export function BarcodeScanner({
   const [scanMode, setScanMode] = useState<ScanMode>("camera");
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
   // Scanner state managed via scannerRef for better cleanup control
   const [isProcessingFile, setIsProcessingFile] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);

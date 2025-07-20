@@ -1,4 +1,4 @@
-import type { Ingredient, Product } from "./types";
+import type { Ingredient, Product } from "./types/types";
 
 /** Calculate calories per 1g from a product */
 export const calculateKcalPer100g = (product: Product): number => {

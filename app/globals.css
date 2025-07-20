@@ -168,3 +168,268 @@ body,
   width: 100%;
   box-sizing: border-box;
 }
+/* Animation für das fliegende Schnitzel */
+@keyframes fliegen {
+  0% {
+    transform: translateX(0) rotate(0deg) scale(0.8);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translateX(50vw) rotate(180deg) scale(1.2);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(calc(100vw + 200px)) rotate(360deg) scale(0.8);
+    opacity: 0.7;
+  }
+}
+@keyframes schnitzelBounce {
+  0% {
+    left: 0;
+    transform: scale(0.9) rotate(0deg);
+  }
+  10% {
+    transform: scale(1.05) rotate(10deg);
+  }
+  50% {
+    left: calc(100vw - 150px);
+    transform: scale(1.2) rotate(180deg);
+  }
+  90% {
+    transform: scale(1.05) rotate(350deg);
+  }
+  100% {
+    left: 0;
+    transform: scale(0.9) rotate(360deg);
+  }
+}
+#fliegendes-schnitzel {
+  position: fixed;
+  width: 150px;
+  height: auto;
+  z-index: 9999;
+  pointer-events: none;
+  top: 10vh; /* oder dynamisch per JS */
+  left: 0;
+  animation-name: schnitzelBounce;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  animation-duration: 6s;
+}
+
+/* A4 Recipe Card Styles */
+.recipe-card-a4 {
+  width: 210mm;
+  min-height: 297mm;
+  max-width: 100%;
+  margin: 0 auto;
+  background: white;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Print-specific styles */
+@media print {
+  @page {
+    size: A4;
+    margin: 15mm;
+  }
+
+  body {
+    -webkit-print-color-adjust: exact;
+    color-adjust: exact;
+  }
+
+  .recipe-card-a4 {
+    width: 100%;
+    min-height: auto;
+    max-width: none;
+    margin: 0;
+    box-shadow: none;
+    page-break-inside: avoid;
+  }
+
+  /* Hide elements with print-hidden class */
+  .print-hidden {
+    display: none !important;
+  }
+
+  /* Print typography adjustments */
+  .recipe-card-a4 h1 {
+    font-size: 1.5rem !important;
+    line-height: 2rem !important;
+    margin-bottom: 0.5rem !important;
+  }
+
+  .recipe-card-a4 .badge-print {
+    font-size: 0.75rem !important;
+    gap: 0.5rem !important;
+    margin-bottom: 0.75rem !important;
+  }
+
+  .recipe-card-a4 .description-print {
+    font-size: 0.75rem !important;
+  }
+
+  .recipe-card-a4 .card-header-print {
+    padding-bottom: 0.5rem !important;
+  }
+
+  .recipe-card-a4 .card-title-print {
+    font-size: 1.125rem !important;
+    line-height: 1.75rem !important;
+  }
+
+  .recipe-card-a4 .ingredient-item-print {
+    font-size: 0.875rem !important;
+  }
+
+  .recipe-card-a4 .instruction-item-print {
+    font-size: 0.75rem !important;
+    gap: 0.5rem !important;
+    margin-bottom: 0.5rem !important;
+  }
+
+  .recipe-card-a4 .step-number-print {
+    width: 1.25rem !important;
+    height: 1.25rem !important;
+    font-size: 0.75rem !important;
+  }
+
+  .recipe-card-a4 .footer-print {
+    margin-top: 1.5rem !important;
+    padding-top: 0.75rem !important;
+    font-size: 10px !important;
+  }
+
+  .recipe-card-a4 .main-content-print {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1.5rem !important;
+  }
+
+  .recipe-card-a4 .card-print {
+    box-shadow: none !important;
+    border: 1px solid #d1d5db !important;
+  }
+
+  .recipe-card-a4 .ingredients-list-print > * + * {
+    margin-top: 0.25rem !important;
+  }
+
+  .recipe-card-a4 .instructions-list-print > * + * {
+    margin-top: 0.5rem !important;
+  }
+
+  /* Print-specific styles for step images */
+  .recipe-card-a4 .instruction-item-print img {
+    max-width: 4cm !important;
+    height: 3cm !important;
+    object-fit: cover !important;
+    border: 1px solid #d1d5db !important;
+    margin-top: 0.25rem !important;
+  }
+
+  /* Print styles for rich text formatting */
+  .recipe-card-a4 .rich-text {
+    font-size: 0.75rem !important;
+    line-height: 1.25 !important;
+  }
+
+  .recipe-card-a4 .rich-text strong {
+    font-weight: 700 !important;
+  }
+
+  .recipe-card-a4 .rich-text em {
+    font-style: italic !important;
+  }
+
+  .recipe-card-a4 .rich-text ul,
+  .recipe-card-a4 .rich-text ol {
+    margin-left: 1rem !important;
+    margin-top: 0.25rem !important;
+    margin-bottom: 0.25rem !important;
+  }
+}
+
+/* Rich Text Editor Styles */
+.rich-text {
+  line-height: 1.6;
+}
+
+.rich-text strong {
+  font-weight: 700;
+}
+
+.rich-text em {
+  font-style: italic;
+}
+
+.rich-text u {
+  text-decoration: underline;
+}
+
+.rich-text ul {
+  list-style-type: disc;
+  margin-left: 1.5rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.rich-text ol {
+  list-style-type: decimal;
+  margin-left: 1.5rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.rich-text li {
+  margin-bottom: 0.25rem;
+}
+
+/* Rich Text Editor Placeholder */
+[contenteditable]:empty:before {
+  content: attr(data-placeholder);
+  color: #9ca3af;
+  font-style: italic;
+}
+
+/* Image Editor Controls */
+.image-editor-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.size-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* Preview Panel Styles */
+.recipe-preview-compact {
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.recipe-preview-full {
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+/* Responsive Layout for Desktop */
+@media (min-width: 1024px) {
+  .desktop-layout {
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    gap: 1.5rem;
+    align-items: start;
+  }
+
+  .desktop-preview-panel {
+    position: sticky;
+    top: 1rem;
+    max-height: calc(100vh - 2rem);
+    overflow-y: auto;
+  }
+}

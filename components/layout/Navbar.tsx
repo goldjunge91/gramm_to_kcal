@@ -2,6 +2,8 @@
 
 import {
   Accessibility,
+  Beaker,
+  Book,
   Calculator,
   ChefHat,
   LogOut,
@@ -84,6 +86,17 @@ export const Navbar = (): JSX.Element => {
               <span>Kalorienvergleich</span>
             </Link>
             <Link
+              href="/anleitungsgenerator"
+              className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                clientPathname === "/anleitungsgenerator"
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted"
+              }`}
+            >
+              <Book className="h-8 w-8" />
+              <span>Anleitungsgenerator</span>
+            </Link>
+            <Link
               href="/recipe"
               className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                 clientPathname === "/recipe"
@@ -93,6 +106,17 @@ export const Navbar = (): JSX.Element => {
             >
               <ChefHat className="h-8 w-8" />
               <span>Rezept-Manager</span>
+            </Link>
+            <Link
+              href="/unit-converter"
+              className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                clientPathname === "/unit-converter"
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted"
+              }`}
+            >
+              <Beaker className="h-8 w-8" />
+              <span>Unit-Converter</span>
             </Link>
           </div>
 
@@ -119,6 +143,17 @@ export const Navbar = (): JSX.Element => {
               aria-label="Rezept-Manager"
             >
               <ChefHat className="h-5 w-5" />
+            </Link>
+            <Link
+              href="/unit-converter"
+              className={`p-2 rounded-md ${
+                clientPathname === "/unit-converter"
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted"
+              }`}
+              aria-label="Unit-Converter"
+            >
+              <Beaker className="h-5 w-5" />
             </Link>
             <div className="flex items-center gap-2">
               <ThemeSwitcher />
