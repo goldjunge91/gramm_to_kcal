@@ -12,6 +12,7 @@ import { parseRecipeText } from "@/lib/parsing/recipeParser";
 import { RecipeCard } from "./components/RecipeCard";
 import { RecipeTextInput } from "./components/RecipeTextInput";
 import { StepManager } from "./components/StepManager";
+import { AdvancedStepManager } from "./components/AdvancedStepManager";
 
 /** Anleitungsgenerator page for converting recipe text to A4 formatted cards */
 export default function AnleitungsgeneratorPage(): JSX.Element {
@@ -19,6 +20,7 @@ export default function AnleitungsgeneratorPage(): JSX.Element {
   const [parsedRecipe, setParsedRecipe] = useState<ParsedRecipe | null>(null);
   const [showPreview, setShowPreview] = useState<boolean>(false);
   const [showStepManager, setShowStepManager] = useState<boolean>(false);
+  const [showAdvancedEditor, setShowAdvancedEditor] = useState<boolean>(false);
 
   const handleParseRecipe = (): void => {
     if (!inputText.trim()) {
@@ -42,6 +44,7 @@ export default function AnleitungsgeneratorPage(): JSX.Element {
     setParsedRecipe(null);
     setShowPreview(false);
     setShowStepManager(false);
+    setShowAdvancedEditor(false);
     toast.info("Formular zurückgesetzt");
   };
 
@@ -110,13 +113,25 @@ export default function AnleitungsgeneratorPage(): JSX.Element {
                 🖨️ Drucken
               </Button>
               <Button 
-                onClick={() => setShowStepManager(!showStepManager)} 
+                onClick={() => {
+                  setShowAdvancedEditor(!showAdvancedEditor);
+                  setShowStepManager(false);
+                }} 
+                variant={showAdvancedEditor ? "default" : "outline"}
+              >
+                🎨 Erweitert bearbeiten
+              </Button>
+              <Button 
+                onClick={() => {
+                  setShowStepManager(!showStepManager);
+                  setShowAdvancedEditor(false);
+                }} 
                 variant={showStepManager ? "default" : "outline"}
               >
-                📸 Bilder hinzufügen
+                📸 Einfache Bilder
               </Button>
               <Button onClick={() => setShowPreview(false)} variant="outline">
-                ✏️ Bearbeiten
+                ✏️ Text bearbeiten
               </Button>
               <Button onClick={handleReset} variant="outline">
                 🔄 Neu beginnen
@@ -124,7 +139,15 @@ export default function AnleitungsgeneratorPage(): JSX.Element {
             </div>
           </div>
 
-          {/* Step Manager */}
+          {/* Advanced Step Manager */}
+          {showAdvancedEditor && parsedRecipe?.steps && (
+            <AdvancedStepManager 
+              steps={parsedRecipe.steps}
+              onStepsChange={handleStepsChange}
+            />
+          )}
+
+          {/* Simple Step Manager */}
           {showStepManager && parsedRecipe?.steps && (
             <StepManager 
               steps={parsedRecipe.steps}

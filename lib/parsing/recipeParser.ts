@@ -186,28 +186,11 @@ const createStepsFromInstructions = (instructions: string[]): RecipeStep[] => {
 
 /** Main function to parse recipe text into structured data */
 export const parseRecipeText = (text: string): ParsedRecipe => {
-  console.log("Parsing text:", `${text.slice(0, 200)}...`);
-
   const title = extractTitle(text);
-  console.log("Extracted title:", title);
-
   const metadata = parseMetadata(text);
-  console.log("Extracted metadata:", metadata);
-
   const description = extractDescription(text);
-  console.log("Extracted description:", description);
-
   const { ingredients, portions } = parseIngredients(text);
-  console.log(
-    "Extracted ingredients:",
-    ingredients.length,
-    "portions:",
-    portions,
-  );
-
   const instructions = parseInstructions(text);
-  console.log("Extracted instructions:", instructions.length);
-
   const steps = createStepsFromInstructions(instructions);
 
   return {

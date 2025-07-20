@@ -53,11 +53,21 @@ export interface RecentScan {
   scannedAt: string; // ISO date string
 }
 
-/** Recipe step with optional image */
+/** Image settings for step images */
+export interface ImageSettings {
+  width: number;
+  height: number;
+  position: 'left' | 'center' | 'right';
+  quality: number;
+}
+
+/** Recipe step with optional image and formatting */
 export interface RecipeStep {
   id: string;
   instruction: string;
+  formattedText?: string; // HTML formatted text
   image?: string; // base64 encoded image or URL
+  imageSettings?: ImageSettings;
   order: number;
 }
 

@@ -81,16 +81,42 @@ export const RecipeCard = ({ recipe }: RecipeCardProps): JSX.Element => {
                         <span className="flex-shrink-0 w-6 h-6 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-sm font-bold step-number-print">
                           {step.order}
                         </span>
-                        <span className="text-sm leading-relaxed">
-                          {step.instruction}
-                        </span>
+                        <div className="text-sm leading-relaxed flex-1">
+                          {step.formattedText ? (
+                            <div
+                              className="rich-text"
+                              dangerouslySetInnerHTML={{
+                                __html: step.formattedText,
+                              }}
+                            />
+                          ) : (
+                            <span>{step.instruction}</span>
+                          )}
+                        </div>
                       </div>
                       {step.image && (
-                        <div className="ml-9">
+                        <div
+                          className="ml-9"
+                          style={{
+                            display: "flex",
+                            justifyContent:
+                              step.imageSettings?.position === "left"
+                                ? "flex-start"
+                                : step.imageSettings?.position === "right"
+                                  ? "flex-end"
+                                  : "center",
+                          }}
+                        >
                           <img
                             src={step.image}
                             alt={`Schritt ${step.order}`}
-                            className="w-full max-w-sm h-32 object-cover rounded-md border mt-2"
+                            style={{
+                              width: `${step.imageSettings?.width || 200}px`,
+                              height: `${step.imageSettings?.height || 150}px`,
+                              objectFit: "cover",
+                              filter: `contrast(${step.imageSettings?.quality || 80}%)`,
+                            }}
+                            className="rounded-md border mt-2"
                           />
                         </div>
                       )}
