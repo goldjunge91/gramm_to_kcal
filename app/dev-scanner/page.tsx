@@ -259,11 +259,11 @@ export default function DevScannerPage(): JSX.Element {
   const handleSpeedTestScan = useCallback(
     (barcode: string, scanDiagnostics: ScanDiagnostics) => {
       const detectionTime = scanDiagnostics.scanDuration;
-      
+
       setSpeedTestResult({
         detectionTime,
         barcode,
-        timestamp: new Date().toLocaleTimeString()
+        timestamp: new Date().toLocaleTimeString(),
       });
 
       // DON'T close the speed test scanner - keep it open for multiple tests
@@ -275,7 +275,7 @@ export default function DevScannerPage(): JSX.Element {
         duration: 3000,
       });
     },
-    []
+    [],
   );
 
   return (
@@ -371,7 +371,9 @@ export default function DevScannerPage(): JSX.Element {
                   <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
                     <div className="flex items-center gap-2 mb-1">
                       <Timer className="h-4 w-4 text-green-600" />
-                      <span className="font-medium text-green-800">Last Detection</span>
+                      <span className="font-medium text-green-800">
+                        Last Detection
+                      </span>
                     </div>
                     <div className="text-sm space-y-1">
                       <div className="flex justify-between">

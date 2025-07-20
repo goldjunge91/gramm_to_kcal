@@ -65,7 +65,9 @@ export function DevBarcodeScanner({
   >(null);
   const [scanProgress, setScanProgress] = useState(0);
   const [fps, setFps] = useState(0);
-  const [flashFeedback, setFlashFeedback] = useState<"success" | "error" | null>(null);
+  const [flashFeedback, setFlashFeedback] = useState<
+    "success" | "error" | null
+  >(null);
 
   // Refs
   const scannerRef = useRef<Html5Qrcode | null>(null);
@@ -99,12 +101,12 @@ export function DevBarcodeScanner({
   // Create diagnostics object
   const createDiagnostics = useCallback(
     (
-      barcode: string, 
-      success: boolean, 
+      barcode: string,
+      success: boolean,
       scanStart: number,
       currentDeviceInfo?: ScanDiagnostics["deviceInfo"],
       currentScannerSettings?: ScanDiagnostics["scannerSettings"],
-      error?: string
+      error?: string,
     ): ScanDiagnostics => {
       const endTime = performance.now();
       return {
@@ -132,22 +134,29 @@ export function DevBarcodeScanner({
     scanStartTimeRef.current = performance.now();
 
     // Wait for DOM element to be available
-    const waitForElement = (elementId: string, maxAttempts = 10): Promise<HTMLElement> => {
+    const waitForElement = (
+      elementId: string,
+      maxAttempts = 10,
+    ): Promise<HTMLElement> => {
       return new Promise((resolve, reject) => {
         let attempts = 0;
-        
+
         const checkElement = () => {
-          const element = document.getElementById(elementId);
+          const element = document.querySelector<HTMLElement>(`#${elementId}`);
           if (element) {
             resolve(element);
           } else if (attempts < maxAttempts) {
             attempts++;
             setTimeout(checkElement, 100); // Wait 100ms between attempts
           } else {
-            reject(new Error(`Element with id '${elementId}' not found after ${maxAttempts} attempts`));
+            reject(
+              new Error(
+                `Element with id '${elementId}' not found after ${maxAttempts} attempts`,
+              ),
+            );
           }
         };
-        
+
         checkElement();
       });
     };
@@ -155,7 +164,7 @@ export function DevBarcodeScanner({
     try {
       // Wait for the scanner element to be available in the DOM
       await waitForElement(scannerId);
-      
+
       // Create scanner instance
       const scanner = new Html5Qrcode(scannerId);
       scannerRef.current = scanner;
@@ -179,7 +188,7 @@ export function DevBarcodeScanner({
       // Configure scanner with performance monitoring
       const config = {
         fps: 10,
-        qrbox: { width: 250, height: 250 },
+        qrbox: { width: 280, height: 280 }, // Larger qrbox to fill most of the 320px container
         aspectRatio: 1,
       };
 
@@ -199,14 +208,14 @@ export function DevBarcodeScanner({
           // Success callback - flash green
           setFlashFeedback("success");
           setTimeout(() => setFlashFeedback(null), 1000); // Clear after 1 second
-          
+
           clearInterval(fpsInterval);
           const diagnostics = createDiagnostics(
-            decodedText, 
-            true, 
+            decodedText,
+            true,
             scanStartTimeRef.current,
             deviceInfo || undefined,
-            config
+            config,
           );
           onScan(decodedText, diagnostics);
           // Don't stop scanning for speed tests - keep it running
@@ -230,8 +239,8 @@ export function DevBarcodeScanner({
     } catch (error) {
       console.error("Scanner start error:", error);
       const errorMessage =
-        error instanceof Error 
-          ? error.message.includes("not found") 
+        error instanceof Error
+          ? error.message.includes("not found")
             ? "Scanner initialization failed - dialog not ready. Please try again."
             : error.message
           : "Failed to start camera";
@@ -298,12 +307,12 @@ export function DevBarcodeScanner({
         tempElement.remove();
 
         const diagnostics = createDiagnostics(
-          result, 
-          true, 
+          result,
+          true,
           scanStartTimeRef.current,
           deviceInfo || undefined,
           undefined, // No scanner settings for file upload
-          undefined  // No error
+          undefined, // No error
         );
         onScan(result, diagnostics);
         onClose();
@@ -383,7 +392,7 @@ export function DevBarcodeScanner({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-auto">
+      <DialogContent className="max-w-lg max-h-[90vh] overflow-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Activity className="h-5 w-5" />
@@ -512,25 +521,31 @@ export function DevBarcodeScanner({
             <div className="relative">
               <div
                 id={scannerId}
-                className={`w-full max-w-md mx-auto border-2 border-dashed rounded-lg overflow-hidden transition-all duration-300 ${
-                  flashFeedback === "success" 
-                    ? "border-green-500 bg-green-50 shadow-lg shadow-green-200" 
+                className={`w-80 h-80 mx-auto border-2 border-dashed rounded-lg overflow-hidden transition-all duration-300 ${
+                  flashFeedback === "success"
+                    ? "border-green-500 bg-green-50 shadow-lg shadow-green-200"
                     : flashFeedback === "error"
-                    ? "border-red-500 bg-red-50 shadow-lg shadow-red-200"
-                    : "border-gray-300"
+                      ? "border-red-500 bg-red-50 shadow-lg shadow-red-200"
+                      : "border-gray-300"
                 }`}
               />
 
               {/* Flash Feedback Overlay */}
               {flashFeedback && (
-                <div className={`absolute inset-0 flex items-center justify-center rounded-lg transition-all duration-300 ${
-                  flashFeedback === "success" 
-                    ? "bg-green-500/30 border-2 border-green-500" 
-                    : "bg-red-500/30 border-2 border-red-500"
-                }`}>
-                  <div className={`text-center font-bold text-2xl ${
-                    flashFeedback === "success" ? "text-green-800" : "text-red-800"
-                  }`}>
+                <div
+                  className={`absolute inset-0 flex items-center justify-center rounded-lg transition-all duration-300 ${
+                    flashFeedback === "success"
+                      ? "bg-green-500/30 border-2 border-green-500"
+                      : "bg-red-500/30 border-2 border-red-500"
+                  }`}
+                >
+                  <div
+                    className={`text-center font-bold text-2xl ${
+                      flashFeedback === "success"
+                        ? "text-green-800"
+                        : "text-red-800"
+                    }`}
+                  >
                     {flashFeedback === "success" ? "✓ DETECTED!" : "✗ ERROR!"}
                   </div>
                 </div>

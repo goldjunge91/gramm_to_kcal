@@ -89,7 +89,7 @@ export function BarcodeScanner({
 
   const startScanning = useCallback(
     async (elementId: string) => {
-      if (!document.getElementById(elementId)) {
+      if (!document.querySelector<HTMLElement>(`#${elementId}`)) {
         console.warn(`Scanner container #${elementId} not found in DOM.`);
         return;
       }

@@ -3,7 +3,8 @@
     "allow": [
       "Bash(mkdir:*)",
       "Bash(pnpm dlx shadcn@latest add:*)",
-      "mcp__mcp-sequentialthinking-tools__sequentialthinking_tools"
+      "mcp__mcp-sequentialthinking-tools__sequentialthinking_tools",
+      "mcp__claude-pocket-pick__pocket_add"
     ],
     "deny": []
   }
