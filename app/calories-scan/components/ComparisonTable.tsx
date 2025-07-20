@@ -3,13 +3,13 @@ import type { CellContext, Column } from "@tanstack/react-table";
 import { ArrowUpDown, Trash2, TrendingUp, Weight } from "lucide-react";
 import { useMemo, type JSX } from "react";
 
-import type { Product } from "@/lib/types";
+import type { Product } from "@/lib/types/types";
 
-import { Button } from "@/components/ui/button";
 import {
   EnhancedTable,
   type EnhancedTableColumn,
-} from "@/components/ui/enhanced-table";
+} from "@/components/enhanced-table";
+import { Button } from "@/components/ui/button";
 import { LoadingButton } from "@/components/ui/loading-button";
 import { calculateKcalPer100g } from "@/lib/calculations";
 

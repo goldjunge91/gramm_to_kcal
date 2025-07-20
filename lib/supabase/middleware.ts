@@ -2,6 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 import { env } from "@/lib/env";
+import { isPublicRoute } from "@/lib/middleware/routes";
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
@@ -40,12 +41,17 @@ export async function updateSession(request: NextRequest) {
 
   const user = data?.claims;
 
+  // Import isPublicRoute from your middleware routes
+  // (add this import at the top if not present)
+  // import { isPublicRoute } from "@/lib/middleware/routes";
+
   if (
     !user &&
+    !isPublicRoute(request.nextUrl.pathname) &&
     !request.nextUrl.pathname.startsWith("/login") &&
     !request.nextUrl.pathname.startsWith("/auth")
   ) {
-    // no user, potentially respond by redirecting the user to the login page
+    // Only redirect if NOT a public route
     const url = request.nextUrl.clone();
     url.pathname = "/auth/login";
     return NextResponse.redirect(url);

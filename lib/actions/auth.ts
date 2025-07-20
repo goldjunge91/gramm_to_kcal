@@ -5,8 +5,8 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 
 import { updateUserProfile, upsertUser } from "@/lib/db/users";
+import { createClient } from "@/lib/supabase/server";
 import { getAuthErrorMessage } from "@/lib/utils/auth-errors";
-import { createClient } from "@/utils/supabase/server";
 
 // Rate limiting store (in production, use Redis or database)
 const rateLimitStore = new Map<
@@ -146,113 +146,6 @@ export async function updateUserProfileAction(updates: {
 }
 
 /**
- * Server action for secure login using Supabase authentication
- * Uses Supabase's built-in password hashing and validation
- */
-export async function loginAction(formData: FormData) {
-  const email = formData.get("email") as string;
-  const password = formData.get("password") as string;
-
-  if (!email || !password) {
-    return { success: false, error: "Email and password are required" };
-  }
-
-  try {
-    const supabase = await createClient();
-
-    // Use Supabase's secure signInWithPassword method
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-
-    if (error) {
-      console.error("Login error:", error);
-      return { success: false, error: error.message };
-    }
-
-    if (data.user) {
-      // Sync user with database
-      await upsertUser(data.user);
-
-      // Revalidate cached data
-      revalidatePath("/", "layout");
-
-      // Redirect to main app
-      redirect("/calories");
-    }
-
-    return { success: false, error: "Login failed" };
-  } catch (error) {
-    console.error("Server login error:", error);
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Login failed",
-    };
-  }
-}
-
-/**
- * Server action for secure signup using Supabase authentication
- * Uses Supabase's built-in password hashing and validation
- */
-export async function signupAction(formData: FormData) {
-  const email = formData.get("email") as string;
-  const password = formData.get("password") as string;
-
-  if (!email || !password) {
-    return { success: false, error: "Email and password are required" };
-  }
-
-  // Basic password validation (Supabase will do more comprehensive validation)
-  if (password.length < 6) {
-    return {
-      success: false,
-      error: "Password must be at least 6 characters long",
-    };
-  }
-
-  try {
-    const supabase = await createClient();
-
-    // Use Supabase's secure signUp method
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: `${process.env.NEXT_PUBLIC_URL || "http://localhost:3000"}/calories`,
-      },
-    });
-
-    if (error) {
-      console.error("Signup error:", error);
-      return { success: false, error: error.message };
-    }
-
-    if (data.user) {
-      // Check if user is immediately confirmed (auto-confirm enabled)
-      if (data.session) {
-        // User is automatically signed in
-        await upsertUser(data.user);
-        revalidatePath("/", "layout");
-        redirect("/calories");
-      } else {
-        // Email confirmation required
-        redirect("/auth/sign-up-success");
-      }
-    }
-
-    return { success: false, error: "Signup failed" };
-  } catch (error) {
-    console.error("Server signup error:", error);
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Signup failed",
-    };
-  }
-}
-
-/**
  * Server action for secure password reset using Supabase
  */
 export async function resetPasswordAction(formData: FormData) {
@@ -357,11 +250,10 @@ export async function handleAuthCallback() {
  * State-of-the-art server action for secure login
  * Features: Rate limiting, input validation, audit logging, client-side hashing support
  */
-export async function signInAction(formData: FormData) {
+export async function loginAction(formData: FormData) {
   const rawData = {
     email: formData.get("email") as string,
     password: formData.get("password") as string,
-    hashedPassword: formData.get("hashedPassword") as string, // Optional client-side hashed password
   };
 
   // Input validation with Zod
@@ -372,7 +264,7 @@ export async function signInAction(formData: FormData) {
     redirect(`/auth/login?error=${encodeURIComponent(errorMessage)}`);
   }
 
-  const { email, password, hashedPassword } = validation.data;
+  const { email, password } = validation.data;
 
   // Rate limiting by email
   if (!checkRateLimit(`signin:${email}`)) {
@@ -385,12 +277,9 @@ export async function signInAction(formData: FormData) {
   const supabase = await createClient();
 
   try {
-    // Use client-side hashed password if provided, otherwise use plain password
-    const authPassword = hashedPassword || password;
-
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
-      password: authPassword,
+      password,
     });
 
     if (error) {
@@ -426,12 +315,11 @@ export async function signInAction(formData: FormData) {
  * State-of-the-art server action for secure signup
  * Features: Rate limiting, input validation, audit logging, client-side hashing support
  */
-export async function signUpAction(formData: FormData) {
+export async function signupAction(formData: FormData) {
   const rawData = {
     email: formData.get("email") as string,
     password: formData.get("password") as string,
     confirmPassword: formData.get("confirmPassword") as string,
-    hashedPassword: formData.get("hashedPassword") as string, // Optional client-side hashed password
   };
 
   // Input validation with Zod
@@ -442,7 +330,7 @@ export async function signUpAction(formData: FormData) {
     redirect(`/auth/sign-up?error=${encodeURIComponent(errorMessage)}`);
   }
 
-  const { email, password, hashedPassword } = validation.data;
+  const { email, password } = validation.data;
 
   // Rate limiting by email
   if (!checkRateLimit(`signup:${email}`)) {
@@ -455,12 +343,9 @@ export async function signUpAction(formData: FormData) {
   const supabase = await createClient();
 
   try {
-    // Use client-side hashed password if provided, otherwise use plain password
-    const authPassword = hashedPassword || password;
-
     const { data, error } = await supabase.auth.signUp({
       email,
-      password: authPassword,
+      password,
       options: {
         emailRedirectTo: `${process.env.NEXT_PUBLIC_URL || "http://localhost:3000"}/calories`,
       },

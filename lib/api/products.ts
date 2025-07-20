@@ -3,7 +3,6 @@ import { toast } from "sonner";
 
 import { useMobileOffline } from "@/app/providers";
 import { mobileOfflineStorage } from "@/lib/offline/mobile-storage";
-import { createClient } from "@/utils/supabase/client";
 
 import type { NewProduct, Product } from "../db/schema";
 
@@ -17,7 +16,8 @@ export const useProducts = (userId: string) => {
         return await mobileOfflineStorage.getProducts(userId);
       }
 
-      const supabase = createClient();
+      const { createRegularClient } = await import("@/lib/supabase/client");
+      const supabase = createRegularClient();
       const { data, error } = await supabase
         .from("products")
         .select("*")
@@ -68,7 +68,8 @@ export const useCreateProduct = () => {
         return productWithId;
       }
 
-      const supabase = createClient();
+      const { createRegularClient } = await import("@/lib/supabase/client");
+      const supabase = createRegularClient();
       // Mapping für Supabase: user_id statt userId
       // Nur user_id an Supabase übergeben, nicht userId
       const { userId, ...rest } = product;
@@ -145,7 +146,8 @@ export const useUpdateProduct = () => {
         return updatedProduct;
       }
 
-      const supabase = createClient();
+      const { createRegularClient } = await import("@/lib/supabase/client");
+      const supabase = createRegularClient();
       const { data, error } = await supabase
         .from("products")
         .update(updates)
@@ -196,7 +198,8 @@ export const useDeleteProduct = () => {
         return;
       }
 
-      const supabase = createClient();
+      const { createRegularClient } = await import("@/lib/supabase/client");
+      const supabase = createRegularClient();
       const { error } = await supabase
         .from("products")
         .update({ is_deleted: true })

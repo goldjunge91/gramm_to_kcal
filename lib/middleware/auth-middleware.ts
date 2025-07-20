@@ -172,41 +172,32 @@ async function handlePageRoute(
 
   // Handle protected routes
   if (isProtectedRoute(pathname)) {
-    if (!authContext.isAuthenticated) {
-      if (debug) {
+    // Allow unauthenticated users to access protected routes
+    if (debug) {
+      if (!authContext.isAuthenticated) {
         console.log(
-          `[Auth Middleware] Redirecting unauthenticated user to login: ${pathname}`,
+          `[Auth Middleware] Unauthenticated user allowed on protected route: ${pathname}`,
+        );
+      } else {
+        console.log(
+          `[Auth Middleware] Protected route authorized: ${pathname}`,
         );
       }
-      const url = request.nextUrl.clone();
-      url.pathname = REDIRECT_PATHS.LOGIN;
-      url.searchParams.set("redirect", pathname);
-      return NextResponse.redirect(url);
-    }
-
-    if (debug) {
-      console.log(`[Auth Middleware] Protected route authorized: ${pathname}`);
     }
     return await updateSession(request);
   }
 
-  // For unknown routes, default to protection
-  if (!authContext.isAuthenticated) {
-    if (debug) {
+  // For unknown routes, allow unauthenticated users
+  if (debug) {
+    if (!authContext.isAuthenticated) {
       console.log(
-        `[Auth Middleware] Unknown route, redirecting to login: ${pathname}`,
+        `[Auth Middleware] Unauthenticated user allowed on unknown route: ${pathname}`,
+      );
+    } else {
+      console.log(
+        `[Auth Middleware] Unknown route allowed for authenticated user: ${pathname}`,
       );
     }
-    const url = request.nextUrl.clone();
-    url.pathname = REDIRECT_PATHS.LOGIN;
-    url.searchParams.set("redirect", pathname);
-    return NextResponse.redirect(url);
-  }
-
-  if (debug) {
-    console.log(
-      `[Auth Middleware] Unknown route allowed for authenticated user: ${pathname}`,
-    );
   }
   return await updateSession(request);
 }
