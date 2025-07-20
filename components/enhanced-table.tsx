@@ -65,15 +65,15 @@ import {
 import { cn } from "@/lib/utils";
 
 // Types for enhanced table
-export type EnhancedTableColumn<T> = ColumnDef<T, any> & {
+export type TableColumn<T> = ColumnDef<T, any> & {
   draggable?: boolean;
   expandable?: boolean;
   priority?: number; // For responsive hiding (1 = highest priority, show on mobile)
 };
 
-export interface EnhancedTableProps<T> {
+export interface TableProps<T> {
   data: T[];
-  columns: EnhancedTableColumn<T>[];
+  columns: TableColumn<T>[];
   title?: string;
   searchable?: boolean;
   searchPlaceholder?: string;
@@ -118,7 +118,7 @@ const DraggableTableHeader = <T,>({
   };
 
   const isDraggableColumn =
-    (header.column.columnDef as EnhancedTableColumn<T>).draggable !== false;
+    (header.column.columnDef as TableColumn<T>).draggable !== false;
 
   return (
     <TableHead
@@ -240,7 +240,7 @@ export function EnhancedTable<T>({
   className,
   getRowCanExpand,
   getRowId,
-}: EnhancedTableProps<T>) {
+}: TableProps<T>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
   const [expanded, setExpanded] = useState<ExpandedState>({});
@@ -249,10 +249,10 @@ export function EnhancedTable<T>({
   );
 
   // Add expand column if expandableRows is enabled
-  const enhancedColumns: EnhancedTableColumn<T>[] = useMemo(() => {
+  const enhancedColumns: TableColumn<T>[] = useMemo(() => {
     if (!expandableRows) return columns;
 
-    const expandColumn: EnhancedTableColumn<T> = {
+    const expandColumn: TableColumn<T> = {
       id: "expander",
       header: () => null,
       cell: ({ row }: { row: Row<T> }) => {

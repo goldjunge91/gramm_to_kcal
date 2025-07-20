@@ -25,7 +25,7 @@ import {
 import { GripVertical, Trash2 } from "lucide-react";
 import { useEffect, useMemo, useState, type JSX } from "react";
 
-import type { Ingredient } from "@/lib/types";
+import type { Ingredient } from "@/lib/types/types";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";

@@ -1,17 +1,25 @@
 "use client";
 
-import { AlertCircle, CheckCircle, Loader2, Scan } from "lucide-react";
+import {
+  AlertCircle,
+  CheckCircle,
+  ChevronDown,
+  Loader2,
+  Scan,
+} from "lucide-react";
 import { useState, type JSX } from "react";
 import { toast } from "sonner";
 
-import type { Product } from "@/lib/types";
+import type { Product } from "@/lib/types/types";
 
 import { BarcodeScanner } from "@/components/BarcodeScanner";
+import { RecentScansDropdown } from "@/components/RecentScansDropdown";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useRecentScans } from "@/hooks/use-recent-scans";
 import { lookupProductByBarcode } from "@/lib/api/product-lookup";
 
 interface ProductFormProps {
@@ -31,6 +39,10 @@ export const ProductForm = ({
   const [name, setName] = useState("");
   const [quantity, setQuantity] = useState("");
   const [kcal, setKcal] = useState("");
+
+  // Recent scans for authenticated users
+  const { recentScans, addRecentScan, removeRecentScan, isAuthenticated } =
+    useRecentScans();
 
   // Barcode scanning state
   const [showScanner, setShowScanner] = useState(false);
@@ -83,6 +95,18 @@ export const ProductForm = ({
     }
   };
 
+  // Handle recent scan selection
+  const handleRecentScanSelect = (scan: (typeof recentScans)[0]): void => {
+    setName(scan.productName);
+    setQuantity(scan.quantity.toString());
+    setKcal(scan.kcal.toString());
+
+    // Clear any previous scan result
+    setScanResult(null);
+
+    toast.success(`Produkt aus letzten Scans geladen: ${scan.productName}`);
+  };
+
   const handleSubmit = async (event: React.FormEvent): Promise<void> => {
     event.preventDefault();
 
@@ -99,11 +123,18 @@ export const ProductForm = ({
       return;
     }
 
-    await onSubmit({
+    const productData = {
       name: name.trim(),
       quantity: quantityNum,
       kcal: kcalNum,
-    });
+    };
+
+    await onSubmit(productData);
+
+    // Add to recent scans for authenticated users
+    if (isAuthenticated) {
+      addRecentScan(productData, scanResult?.barcode);
+    }
 
     // Reset form
     setName("");
@@ -191,15 +222,40 @@ export const ProductForm = ({
                 className={`space-y-2 ${compact ? "" : "sm:col-span-2 md:col-span-1"}`}
               >
                 <Label htmlFor="name">Produktname</Label>
-                <Input
-                  id="name"
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="z.B. Vollkornbrot"
-                  required
-                  disabled={isLoading || isLookingUp}
-                />
+                <div className="relative">
+                  <Input
+                    id="name"
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="z.B. Vollkornbrot"
+                    required
+                    disabled={isLoading || isLookingUp}
+                    className={
+                      isAuthenticated && recentScans.length > 0 ? "pr-10" : ""
+                    }
+                  />
+                  {isAuthenticated && recentScans.length > 0 && (
+                    <RecentScansDropdown
+                      recentScans={recentScans}
+                      onSelect={handleRecentScanSelect}
+                      onRemove={removeRecentScan}
+                      trigger={
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 p-0 hover:bg-muted"
+                          disabled={isLoading || isLookingUp}
+                        >
+                          <ChevronDown className="h-4 w-4" />
+                          <span className="sr-only">Letzte Scans anzeigen</span>
+                        </Button>
+                      }
+                      placeholder="Suche in letzten Scans..."
+                    />
+                  )}
+                </div>
               </div>
 
               <div className="space-y-2">

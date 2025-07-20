@@ -7,6 +7,14 @@ const withBundleAnalyzerConfig = withBundleAnalyzer({
 });
 
 const nextConfig: NextConfig = {
+  reactStrictMode: false,
+  allowedDevOrigins: [
+    "http://127.51.68.120:3000",
+    "http://localhost:3000",
+    "https://gramm-to-kcal.vercel.app",
+  ],
+  transpilePackages: ["@scanbot/scanbot-web-sdk-react"],
+
   /* config options here */
   images: {
     remotePatterns: [

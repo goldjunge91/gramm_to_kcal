@@ -11,6 +11,8 @@ function createEnv() {
     NEXT_PUBLIC_URL: process.env.NEXT_PUBLIC_URL,
     NODE_ENV: process.env.NODE_ENV,
     NEXT_PUBLIC_NODE_ENV: process.env.NEXT_PUBLIC_NODE_ENV,
+    STORAGE_KEY: process.env.NEXT_PUBLIC_STORAGE_KEY,
+    RECENT_SCANS_KEY: process.env.NEXT_PUBLIC_RECENT_SCANS_KEY,
   } as const;
 
   // Log environment status for debugging (only in development)
@@ -27,6 +29,8 @@ function createEnv() {
     "NEXT_PUBLIC_SUPABASE_ANON_KEY",
     "NODE_ENV",
     "NEXT_PUBLIC_NODE_ENV",
+    "STORAGE_KEY",
+    "RECENT_SCANS_KEY",
   ] as const;
 
   const missingVars = requiredEnvVars.filter(

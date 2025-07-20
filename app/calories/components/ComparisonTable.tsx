@@ -3,13 +3,10 @@ import type { CellContext, Column } from "@tanstack/react-table";
 import { ArrowUpDown, Trash2, TrendingUp, Weight } from "lucide-react";
 import { useMemo, type JSX } from "react";
 
-import type { Product } from "@/lib/types";
+import type { Product } from "@/lib/types/types";
 
+import { EnhancedTable, type TableColumn } from "@/components/enhanced-table";
 import { Button } from "@/components/ui/button";
-import {
-  EnhancedTable,
-  type EnhancedTableColumn,
-} from "@/components/ui/enhanced-table";
 import { LoadingButton } from "@/components/ui/loading-button";
 import { calculateKcalPer100g } from "@/lib/calculations";
 
@@ -29,7 +26,7 @@ export const ComparisonTable = ({
   compact = false,
 }: ComparisonTableProps): JSX.Element => {
   // Define enhanced columns with new features
-  const columns: EnhancedTableColumn<Product>[] = useMemo(
+  const columns: TableColumn<Product>[] = useMemo(
     () => [
       {
         id: "name",
@@ -130,7 +127,7 @@ export const ComparisonTable = ({
       // Add delete column if onDelete is provided
       ...(onDelete
         ? (() => {
-            const actionsColumn: EnhancedTableColumn<Product> = {
+            const actionsColumn: TableColumn<Product> = {
               id: "actions",
               header: () => <div className="text-right">Aktionen</div>,
               cell: (info: CellContext<Product, unknown>) => (

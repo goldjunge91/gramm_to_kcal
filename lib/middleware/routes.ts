@@ -22,7 +22,15 @@ export interface RouteConfig {
  */
 export const ROUTE_GROUPS: Record<RouteGroup, string[]> = {
   // Public routes - no authentication required
-  PUBLIC: ["/", "/calories", "/recipe", "/health", "/error", "/debug"],
+  PUBLIC: [
+    "/",
+    "/calories",
+    "/recipe",
+    "/health",
+    "/error",
+    "/debug",
+    "/dev-scanner",
+  ],
 
   // Authentication routes - redirect authenticated users away
   AUTH: [
@@ -126,6 +134,11 @@ export const ROUTE_CONFIGS: RouteConfig[] = [
     pattern: "/debug.*",
     group: "PUBLIC",
     description: "Debug pages (development only)",
+  },
+  {
+    pattern: "/dev-scanner.*",
+    group: "PUBLIC",
+    description: "Developer barcode scanner testing page",
   },
   { pattern: "/", group: "PUBLIC", description: "Home page" },
 ];

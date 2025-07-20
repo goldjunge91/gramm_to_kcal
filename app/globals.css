@@ -168,3 +168,51 @@ body,
   width: 100%;
   box-sizing: border-box;
 }
+/* Animation für das fliegende Schnitzel */
+@keyframes fliegen {
+  0% {
+    transform: translateX(0) rotate(0deg) scale(0.8);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translateX(50vw) rotate(180deg) scale(1.2);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(calc(100vw + 200px)) rotate(360deg) scale(0.8);
+    opacity: 0.7;
+  }
+}
+@keyframes schnitzelBounce {
+  0% {
+    left: 0;
+    transform: scale(0.9) rotate(0deg);
+  }
+  10% {
+    transform: scale(1.05) rotate(10deg);
+  }
+  50% {
+    left: calc(100vw - 150px);
+    transform: scale(1.2) rotate(180deg);
+  }
+  90% {
+    transform: scale(1.05) rotate(350deg);
+  }
+  100% {
+    left: 0;
+    transform: scale(0.9) rotate(360deg);
+  }
+}
+#fliegendes-schnitzel {
+  position: fixed;
+  width: 150px;
+  height: auto;
+  z-index: 9999;
+  pointer-events: none;
+  top: 10vh; /* oder dynamisch per JS */
+  left: 0;
+  animation-name: schnitzelBounce;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  animation-duration: 6s;
+}

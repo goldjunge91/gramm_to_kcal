@@ -1,3 +1,4 @@
+/* eslint-disable no-void */
 import "@testing-library/jest-dom";
 import { vi } from "vitest";
 
@@ -15,11 +16,23 @@ Object.defineProperty(window, "matchMedia", {
     dispatchEvent: vi.fn(),
   })),
 });
-
-// Mock IntersectionObserver
+// Richtiger IntersectionObserver-Mock
 global.IntersectionObserver = class IntersectionObserver {
-  constructor() {}
+  root: Element | null = null;
+  rootMargin: string = "";
+  thresholds: number[] = [];
+  constructor(
+    _callback: IntersectionObserverCallback,
+    _options?: IntersectionObserverInit,
+  ) {
+    // Parameter werden absichtlich nicht genutzt
+    void _callback;
+    void _options;
+  }
   disconnect() {}
   observe() {}
   unobserve() {}
+  takeRecords(): IntersectionObserverEntry[] {
+    return [];
+  }
 };

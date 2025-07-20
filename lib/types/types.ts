@@ -6,6 +6,14 @@ export interface Product {
   kcal: number;
 }
 
+export interface ProductFormProps {
+  onSubmit: (product: Omit<Product, "id">) => Promise<void>;
+  isLoading?: boolean;
+  compact?: boolean;
+  enableBarcode?: boolean;
+  enableBarcode2?: boolean;
+}
+
 /** Ingredient interface for recipe management */
 export interface Ingredient {
   id: string;
@@ -20,4 +28,13 @@ export interface Recipe {
   name: string;
   originalPortions: number;
   ingredients: Ingredient[];
+}
+
+export interface RecentScan {
+  id: string;
+  productName: string;
+  barcode?: string;
+  quantity: number;
+  kcal: number;
+  scannedAt: string; // ISO date string
 }
