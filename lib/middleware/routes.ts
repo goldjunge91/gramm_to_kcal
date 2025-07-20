@@ -140,6 +140,16 @@ export const ROUTE_CONFIGS: RouteConfig[] = [
     group: "PUBLIC",
     description: "Developer barcode scanner testing page",
   },
+  {
+    pattern: "/anleitungsgenerator.*",
+    group: "PUBLIC",
+    description: "Instruction generator pages",
+  },
+  {
+    pattern: "/unit-converter.*",
+    group: "PUBLIC",
+    description: "unit-converter pages",
+  },
   { pattern: "/", group: "PUBLIC", description: "Home page" },
 ];
 

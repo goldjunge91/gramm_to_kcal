@@ -3,6 +3,7 @@
 import {
   Accessibility,
   Beaker,
+  Book,
   Calculator,
   ChefHat,
   LogOut,
@@ -83,6 +84,17 @@ export const Navbar = (): JSX.Element => {
             >
               <Calculator className="h-8 w-8" />
               <span>Kalorienvergleich</span>
+            </Link>
+            <Link
+              href="/anleitungsgenerator"
+              className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                clientPathname === "/anleitungsgenerator"
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted"
+              }`}
+            >
+              <Book className="h-8 w-8" />
+              <span>Anleitungsgenerator</span>
             </Link>
             <Link
               href="/recipe"

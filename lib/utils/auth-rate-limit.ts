@@ -282,6 +282,14 @@ export function createRateLimitedSupabaseClient(supabase: SupabaseClient) {
       return originalAuth.signInWithPassword(credentials);
     },
 
+    async signInWithOAuth(options: {
+      provider: import("@supabase/supabase-js").Provider;
+      options?: any;
+    }) {
+      // Optionally, add rate limiting here if you want to limit OAuth attempts
+      return await originalAuth.signInWithOAuth(options);
+    },
+
     async signUp(credentials: {
       email: string;
       password: string;
