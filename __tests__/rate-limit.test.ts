@@ -12,7 +12,7 @@ import {
 // Mock NextRequest for testing
 function createMockRequest(
   headers: Record<string, string>,
-  url = "http://localhost/api/test",
+  url = "http://localhost:3000/api/test",
 ): any {
   return {
     headers: {
@@ -51,7 +51,7 @@ describe("keyGenerators", () => {
   it("endpoint: returns correct key", () => {
     const req = createMockRequest(
       { "x-forwarded-for": "1.2.3.4" },
-      "http://localhost/api/test",
+      "http://localhost:3000/api/test",
     );
     expect(keyGenerators.endpoint(req)).toBe(
       "rate-limit:endpoint:/api/test:1.2.3.4",

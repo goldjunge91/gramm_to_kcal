@@ -302,8 +302,9 @@ body,
   }
   
   .recipe-card-a4 .main-content-print {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    gap: 1rem !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1.5rem !important;
   }
   
   .recipe-card-a4 .card-print {
@@ -403,4 +404,32 @@ body,
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+}
+
+/* Preview Panel Styles */
+.recipe-preview-compact {
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.recipe-preview-full {
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+/* Responsive Layout for Desktop */
+@media (min-width: 1024px) {
+  .desktop-layout {
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    gap: 1.5rem;
+    align-items: start;
+  }
+  
+  .desktop-preview-panel {
+    position: sticky;
+    top: 1rem;
+    max-height: calc(100vh - 2rem);
+    overflow-y: auto;
+  }
 }

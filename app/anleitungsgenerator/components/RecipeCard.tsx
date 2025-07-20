@@ -39,8 +39,8 @@ export const RecipeCard = ({ recipe }: RecipeCardProps): JSX.Element => {
         )}
       </div>
 
-      {/* Two-column layout for ingredients and instructions */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 main-content-print">
+      {/* Vertical layout - ingredients first, then instructions */}
+      <div className="space-y-6 main-content-print">
         {/* Ingredients Section */}
         <Card className="card-print">
           <CardHeader className="pb-3 card-header-print">
