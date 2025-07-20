@@ -16,6 +16,7 @@
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio",
     "db:rls": "tsx scripts/run-rls-migration.ts",
+    "clean": "eslint . --fix && prettier --write .",
     "test_pw": "playwright test --headed"
   },
   "dependencies": {
