@@ -328,6 +328,25 @@ export function createRateLimitedSupabaseClient(supabase: SupabaseClient) {
 
         return supabase.auth.resend(credentials);
       },
+
+      async updateUser(attributes: {
+        password?: string;
+        email?: string;
+        data?: object;
+      }) {
+        const rateLimit = await authRateLimiter.checkRateLimit(
+          "GENERAL",
+          "user-update",
+        );
+
+        if (!rateLimit.allowed) {
+          throw new Error(
+            `Too many update attempts. ${rateLimit.blocked ? "Account temporarily blocked." : "Please try again later."}`,
+          );
+        }
+
+        return supabase.auth.updateUser(attributes);
+      },
     },
   };
 }

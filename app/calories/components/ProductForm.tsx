@@ -6,13 +6,10 @@ import { toast } from "sonner";
 
 import type { Product } from "@/lib/db/schema";
 
-import { MlToGramConverter } from "@/components/unit-converter/MlToGramConverter";
 import { RecentScansDropdown } from "@/components/dev/RecentScansDropdown";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { 
+import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -20,6 +17,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { MlToGramConverter } from "@/components/unit-converter/MlToGramConverter";
 import { useRecentScans } from "@/hooks/use-recent-scans";
 
 interface ProductFormProps {
@@ -181,15 +181,18 @@ export const ProductForm = ({
                     <DialogHeader>
                       <DialogTitle>ML zu Gramm Umrechner</DialogTitle>
                       <DialogDescription>
-                        Konvertieren Sie Milliliter in Gramm für verschiedene Substanzen
+                        Konvertieren Sie Milliliter in Gramm für verschiedene
+                        Substanzen
                       </DialogDescription>
                     </DialogHeader>
-                    <MlToGramConverter 
+                    <MlToGramConverter
                       compact={true}
                       onConversionChange={(result) => {
-                        if (result.success && result.unit === 'g') {
+                        if (result.success && result.unit === "g") {
                           setQuantity(result.value.toString());
-                          toast.success(`${result.originalValue} ml = ${result.value} g`);
+                          toast.success(
+                            `${result.originalValue} ml = ${result.value} g`,
+                          );
                           setConverterOpen(false);
                         }
                       }}

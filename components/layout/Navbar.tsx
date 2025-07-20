@@ -2,12 +2,12 @@
 
 import {
   Accessibility,
+  Beaker,
   Calculator,
   ChefHat,
   LogOut,
   Settings,
   User,
-  Beaker,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";

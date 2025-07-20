@@ -52,3 +52,24 @@ export interface RecentScan {
   kcal: number;
   scannedAt: string; // ISO date string
 }
+
+/** Recipe step with optional image */
+export interface RecipeStep {
+  id: string;
+  instruction: string;
+  image?: string; // base64 encoded image or URL
+  order: number;
+}
+
+/** Parsed recipe data from text input for Anleitungsgenerator */
+export interface ParsedRecipe {
+  title: string;
+  calories?: number;
+  time?: string;
+  difficulty?: string;
+  description: string;
+  portions: number;
+  ingredients: Ingredient[];
+  instructions: string[];
+  steps?: RecipeStep[]; // Enhanced steps with images
+}

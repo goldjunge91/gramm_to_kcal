@@ -216,3 +216,115 @@ body,
   animation-iteration-count: infinite;
   animation-duration: 6s;
 }
+
+/* A4 Recipe Card Styles */
+.recipe-card-a4 {
+  width: 210mm;
+  min-height: 297mm;
+  max-width: 100%;
+  margin: 0 auto;
+  background: white;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Print-specific styles */
+@media print {
+  @page {
+    size: A4;
+    margin: 15mm;
+  }
+  
+  body {
+    -webkit-print-color-adjust: exact;
+    color-adjust: exact;
+  }
+  
+  .recipe-card-a4 {
+    width: 100%;
+    min-height: auto;
+    max-width: none;
+    margin: 0;
+    box-shadow: none;
+    page-break-inside: avoid;
+  }
+  
+  /* Hide elements with print-hidden class */
+  .print-hidden {
+    display: none !important;
+  }
+  
+  /* Print typography adjustments */
+  .recipe-card-a4 h1 {
+    font-size: 1.5rem !important;
+    line-height: 2rem !important;
+    margin-bottom: 0.5rem !important;
+  }
+  
+  .recipe-card-a4 .badge-print {
+    font-size: 0.75rem !important;
+    gap: 0.5rem !important;
+    margin-bottom: 0.75rem !important;
+  }
+  
+  .recipe-card-a4 .description-print {
+    font-size: 0.75rem !important;
+  }
+  
+  .recipe-card-a4 .card-header-print {
+    padding-bottom: 0.5rem !important;
+  }
+  
+  .recipe-card-a4 .card-title-print {
+    font-size: 1.125rem !important;
+    line-height: 1.75rem !important;
+  }
+  
+  .recipe-card-a4 .ingredient-item-print {
+    font-size: 0.875rem !important;
+  }
+  
+  .recipe-card-a4 .instruction-item-print {
+    font-size: 0.75rem !important;
+    gap: 0.5rem !important;
+    margin-bottom: 0.5rem !important;
+  }
+  
+  .recipe-card-a4 .step-number-print {
+    width: 1.25rem !important;
+    height: 1.25rem !important;
+    font-size: 0.75rem !important;
+  }
+  
+  .recipe-card-a4 .footer-print {
+    margin-top: 1.5rem !important;
+    padding-top: 0.75rem !important;
+    font-size: 10px !important;
+  }
+  
+  .recipe-card-a4 .main-content-print {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 1rem !important;
+  }
+  
+  .recipe-card-a4 .card-print {
+    box-shadow: none !important;
+    border: 1px solid #d1d5db !important;
+  }
+  
+  .recipe-card-a4 .ingredients-list-print > * + * {
+    margin-top: 0.25rem !important;
+  }
+  
+  .recipe-card-a4 .instructions-list-print > * + * {
+    margin-top: 0.5rem !important;
+  }
+  
+  /* Print-specific styles for step images */
+  .recipe-card-a4 .instruction-item-print img {
+    max-width: 4cm !important;
+    height: 3cm !important;
+    object-fit: cover !important;
+    border: 1px solid #d1d5db !important;
+    margin-top: 0.25rem !important;
+  }
+}

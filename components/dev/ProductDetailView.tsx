@@ -70,7 +70,10 @@ export function ProductDetailView({
         <CardContent className="flex items-center justify-center h-64">
           <div className="text-center text-muted-foreground">
             <Package className="h-12 w-12 mx-auto mb-4 opacity-50" />
-            <p>Scannen Sie einen Barcode, um detaillierte Produktinformationen zu sehen</p>
+            <p>
+              Scannen Sie einen Barcode, um detaillierte Produktinformationen zu
+              sehen
+            </p>
           </div>
         </CardContent>
       </Card>
@@ -169,7 +172,9 @@ export function ProductDetailView({
           <TabsContent value="overview" className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label className="text-sm font-medium">Grundinformationen</Label>
+                <Label className="text-sm font-medium">
+                  Grundinformationen
+                </Label>
                 <div className="space-y-2 mt-2">
                   <div className="flex justify-between text-sm">
                     <span>Kalorien (100g):</span>

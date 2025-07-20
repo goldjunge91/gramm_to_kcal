@@ -5,26 +5,10 @@
 
 "use client";
 
-import { Calculator, ChevronDown, Info, RotateCcw, Search } from "lucide-react";
+import { Calculator, ChevronDown, Info, RotateCcw } from "lucide-react";
 import { useCallback, useEffect, useState, type JSX } from "react";
 import { toast } from "sonner";
 
-import {
-  convertUnits,
-  formatNumber,
-  getQuickConversions,
-  parseNumberInput,
-  type ConversionResult,
-} from "@/lib/utils/unit-converter";
-import {
-  getDensityDataByCategory,
-  searchDensityData,
-  getCategoryDisplayName,
-  getAvailableCategories,
-  type DensityData,
-} from "@/lib/utils/density-database";
-
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -42,15 +26,21 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  getCategoryDisplayName,
+  getDensityDataByCategory,
+  searchDensityData,
+  type DensityData,
+} from "@/lib/utils/density-database";
+import {
+  convertUnits,
+  formatNumber,
+  getQuickConversions,
+  parseNumberInput,
+  type ConversionResult,
+} from "@/lib/utils/unit-converter";
 
 interface MlToGramConverterProps {
   className?: string;
@@ -73,18 +63,23 @@ export function MlToGramConverter({
   const [selectedSubstance, setSelectedSubstance] = useState(defaultSubstance);
   const [customDensity, setCustomDensity] = useState("");
   const [useCustomDensity, setUseCustomDensity] = useState(false);
-  
+
   // State für die UI
   const [substanceSearchOpen, setSubstanceSearchOpen] = useState(false);
   const [substanceSearch, setSubstanceSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("cooking");
-  const [lastChangedField, setLastChangedField] = useState<"ml" | "grams">("ml");
+  const [lastChangedField, setLastChangedField] = useState<"ml" | "grams">(
+    "ml",
+  );
 
   // Aktuelle Umrechnungsergebnisse
-  const [conversionResult, setConversionResult] = useState<ConversionResult | null>(null);
+  const [conversionResult, setConversionResult] =
+    useState<ConversionResult | null>(null);
 
   // Substanzen für die Auswahl basierend auf Kategorie und Suche
-  const [availableSubstances, setAvailableSubstances] = useState<DensityData[]>([]);
+  const [availableSubstances, setAvailableSubstances] = useState<DensityData[]>(
+    [],
+  );
 
   // Aktualisiere verfügbare Substanzen basierend auf Kategorie und Suche
   useEffect(() => {
@@ -92,25 +87,27 @@ export function MlToGramConverter({
       setAvailableSubstances(searchDensityData(substanceSearch));
     } else {
       setAvailableSubstances(
-        getDensityDataByCategory(selectedCategory as DensityData['category'])
+        getDensityDataByCategory(selectedCategory as DensityData["category"]),
       );
     }
   }, [selectedCategory, substanceSearch]);
 
   // Führe Umrechnung durch
   const performConversion = useCallback(
-    (fromValue: number, fromUnit: 'ml' | 'g') => {
-      const toUnit = fromUnit === 'ml' ? 'g' : 'ml';
-      
+    (fromValue: number, fromUnit: "ml" | "g") => {
+      const toUnit = fromUnit === "ml" ? "g" : "ml";
+
       const options = {
         substance: useCustomDensity ? undefined : selectedSubstance,
-        customDensity: useCustomDensity ? parseNumberInput(customDensity) || undefined : undefined,
+        customDensity: useCustomDensity
+          ? parseNumberInput(customDensity) || undefined
+          : undefined,
         precision: 2,
       };
 
       const result = convertUnits(fromValue, fromUnit, toUnit, options);
       setConversionResult(result);
-      
+
       if (onConversionChange) {
         onConversionChange(result);
       }
@@ -121,7 +118,7 @@ export function MlToGramConverter({
 
       return result;
     },
-    [selectedSubstance, useCustomDensity, customDensity, onConversionChange]
+    [selectedSubstance, useCustomDensity, customDensity, onConversionChange],
   );
 
   // Handler für ML Eingabe
@@ -141,7 +138,7 @@ export function MlToGramConverter({
         setConversionResult(null);
       }
     },
-    [performConversion]
+    [performConversion],
   );
 
   // Handler für Gramm Eingabe
@@ -161,7 +158,7 @@ export function MlToGramConverter({
         setConversionResult(null);
       }
     },
-    [performConversion]
+    [performConversion],
   );
 
   // Handler für Substanzwechsel
@@ -180,7 +177,7 @@ export function MlToGramConverter({
         }
       }
     },
-    [mlInput, gramsInput, lastChangedField, handleMlChange, handleGramsChange]
+    [mlInput, gramsInput, lastChangedField, handleMlChange, handleGramsChange],
   );
 
   // Felder zurücksetzen
@@ -208,7 +205,10 @@ export function MlToGramConverter({
         <div className="space-y-2">
           <Label>Substanz auswählen</Label>
           <div className="flex gap-2">
-            <Popover open={substanceSearchOpen} onOpenChange={setSubstanceSearchOpen}>
+            <Popover
+              open={substanceSearchOpen}
+              onOpenChange={setSubstanceSearchOpen}
+            >
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
@@ -216,20 +216,24 @@ export function MlToGramConverter({
                   aria-expanded={substanceSearchOpen}
                   className="flex-1 justify-between"
                 >
-                  {selectedSubstance === "custom" 
-                    ? "Benutzerdefiniert" 
-                    : availableSubstances.find(s => s.name === selectedSubstance)?.nameDE || "Wasser"
-                  }
+                  {selectedSubstance === "custom"
+                    ? "Benutzerdefiniert"
+                    : availableSubstances.find(
+                        (s) => s.name === selectedSubstance,
+                      )?.nameDE || "Wasser"}
                   <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-80 p-0">
-                <Tabs value={selectedCategory} onValueChange={setSelectedCategory}>
+                <Tabs
+                  value={selectedCategory}
+                  onValueChange={setSelectedCategory}
+                >
                   <TabsList className="grid w-full grid-cols-2">
                     <TabsTrigger value="cooking">Küche</TabsTrigger>
                     <TabsTrigger value="chemistry">Labor</TabsTrigger>
                   </TabsList>
-                  
+
                   <Command>
                     <CommandInput
                       placeholder="Substanz suchen..."
@@ -238,25 +242,34 @@ export function MlToGramConverter({
                     />
                     <CommandList>
                       <CommandEmpty>Keine Substanz gefunden.</CommandEmpty>
-                      
-                      <CommandGroup heading={getCategoryDisplayName(selectedCategory as DensityData['category'])}>
+
+                      <CommandGroup
+                        heading={getCategoryDisplayName(
+                          selectedCategory as DensityData["category"],
+                        )}
+                      >
                         {availableSubstances.map((substance) => (
                           <CommandItem
                             key={substance.name}
                             value={substance.name}
-                            onSelect={() => handleSubstanceChange(substance.name)}
+                            onSelect={() =>
+                              handleSubstanceChange(substance.name)
+                            }
                           >
                             <div className="flex flex-col">
-                              <div className="font-medium">{substance.nameDE}</div>
+                              <div className="font-medium">
+                                {substance.nameDE}
+                              </div>
                               <div className="text-xs text-muted-foreground">
                                 {substance.density} g/ml
-                                {substance.temperature && ` @ ${substance.temperature}°C`}
+                                {substance.temperature &&
+                                  ` @ ${substance.temperature}°C`}
                               </div>
                             </div>
                           </CommandItem>
                         ))}
                       </CommandGroup>
-                      
+
                       <Separator />
                       <CommandGroup heading="Erweitert">
                         <CommandItem
@@ -264,7 +277,9 @@ export function MlToGramConverter({
                           onSelect={() => handleSubstanceChange("custom")}
                         >
                           <div className="flex flex-col">
-                            <div className="font-medium">Benutzerdefinierte Dichte</div>
+                            <div className="font-medium">
+                              Benutzerdefinierte Dichte
+                            </div>
                             <div className="text-xs text-muted-foreground">
                               Eigene Dichte eingeben
                             </div>
@@ -276,7 +291,7 @@ export function MlToGramConverter({
                 </Tabs>
               </PopoverContent>
             </Popover>
-            
+
             <Button variant="outline" size="icon" onClick={resetFields}>
               <RotateCcw className="h-4 w-4" />
             </Button>
@@ -342,11 +357,10 @@ export function MlToGramConverter({
                 </div>
                 {conversionResult.substance && (
                   <div className="text-xs text-muted-foreground">
-                    Substanz: {conversionResult.substance.nameDE} 
-                    ({conversionResult.substance.density} g/ml)
-                    {conversionResult.substance.temperature && 
-                      ` bei ${conversionResult.substance.temperature}°C`
-                    }
+                    Substanz: {conversionResult.substance.nameDE}(
+                    {conversionResult.substance.density} g/ml)
+                    {conversionResult.substance.temperature &&
+                      ` bei ${conversionResult.substance.temperature}°C`}
                   </div>
                 )}
               </div>
