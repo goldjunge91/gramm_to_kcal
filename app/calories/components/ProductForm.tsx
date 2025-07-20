@@ -6,7 +6,7 @@ import { toast } from "sonner";
 
 import type { Product } from "@/lib/db/schema";
 
-import { RecentScansDropdown } from "@/components/RecentScansDropdown";
+import { RecentScansDropdown } from "@/components/dev/RecentScansDropdown";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";

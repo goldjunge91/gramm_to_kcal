@@ -56,6 +56,7 @@
     "@tanstack/react-router": "^1.128.3",
     "@tanstack/react-router-devtools": "^1.128.3",
     "@tanstack/react-table": "^8.21.3",
+    "@upstash/redis": "^1.35.1",
     "bcryptjs": "^3.0.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

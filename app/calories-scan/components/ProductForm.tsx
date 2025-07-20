@@ -13,7 +13,7 @@ import { toast } from "sonner";
 import type { Product } from "@/lib/types/types";
 
 import { BarcodeScanner } from "@/components/BarcodeScanner";
-import { RecentScansDropdown } from "@/components/RecentScansDropdown";
+import { RecentScansDropdown } from "@/components/dev/RecentScansDropdown";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";

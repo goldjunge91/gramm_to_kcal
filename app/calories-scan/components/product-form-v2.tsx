@@ -9,7 +9,7 @@ import type { ProductFormProps } from "@/lib/types/types";
 // Den neuen, verbesserten Scanner importieren
 import { BarcodeScanner } from "@/components/barcode-scanner";
 import { BarcodeScanner as ClassicBarcodeScanner } from "@/components/BarcodeScanner";
-import { RecentScansDropdown } from "@/components/RecentScansDropdown";
+import { RecentScansDropdown } from "@/components/dev/RecentScansDropdown";
 // import { Alert, AlertDescription } from "@/components/ui/alert"; // nicht mehr benötigt
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";

@@ -15,9 +15,9 @@ import type {
   ScanDiagnostics,
 } from "@/lib/types/dev-scanner";
 
-import { DevBarcodeScanner } from "@/components/DevBarcodeScanner";
-import { DevToolsPanel } from "@/components/DevToolsPanel";
-import { ProductDetailView } from "@/components/ProductDetailView";
+import { DevBarcodeScanner } from "@/components/dev/DevBarcodeScanner";
+import { DevToolsPanel } from "@/components/dev/DevToolsPanel";
+import { ProductDetailView } from "@/components/dev/ProductDetailView";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { enhancedLookupProductByBarcode } from "@/lib/api/enhanced-product-lookup";

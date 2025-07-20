@@ -13,25 +13,12 @@ import {
   SupabaseAuthRateLimiter,
 } from "../utils/supabase/auth-rate-limit";
 
-// Mocks zuerst definieren!
-const mockRedis = {
-  get: vi.fn(),
-  setex: vi.fn(),
-  del: vi.fn(),
-  pipeline: vi.fn(),
-  exec: vi.fn(),
-  lpush: vi.fn(),
-  ltrim: vi.fn(),
-  expire: vi.fn(),
-  lrange: vi.fn(),
-};
-
-vi.mock("@/lib/redis", () => ({
-  getRedis: () => mockRedis,
-}));
+// Removed local mockRedis definition and vi.mock
+// Use global.mockRedis instead
 
 const identifier = "test@example.com";
 const now = Date.now();
+const mockRedis = global.mockRedis;
 
 describe("SupabaseAuthRateLimiter", () => {
   let limiter: SupabaseAuthRateLimiter;

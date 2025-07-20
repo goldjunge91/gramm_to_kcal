@@ -13,6 +13,8 @@ function createEnv() {
     NEXT_PUBLIC_NODE_ENV: process.env.NEXT_PUBLIC_NODE_ENV,
     STORAGE_KEY: process.env.NEXT_PUBLIC_STORAGE_KEY,
     RECENT_SCANS_KEY: process.env.NEXT_PUBLIC_RECENT_SCANS_KEY,
+    UPSTASH_REDIS_REST_URL: process.env.UPSTASH_REDIS_REST_URL,
+    UPSTASH_REDIS_REST_TOKEN: process.env.UPSTASH_REDIS_REST_TOKEN,
   } as const;
 
   // Log environment status for debugging (only in development)
@@ -31,6 +33,8 @@ function createEnv() {
     "NEXT_PUBLIC_NODE_ENV",
     "STORAGE_KEY",
     "RECENT_SCANS_KEY",
+    "UPSTASH_REDIS_REST_URL",
+    "UPSTASH_REDIS_REST_TOKEN",
   ] as const;
 
   const missingVars = requiredEnvVars.filter(

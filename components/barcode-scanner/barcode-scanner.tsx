@@ -239,7 +239,7 @@ export function BarcodeScanner({
     },
     [scanMode, stopScanning],
   );
-
+  // @ts-ignore
   if (!isOpen) return null;
 
   const modeToggle = (
