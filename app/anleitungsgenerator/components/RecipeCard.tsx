@@ -27,7 +27,8 @@ export const RecipeCard = ({ recipe }: RecipeCardProps): JSX.Element => {
             <Badge variant="secondary">📊 {recipe.difficulty}</Badge>
           )}
           <Badge variant="secondary">
-            👥 {recipe.portions} Portion{recipe.portions !== 1 ? "en" : ""}
+            👥 {recipe.portions} Portion
+            {recipe.portions !== 1 ? "en" : ""}
           </Badge>
         </div>
 

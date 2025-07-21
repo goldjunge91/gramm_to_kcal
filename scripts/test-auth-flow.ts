@@ -24,8 +24,6 @@ import { SupabaseAuthRateLimiter } from "../lib/utils/auth-rate-limit";
 import { middleware } from "../middleware";
 
 // Test configuration
-const TEST_EMAIL = "auth-test@example.com";
-const TEST_PASSWORD = "TestPassword123!";
 const TEST_BASE_URL = process.env.NEXT_PUBLIC_URL || "http://localhost:3000";
 
 // Colors for console output
@@ -58,10 +56,6 @@ function logWarning(message: string) {
   log(`⚠️  ${message}`, "yellow");
 }
 
-async function delay(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
 class AuthFlowTester {
   private supabase = createClient(
     env.NEXT_PUBLIC_SUPABASE_URL,
@@ -84,7 +78,7 @@ class AuthFlowTester {
   }
 
   // Test 1: Route Classification System
-  async testRouteClassification() {
+  testRouteClassification() {
     logTest("Route Classification System");
 
     const publicRoutes = ["/", "/calories", "/recipe", "/api/health"];
@@ -141,7 +135,7 @@ class AuthFlowTester {
         mockCookies.set("sb-access-token", "mock-token");
 
         // Call middleware
-        const result = await middleware(request);
+        await middleware(request);
 
         this.addResult(
           `Middleware ${route}`,
@@ -232,7 +226,7 @@ class AuthFlowTester {
       },
     ];
 
-    for (const { path, expectRedirect, desc } of testRoutes) {
+    for (const { path, desc } of testRoutes) {
       try {
         const request = new NextRequest(new URL(`${TEST_BASE_URL}${path}`));
         const result = await updateSession(request);
@@ -336,7 +330,7 @@ class AuthFlowTester {
 
     // Check Supabase connection
     try {
-      const { data, error } = await this.supabase.auth.getSession();
+      const { error } = await this.supabase.auth.getSession();
       this.addResult(
         "Supabase Connection",
         !error,

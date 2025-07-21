@@ -190,7 +190,10 @@ describe("createRateLimitedSupabaseClient", () => {
     mockRedis.get.mockResolvedValueOnce((now + 10000).toString());
     const client = createRateLimitedSupabaseClient(mockSupabase as any);
     await expect(
-      client.auth.signInWithPassword({ email: identifier, password: "pw" }),
+      client.auth.signInWithPassword({
+        email: identifier,
+        password: "pw",
+      }),
     ).rejects.toThrow(/Too many sign-in attempts/);
   });
 
@@ -267,7 +270,12 @@ describe("AuthSecurityMonitor", () => {
         ip: "1.1.1.3",
         userAgent: "ua3",
       },
-      { success: true, timestamp: now - 4000, ip: "1.1.1.1", userAgent: "ua1" },
+      {
+        success: true,
+        timestamp: now - 4000,
+        ip: "1.1.1.1",
+        userAgent: "ua1",
+      },
       {
         success: false,
         timestamp: now - 5000,

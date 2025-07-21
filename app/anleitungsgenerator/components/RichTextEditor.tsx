@@ -71,7 +71,11 @@ export const RichTextEditor = ({
     { command: "italic", icon: "𝐼", title: "Kursiv (Strg+I)" },
     { command: "underline", icon: "𝐔", title: "Unterstrichen (Strg+U)" },
     { command: "insertUnorderedList", icon: "•", title: "Aufzählung" },
-    { command: "insertOrderedList", icon: "1.", title: "Nummerierte Liste" },
+    {
+      command: "insertOrderedList",
+      icon: "1.",
+      title: "Nummerierte Liste",
+    },
     { command: "undo", icon: "↶", title: "Rückgängig (Strg+Z)" },
     { command: "redo", icon: "↷", title: "Wiederholen (Strg+Y)" },
   ];

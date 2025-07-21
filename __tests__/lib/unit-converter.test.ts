@@ -50,7 +50,9 @@ describe("ML zu Gramm Umrechnung", () => {
     });
 
     it("should handle unknown substance", () => {
-      const result = convertMlToGrams(100, { substance: "unknown_substance" });
+      const result = convertMlToGrams(100, {
+        substance: "unknown_substance",
+      });
 
       expect(result.success).toBe(false);
       expect(result.error).toContain("nicht in der Datenbank gefunden");

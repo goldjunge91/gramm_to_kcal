@@ -15,6 +15,7 @@ function createEnv() {
     RECENT_SCANS_KEY: process.env.NEXT_PUBLIC_RECENT_SCANS_KEY,
     UPSTASH_REDIS_REST_URL: process.env.UPSTASH_REDIS_REST_URL,
     UPSTASH_REDIS_REST_TOKEN: process.env.UPSTASH_REDIS_REST_TOKEN,
+    FORCE_BUILD: process.env.FORCE_BUILD === "true",
   } as const;
 
   // Log environment status for debugging (only in development)

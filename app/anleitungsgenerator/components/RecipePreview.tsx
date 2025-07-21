@@ -80,7 +80,8 @@ export const RecipePreview = ({
                 variant="secondary"
                 className={showFullCard ? "" : "text-xs"}
               >
-                👥 {recipe.portions} Portion{recipe.portions !== 1 ? "en" : ""}
+                👥 {recipe.portions} Portion
+                {recipe.portions !== 1 ? "en" : ""}
               </Badge>
             </div>
 

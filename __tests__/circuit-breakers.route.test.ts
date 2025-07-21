@@ -78,7 +78,11 @@ describe("GET", () => {
       resetTime: Date.now() + 1000,
     });
     mockGetAllStatus.mockResolvedValue({ serviceA: "closed" });
-    mockGetHealthSummary.mockResolvedValue({ healthy: 1, total: 1, open: 0 });
+    mockGetHealthSummary.mockResolvedValue({
+      healthy: 1,
+      total: 1,
+      open: 0,
+    });
   });
 
   it("returns 429 if rate limited", async () => {
@@ -124,7 +128,11 @@ describe("POST", () => {
       success: true,
       data: { action: "reset" },
     });
-    mockGetHealthSummary.mockResolvedValue({ healthy: 1, total: 1, open: 0 });
+    mockGetHealthSummary.mockResolvedValue({
+      healthy: 1,
+      total: 1,
+      open: 0,
+    });
     mockEmergencyResetAll.mockResolvedValue(undefined);
     mockEmergencyOpenAll.mockResolvedValue(undefined);
     mockGet.mockReturnValue(mockBreaker);
@@ -301,13 +309,20 @@ describe("POST", () => {
 describe("HEAD", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockGetHealthSummary.mockResolvedValue({ healthy: 1, total: 1, open: 0 });
+    mockGetHealthSummary.mockResolvedValue({
+      healthy: 1,
+      total: 1,
+      open: 0,
+    });
   });
 
   it("returns 200 if all healthy", async () => {
     const req = createRequest({
       method: "HEAD",
-      headers: { "x-forwarded-for": "1.2.3.4", "user-agent": "test-agent" },
+      headers: {
+        "x-forwarded-for": "1.2.3.4",
+        "user-agent": "test-agent",
+      },
     });
     const res = await HEAD(req);
     expect(res.status).toBe(200);

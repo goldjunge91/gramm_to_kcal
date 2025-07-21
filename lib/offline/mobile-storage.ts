@@ -74,14 +74,18 @@ class MobileOfflineStorage {
         productsStore.createIndex("userId", "userId");
 
         // Recipes with ingredient count for quick loading
-        const recipesStore = db.createObjectStore("recipes", { keyPath: "id" });
+        const recipesStore = db.createObjectStore("recipes", {
+          keyPath: "id",
+        });
         recipesStore.createIndex("lastUsed", "lastUsed");
         recipesStore.createIndex("userId", "userId");
 
         db.createObjectStore("ingredients", { keyPath: "id" });
 
         // Priority-based sync queue for mobile
-        const syncStore = db.createObjectStore("syncQueue", { keyPath: "id" });
+        const syncStore = db.createObjectStore("syncQueue", {
+          keyPath: "id",
+        });
         syncStore.createIndex("priority", "priority");
         syncStore.createIndex("timestamp", "timestamp");
 

@@ -167,12 +167,14 @@ describe("RequestSchemas", () => {
   });
   it("validates passwordReset schema", () => {
     expect(
-      RequestSchemas.passwordReset.safeParse({ email: "user@example.com" })
-        .success,
+      RequestSchemas.passwordReset.safeParse({
+        email: "user@example.com",
+      }).success,
     ).toBe(true);
     expect(
-      RequestSchemas.passwordReset.safeParse({ email: "foo@mailinator.com" })
-        .success,
+      RequestSchemas.passwordReset.safeParse({
+        email: "foo@mailinator.com",
+      }).success,
     ).toBe(false);
   });
 });

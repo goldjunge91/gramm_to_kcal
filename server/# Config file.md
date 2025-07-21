@@ -8,24 +8,33 @@ This file is used to define constants and environment variables for the applicat
 import { API_CONFIG, MAX_RECENT_SCANS, SCAN_CONFIG } from "@/server/config";
 
 // Direkt als Wert:
+```
+
 console.log("Max recent scans:", MAX_RECENT_SCANS);
 
+```
+
 // Aus dem Gruppen-Objekt:
+```
+
 console.log(
-  "Scan-Konfiguration:",
-  SCAN_CONFIG.maxRecent,
-  SCAN_CONFIG.maxBarcodeLength,
+"Scan-Konfiguration:",
+SCAN_CONFIG.maxRecent,
+SCAN_CONFIG.maxBarcodeLength,
 );
 
 // In einer Funktion:
 function getRecentScansLimit() {
-  return SCAN_CONFIG.maxRecent;
+return SCAN_CONFIG.maxRecent;
 }
 
 function fetchData() {
-  // z.B. für ein API-Timeout
-  setTimeout(() => {
-    // ...fetch logic...
-  }, API_CONFIG.timeoutMs);
+// z.B. für ein API-Timeout
+setTimeout(() => {
+// ...fetch logic...
+}, API_CONFIG.timeoutMs);
 }
+
+```
+
 ```

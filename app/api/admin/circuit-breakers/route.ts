@@ -130,7 +130,9 @@ export async function POST(request: NextRequest) {
             throw new Error(`Service '${service}' not found`);
           }
           await breaker.reset();
-          result = { message: `Circuit breaker reset for service: ${service}` };
+          result = {
+            message: `Circuit breaker reset for service: ${service}`,
+          };
         } else {
           await circuitBreakerManager.emergencyResetAll();
           result = { message: "All circuit breakers reset" };

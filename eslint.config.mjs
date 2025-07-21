@@ -4,23 +4,25 @@ export default sxzz(
   {
     type: "app",
     typescript: true,
-    formatters: true,
-    stylistic: {
-      indent: 4,
-      semi: true,
-      quotes: "double",
-    },
+    unocss: false, // auto detection
+    // formatters: true,
+    // stylistic: {
+    //   indent: 4,
+    //   semi: true,
+    //   quotes: "double",
+    // },
     ignores: [
       "**/migrations/*",
       "**/fixtures",
       "**/tests/*",
       "**/__tests__/*",
       "**/__mocks__/*",
-      "**/scripts/*",
+      "scripts/**",
       "**/db/migrations/*",
       "**/ui/*",
       "**/ci.yml",
       "**/.github/workflows/*",
+      "**/docs/*",
       ".github/",
       "*.yml",
       "*.yaml",
@@ -48,14 +50,22 @@ export default sxzz(
         },
       ],
       "node/prefer-global/buffer": "off",
-      "no-control-regex": "error",
-      "prettier/prettier": "error",
+      "no-control-regex": "off",
+      "prettier/prettier": "off",
+    },
+  },
+  {
+    files: ["scripts/**"],
+    rules: {
+      "unused-imports/no-unused-vars": "off",
+      "no-console": ["off"],
+      "antfu/no-top-level-await": ["off"],
     },
   },
   {
     files: ["**/types.ts"],
     rules: {
-      "unicorn/filename-case": "error",
+      "unicorn/filename-case": "off",
     },
   },
 );

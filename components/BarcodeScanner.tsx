@@ -96,6 +96,16 @@ export function BarcodeScanner({
           onScan(result);
           onClose();
         } catch (scanError) {
+          // Prüfe auf den spezifischen Fehlertext und zeige eine freundliche Meldung
+          const friendlyMessage =
+            scanError instanceof Error &&
+            scanError.message.includes(
+              "No MultiFormat Readers were able to detect the code",
+            )
+              ? "Kein Barcode im Bild gefunden. Bitte versuche es mit einem anderen, klareren Bild."
+              : "Kein Barcode im Bild gefunden. Versuche es mit einem anderen Bild.";
+          setUploadError(friendlyMessage);
+          console.error("File scan failed:", scanError);
           console.error("File scan failed:", scanError);
           setUploadError(
             "Kein Barcode im Bild gefunden. Versuche es mit einem anderen Bild.",

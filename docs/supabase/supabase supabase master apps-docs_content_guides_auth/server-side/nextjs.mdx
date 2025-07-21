@@ -323,16 +323,16 @@ See the Next.js docs to learn more about [opting out of data caching](https://ne
 import { login, signup } from './actions'
 
 export default function LoginPage() {
-  return (
-    <form>
-      <label htmlFor="email">Email:</label>
-      <input id="email" name="email" type="email" required />
-      <label htmlFor="password">Password:</label>
-      <input id="password" name="password" type="password" required />
-      <button formAction={login}>Log in</button>
-      <button formAction={signup}>Sign up</button>
-    </form>
-  )
+    return (
+        <form>
+            <label htmlFor="email">Email:</label>
+            <input id="email" name="email" type="email" required />
+            <label htmlFor="password">Password:</label>
+            <input id="password" name="password" type="password" required />
+            <button formAction={login}>Log in</button>
+            <button formAction={signup}>Sign up</button>
+        </form>
+    )
 }
 ```
 
@@ -389,7 +389,7 @@ export async function signup(formData: FormData) {
 'use client'
 
 export default function ErrorPage() {
-  return <p>Sorry, something went wrong</p>
+    return <p>Sorry, something went wrong</p>
 }
 ```
 
@@ -498,14 +498,14 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/utils/supabase/server'
 
 export default async function PrivatePage() {
-  const supabase = await createClient()
+    const supabase = await createClient()
 
-  const { data, error } = await supabase.auth.getUser()
-  if (error || !data?.user) {
-    redirect('/login')
-  }
+    const { data, error } = await supabase.auth.getUser()
+    if (error || !data?.user) {
+        redirect('/login')
+    }
 
-  return <p>Hello {data.user.email}</p>
+    return <p>Hello {data.user.email}</p>
 }
 ```
 
@@ -754,49 +754,57 @@ import { useState } from 'react'
 import { createClient } from '@/utils/supabase/component'
 
 export default function LoginPage() {
-  const router = useRouter()
-  const supabase = createClient()
+    const router = useRouter()
+    const supabase = createClient()
 
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
 
-  async function logIn() {
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
-    if (error) {
-      console.error(error)
+    async function logIn() {
+        const { error } = await supabase.auth.signInWithPassword({
+            email,
+            password,
+        })
+        if (error) {
+            console.error(error)
+        }
+        router.push('/')
     }
-    router.push('/')
-  }
 
-  async function signUp() {
-    const { error } = await supabase.auth.signUp({ email, password })
-    if (error) {
-      console.error(error)
+    async function signUp() {
+        const { error } = await supabase.auth.signUp({ email, password })
+        if (error) {
+            console.error(error)
+        }
+        router.push('/')
     }
-    router.push('/')
-  }
 
-  return (
-    <main>
-      <form>
-        <label htmlFor="email">Email:</label>
-        <input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-        <label htmlFor="password">Password:</label>
-        <input
-          id="password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <button type="button" onClick={logIn}>
-          Log in
-        </button>
-        <button type="button" onClick={signUp}>
-          Sign up
-        </button>
-      </form>
-    </main>
-  )
+    return (
+        <main>
+            <form>
+                <label htmlFor="email">Email:</label>
+                <input
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                />
+                <label htmlFor="password">Password:</label>
+                <input
+                    id="password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                />
+                <button type="button" onClick={logIn}>
+                    Log in
+                </button>
+                <button type="button" onClick={signUp}>
+                    Sign up
+                </button>
+            </form>
+        </main>
+    )
 }
 ```
 
@@ -919,28 +927,28 @@ import type { GetServerSidePropsContext } from 'next'
 import { createClient } from '@/utils/supabase/server-props'
 
 export default function PrivatePage({ user }: { user: User }) {
-  return <h1>Hello, {user.email || 'user'}!</h1>
+    return <h1>Hello, {user.email || 'user'}!</h1>
 }
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
-  const supabase = createClient(context)
+    const supabase = createClient(context)
 
-  const { data, error } = await supabase.auth.getUser()
+    const { data, error } = await supabase.auth.getUser()
 
-  if (error || !data) {
-    return {
-      redirect: {
-        destination: '/',
-        permanent: false,
-      },
+    if (error || !data) {
+        return {
+            redirect: {
+                destination: '/',
+                permanent: false,
+            },
+        }
     }
-  }
 
-  return {
-    props: {
-      user: data.user,
-    },
-  }
+    return {
+        props: {
+            user: data.user,
+        },
+    }
 }
 ```
 
@@ -966,19 +974,19 @@ Then fetch the colors data using `getStaticProps` with the client from `@/utils/
 import { createClient } from '@/utils/supabase/static-props'
 
 export default function PublicPage({ data }: { data?: any[] }) {
-  return <pre>{data && JSON.stringify(data, null, 2)}</pre>
+    return <pre>{data && JSON.stringify(data, null, 2)}</pre>
 }
 
 export async function getStaticProps() {
-  const supabase = createClient()
+    const supabase = createClient()
 
-  const { data, error } = await supabase.from('colors').select()
+    const { data, error } = await supabase.from('colors').select()
 
-  if (error || !data) {
-    return { props: {} }
-  }
+    if (error || !data) {
+        return { props: {} }
+    }
 
-  return { props: { data } }
+    return { props: { data } }
 }
 ```
 

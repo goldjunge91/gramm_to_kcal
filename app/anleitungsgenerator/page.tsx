@@ -9,19 +9,17 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { parseRecipeText } from "@/lib/parsing/recipeParser";
 
-import { AdvancedStepManager } from "./components/AdvancedStepManager";
 import { RecipeCard } from "./components/RecipeCard";
 import { RecipePreview } from "./components/RecipePreview";
 import { RecipeTextInput } from "./components/RecipeTextInput";
-import { StepManager } from "./components/StepManager";
+import { UnifiedStepEditor } from "./components/UnifiedStepEditor";
 
 /** Anleitungsgenerator page for converting recipe text to A4 formatted cards */
 export default function AnleitungsgeneratorPage(): JSX.Element {
   const [inputText, setInputText] = useState<string>("");
   const [parsedRecipe, setParsedRecipe] = useState<ParsedRecipe | null>(null);
   const [showPreview, setShowPreview] = useState<boolean>(false);
-  const [showStepManager, setShowStepManager] = useState<boolean>(false);
-  const [showAdvancedEditor, setShowAdvancedEditor] = useState<boolean>(false);
+  const [showStepEditor, setShowStepEditor] = useState<boolean>(false);
   const [showPreviewPanel, setShowPreviewPanel] = useState<boolean>(false);
   const [previewMode, setPreviewMode] = useState<"compact" | "full">("compact");
 
@@ -46,8 +44,7 @@ export default function AnleitungsgeneratorPage(): JSX.Element {
     setInputText("");
     setParsedRecipe(null);
     setShowPreview(false);
-    setShowStepManager(false);
-    setShowAdvancedEditor(false);
+    setShowStepEditor(false);
     setShowPreviewPanel(false);
     toast.info("Formular zurückgesetzt");
   };
@@ -123,22 +120,10 @@ export default function AnleitungsgeneratorPage(): JSX.Element {
                 👁️ Live-Vorschau
               </Button>
               <Button
-                onClick={() => {
-                  setShowAdvancedEditor(!showAdvancedEditor);
-                  setShowStepManager(false);
-                }}
-                variant={showAdvancedEditor ? "default" : "outline"}
+                onClick={() => setShowStepEditor(!showStepEditor)}
+                variant={showStepEditor ? "default" : "outline"}
               >
-                🎨 Erweitert bearbeiten
-              </Button>
-              <Button
-                onClick={() => {
-                  setShowStepManager(!showStepManager);
-                  setShowAdvancedEditor(false);
-                }}
-                variant={showStepManager ? "default" : "outline"}
-              >
-                📸 Einfache Bilder
+                ✍️ Schritte bearbeiten
               </Button>
               <Button onClick={() => setShowPreview(false)} variant="outline">
                 ✏️ Text bearbeiten
@@ -169,17 +154,9 @@ export default function AnleitungsgeneratorPage(): JSX.Element {
             )}
           </div>
 
-          {/* Advanced Step Manager */}
-          {showAdvancedEditor && parsedRecipe?.steps && (
-            <AdvancedStepManager
-              steps={parsedRecipe.steps}
-              onStepsChange={handleStepsChange}
-            />
-          )}
-
-          {/* Simple Step Manager */}
-          {showStepManager && parsedRecipe?.steps && (
-            <StepManager
+          {/* Unified Step Editor */}
+          {showStepEditor && parsedRecipe?.steps && (
+            <UnifiedStepEditor
               steps={parsedRecipe.steps}
               onStepsChange={handleStepsChange}
             />
@@ -194,7 +171,7 @@ export default function AnleitungsgeneratorPage(): JSX.Element {
           )}
 
           {/* Recipe Card Display - Final Output */}
-          {parsedRecipe && !showPreviewPanel && (
+          {parsedRecipe && !showPreviewPanel && !showStepEditor && (
             <RecipeCard recipe={parsedRecipe} />
           )}
         </>

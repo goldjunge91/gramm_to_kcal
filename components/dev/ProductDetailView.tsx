@@ -149,7 +149,8 @@ export function ProductDetailView({
           <div className="text-right text-xs text-muted-foreground">
             <div>
               Response:{" "}
-              {Math.round(metadata.responseTime - metadata.requestTime)}ms
+              {Math.round(metadata.responseTime - metadata.requestTime)}
+              ms
             </div>
             {enhancedData?.completenessScore && (
               <div>Completeness: {enhancedData.completenessScore}%</div>

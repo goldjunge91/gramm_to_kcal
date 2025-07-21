@@ -143,7 +143,10 @@ export function Providers({ children }: { children: ReactNode }): JSX.Element {
       mobileSyncManager
         .startMobileSync()
         .then(() => {
-          setMobileStatus((prev) => ({ ...prev, lastSyncAt: new Date() }));
+          setMobileStatus((prev) => ({
+            ...prev,
+            lastSyncAt: new Date(),
+          }));
         })
         .catch(console.error);
     };

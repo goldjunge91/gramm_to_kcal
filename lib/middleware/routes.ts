@@ -29,6 +29,9 @@ export const ROUTE_GROUPS: Record<RouteGroup, string[]> = {
     "/health",
     "/error",
     "/debug",
+    "/anleitungsgenerator",
+    "/unit-converter",
+    "/calories-scan",
     "/dev-scanner",
   ],
 

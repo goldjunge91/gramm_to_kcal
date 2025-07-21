@@ -227,4 +227,4 @@ This project uses pnpm with workspace configuration. Always use `pnpm` commands 
 ## Security Warnings
 
 - **NEVER USE MOCK**
-- **NEVER TOUCH .ENV.* FILES**
+- **NEVER TOUCH .ENV.\* FILES**

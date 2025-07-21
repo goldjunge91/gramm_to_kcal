@@ -2,11 +2,13 @@ import type { NextConfig } from "next";
 
 import withBundleAnalyzer from "@next/bundle-analyzer";
 
+import { env } from "./lib/env";
+
 const withBundleAnalyzerConfig = withBundleAnalyzer({
   enabled: process.env.ANALYZE === "true",
 });
 
-const nextConfig: NextConfig = {
+const baseConfig: NextConfig = {
   reactStrictMode: false,
   allowedDevOrigins: [
     "http://127.51.68.120:3000",
@@ -50,9 +52,20 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  typescript: {
-    // This is set to true to ensure that TypeScript errors are treated as build errors.
-    ignoreBuildErrors: true,
-  },
 };
+
+const nextConfig: NextConfig = env.FORCE_BUILD
+  ? {
+      ...baseConfig,
+      typescript: {
+        // This is set to true to ensure that TypeScript errors are ignored during build.
+        ignoreBuildErrors: true,
+      },
+      eslint: {
+        // This is set to true to ensure that ESLint errors are ignored during build.
+        ignoreDuringBuilds: true,
+      },
+    }
+  : baseConfig;
+
 export default withBundleAnalyzerConfig(nextConfig);

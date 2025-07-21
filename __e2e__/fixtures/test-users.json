@@ -5,7 +5,7 @@
     "name": "E2E Test User"
   },
   "secondValidUser": {
-    "email": "test-e2e-2@example.com", 
+    "email": "test-e2e-2@example.com",
     "password": "TestPassword123!",
     "name": "Second E2E User"
   },

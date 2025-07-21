@@ -379,7 +379,8 @@ export default function DevScannerPage(): JSX.Element {
                       <div className="flex justify-between">
                         <span>Speed:</span>
                         <span className="font-mono font-bold text-green-700">
-                          {Math.round(speedTestResult.detectionTime)}ms
+                          {Math.round(speedTestResult.detectionTime)}
+                          ms
                         </span>
                       </div>
                       <div className="flex justify-between">

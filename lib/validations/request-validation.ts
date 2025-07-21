@@ -257,7 +257,10 @@ export async function validateRequest<T>(
         try {
           data = await request.json();
         } catch {
-          return { success: false, error: "Invalid JSON in request body" };
+          return {
+            success: false,
+            error: "Invalid JSON in request body",
+          };
         }
         break;
 
