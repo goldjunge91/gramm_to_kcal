@@ -160,7 +160,7 @@ export const REDIRECT_PATHS = {
   LOGIN: "/auth/login",
   HOME: "/",
   ACCOUNT: "/account",
-  DEFAULT_AFTER_LOGIN: "/account",
+  DEFAULT_AFTER_LOGIN: "/calories", // Main app landing page after successful auth
   DEFAULT_AFTER_LOGOUT: "/",
 } as const;
 

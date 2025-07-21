@@ -1,0 +1,25 @@
+{
+  "validUser": {
+    "email": "test-e2e@example.com",
+    "password": "TestPassword123!",
+    "name": "E2E Test User"
+  },
+  "secondValidUser": {
+    "email": "test-e2e-2@example.com", 
+    "password": "TestPassword123!",
+    "name": "Second E2E User"
+  },
+  "invalidUser": {
+    "email": "invalid-e2e@example.com",
+    "password": "WrongPassword123!"
+  },
+  "newUser": {
+    "email": "new-user-e2e@example.com",
+    "password": "NewUserPassword123!",
+    "name": "New E2E User"
+  },
+  "rateLimitTestUser": {
+    "email": "rate-limit-test@example.com",
+    "password": "WrongPassword123!"
+  }
+}

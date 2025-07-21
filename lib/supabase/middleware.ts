@@ -2,7 +2,11 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 import { env } from "@/lib/env";
-import { isPublicRoute } from "@/lib/middleware/routes";
+import {
+  isAuthRoute,
+  isPublicRoute,
+  REDIRECT_PATHS,
+} from "@/lib/middleware/routes";
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
@@ -41,10 +45,14 @@ export async function updateSession(request: NextRequest) {
 
   const user = data?.claims;
 
-  // Import isPublicRoute from your middleware routes
-  // (add this import at the top if not present)
-  // import { isPublicRoute } from "@/lib/middleware/routes";
+  // Redirect authenticated users away from auth pages
+  if (user && isAuthRoute(request.nextUrl.pathname)) {
+    const url = request.nextUrl.clone();
+    url.pathname = REDIRECT_PATHS.DEFAULT_AFTER_LOGIN;
+    return NextResponse.redirect(url);
+  }
 
+  // Redirect unauthenticated users to login for protected routes
   if (
     !user &&
     !isPublicRoute(request.nextUrl.pathname) &&

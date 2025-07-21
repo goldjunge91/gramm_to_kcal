@@ -223,3 +223,8 @@ This project uses pnpm with workspace configuration. Always use `pnpm` commands 
 3. **Fix root causes**, not symptoms
 4. Rely on **TypeScript** for catching errors
 5. **Consult the user** before making any major structural changes
+
+## Security Warnings
+
+- **NEVER USE MOCK**
+- **NEVER TOUCH .ENV.* FILES**

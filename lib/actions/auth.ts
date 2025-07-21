@@ -5,14 +5,13 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 
 import { updateUserProfile, upsertUser } from "@/lib/db/users";
+import { REDIRECT_PATHS } from "@/lib/middleware/routes";
 import { createClient } from "@/lib/supabase/server";
 import { getAuthErrorMessage } from "@/lib/utils/auth-errors";
+import { SupabaseAuthRateLimiter } from "@/lib/utils/auth-rate-limit";
 
-// Rate limiting store (in production, use Redis or database)
-const rateLimitStore = new Map<
-  string,
-  { attempts: number; lastAttempt: number }
->();
+// Production-ready Redis-based rate limiter
+const authRateLimiter = new SupabaseAuthRateLimiter();
 
 // Validation schemas
 const signInSchema = z.object({
@@ -35,37 +34,6 @@ const signUpSchema = z
     message: "Passwords do not match",
     path: ["confirmPassword"],
   });
-
-// Rate limiting helper
-function checkRateLimit(
-  identifier: string,
-  maxAttempts = 5,
-  windowMs = 15 * 60 * 1000,
-): boolean {
-  const now = Date.now();
-  const record = rateLimitStore.get(identifier);
-
-  if (!record) {
-    rateLimitStore.set(identifier, { attempts: 1, lastAttempt: now });
-    return true;
-  }
-
-  // Reset if window has passed
-  if (now - record.lastAttempt > windowMs) {
-    rateLimitStore.set(identifier, { attempts: 1, lastAttempt: now });
-    return true;
-  }
-
-  // Check if exceeded
-  if (record.attempts >= maxAttempts) {
-    return false;
-  }
-
-  // Increment attempts
-  record.attempts++;
-  record.lastAttempt = now;
-  return true;
-}
 
 // Audit logging helper
 function logAuthAttempt(
@@ -205,7 +173,7 @@ export async function updatePasswordAction(formData: FormData) {
     }
 
     revalidatePath("/", "layout");
-    redirect("/calories");
+    redirect(REDIRECT_PATHS.DEFAULT_AFTER_LOGIN);
   } catch (error) {
     console.error("Server password update error:", error);
     return {
@@ -266,8 +234,12 @@ export async function loginAction(formData: FormData) {
 
   const { email, password } = validation.data;
 
-  // Rate limiting by email
-  if (!checkRateLimit(`signin:${email}`)) {
+  // Rate limiting by email using Redis-based solution
+  const rateLimitResult = await authRateLimiter.checkRateLimit(
+    "SIGN_IN",
+    email,
+  );
+  if (!rateLimitResult.allowed) {
     logAuthAttempt("signin", email, false, "Rate limit exceeded");
     redirect(
       "/auth/login?error=Too many login attempts. Please try again later.",
@@ -293,15 +265,15 @@ export async function loginAction(formData: FormData) {
       await syncUserWithDatabase(data.user.id);
 
       // Clear rate limit on successful login
-      rateLimitStore.delete(`signin:${email}`);
+      await authRateLimiter.resetRateLimit("SIGN_IN", email);
 
       logAuthAttempt("signin", email, true);
 
       // Revalidate layout to update auth state
       revalidatePath("/", "layout");
 
-      // Redirect to main app
-      redirect("/calories");
+      // Redirect to main app using centralized redirect path
+      redirect(REDIRECT_PATHS.DEFAULT_AFTER_LOGIN);
     }
   } catch (error) {
     const errorMsg =
@@ -332,8 +304,12 @@ export async function signupAction(formData: FormData) {
 
   const { email, password } = validation.data;
 
-  // Rate limiting by email
-  if (!checkRateLimit(`signup:${email}`)) {
+  // Rate limiting by email using Redis-based solution
+  const rateLimitResult = await authRateLimiter.checkRateLimit(
+    "SIGN_UP",
+    email,
+  );
+  if (!rateLimitResult.allowed) {
     logAuthAttempt("signup", email, false, "Rate limit exceeded");
     redirect(
       "/auth/sign-up?error=Too many signup attempts. Please try again later.",
@@ -347,7 +323,7 @@ export async function signupAction(formData: FormData) {
       email,
       password,
       options: {
-        emailRedirectTo: `${process.env.NEXT_PUBLIC_URL || "http://localhost:3000"}/calories`,
+        emailRedirectTo: `${process.env.NEXT_PUBLIC_URL || "http://localhost:3000"}${REDIRECT_PATHS.DEFAULT_AFTER_LOGIN}`,
       },
     });
 
@@ -364,12 +340,12 @@ export async function signupAction(formData: FormData) {
         await syncUserWithDatabase(data.user.id);
 
         // Clear rate limit on successful signup
-        rateLimitStore.delete(`signup:${email}`);
+        await authRateLimiter.resetRateLimit("SIGN_UP", email);
 
         logAuthAttempt("signup", email, true);
 
         revalidatePath("/", "layout");
-        redirect("/calories");
+        redirect(REDIRECT_PATHS.DEFAULT_AFTER_LOGIN);
       } else {
         // Email confirmation required
         logAuthAttempt("signup", email, true, "Email confirmation required");
