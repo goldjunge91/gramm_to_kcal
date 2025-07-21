@@ -3,9 +3,16 @@
     "allow": [
       "Bash(mkdir:*)",
       "Bash(pnpm dlx shadcn@latest add:*)",
+      "Bash(pnpm test:*)",
+      "Bash(pnpm clean)",
       "mcp__mcp-sequentialthinking-tools__sequentialthinking_tools",
       "mcp__claude-pocket-pick__pocket_add"
     ],
-    "deny": ["pnpm lint", "pnpm dev", "pnpm build", "pnpm add"]
+    "deny": [
+      "Bash(pnpm install)",
+      "Bash(pnpm build)",
+      "Bash(pnpm test)",
+      "Bash(pnpm lint)"
+    ]
   }
 }
