@@ -18,18 +18,18 @@ As a result, a logged-in user's session can expire in the background while they 
 Your goal is to ensure the `updateSession` function runs on all necessary routes to keep the user's session alive.
 
 1.  **Modify `middleware.ts`:** Change the main middleware function so that it no longer exits early for public routes. The middleware should continue its execution for all page types.
-2.  **Verify Logic in `lib/supabase/middleware.ts`:** The logic to decide whether to redirect a user should exist *inside* the `updateSession` function, not in the main `middleware.ts` file. Ensure this function correctly handles both public and protected routes without improperly redirecting users.
+2.  **Verify Logic in `lib/supabase/middleware.ts`:** The logic to decide whether to redirect a user should exist _inside_ the `updateSession` function, not in the main `middleware.ts` file. Ensure this function correctly handles both public and protected routes without improperly redirecting users.
 
 ### Files to Investigate
 
-*   `middleware.ts` (This is the main entry point)
-*   `lib/supabase/middleware.ts` (Contains the `updateSession` logic)
-*   `lib/middleware/routes.ts` (To understand which routes are public)
+- `middleware.ts` (This is the main entry point)
+- `lib/supabase/middleware.ts` (Contains the `updateSession` logic)
+- `lib/middleware/routes.ts` (To understand which routes are public)
 
 ### Acceptance Criteria
 
-*   A logged-in user can navigate between public pages (e.g., from `/` to `/calories`) and their session remains active.
-*   Unauthenticated users can still access all public pages without being redirected.
+- A logged-in user can navigate between public pages (e.g., from `/` to `/calories`) and their session remains active.
+- Unauthenticated users can still access all public pages without being redirected.
 ```
 
 ### Task 2: Standardize the Authentication Flow
@@ -54,13 +54,13 @@ Your goal is to add logic to the middleware to handle this case.
 
 ### Files to Investigate
 
-*   `lib/supabase/middleware.ts` (Where the new logic will go)
-*   `lib/middleware/routes.ts` (To see the definition of `isAuthRoute` and the `REDIRECT_PATHS`)
+- `lib/supabase/middleware.ts` (Where the new logic will go)
+- `lib/middleware/routes.ts` (To see the definition of `isAuthRoute` and the `REDIRECT_PATHS`)
 
 ### Acceptance Criteria
 
-*   When a logged-in user attempts to visit `/auth/login` or `/auth/sign-up`, they are immediately redirected to `/account`.
-*   Unauthenticated users can still access the login and signup pages as normal.
+- When a logged-in user attempts to visit `/auth/login` or `/auth/sign-up`, they are immediately redirected to `/account`.
+- Unauthenticated users can still access the login and signup pages as normal.
 ```
 
 ### Task 3: Implement Production-Ready Rate Limiting
@@ -88,13 +88,13 @@ Your goal is to replace the temporary rate-limiting solution with our production
 
 ### Files to Investigate
 
-*   `lib/actions/auth.ts` (Where the changes will be made)
-*   `lib/utils/auth-rate-limit.ts` (To see the functions you need to import and use)
+- `lib/actions/auth.ts` (Where the changes will be made)
+- `lib/utils/auth-rate-limit.ts` (To see the functions you need to import and use)
 
 ### Acceptance Criteria
 
-*   The login and signup server actions are now protected by the Redis-based rate limiter.
-*   The old, in-memory rate limiting code is completely removed.
+- The login and signup server actions are now protected by the Redis-based rate limiter.
+- The old, in-memory rate limiting code is completely removed.
 ```
 
 ### Task 4: Simplify Middleware Configuration
@@ -116,17 +116,17 @@ The best practice is to use a simple, broad matcher and handle the routing logic
 
 Your goal is to refactor the matcher to make it simpler and more maintainable.
 
-1.  **Update `middleware.ts`:** Replace the complex `matcher` with a simpler, more standard pattern. A good example is `"/((?!api|_next/static|_next/image|favicon.ico).*)"`. This pattern matches everything *except* for a few standard Next.js folders.
+1.  **Update `middleware.ts`:** Replace the complex `matcher` with a simpler, more standard pattern. A good example is `"/((?!api|_next/static|_next/image|favicon.ico).*)"`. This pattern matches everything _except_ for a few standard Next.js folders.
 2.  **Verify No Regressions:** After changing the matcher, double-check that the authentication and routing logic still works as expected. The routing decisions should be made by the code inside the middleware function, not by the matcher.
 
 ### Files to Investigate
 
-*   `middleware.ts` (Where the `matcher` is defined)
+- `middleware.ts` (Where the `matcher` is defined)
 
 ### Acceptance Criteria
 
-*   The `config.matcher` in `middleware.ts` is simplified to a one-line, easy-to-understand pattern.
-*   The application's authentication and redirection logic continues to work exactly as it did before.
+- The `config.matcher` in `middleware.ts` is simplified to a one-line, easy-to-understand pattern.
+- The application's authentication and redirection logic continues to work exactly as it did before.
 ```
 
 ### Task 5: Unify Post-Authentication Redirects
@@ -141,8 +141,9 @@ Your goal is to refactor the matcher to make it simpler and more maintainable.
 ### The Problem
 
 There is a small inconsistency in our user experience after authentication:
-*   After a successful **signup**, the user is redirected to `/calories`.
-*   After a successful **login**, the user is redirected to `/calories`, but the standard redirect for already-authenticated users is `/account`.
+
+- After a successful **signup**, the user is redirected to `/calories`.
+- After a successful **login**, the user is redirected to `/calories`, but the standard redirect for already-authenticated users is `/account`.
 
 For a more predictable experience, the destination should be the same in all cases.
 
@@ -156,13 +157,13 @@ Your goal is to make all successful authentications lead to the same place.
 
 ### Files to Investigate
 
-*   `lib/actions/auth.ts` (Contains the redirect logic)
-*   `lib/middleware/routes.ts` (To confirm the `DEFAULT_AFTER_LOGIN` path)
+- `lib/actions/auth.ts` (Contains the redirect logic)
+- `lib/middleware/routes.ts` (To confirm the `DEFAULT_AFTER_LOGIN` path)
 
 ### Acceptance Criteria
 
-*   After a user successfully signs up, they are redirected to `/account`.
-*   After a user successfully logs in, they are redirected to `/account`.
+- After a user successfully signs up, they are redirected to `/account`.
+- After a user successfully logs in, they are redirected to `/account`.
 ```
 
 ### Task 6: Clean Up Unused Code
@@ -177,6 +178,7 @@ Your goal is to make all successful authentications lead to the same place.
 ### The Problem
 
 Our codebase currently contains two different middleware implementations for authentication:
+
 1.  `lib/supabase/middleware.ts` (which is currently being used)
 2.  `lib/middleware/auth-middleware.ts` (a more complex but completely unused file)
 
@@ -192,11 +194,11 @@ Your goal is to safely remove the unused code to clean up our project.
 
 ### Files to Investigate
 
-*   `lib/middleware/auth-middleware.ts` (The file to be deleted)
-*   `middleware.ts` (To confirm the unused file is not imported here)
+- `lib/middleware/auth-middleware.ts` (The file to be deleted)
+- `middleware.ts` (To confirm the unused file is not imported here)
 
 ### Acceptance Criteria
 
-*   The file `lib/middleware/auth-middleware.ts` is deleted from the project.
-*   The application's authentication and routing continue to function correctly.
+- The file `lib/middleware/auth-middleware.ts` is deleted from the project.
+- The application's authentication and routing continue to function correctly.
 ```
