@@ -1,15 +1,15 @@
-import type { NextRequest } from 'next/server';
+import type { NextRequest } from 'next/server'
 
-import { NextResponse } from 'next/server';
-import { z } from 'zod';
+import { NextResponse } from 'next/server'
+import { z } from 'zod'
 
-import { circuitBreakerManager } from '@/lib/circuit-breaker';
+import { circuitBreakerManager } from '@/lib/circuit-breaker'
 import {
   getSecurityHeaders,
   validateContentType,
   validateRequest,
   validateRequestSize,
-} from '@/lib/validations/request-validation';
+} from '@/lib/validations/request-validation'
 
 // Admin action schema
 const AdminActionSchema = z.object({
@@ -19,7 +19,7 @@ const AdminActionSchema = z.object({
 
 export async function GET(request: NextRequest) {
   // Note: Rate limiting handled by Better Auth middleware
-  
+
   // Log admin circuit breaker access for monitoring
   const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown'
   console.info(`[CIRCUIT-BREAKER] Admin GET request from IP: ${ip}`)

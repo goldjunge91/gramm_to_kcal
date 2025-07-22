@@ -1,13 +1,13 @@
-import type { NextRequest } from 'next/server';
+import type { NextRequest } from 'next/server'
 
-import { NextResponse } from 'next/server';
+import { NextResponse } from 'next/server'
 
-import { getOpenFoodFactsHealth } from '@/lib/api/cached-product-lookup';
-import { circuitBreakerManager } from '@/lib/circuit-breaker';
-import { db } from '@/lib/db';
-import { env } from '@/lib/env';
-import { getURL } from '@/lib/get-url';
-import { getRedisHealth } from '@/lib/redis';
+import { getOpenFoodFactsHealth } from '@/lib/api/cached-product-lookup'
+import { circuitBreakerManager } from '@/lib/circuit-breaker'
+import { db } from '@/lib/db'
+import { env } from '@/lib/env'
+import { getURL } from '@/lib/get-url'
+import { getRedisHealth } from '@/lib/redis'
 
 export async function GET(request: NextRequest) {
   // Log health check request for monitoring
