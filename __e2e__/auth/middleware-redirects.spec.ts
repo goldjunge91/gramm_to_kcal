@@ -19,6 +19,8 @@ import {
 
 test.describe('Middleware Redirects (GitHub Issues #8, #11)', () => {
   test.beforeEach(async ({ page }) => {
+    // Navigate to app first, then ensure clean state
+    await page.goto('/')
     await clearAuthState(page)
   })
 
@@ -282,11 +284,22 @@ test.describe('Middleware Redirects (GitHub Issues #8, #11)', () => {
 
   test.afterEach(async ({ page }) => {
     try {
-      await logoutUser(page)
+      // Only attempt logout if we're on a page where it makes sense
+      if (!page.url().startsWith('about:')) {
+        await logoutUser(page)
+      }
     }
     catch {
-      // User might not be logged in
+      // User might not be logged in, that's fine
     }
-    await clearAuthState(page)
+    
+    try {
+      // Navigate to app and clear state
+      await page.goto('/')
+      await clearAuthState(page)
+    }
+    catch {
+      // If cleanup fails, don't block the test
+    }
   })
 })

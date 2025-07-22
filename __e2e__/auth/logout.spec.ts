@@ -15,8 +15,10 @@ import {
   logoutUser,
 } from '../helpers/auth-helpers'
 
-test.describe('Logout Flow', () => {
+test.describe('Logout Flow @auth @core', () => {
   test.beforeEach(async ({ page }) => {
+    // Navigate to app first, then ensure clean state
+    await page.goto('/')
     await clearAuthState(page)
   })
 
@@ -286,6 +288,13 @@ test.describe('Logout Flow', () => {
   })
 
   test.afterEach(async ({ page }) => {
-    await clearAuthState(page)
+    try {
+      // Navigate to app first, then clear state
+      await page.goto('/')
+      await clearAuthState(page)
+    }
+    catch {
+      // If cleanup fails, don't block the test
+    }
   })
 })

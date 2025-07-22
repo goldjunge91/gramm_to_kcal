@@ -15,8 +15,10 @@ import {
   signupUser,
 } from '../helpers/auth-helpers'
 
-test.describe('Signup Flow', () => {
+test.describe('Signup Flow @auth @core', () => {
   test.beforeEach(async ({ page }) => {
+    // Navigate to app first, then ensure clean state
+    await page.goto('/')
     await clearAuthState(page)
   })
 

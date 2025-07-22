@@ -1,5 +1,6 @@
 import { betterAuth } from 'better-auth'
 import { drizzleAdapter } from 'better-auth/adapters/drizzle'
+import { nextCookies } from 'better-auth/next-js'
 
 import { db } from '@/lib/db'
 import {
@@ -37,4 +38,7 @@ export const auth = betterAuth({
       maxAge: 5 * 60, // 5 minutes cache
     },
   },
+  plugins: [
+    nextCookies(), // Enable automatic cookie handling for Next.js server actions
+  ],
 })

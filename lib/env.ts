@@ -5,8 +5,8 @@
 
 function createEnv() {
   const env = {
-    NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
-    NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    // NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
+    // NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
     DATABASE_URL: process.env.DATABASE_URL,
     NEXT_PUBLIC_URL: process.env.NEXT_PUBLIC_URL,
     NODE_ENV: process.env.NODE_ENV,
@@ -32,20 +32,20 @@ function createEnv() {
 
   // Validate required environment variables
   const requiredEnvVars = [
-    'NEXT_PUBLIC_SUPABASE_URL',
-    'NEXT_PUBLIC_SUPABASE_ANON_KEY',
-    'NODE_ENV',
-    'NEXT_PUBLIC_NODE_ENV',
-    'STORAGE_KEY',
-    'RECENT_SCANS_KEY',
+    // 'NEXT_PUBLIC_SUPABASE_URL',
+    // 'NEXT_PUBLIC_SUPABASE_ANON_KEY',
+    // 'NODE_ENV',
+    // 'NEXT_PUBLIC_NODE_ENV',
+    // 'STORAGE_KEY',
+    // 'RECENT_SCANS_KEY',
+    'AUTH_GOOGLE_ID',
+    'AUTH_GOOGLE_SECRET',
   ] as const
 
   // Optional environment variables - features will be disabled if missing
   const optionalEnvVars = [
     'UPSTASH_REDIS_REST_URL',
     'UPSTASH_REDIS_REST_TOKEN',
-    'AUTH_GOOGLE_ID',
-    'AUTH_GOOGLE_SECRET',
   ] as const
 
   const missingVars = requiredEnvVars.filter(

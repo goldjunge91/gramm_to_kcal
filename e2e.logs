@@ -1,0 +1,597 @@
+pnpm test_pw                                               ❌  1  28% ⚡   15:07 ♥  ▓▒░
+
+> gramm_to_kcal@0.1.0 test_pw /Users/marco/Github.tmp/gramm_to_kcal
+> playwright test --headed
+
+
+Running 49 tests using 4 workers
+  1) [chromium] › __e2e__/auth/login.spec.ts:79:7 › Login Flow › should validate email format ──────
+
+    Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at clearAuthState (/Users/marco/Github.tmp/gramm_to_kcal/__e2e__/helpers/auth-helpers.ts:170:14)
+        at /Users/marco/Github.tmp/gramm_to_kcal/__e2e__/auth/login.spec.ts:16:5
+
+    Test timeout of 30000ms exceeded while running "afterEach" hook.
+
+      141 |   })
+      142 |
+    > 143 |   test.afterEach(async ({ page }) => {
+          |        ^
+      144 |     // Clean up: logout if logged in
+      145 |     try {
+      146 |       await logoutUser(page)
+        at /Users/marco/Github.tmp/gramm_to_kcal/__e2e__/auth/login.spec.ts:143:8
+
+    Error: browserContext.clearCookies: Test ended.
+    Browser logs:
+
+    <launching> /Users/marco/Library/Caches/ms-playwright/chromium-1181/chrome-mac/Chromium.app/Contents/MacOS/Chromium --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-extensions --disable-features=AcceptCHFrame,AutoExpandDetailsElement,AvoidUnnecessaryBeforeUnloadCheckSync,CertificateTransparencyComponentUpdater,DestroyProfileOnBrowserClose,DialMediaRouteProvider,ExtensionManifestV2Disabled,GlobalMediaControls,HttpsUpgrades,ImprovedCookieControls,LazyFrameLoading,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,Translate --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --enable-automation --enable-use-zoom-for-dsf=false --enable-unsafe-swiftshader --no-sandbox --user-data-dir=/var/folders/30/fv5ry3pj7k5851d__q59rm280000gn/T/playwright_chromiumdev_profile-VRoF34 --remote-debugging-pipe --no-startup-window
+    <launched> pid=63529
+    [pid=63529][err] [63529:4530898:0722/150730.274573:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: DEPRECATED_ENDPOINT
+    [pid=63529] <gracefully close start>
+
+       at helpers/auth-helpers.ts:169
+
+      167 |  */
+      168 | export async function clearAuthState(page: Page): Promise<void> {
+    > 169 |   await page.context().clearCookies()
+          |                        ^
+      170 |   await page.evaluate(() => {
+      171 |     localStorage.clear()
+      172 |     sessionStorage.clear()
+        at clearAuthState (/Users/marco/Github.tmp/gramm_to_kcal/__e2e__/helpers/auth-helpers.ts:169:24)
+        at /Users/marco/Github.tmp/gramm_to_kcal/__e2e__/auth/login.spec.ts:151:25
+
+  2) [chromium] › __e2e__/auth/login.spec.ts:19:7 › Login Flow › should successfully login with valid credentials 
+
+    Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at clearAuthState (/Users/marco/Github.tmp/gramm_to_kcal/__e2e__/helpers/auth-helpers.ts:170:14)
+        at /Users/marco/Github.tmp/gramm_to_kcal/__e2e__/auth/login.spec.ts:16:5
+
+    Test timeout of 30000ms exceeded while running "afterEach" hook.
+
+      141 |   })
+      142 |
+    > 143 |   test.afterEach(async ({ page }) => {
+          |        ^
+      144 |     // Clean up: logout if logged in
+      145 |     try {
+      146 |       await logoutUser(page)
+        at /Users/marco/Github.tmp/gramm_to_kcal/__e2e__/auth/login.spec.ts:143:8
+
+    Error: browserContext.clearCookies: Test ended.
+    Browser logs:
+
+    <launching> /Users/marco/Library/Caches/ms-playwright/chromium-1181/chrome-mac/Chromium.app/Contents/MacOS/Chromium --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-extensions --disable-features=AcceptCHFrame,AutoExpandDetailsElement,AvoidUnnecessaryBeforeUnloadCheckSync,CertificateTransparencyComponentUpdater,DestroyProfileOnBrowserClose,DialMediaRouteProvider,ExtensionManifestV2Disabled,GlobalMediaControls,HttpsUpgrades,ImprovedCookieControls,LazyFrameLoading,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,Translate --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --enable-automation --enable-use-zoom-for-dsf=false --enable-unsafe-swiftshader --no-sandbox --user-data-dir=/var/folders/30/fv5ry3pj7k5851d__q59rm280000gn/T/playwright_chromiumdev_profile-ZX8YMh --remote-debugging-pipe --no-startup-window
+    <launched> pid=63530
+    [pid=63530][err] [63530:4530899:0722/150727.443910:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: PHONE_REGISTRATION_ERROR
+    [pid=63530][err] [63530:4530899:0722/150727.444256:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: PHONE_REGISTRATION_ERROR
+    [pid=63530][err] [63530:4530899:0722/150727.476188:ERROR:google_apis/gcm/engine/mcs_client.cc:700]   Error code: 401  Error message: Authentication Failed: wrong_secret
+    [pid=63530][err] [63530:4530899:0722/150727.476210:ERROR:google_apis/gcm/engine/mcs_client.cc:702] Failed to log in to GCM, resetting connection.
+    [pid=63530] <gracefully close start>
+
+       at helpers/auth-helpers.ts:169
+
+      167 |  */
+      168 | export async function clearAuthState(page: Page): Promise<void> {
+    > 169 |   await page.context().clearCookies()
+          |                        ^
+      170 |   await page.evaluate(() => {
+      171 |     localStorage.clear()
+      172 |     sessionStorage.clear()
+        at clearAuthState (/Users/marco/Github.tmp/gramm_to_kcal/__e2e__/helpers/auth-helpers.ts:169:24)
+        at /Users/marco/Github.tmp/gramm_to_kcal/__e2e__/auth/login.spec.ts:151:25
+
+  3) [chromium] › __e2e__/auth/login.spec.ts:64:7 › Login Flow › should validate required fields ───
+
+    Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at clearAuthState (/Users/marco/Github.tmp/gramm_to_kcal/__e2e__/helpers/auth-helpers.ts:170:14)
+        at /Users/marco/Github.tmp/gramm_to_kcal/__e2e__/auth/login.spec.ts:16:5
+
+    Test timeout of 30000ms exceeded while running "afterEach" hook.
+
+      141 |   })
+      142 |
+    > 143 |   test.afterEach(async ({ page }) => {
+          |        ^
+      144 |     // Clean up: logout if logged in
+      145 |     try {
+      146 |       await logoutUser(page)
+        at /Users/marco/Github.tmp/gramm_to_kcal/__e2e__/auth/login.spec.ts:143:8
+
+    Error: browserContext.clearCookies: Test ended.
+    Browser logs:
+
+    <launching> /Users/marco/Library/Caches/ms-playwright/chromium-1181/chrome-mac/Chromium.app/Contents/MacOS/Chromium --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-extensions --disable-features=AcceptCHFrame,AutoExpandDetailsElement,AvoidUnnecessaryBeforeUnloadCheckSync,CertificateTransparencyComponentUpdater,DestroyProfileOnBrowserClose,DialMediaRouteProvider,ExtensionManifestV2Disabled,GlobalMediaControls,HttpsUpgrades,ImprovedCookieControls,LazyFrameLoading,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,Translate --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --enable-automation --enable-use-zoom-for-dsf=false --enable-unsafe-swiftshader --no-sandbox --user-data-dir=/var/folders/30/fv5ry3pj7k5851d__q59rm280000gn/T/playwright_chromiumdev_profile-i2b8LB --remote-debugging-pipe --no-startup-window
+    <launched> pid=63532
+    [pid=63532][err] [63532:4530896:0722/150727.287297:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: PHONE_REGISTRATION_ERROR
+    [pid=63532][err] [63532:4530896:0722/150727.287375:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: PHONE_REGISTRATION_ERROR
+    [pid=63532][err] [63532:4530896:0722/150727.313873:ERROR:google_apis/gcm/engine/mcs_client.cc:700]   Error code: 401  Error message: Authentication Failed: wrong_secret
+    [pid=63532][err] [63532:4530896:0722/150727.313887:ERROR:google_apis/gcm/engine/mcs_client.cc:702] Failed to log in to GCM, resetting connection.
+    [pid=63532][err] [63532:4530896:0722/150748.083670:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: DEPRECATED_ENDPOINT
+    [pid=63532] <gracefully close start>
+
+       at helpers/auth-helpers.ts:169
+
+      167 |  */
+      168 | export async function clearAuthState(page: Page): Promise<void> {
+    > 169 |   await page.context().clearCookies()
+          |                        ^
+      170 |   await page.evaluate(() => {
+      171 |     localStorage.clear()
+      172 |     sessionStorage.clear()
+        at clearAuthState (/Users/marco/Github.tmp/gramm_to_kcal/__e2e__/helpers/auth-helpers.ts:169:24)
+        at /Users/marco/Github.tmp/gramm_to_kcal/__e2e__/auth/login.spec.ts:151:25
+
+  4) [chromium] › __e2e__/auth/login.spec.ts:41:7 › Login Flow › should show error message for invalid credentials 
+
+    Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at clearAuthState (/Users/marco/Github.tmp/gramm_to_kcal/__e2e__/helpers/auth-helpers.ts:170:14)
+        at /Users/marco/Github.tmp/gramm_to_kcal/__e2e__/auth/login.spec.ts:16:5
+
+    Test timeout of 30000ms exceeded while running "afterEach" hook.
+
+      141 |   })
+      142 |
+    > 143 |   test.afterEach(async ({ page }) => {
+          |        ^
+      144 |     // Clean up: logout if logged in
+      145 |     try {
+      146 |       await logoutUser(page)
+        at /Users/marco/Github.tmp/gramm_to_kcal/__e2e__/auth/login.spec.ts:143:8
+
+    Error: browserContext.clearCookies: Target page, context or browser has been closed
+
+       at helpers/auth-helpers.ts:169
+
+      167 |  */
+      168 | export async function clearAuthState(page: Page): Promise<void> {
+    > 169 |   await page.context().clearCookies()
+          |                        ^
+      170 |   await page.evaluate(() => {
+      171 |     localStorage.clear()
+      172 |     sessionStorage.clear()
+        at clearAuthState (/Users/marco/Github.tmp/gramm_to_kcal/__e2e__/helpers/auth-helpers.ts:169:24)
+        at /Users/marco/Github.tmp/gramm_to_kcal/__e2e__/auth/login.spec.ts:151:25
+
+  5) [chromium] › __e2e__/auth/logout.spec.ts:23:7 › Logout Flow › should successfully logout user ─
+
+    Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at clearAuthState (/Users/marco/Github.tmp/gramm_to_kcal/__e2e__/helpers/auth-helpers.ts:170:14)
+        at /Users/marco/Github.tmp/gramm_to_kcal/__e2e__/auth/logout.spec.ts:20:5
+
+    Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at clearAuthState (/Users/marco/Github.tmp/gramm_to_kcal/__e2e__/helpers/auth-helpers.ts:170:14)
+        at /Users/marco/Github.tmp/gramm_to_kcal/__e2e__/auth/logout.spec.ts:289:5
+
+  6) [chromium] › __e2e__/auth/logout.spec.ts:44:7 › Logout Flow › should clear session and prevent access to protected routes after logout 
+
+    Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at clearAuthState (/Users/marco/Github.tmp/gramm_to_kcal/__e2e__/helpers/auth-helpers.ts:170:14)
+        at /Users/marco/Github.tmp/gramm_to_kcal/__e2e__/auth/logout.spec.ts:20:5
+
+    Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at clearAuthState (/Users/marco/Github.tmp/gramm_to_kcal/__e2e__/helpers/auth-helpers.ts:170:14)
+        at /Users/marco/Github.tmp/gramm_to_kcal/__e2e__/auth/logout.spec.ts:289:5
+
+  7) [chromium] › __e2e__/auth/logout.spec.ts:93:7 › Logout Flow › should logout from dropdown menu if logout is in user menu 
+
+    Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at clearAuthState (/Users/marco/Github.tmp/gramm_to_kcal/__e2e__/helpers/auth-helpers.ts:170:14)
+        at /Users/marco/Github.tmp/gramm_to_kcal/__e2e__/auth/logout.spec.ts:20:5
+
+    Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at clearAuthState (/Users/marco/Github.tmp/gramm_to_kcal/__e2e__/helpers/auth-helpers.ts:170:14)
+        at /Users/marco/Github.tmp/gramm_to_kcal/__e2e__/auth/logout.spec.ts:289:5
+
+  8) [chromium] › __e2e__/auth/logout.spec.ts:67:7 › Logout Flow › should handle logout from different pages 
+
+    Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at clearAuthState (/Users/marco/Github.tmp/gramm_to_kcal/__e2e__/helpers/auth-helpers.ts:170:14)
+        at /Users/marco/Github.tmp/gramm_to_kcal/__e2e__/auth/logout.spec.ts:20:5
+
+    Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at clearAuthState (/Users/marco/Github.tmp/gramm_to_kcal/__e2e__/helpers/auth-helpers.ts:170:14)
+        at /Users/marco/Github.tmp/gramm_to_kcal/__e2e__/auth/logout.spec.ts:289:5
+
+  9) [chromium] › __e2e__/auth/logout.spec.ts:171:7 › Logout Flow › should prevent double logout issues 
+
+    Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at clearAuthState (/Users/marco/Github.tmp/gramm_to_kcal/__e2e__/helpers/auth-helpers.ts:170:14)
+        at /Users/marco/Github.tmp/gramm_to_kcal/__e2e__/auth/logout.spec.ts:20:5
+
+    Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at clearAuthState (/Users/marco/Github.tmp/gramm_to_kcal/__e2e__/helpers/auth-helpers.ts:170:14)
+        at /Users/marco/Github.tmp/gramm_to_kcal/__e2e__/auth/logout.spec.ts:289:5
+
+  10) [chromium] › __e2e__/auth/logout.spec.ts:137:7 › Logout Flow › should handle logout across multiple tabs 
+
+    Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at clearAuthState (/Users/marco/Github.tmp/gramm_to_kcal/__e2e__/helpers/auth-helpers.ts:170:14)
+        at /Users/marco/Github.tmp/gramm_to_kcal/__e2e__/auth/logout.spec.ts:20:5
+
+    Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at clearAuthState (/Users/marco/Github.tmp/gramm_to_kcal/__e2e__/helpers/auth-helpers.ts:170:14)
+        at /Users/marco/Github.tmp/gramm_to_kcal/__e2e__/auth/logout.spec.ts:289:5
+
+  11) [chromium] › __e2e__/auth/logout.spec.ts:195:7 › Logout Flow › should clear local storage and session data on logout 
+
+    Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at clearAuthState (/Users/marco/Github.tmp/gramm_to_kcal/__e2e__/helpers/auth-helpers.ts:170:14)
+        at /Users/marco/Github.tmp/gramm_to_kcal/__e2e__/auth/logout.spec.ts:20:5
+
+    Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at clearAuthState (/Users/marco/Github.tmp/gramm_to_kcal/__e2e__/helpers/auth-helpers.ts:170:14)
+        at /Users/marco/Github.tmp/gramm_to_kcal/__e2e__/auth/logout.spec.ts:289:5
+
+  12) [chromium] › __e2e__/auth/logout.spec.ts:239:7 › Logout Flow › should handle logout with network errors 
+
+    Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at clearAuthState (/Users/marco/Github.tmp/gramm_to_kcal/__e2e__/helpers/auth-helpers.ts:170:14)
+        at /Users/marco/Github.tmp/gramm_to_kcal/__e2e__/auth/logout.spec.ts:20:5
+
+    Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at clearAuthState (/Users/marco/Github.tmp/gramm_to_kcal/__e2e__/helpers/auth-helpers.ts:170:14)
+        at /Users/marco/Github.tmp/gramm_to_kcal/__e2e__/auth/logout.spec.ts:289:5
+
+
+[15/49] …ware Redirects (GitHub Issues #8, #11) › Issue #8: Redirect logged-in users away from auth pages › should redirect authenticated user from log
+[16/49] …are Redirects (GitHub Issues #8, #11) › Issue #8: Redirect logged-in users away from auth pages › should redirect authenticated user from sign
+  13) [chromium] › __e2e__/auth/login.spec.ts:96:7 › Login Flow › should redirect to originally requested page after login 
+
+    Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at clearAuthState (/Users/marco/Github.tmp/gramm_to_kcal/__e2e__/helpers/auth-helpers.ts:170:14)
+        at /Users/marco/Github.tmp/gramm_to_kcal/__e2e__/auth/login.spec.ts:16:5
+
+    Test timeout of 30000ms exceeded while running "afterEach" hook.
+
+      141 |   })
+      142 |
+    > 143 |   test.afterEach(async ({ page }) => {
+          |        ^
+      144 |     // Clean up: logout if logged in
+      145 |     try {
+      146 |       await logoutUser(page)
+        at /Users/marco/Github.tmp/gramm_to_kcal/__e2e__/auth/login.spec.ts:143:8
+
+    Error: browserContext.clearCookies: Test ended.
+    Browser logs:
+
+    <launching> /Users/marco/Library/Caches/ms-playwright/chromium-1181/chrome-mac/Chromium.app/Contents/MacOS/Chromium --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-extensions --disable-features=AcceptCHFrame,AutoExpandDetailsElement,AvoidUnnecessaryBeforeUnloadCheckSync,CertificateTransparencyComponentUpdater,DestroyProfileOnBrowserClose,DialMediaRouteProvider,ExtensionManifestV2Disabled,GlobalMediaControls,HttpsUpgrades,ImprovedCookieControls,LazyFrameLoading,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,Translate --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --enable-automation --enable-use-zoom-for-dsf=false --enable-unsafe-swiftshader --no-sandbox --user-data-dir=/var/folders/30/fv5ry3pj7k5851d__q59rm280000gn/T/playwright_chromiumdev_profile-0CT0jP --remote-debugging-pipe --no-startup-window
+    <launched> pid=63805
+    [pid=63805][err] [63805:4532904:0722/150802.983885:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: PHONE_REGISTRATION_ERROR
+    [pid=63805][err] [63805:4532904:0722/150802.987152:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: PHONE_REGISTRATION_ERROR
+    [pid=63805][err] [63805:4532904:0722/150803.027080:ERROR:google_apis/gcm/engine/mcs_client.cc:700]   Error code: 401  Error message: Authentication Failed: wrong_secret
+    [pid=63805][err] [63805:4532904:0722/150803.027100:ERROR:google_apis/gcm/engine/mcs_client.cc:702] Failed to log in to GCM, resetting connection.
+    [pid=63805][err] [63805:4532904:0722/150825.542612:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: DEPRECATED_ENDPOINT
+    [pid=63805] <gracefully close start>
+
+       at helpers/auth-helpers.ts:169
+
+      167 |  */
+      168 | export async function clearAuthState(page: Page): Promise<void> {
+    > 169 |   await page.context().clearCookies()
+          |                        ^
+      170 |   await page.evaluate(() => {
+      171 |     localStorage.clear()
+      172 |     sessionStorage.clear()
+        at clearAuthState (/Users/marco/Github.tmp/gramm_to_kcal/__e2e__/helpers/auth-helpers.ts:169:24)
+        at /Users/marco/Github.tmp/gramm_to_kcal/__e2e__/auth/login.spec.ts:151:25
+
+  14) [chromium] › __e2e__/auth/login.spec.ts:112:7 › Login Flow › should maintain login state across page navigation 
+
+    Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at clearAuthState (/Users/marco/Github.tmp/gramm_to_kcal/__e2e__/helpers/auth-helpers.ts:170:14)
+        at /Users/marco/Github.tmp/gramm_to_kcal/__e2e__/auth/login.spec.ts:16:5
+
+    Test timeout of 30000ms exceeded while running "afterEach" hook.
+
+      141 |   })
+      142 |
+    > 143 |   test.afterEach(async ({ page }) => {
+          |        ^
+      144 |     // Clean up: logout if logged in
+      145 |     try {
+      146 |       await logoutUser(page)
+        at /Users/marco/Github.tmp/gramm_to_kcal/__e2e__/auth/login.spec.ts:143:8
+
+    Error: browserContext.clearCookies: Test ended.
+    Browser logs:
+
+    <launching> /Users/marco/Library/Caches/ms-playwright/chromium-1181/chrome-mac/Chromium.app/Contents/MacOS/Chromium --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-extensions --disable-features=AcceptCHFrame,AutoExpandDetailsElement,AvoidUnnecessaryBeforeUnloadCheckSync,CertificateTransparencyComponentUpdater,DestroyProfileOnBrowserClose,DialMediaRouteProvider,ExtensionManifestV2Disabled,GlobalMediaControls,HttpsUpgrades,ImprovedCookieControls,LazyFrameLoading,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,Translate --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --enable-automation --enable-use-zoom-for-dsf=false --enable-unsafe-swiftshader --no-sandbox --user-data-dir=/var/folders/30/fv5ry3pj7k5851d__q59rm280000gn/T/playwright_chromiumdev_profile-mECgih --remote-debugging-pipe --no-startup-window
+    <launched> pid=63804
+    [pid=63804][err] [63804:4532899:0722/150802.959420:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: PHONE_REGISTRATION_ERROR
+    [pid=63804][err] [63804:4532899:0722/150802.961509:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: PHONE_REGISTRATION_ERROR
+    [pid=63804][err] [63804:4532899:0722/150802.993397:ERROR:google_apis/gcm/engine/mcs_client.cc:700]   Error code: 401  Error message: Authentication Failed: wrong_secret
+    [pid=63804][err] [63804:4532899:0722/150802.993427:ERROR:google_apis/gcm/engine/mcs_client.cc:702] Failed to log in to GCM, resetting connection.
+    [pid=63804][err] [63804:4532899:0722/150827.070671:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: DEPRECATED_ENDPOINT
+    [pid=63804] <gracefully close start>
+
+       at helpers/auth-helpers.ts:169
+
+      167 |  */
+      168 | export async function clearAuthState(page: Page): Promise<void> {
+    > 169 |   await page.context().clearCookies()
+          |                        ^
+      170 |   await page.evaluate(() => {
+      171 |     localStorage.clear()
+      172 |     sessionStorage.clear()
+        at clearAuthState (/Users/marco/Github.tmp/gramm_to_kcal/__e2e__/helpers/auth-helpers.ts:169:24)
+        at /Users/marco/Github.tmp/gramm_to_kcal/__e2e__/auth/login.spec.ts:151:25
+
+[17/49] …ects (GitHub Issues #8, #11) › Issue #8: Redirect logged-in users away from auth pages › should redirect authenticated user from forgot passwo
+[18/49] …ware Redirects (GitHub Issues #8, #11) › Issue #8: Redirect logged-in users away from auth pages › should redirect from all auth pages when logged in
+
+[15/49] …ware Redirects (GitHub Issues #8, #11) › Issue #8: Redirect logged-in users away from auth pages › should redirect authenticated user from log
+[16/49] …are Redirects (GitHub Issues #8, #11) › Issue #8: Redirect logged-in users away from auth pages › should redirect authenticated user from sign
+  13) [chromium] › __e2e__/auth/login.spec.ts:96:7 › Login Flow › should redirect to originally requested page after login 
+
+    Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at clearAuthState (/Users/marco/Github.tmp/gramm_to_kcal/__e2e__/helpers/auth-helpers.ts:170:14)
+        at /Users/marco/Github.tmp/gramm_to_kcal/__e2e__/auth/login.spec.ts:16:5
+
+    Test timeout of 30000ms exceeded while running "afterEach" hook.
+
+      141 |   })
+      142 |
+    > 143 |   test.afterEach(async ({ page }) => {
+          |        ^
+      144 |     // Clean up: logout if logged in
+      145 |     try {
+      146 |       await logoutUser(page)
+        at /Users/marco/Github.tmp/gramm_to_kcal/__e2e__/auth/login.spec.ts:143:8
+
+    Error: browserContext.clearCookies: Test ended.
+    Browser logs:
+
+    <launching> /Users/marco/Library/Caches/ms-playwright/chromium-1181/chrome-mac/Chromium.app/Contents/MacOS/Chromium --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-extensions --disable-features=AcceptCHFrame,AutoExpandDetailsElement,AvoidUnnecessaryBeforeUnloadCheckSync,CertificateTransparencyComponentUpdater,DestroyProfileOnBrowserClose,DialMediaRouteProvider,ExtensionManifestV2Disabled,GlobalMediaControls,HttpsUpgrades,ImprovedCookieControls,LazyFrameLoading,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,Translate --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --enable-automation --enable-use-zoom-for-dsf=false --enable-unsafe-swiftshader --no-sandbox --user-data-dir=/var/folders/30/fv5ry3pj7k5851d__q59rm280000gn/T/playwright_chromiumdev_profile-0CT0jP --remote-debugging-pipe --no-startup-window
+    <launched> pid=63805
+    [pid=63805][err] [63805:4532904:0722/150802.983885:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: PHONE_REGISTRATION_ERROR
+    [pid=63805][err] [63805:4532904:0722/150802.987152:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: PHONE_REGISTRATION_ERROR
+    [pid=63805][err] [63805:4532904:0722/150803.027080:ERROR:google_apis/gcm/engine/mcs_client.cc:700]   Error code: 401  Error message: Authentication Failed: wrong_secret
+    [pid=63805][err] [63805:4532904:0722/150803.027100:ERROR:google_apis/gcm/engine/mcs_client.cc:702] Failed to log in to GCM, resetting connection.
+    [pid=63805][err] [63805:4532904:0722/150825.542612:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: DEPRECATED_ENDPOINT
+    [pid=63805] <gracefully close start>
+
+       at helpers/auth-helpers.ts:169
+
+      167 |  */
+      168 | export async function clearAuthState(page: Page): Promise<void> {
+    > 169 |   await page.context().clearCookies()
+          |                        ^
+      170 |   await page.evaluate(() => {
+      171 |     localStorage.clear()
+      172 |     sessionStorage.clear()
+        at clearAuthState (/Users/marco/Github.tmp/gramm_to_kcal/__e2e__/helpers/auth-helpers.ts:169:24)
+        at /Users/marco/Github.tmp/gramm_to_kcal/__e2e__/auth/login.spec.ts:151:25
+
+  14) [chromium] › __e2e__/auth/login.spec.ts:112:7 › Login Flow › should maintain login state across page navigation 
+
+    Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at clearAuthState (/Users/marco/Github.tmp/gramm_to_kcal/__e2e__/helpers/auth-helpers.ts:170:14)
+        at /Users/marco/Github.tmp/gramm_to_kcal/__e2e__/auth/login.spec.ts:16:5
+
+    Test timeout of 30000ms exceeded while running "afterEach" hook.
+
+      141 |   })
+      142 |
+    > 143 |   test.afterEach(async ({ page }) => {
+          |        ^
+      144 |     // Clean up: logout if logged in
+      145 |     try {
+      146 |       await logoutUser(page)
+        at /Users/marco/Github.tmp/gramm_to_kcal/__e2e__/auth/login.spec.ts:143:8
+
+    Error: browserContext.clearCookies: Test ended.
+    Browser logs:
+
+    <launching> /Users/marco/Library/Caches/ms-playwright/chromium-1181/chrome-mac/Chromium.app/Contents/MacOS/Chromium --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-extensions --disable-features=AcceptCHFrame,AutoExpandDetailsElement,AvoidUnnecessaryBeforeUnloadCheckSync,CertificateTransparencyComponentUpdater,DestroyProfileOnBrowserClose,DialMediaRouteProvider,ExtensionManifestV2Disabled,GlobalMediaControls,HttpsUpgrades,ImprovedCookieControls,LazyFrameLoading,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,Translate --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --enable-automation --enable-use-zoom-for-dsf=false --enable-unsafe-swiftshader --no-sandbox --user-data-dir=/var/folders/30/fv5ry3pj7k5851d__q59rm280000gn/T/playwright_chromiumdev_profile-mECgih --remote-debugging-pipe --no-startup-window
+    <launched> pid=63804
+    [pid=63804][err] [63804:4532899:0722/150802.959420:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: PHONE_REGISTRATION_ERROR
+    [pid=63804][err] [63804:4532899:0722/150802.961509:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: PHONE_REGISTRATION_ERROR
+    [pid=63804][err] [63804:4532899:0722/150802.993397:ERROR:google_apis/gcm/engine/mcs_client.cc:700]   Error code: 401  Error message: Authentication Failed: wrong_secret
+    [pid=63804][err] [63804:4532899:0722/150802.993427:ERROR:google_apis/gcm/engine/mcs_client.cc:702] Failed to log in to GCM, resetting connection.
+    [pid=63804][err] [63804:4532899:0722/150827.070671:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: DEPRECATED_ENDPOINT
+    [pid=63804] <gracefully close start>
+
+       at helpers/auth-helpers.ts:169
+
+      167 |  */
+      168 | export async function clearAuthState(page: Page): Promise<void> {
+    > 169 |   await page.context().clearCookies()
+          |                        ^
+      170 |   await page.evaluate(() => {
+      171 |     localStorage.clear()
+      172 |     sessionStorage.clear()
+        at clearAuthState (/Users/marco/Github.tmp/gramm_to_kcal/__e2e__/helpers/auth-helpers.ts:169:24)
+        at /Users/marco/Github.tmp/gramm_to_kcal/__e2e__/auth/login.spec.ts:151:25
+
+[17/49] …ects (GitHub Issues #8, #11) › Issue #8: Redirect logged-in users away from auth pages › should redirect authenticated user from forgot passwo
+[18/49] …ware Redirects (GitHub Issues #8, #11) › Issue #8: Redirect logged-in users away from auth pages › should redirect from all auth pages when lo
+  15) [chromium] › __e2e__/auth/middleware-redirects.spec.ts:46:9 › Middleware Redirects (GitHub Issues #8, #11) › Issue #8: Redirect logged-in users away from auth pages › should redirect authenticated user from signup page 
+
+    Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at clearAuthState (/Users/marco/Github.tmp/gramm_to_kcal/__e2e__/helpers/auth-helpers.ts:170:14)
+        at /Users/marco/Github.tmp/gramm_to_kcal/__e2e__/auth/middleware-redirects.spec.ts:22:5
+
+    Test timeout of 30000ms exceeded while running "afterEach" hook.
+
+      281 |   })
+      282 |
+    > 283 |   test.afterEach(async ({ page }) => {
+          |        ^
+      284 |     try {
+      285 |       await logoutUser(page)
+      286 |     }
+        at /Users/marco/Github.tmp/gramm_to_kcal/__e2e__/auth/middleware-redirects.spec.ts:283:8
+
+    Error: browserContext.clearCookies: Test ended.
+    Browser logs:
+
+    <launching> /Users/marco/Library/Caches/ms-playwright/chromium-1181/chrome-mac/Chromium.app/Contents/MacOS/Chromium --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-extensions --disable-features=AcceptCHFrame,AutoExpandDetailsElement,AvoidUnnecessaryBeforeUnloadCheckSync,CertificateTransparencyComponentUpdater,DestroyProfileOnBrowserClose,DialMediaRouteProvider,ExtensionManifestV2Disabled,GlobalMediaControls,HttpsUpgrades,ImprovedCookieControls,LazyFrameLoading,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,Translate --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --enable-automation --enable-use-zoom-for-dsf=false --enable-unsafe-swiftshader --no-sandbox --user-data-dir=/var/folders/30/fv5ry3pj7k5851d__q59rm280000gn/T/playwright_chromiumdev_profile-C64ydo --remote-debugging-pipe --no-startup-window
+    <launched> pid=63968
+    [pid=63968][err] [63968:4535013:0722/150809.538004:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: PHONE_REGISTRATION_ERROR
+    [pid=63968][err] [63968:4535013:0722/150809.538851:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: PHONE_REGISTRATION_ERROR
+    [pid=63968][err] [63968:4535013:0722/150809.581676:ERROR:google_apis/gcm/engine/mcs_client.cc:700]   Error code: 401  Error message: Authentication Failed: wrong_secret
+    [pid=63968][err] [63968:4535013:0722/150809.581693:ERROR:google_apis/gcm/engine/mcs_client.cc:702] Failed to log in to GCM, resetting connection.
+    [pid=63968] <gracefully close start>
+
+       at helpers/auth-helpers.ts:169
+
+      167 |  */
+      168 | export async function clearAuthState(page: Page): Promise<void> {
+    > 169 |   await page.context().clearCookies()
+          |                        ^
+      170 |   await page.evaluate(() => {
+      171 |     localStorage.clear()
+      172 |     sessionStorage.clear()
+        at clearAuthState (/Users/marco/Github.tmp/gramm_to_kcal/__e2e__/helpers/auth-helpers.ts:169:24)
+        at /Users/marco/Github.tmp/gramm_to_kcal/__e2e__/auth/middleware-redirects.spec.ts:290:25
+
+  16) [chromium] › __e2e__/auth/middleware-redirects.spec.ts:26:9 › Middleware Redirects (GitHub Issues #8, #11) › Issue #8: Redirect logged-in users away from auth pages › should redirect authenticated user from login page 
+
+    Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at clearAuthState (/Users/marco/Github.tmp/gramm_to_kcal/__e2e__/helpers/auth-helpers.ts:170:14)
+        at /Users/marco/Github.tmp/gramm_to_kcal/__e2e__/auth/middleware-redirects.spec.ts:22:5
+
+    Test timeout of 30000ms exceeded while running "afterEach" hook.
+
+      281 |   })
+      282 |
+    > 283 |   test.afterEach(async ({ page }) => {
+          |        ^
+      284 |     try {
+      285 |       await logoutUser(page)
+      286 |     }
+        at /Users/marco/Github.tmp/gramm_to_kcal/__e2e__/auth/middleware-redirects.spec.ts:283:8
+
+    Error: browserContext.clearCookies: Test ended.
+    Browser logs:
+
+    <launching> /Users/marco/Library/Caches/ms-playwright/chromium-1181/chrome-mac/Chromium.app/Contents/MacOS/Chromium --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-extensions --disable-features=AcceptCHFrame,AutoExpandDetailsElement,AvoidUnnecessaryBeforeUnloadCheckSync,CertificateTransparencyComponentUpdater,DestroyProfileOnBrowserClose,DialMediaRouteProvider,ExtensionManifestV2Disabled,GlobalMediaControls,HttpsUpgrades,ImprovedCookieControls,LazyFrameLoading,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,Translate --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --enable-automation --enable-use-zoom-for-dsf=false --enable-unsafe-swiftshader --no-sandbox --user-data-dir=/var/folders/30/fv5ry3pj7k5851d__q59rm280000gn/T/playwright_chromiumdev_profile-PJKlmM --remote-debugging-pipe --no-startup-window
+    <launched> pid=63967
+    [pid=63967][err] [63967:4535011:0722/150809.515958:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: PHONE_REGISTRATION_ERROR
+    [pid=63967][err] [63967:4535011:0722/150809.527954:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: PHONE_REGISTRATION_ERROR
+    [pid=63967][err] [63967:4535011:0722/150809.554320:ERROR:google_apis/gcm/engine/mcs_client.cc:700]   Error code: 401  Error message: Authentication Failed: wrong_secret
+    [pid=63967][err] [63967:4535011:0722/150809.554337:ERROR:google_apis/gcm/engine/mcs_client.cc:702] Failed to log in to GCM, resetting connection.
+    [pid=63967][err] [63967:4535011:0722/150831.312782:ERROR:google_apis/gcm/engine/registration_request.cc:291] Registration response error message: DEPRECATED_ENDPOINT
+    [pid=63967] <gracefully close start>
+
+       at helpers/auth-helpers.ts:169
+
+      167 |  */
+      168 | export async function clearAuthState(page: Page): Promise<void> {
+    > 169 |   await page.context().clearCookies()
+          |                        ^
+      170 |   await page.evaluate(() => {
+      171 |     localStorage.clear()
+      172 |     sessionStorage.clear()
+        at clearAuthState (/Users/marco/Github.tmp/gramm_to_kcal/__e2e__/helpers/auth-helpers.ts:169:24)
+        at /Users/marco/Github.tmp/gramm_to_kcal/__e2e__/auth/middleware-redirects.spec.ts:290:25
+
+[19/49] …iddleware Redirects (GitHub Issues #8, #11) › Protected Routes for Unauthenticated Users › should redirect unauthenticated user from protected
+[20/49] …:9 › Middleware Redirects (GitHub Issues #8, #11) › Protected Routes for Unauthenticated Users › should allow unauthenticated access to public routes

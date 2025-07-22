@@ -44,3 +44,9 @@ test-results
 *test-results
 repomix-output-sxzz-eslint-config.xml
 .eslint-config-inspector
+
+# Playwright
+node_modules/
+/playwright-report/
+/blob-report/
+/playwright/.cache/

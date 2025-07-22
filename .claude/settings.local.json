@@ -2,9 +2,6 @@
   "permissions": {
     "allow": [
       "Bash(mkdir:*)",
-      "Bash(pnpm dlx shadcn@latest add:*)",
-      "Bash(pnpm test:*)",
-      "Bash(pnpm clean)",
       "mcp__mcp-sequentialthinking-tools__sequentialthinking_tools",
       "mcp__claude-pocket-pick__pocket_add",
       "mcp__context7__get-library-docs",
@@ -14,7 +11,11 @@
       "Bash(pnpm install)",
       "Bash(pnpm build)",
       "Bash(pnpm test)",
-      "Bash(pnpm lint)"
+      "Bash(pnpm lint)",
+      "Bash(pnpm dlx shadcn@latest add:*)",
+      "Bash(pnpm test:*)",
+      "Bash(pnpm clean)",
+      "Bash(pnpm*)"
     ]
   }
 }

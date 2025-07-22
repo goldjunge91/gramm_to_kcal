@@ -24,6 +24,7 @@
 
 - **Never** use npm or yarn, only pnpm
 - **Never** run `pnpm dev` or `pnpm build` automatically - ask user first
+- **Dont run pnpm * commands ask the user to excute it.**
 - **Always** update DrizzleAdapter mapping in `auth.ts` when changing schema
 - **Never** NEVER NEVER NEVER send plain text to server
 - **Always** use existing patterns and components from the codebase
