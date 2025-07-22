@@ -3,7 +3,7 @@
  * Professionelles Tool für die Umrechnung zwischen Millilitern und Gramm
  */
 
-"use client";
+'use client'
 
 import {
   Beaker,
@@ -16,189 +16,193 @@ import {
   Info,
   Share2,
   Star,
-} from "lucide-react";
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
+} from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { toast } from 'sonner'
 
-import type { ConversionResult } from "@/lib/utils/unit-converter";
+import type { ConversionResult } from '@/lib/utils/unit-converter'
 
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "@/components/ui/collapsible";
-import { Separator } from "@/components/ui/separator";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { MlToGramConverter } from "@/components/unit-converter/MlToGramConverter";
-import { getDensityDataByCategory } from "@/lib/utils/density-database";
+} from '@/components/ui/collapsible'
+import { Separator } from '@/components/ui/separator'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { MlToGramConverter } from '@/components/unit-converter/MlToGramConverter'
+import { getDensityDataByCategory } from '@/lib/utils/density-database'
 
 export default function UnitConverterPage() {
   // State Management
   const [conversionHistory, setConversionHistory] = useState<
     ConversionResult[]
-  >([]);
-  const [favorites, setFavorites] = useState<string[]>([]);
-  const [faqOpen, setFaqOpen] = useState<Record<string, boolean>>({});
+  >([])
+  const [favorites, setFavorites] = useState<string[]>([])
+  const [faqOpen, setFaqOpen] = useState<Record<string, boolean>>({})
 
   // Load saved data from localStorage
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const savedHistory = localStorage.getItem("unit-converter-history");
-      const savedFavorites = localStorage.getItem("unit-converter-favorites");
+    if (typeof window !== 'undefined') {
+      const savedHistory = localStorage.getItem('unit-converter-history')
+      const savedFavorites = localStorage.getItem('unit-converter-favorites')
 
       if (savedHistory) {
         try {
-          setConversionHistory(JSON.parse(savedHistory));
-        } catch (error) {
-          console.warn("Failed to load conversion history:", error);
+          setConversionHistory(JSON.parse(savedHistory))
+        }
+        catch (error) {
+          console.warn('Failed to load conversion history:', error)
         }
       }
 
       if (savedFavorites) {
         try {
-          setFavorites(JSON.parse(savedFavorites));
-        } catch (error) {
-          console.warn("Failed to load favorites:", error);
+          setFavorites(JSON.parse(savedFavorites))
+        }
+        catch (error) {
+          console.warn('Failed to load favorites:', error)
         }
       }
     }
-  }, []);
+  }, [])
 
   // Save to localStorage when data changes
   useEffect(() => {
-    if (typeof window !== "undefined") {
+    if (typeof window !== 'undefined') {
       localStorage.setItem(
-        "unit-converter-history",
+        'unit-converter-history',
         JSON.stringify(conversionHistory),
-      );
+      )
     }
-  }, [conversionHistory]);
+  }, [conversionHistory])
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
+    if (typeof window !== 'undefined') {
       localStorage.setItem(
-        "unit-converter-favorites",
+        'unit-converter-favorites',
         JSON.stringify(favorites),
-      );
+      )
     }
-  }, [favorites]);
+  }, [favorites])
 
   const handleConversionChange = (result: ConversionResult) => {
     if (result.success) {
-      setConversionHistory((prev) => [result, ...prev.slice(0, 9)]); // Behalte nur die letzten 10
+      setConversionHistory(prev => [result, ...prev.slice(0, 9)]) // Behalte nur die letzten 10
     }
-  };
+  }
 
   // Favorites Management
   const toggleFavorite = (substance: string) => {
-    setFavorites((prev) =>
+    setFavorites(prev =>
       prev.includes(substance)
-        ? prev.filter((fav) => fav !== substance)
+        ? prev.filter(fav => fav !== substance)
         : [...prev, substance],
-    );
+    )
     toast.success(
       favorites.includes(substance)
-        ? "Aus Favoriten entfernt"
-        : "Zu Favoriten hinzugefügt",
-    );
-  };
+        ? 'Aus Favoriten entfernt'
+        : 'Zu Favoriten hinzugefügt',
+    )
+  }
 
   // Clear History
   const clearHistory = () => {
-    setConversionHistory([]);
-    toast.success("Verlauf gelöscht");
-  };
+    setConversionHistory([])
+    toast.success('Verlauf gelöscht')
+  }
 
   // Export Functions
   const exportHistory = () => {
     if (conversionHistory.length === 0) {
-      toast.error("Kein Verlauf zum Exportieren vorhanden");
-      return;
+      toast.error('Kein Verlauf zum Exportieren vorhanden')
+      return
     }
 
     const csvContent = [
-      ["Datum", "Von", "Nach", "Substanz", "Formel"].join(","),
-      ...conversionHistory.map((result) =>
+      ['Datum', 'Von', 'Nach', 'Substanz', 'Formel'].join(','),
+      ...conversionHistory.map(result =>
         [
-          new Date(result.timestamp || Date.now()).toLocaleDateString("de-DE"),
+          new Date(result.timestamp || Date.now()).toLocaleDateString('de-DE'),
           `${result.originalValue} ${result.originalUnit}`,
           `${result.value} ${result.unit}`,
-          result.substance?.nameDE || "Wasser",
-          `"${result.formula || ""}"`,
-        ].join(","),
+          result.substance?.nameDE || 'Wasser',
+          `"${result.formula || ''}"`,
+        ].join(','),
       ),
-    ].join("\n");
+    ].join('\n')
 
     const blob = new Blob([csvContent], {
-      type: "text/csv;charset=utf-8;",
-    });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = `umrechnungen-${new Date().toISOString().split("T")[0]}.csv`;
-    link.click();
+      type: 'text/csv;charset=utf-8;',
+    })
+    const link = document.createElement('a')
+    link.href = URL.createObjectURL(blob)
+    link.download = `umrechnungen-${new Date().toISOString().split('T')[0]}.csv`
+    link.click()
 
-    toast.success("Verlauf als CSV exportiert");
-  };
+    toast.success('Verlauf als CSV exportiert')
+  }
 
   // Share Function
   const shareConverter = async () => {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: "ML zu Gramm Umrechner",
-          text: "Konvertiere einfach zwischen Millilitern und Gramm für verschiedene Substanzen",
+          title: 'ML zu Gramm Umrechner',
+          text: 'Konvertiere einfach zwischen Millilitern und Gramm für verschiedene Substanzen',
           url: window.location.href,
-        });
-      } catch (error) {
-        console.log("Error sharing:", error);
+        })
       }
-    } else {
-      // Fallback: Copy to clipboard
-      navigator.clipboard.writeText(window.location.href);
-      toast.success("Link in Zwischenablage kopiert");
+      catch (error) {
+        console.log('Error sharing:', error)
+      }
     }
-  };
+    else {
+      // Fallback: Copy to clipboard
+      navigator.clipboard.writeText(window.location.href)
+      toast.success('Link in Zwischenablage kopiert')
+    }
+  }
 
   // FAQ Data
   const faqData = [
     {
-      id: "basic-conversion",
-      question: "Wie funktioniert die Umrechnung von ML zu Gramm?",
+      id: 'basic-conversion',
+      question: 'Wie funktioniert die Umrechnung von ML zu Gramm?',
       answer:
-        "Die Umrechnung basiert auf der Formel: Gewicht [g] = Volumen [ml] × Dichte [g/ml]. Die Dichte ist substanzspezifisch - Wasser hat beispielsweise eine Dichte von 1,0 g/ml, während Honig 1,4 g/ml hat.",
+        'Die Umrechnung basiert auf der Formel: Gewicht [g] = Volumen [ml] × Dichte [g/ml]. Die Dichte ist substanzspezifisch - Wasser hat beispielsweise eine Dichte von 1,0 g/ml, während Honig 1,4 g/ml hat.',
     },
     {
-      id: "accuracy",
-      question: "Wie genau sind die Umrechnungen?",
+      id: 'accuracy',
+      question: 'Wie genau sind die Umrechnungen?',
       answer:
-        "Unsere Dichte-Datenbank basiert auf wissenschaftlichen Werten und ist sehr präzise. Beachten Sie jedoch, dass natürliche Schwankungen bei Lebensmitteln (z.B. Fettgehalt bei Milch) kleine Abweichungen verursachen können.",
+        'Unsere Dichte-Datenbank basiert auf wissenschaftlichen Werten und ist sehr präzise. Beachten Sie jedoch, dass natürliche Schwankungen bei Lebensmitteln (z.B. Fettgehalt bei Milch) kleine Abweichungen verursachen können.',
     },
     {
-      id: "water-special",
-      question: "Warum ist Wasser ein Spezialfall?",
+      id: 'water-special',
+      question: 'Warum ist Wasser ein Spezialfall?',
       answer:
-        "Wasser hat bei Raumtemperatur (20°C) eine Dichte von genau 1,0 g/ml. Das bedeutet: 1 ml Wasser = 1 g Wasser. Dies macht Wasser zum einfachsten Umrechnungsfall.",
+        'Wasser hat bei Raumtemperatur (20°C) eine Dichte von genau 1,0 g/ml. Das bedeutet: 1 ml Wasser = 1 g Wasser. Dies macht Wasser zum einfachsten Umrechnungsfall.',
     },
     {
-      id: "cooking-tips",
-      question: "Welche Substanzen sind fürs Kochen wichtig?",
+      id: 'cooking-tips',
+      question: 'Welche Substanzen sind fürs Kochen wichtig?',
       answer:
-        "Die wichtigsten Küchen-Umrechnungen sind: Milch (1,03 g/ml), Öl (0,92 g/ml), Honig (1,4 g/ml), und Sahne (1,01 g/ml). Diese verwenden Sie am häufigsten beim Backen und Kochen.",
+        'Die wichtigsten Küchen-Umrechnungen sind: Milch (1,03 g/ml), Öl (0,92 g/ml), Honig (1,4 g/ml), und Sahne (1,01 g/ml). Diese verwenden Sie am häufigsten beim Backen und Kochen.',
     },
     {
-      id: "custom-density",
-      question: "Was ist wenn meine Substanz nicht in der Liste steht?",
+      id: 'custom-density',
+      question: 'Was ist wenn meine Substanz nicht in der Liste steht?',
       answer:
         'Verwenden Sie die "Benutzerdefinierte Dichte" Option! Suchen Sie die Dichte Ihrer Substanz online oder auf der Produktverpackung und geben Sie den Wert manuell ein.',
     },
-  ];
+  ]
 
   const toggleFaq = (id: string) => {
-    setFaqOpen((prev) => ({ ...prev, [id]: !prev[id] }));
-  };
+    setFaqOpen(prev => ({ ...prev, [id]: !prev[id] }))
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -304,8 +308,15 @@ export default function UnitConverterPage() {
                       className="text-sm border-l-2 border-primary/20 pl-3 py-1"
                     >
                       <div className="font-medium">
-                        {result.originalValue} {result.originalUnit} →{" "}
-                        {result.value} {result.unit}
+                        {result.originalValue}
+                        {' '}
+                        {result.originalUnit}
+                        {' '}
+                        →
+                        {' '}
+                        {result.value}
+                        {' '}
+                        {result.unit}
                       </div>
                       {result.substance && (
                         <div className="text-muted-foreground text-xs">
@@ -316,7 +327,10 @@ export default function UnitConverterPage() {
                   ))}
                   {conversionHistory.length > 5 && (
                     <div className="text-xs text-muted-foreground text-center pt-2">
-                      +{conversionHistory.length - 5} weitere Umrechnungen
+                      +
+                      {conversionHistory.length - 5}
+                      {' '}
+                      weitere Umrechnungen
                     </div>
                   )}
                 </CardContent>
@@ -443,13 +457,13 @@ export default function UnitConverterPage() {
           {/* Substances Tab */}
           <TabsContent value="substances" className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {(["cooking", "chemistry", "common"] as const).map((category) => {
-                const substances = getDensityDataByCategory(category);
+              {(['cooking', 'chemistry', 'common'] as const).map((category) => {
+                const substances = getDensityDataByCategory(category)
                 const categoryNames = {
-                  cooking: "Kochen & Backen",
-                  chemistry: "Chemikalien",
-                  common: "Alltägliche Substanzen",
-                };
+                  cooking: 'Kochen & Backen',
+                  chemistry: 'Chemikalien',
+                  common: 'Alltägliche Substanzen',
+                }
 
                 return (
                   <Card key={category}>
@@ -459,7 +473,7 @@ export default function UnitConverterPage() {
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-2">
-                      {substances.slice(0, 8).map((substance) => (
+                      {substances.slice(0, 8).map(substance => (
                         <div
                           key={substance.name}
                           className="flex justify-between items-center text-sm"
@@ -467,7 +481,9 @@ export default function UnitConverterPage() {
                           <span>{substance.nameDE}</span>
                           <div className="flex items-center gap-2">
                             <span className="font-mono text-xs">
-                              {substance.density} g/ml
+                              {substance.density}
+                              {' '}
+                              g/ml
                             </span>
                             <Button
                               variant="ghost"
@@ -478,8 +494,8 @@ export default function UnitConverterPage() {
                               <Heart
                                 className={`h-3 w-3 ${
                                   favorites.includes(substance.name)
-                                    ? "fill-current text-red-500"
-                                    : "text-muted-foreground"
+                                    ? 'fill-current text-red-500'
+                                    : 'text-muted-foreground'
                                 }`}
                               />
                             </Button>
@@ -488,12 +504,15 @@ export default function UnitConverterPage() {
                       ))}
                       {substances.length > 8 && (
                         <div className="text-xs text-muted-foreground text-center pt-2">
-                          +{substances.length - 8} weitere verfügbar
+                          +
+                          {substances.length - 8}
+                          {' '}
+                          weitere verfügbar
                         </div>
                       )}
                     </CardContent>
                   </Card>
-                );
+                )
               })}
             </div>
           </TabsContent>
@@ -593,7 +612,7 @@ export default function UnitConverterPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                {faqData.map((faq) => (
+                {faqData.map(faq => (
                   <Collapsible
                     key={faq.id}
                     open={faqOpen[faq.id]}
@@ -622,5 +641,5 @@ export default function UnitConverterPage() {
         <div></div>
       </div>
     </div>
-  );
+  )
 }

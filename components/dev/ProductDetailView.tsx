@@ -3,7 +3,9 @@
  * Zeigt vollständige OpenFoodFacts-Daten mit formatierten Ansichten an
  */
 
-"use client";
+'use client'
+
+import type { JSX } from 'react'
 
 import {
   AlertCircle,
@@ -14,55 +16,57 @@ import {
   Info,
   Package,
   Star,
-} from "lucide-react";
-import Image from "next/image";
-import { useState, type JSX } from "react";
-import { toast } from "sonner";
+} from 'lucide-react'
+import Image from 'next/image'
+import { useState } from 'react'
+import { toast } from 'sonner'
 
-import type { EnhancedProductLookupResult } from "@/lib/types/dev-scanner";
+import type { EnhancedProductLookupResult } from '@/lib/types/dev-scanner'
 
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Label } from '@/components/ui/label'
+import { ScrollArea } from '@/components/ui/scroll-area'
+import { Separator } from '@/components/ui/separator'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 interface ProductDetailViewProps {
-  result: EnhancedProductLookupResult | null;
-  className?: string;
+  result: EnhancedProductLookupResult | null
+  className?: string
 }
 
 export function ProductDetailView({
   result,
-  className = "",
+  className = '',
 }: ProductDetailViewProps): JSX.Element {
   const [imageLoadError, setImageLoadError] = useState<Record<string, boolean>>(
     {},
-  );
+  )
 
   // Copy JSON to clipboard
   const copyToClipboard = async (data: any, label: string) => {
     try {
-      await navigator.clipboard.writeText(JSON.stringify(data, null, 2));
-      toast.success(`${label} copied to clipboard`);
-    } catch {
-      toast.error("Failed to copy to clipboard");
+      await navigator.clipboard.writeText(JSON.stringify(data, null, 2))
+      toast.success(`${label} copied to clipboard`)
     }
-  };
+    catch {
+      toast.error('Failed to copy to clipboard')
+    }
+  }
 
   // Format nutritional value
-  const formatNutrientValue = (value: number | undefined, unit = "g") => {
-    return value !== undefined ? `${value.toFixed(1)}${unit}` : "N/A";
-  };
+  const formatNutrientValue = (value: number | undefined, unit = 'g') => {
+    return value !== undefined ? `${value.toFixed(1)}${unit}` : 'N/A'
+  }
 
   // Format date
   const formatDate = (dateString: string | undefined) => {
-    if (!dateString) return "N/A";
-    return new Date(dateString).toLocaleDateString("de-DE");
-  };
+    if (!dateString)
+      return 'N/A'
+    return new Date(dateString).toLocaleDateString('de-DE')
+  }
 
   if (!result) {
     return (
@@ -77,7 +81,7 @@ export function ProductDetailView({
           </div>
         </CardContent>
       </Card>
-    );
+    )
   }
 
   if (!result.success) {
@@ -87,7 +91,9 @@ export function ProductDetailView({
           <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>
-              <strong>Suche fehlgeschlagen:</strong> {result.error}
+              <strong>Suche fehlgeschlagen:</strong>
+              {' '}
+              {result.error}
             </AlertDescription>
           </Alert>
 
@@ -106,9 +112,8 @@ export function ProductDetailView({
                 onClick={() =>
                   copyToClipboard(
                     result.enhancedData!.openFoodFacts,
-                    "Raw data",
-                  )
-                }
+                    'Raw data',
+                  )}
                 className="mt-2"
               >
                 <Copy className="h-3 w-3 mr-1" />
@@ -118,10 +123,10 @@ export function ProductDetailView({
           )}
         </CardContent>
       </Card>
-    );
+    )
   }
 
-  const { product, enhancedData, metadata, validation } = result;
+  const { product, enhancedData, metadata, validation } = result
 
   return (
     <Card className={className}>
@@ -129,11 +134,11 @@ export function ProductDetailView({
         <div className="flex items-start justify-between">
           <div>
             <CardTitle className="text-lg">
-              {product?.name || "Unknown Product"}
+              {product?.name || 'Unknown Product'}
             </CardTitle>
             <div className="flex items-center gap-2 mt-1">
               <Badge variant="outline">{metadata.barcode}</Badge>
-              <Badge variant={validation.isValid ? "default" : "destructive"}>
+              <Badge variant={validation.isValid ? 'default' : 'destructive'}>
                 {validation.format}
               </Badge>
               {enhancedData?.nutritionScore && (
@@ -148,12 +153,17 @@ export function ProductDetailView({
           {/* Performance Metrics */}
           <div className="text-right text-xs text-muted-foreground">
             <div>
-              Response:{" "}
+              Response:
+              {' '}
               {Math.round(metadata.responseTime - metadata.requestTime)}
               ms
             </div>
             {enhancedData?.completenessScore && (
-              <div>Completeness: {enhancedData.completenessScore}%</div>
+              <div>
+                Completeness:
+                {enhancedData.completenessScore}
+                %
+              </div>
             )}
           </div>
         </div>
@@ -180,19 +190,21 @@ export function ProductDetailView({
                   <div className="flex justify-between text-sm">
                     <span>Kalorien (100g):</span>
                     <span className="font-mono">
-                      {product?.kcal || "N/A"} kcal
+                      {product?.kcal || 'N/A'}
+                      {' '}
+                      kcal
                     </span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span>Menge:</span>
                     <span className="font-mono">
-                      {enhancedData?.openFoodFacts.product.quantity || "N/A"}
+                      {enhancedData?.openFoodFacts.product.quantity || 'N/A'}
                     </span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span>Marken:</span>
                     <span className="font-mono text-right">
-                      {enhancedData?.openFoodFacts.product.brands || "N/A"}
+                      {enhancedData?.openFoodFacts.product.brands || 'N/A'}
                     </span>
                   </div>
                 </div>
@@ -219,21 +231,23 @@ export function ProductDetailView({
             <div>
               <Label className="text-sm font-medium">Allergene</Label>
               <div className="flex flex-wrap gap-1 mt-2">
-                {enhancedData?.allergens.length ? (
-                  enhancedData.allergens.map((allergen, index) => (
-                    <Badge
-                      key={index}
-                      variant="destructive"
-                      className="text-xs"
-                    >
-                      {allergen}
-                    </Badge>
-                  ))
-                ) : (
-                  <span className="text-sm text-muted-foreground">
-                    Keine angegeben
-                  </span>
-                )}
+                {enhancedData?.allergens.length
+                  ? (
+                      enhancedData.allergens.map((allergen, index) => (
+                        <Badge
+                          key={index}
+                          variant="destructive"
+                          className="text-xs"
+                        >
+                          {allergen}
+                        </Badge>
+                      ))
+                    )
+                  : (
+                      <span className="text-sm text-muted-foreground">
+                        Keine angegeben
+                      </span>
+                    )}
               </div>
             </div>
 
@@ -241,7 +255,7 @@ export function ProductDetailView({
               <Label className="text-sm font-medium">Zutaten</Label>
               <ScrollArea className="h-20 mt-2">
                 <p className="text-sm leading-relaxed">
-                  {enhancedData?.ingredients.join(", ") || "Nicht verfügbar"}
+                  {enhancedData?.ingredients.join(', ') || 'Nicht verfügbar'}
                 </p>
               </ScrollArea>
             </div>
@@ -260,9 +274,9 @@ export function ProductDetailView({
                     <span className="font-mono">
                       {formatNutrientValue(
                         enhancedData?.openFoodFacts.product.nutriments?.[
-                          "energy-kcal_100g"
+                          'energy-kcal_100g'
                         ],
-                        "kcal",
+                        'kcal',
                       )}
                     </span>
                   </div>
@@ -271,9 +285,9 @@ export function ProductDetailView({
                     <span className="font-mono">
                       {formatNutrientValue(
                         enhancedData?.openFoodFacts.product.nutriments?.[
-                          "energy-kj_100g"
+                          'energy-kj_100g'
                         ],
-                        "kJ",
+                        'kJ',
                       )}
                     </span>
                   </div>
@@ -299,7 +313,7 @@ export function ProductDetailView({
                     <span className="font-mono">
                       {formatNutrientValue(
                         enhancedData?.openFoodFacts.product.nutriments?.[
-                          "saturated-fat_100g"
+                          'saturated-fat_100g'
                         ],
                       )}
                     </span>
@@ -388,35 +402,35 @@ export function ProductDetailView({
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    {!imageLoadError.front ? (
-                      <div className="relative aspect-square bg-muted rounded-lg overflow-hidden">
-                        <Image
-                          src={enhancedData.images.front}
-                          alt="Product front"
-                          fill
-                          className="object-contain"
-                          onError={() =>
-                            setImageLoadError((prev) => ({
-                              ...prev,
-                              front: true,
-                            }))
-                          }
-                        />
-                      </div>
-                    ) : (
-                      <div className="aspect-square bg-muted rounded-lg flex items-center justify-center">
-                        <span className="text-sm text-muted-foreground">
-                          Bild konnte nicht geladen werden
-                        </span>
-                      </div>
-                    )}
+                    {!imageLoadError.front
+                      ? (
+                          <div className="relative aspect-square bg-muted rounded-lg overflow-hidden">
+                            <Image
+                              src={enhancedData.images.front}
+                              alt="Product front"
+                              fill
+                              className="object-contain"
+                              onError={() =>
+                                setImageLoadError(prev => ({
+                                  ...prev,
+                                  front: true,
+                                }))}
+                            />
+                          </div>
+                        )
+                      : (
+                          <div className="aspect-square bg-muted rounded-lg flex items-center justify-center">
+                            <span className="text-sm text-muted-foreground">
+                              Bild konnte nicht geladen werden
+                            </span>
+                          </div>
+                        )}
                     <Button
                       variant="outline"
                       size="sm"
                       className="w-full mt-2"
                       onClick={() =>
-                        window.open(enhancedData.images.front, "_blank")
-                      }
+                        window.open(enhancedData.images.front, '_blank')}
                     >
                       <ExternalLink className="h-3 w-3 mr-1" />
                       In Originalgröße anzeigen
@@ -435,35 +449,35 @@ export function ProductDetailView({
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    {!imageLoadError.nutrition ? (
-                      <div className="relative aspect-square bg-muted rounded-lg overflow-hidden">
-                        <Image
-                          src={enhancedData.images.nutrition}
-                          alt="Nutrition label"
-                          fill
-                          className="object-contain"
-                          onError={() =>
-                            setImageLoadError((prev) => ({
-                              ...prev,
-                              nutrition: true,
-                            }))
-                          }
-                        />
-                      </div>
-                    ) : (
-                      <div className="aspect-square bg-muted rounded-lg flex items-center justify-center">
-                        <span className="text-sm text-muted-foreground">
-                          Bild konnte nicht geladen werden
-                        </span>
-                      </div>
-                    )}
+                    {!imageLoadError.nutrition
+                      ? (
+                          <div className="relative aspect-square bg-muted rounded-lg overflow-hidden">
+                            <Image
+                              src={enhancedData.images.nutrition}
+                              alt="Nutrition label"
+                              fill
+                              className="object-contain"
+                              onError={() =>
+                                setImageLoadError(prev => ({
+                                  ...prev,
+                                  nutrition: true,
+                                }))}
+                            />
+                          </div>
+                        )
+                      : (
+                          <div className="aspect-square bg-muted rounded-lg flex items-center justify-center">
+                            <span className="text-sm text-muted-foreground">
+                              Bild konnte nicht geladen werden
+                            </span>
+                          </div>
+                        )}
                     <Button
                       variant="outline"
                       size="sm"
                       className="w-full mt-2"
                       onClick={() =>
-                        window.open(enhancedData.images.nutrition, "_blank")
-                      }
+                        window.open(enhancedData.images.nutrition, '_blank')}
                     >
                       <ExternalLink className="h-3 w-3 mr-1" />
                       In Originalgröße anzeigen
@@ -482,35 +496,35 @@ export function ProductDetailView({
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    {!imageLoadError.ingredients ? (
-                      <div className="relative aspect-square bg-muted rounded-lg overflow-hidden">
-                        <Image
-                          src={enhancedData.images.ingredients}
-                          alt="Ingredients"
-                          fill
-                          className="object-contain"
-                          onError={() =>
-                            setImageLoadError((prev) => ({
-                              ...prev,
-                              ingredients: true,
-                            }))
-                          }
-                        />
-                      </div>
-                    ) : (
-                      <div className="aspect-square bg-muted rounded-lg flex items-center justify-center">
-                        <span className="text-sm text-muted-foreground">
-                          Bild konnte nicht geladen werden
-                        </span>
-                      </div>
-                    )}
+                    {!imageLoadError.ingredients
+                      ? (
+                          <div className="relative aspect-square bg-muted rounded-lg overflow-hidden">
+                            <Image
+                              src={enhancedData.images.ingredients}
+                              alt="Ingredients"
+                              fill
+                              className="object-contain"
+                              onError={() =>
+                                setImageLoadError(prev => ({
+                                  ...prev,
+                                  ingredients: true,
+                                }))}
+                            />
+                          </div>
+                        )
+                      : (
+                          <div className="aspect-square bg-muted rounded-lg flex items-center justify-center">
+                            <span className="text-sm text-muted-foreground">
+                              Bild konnte nicht geladen werden
+                            </span>
+                          </div>
+                        )}
                     <Button
                       variant="outline"
                       size="sm"
                       className="w-full mt-2"
                       onClick={() =>
-                        window.open(enhancedData.images.ingredients, "_blank")
-                      }
+                        window.open(enhancedData.images.ingredients, '_blank')}
                     >
                       <ExternalLink className="h-3 w-3 mr-1" />
                       In Originalgröße anzeigen
@@ -520,14 +534,14 @@ export function ProductDetailView({
               )}
             </div>
 
-            {!enhancedData?.images.front &&
-              !enhancedData?.images.nutrition &&
-              !enhancedData?.images.ingredients && (
-                <div className="text-center py-8 text-muted-foreground">
-                  <ImageIcon className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                  <p>Keine Bilder für dieses Produkt verfügbar</p>
-                </div>
-              )}
+            {!enhancedData?.images.front
+              && !enhancedData?.images.nutrition
+              && !enhancedData?.images.ingredients && (
+              <div className="text-center py-8 text-muted-foreground">
+                <ImageIcon className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                <p>Keine Bilder für dieses Produkt verfügbar</p>
+              </div>
+            )}
           </TabsContent>
 
           {/* Raw Data Tab */}
@@ -540,8 +554,7 @@ export function ProductDetailView({
                 variant="outline"
                 size="sm"
                 onClick={() =>
-                  copyToClipboard(enhancedData?.openFoodFacts, "Raw API data")
-                }
+                  copyToClipboard(enhancedData?.openFoodFacts, 'Raw API data')}
               >
                 <Copy className="h-3 w-3 mr-1" />
                 JSON kopieren
@@ -561,7 +574,7 @@ export function ProductDetailView({
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => copyToClipboard(result, "Complete result")}
+                onClick={() => copyToClipboard(result, 'Complete result')}
               >
                 <Copy className="h-3 w-3 mr-1" />
                 Alles kopieren
@@ -584,13 +597,15 @@ export function ProductDetailView({
                 </CardHeader>
                 <CardContent className="space-y-2">
                   <div className="flex items-center gap-2">
-                    {validation.isValid ? (
-                      <CheckCircle className="h-4 w-4 text-green-500" />
-                    ) : (
-                      <AlertCircle className="h-4 w-4 text-red-500" />
-                    )}
+                    {validation.isValid
+                      ? (
+                          <CheckCircle className="h-4 w-4 text-green-500" />
+                        )
+                      : (
+                          <AlertCircle className="h-4 w-4 text-red-500" />
+                        )}
                     <span className="text-sm font-medium">
-                      {validation.isValid ? "Gültig" : "Ungültig"}
+                      {validation.isValid ? 'Gültig' : 'Ungültig'}
                     </span>
                   </div>
                   <div className="space-y-1 text-xs">
@@ -607,11 +622,11 @@ export function ProductDetailView({
                       <span
                         className={
                           validation.checksum
-                            ? "text-green-600"
-                            : "text-red-600"
+                            ? 'text-green-600'
+                            : 'text-red-600'
                         }
                       >
-                        {validation.checksum ? "Gültig" : "Ungültig"}
+                        {validation.checksum ? 'Gültig' : 'Ungültig'}
                       </span>
                     </div>
                   </div>
@@ -620,7 +635,10 @@ export function ProductDetailView({
                       <Label className="text-xs">Fehler:</Label>
                       <ul className="text-xs text-red-600 mt-1">
                         {validation.errors.map((error, index) => (
-                          <li key={index}>• {error}</li>
+                          <li key={index}>
+                            •
+                            {error}
+                          </li>
                         ))}
                       </ul>
                     </div>
@@ -646,13 +664,13 @@ export function ProductDetailView({
                     <div className="flex justify-between">
                       <span>API-URL:</span>
                       <span className="font-mono text-right text-muted-foreground">
-                        {metadata.apiUrl.split("/").pop()}
+                        {metadata.apiUrl.split('/').pop()}
                       </span>
                     </div>
                     <div className="flex justify-between">
                       <span>User-Agent:</span>
                       <span className="font-mono text-right text-muted-foreground truncate">
-                        {metadata.userAgent.split("/")[0]}
+                        {metadata.userAgent.split('/')[0]}
                       </span>
                     </div>
                   </div>
@@ -661,7 +679,7 @@ export function ProductDetailView({
                     variant="outline"
                     size="sm"
                     className="w-full mt-3"
-                    onClick={() => window.open(metadata.apiUrl, "_blank")}
+                    onClick={() => window.open(metadata.apiUrl, '_blank')}
                   >
                     <ExternalLink className="h-3 w-3 mr-1" />
                     API-Antwort anzeigen
@@ -678,7 +696,8 @@ export function ProductDetailView({
                 <div className="grid grid-cols-3 gap-4 text-center">
                   <div>
                     <div className="text-lg font-bold">
-                      {enhancedData?.completenessScore || 0}%
+                      {enhancedData?.completenessScore || 0}
+                      %
                     </div>
                     <div className="text-xs text-muted-foreground">
                       Vollständigkeit
@@ -686,7 +705,7 @@ export function ProductDetailView({
                   </div>
                   <div>
                     <div className="text-lg font-bold">
-                      {enhancedData?.nutritionScore || "N/A"}
+                      {enhancedData?.nutritionScore || 'N/A'}
                     </div>
                     <div className="text-xs text-muted-foreground">
                       Nährwert-Score
@@ -710,5 +729,5 @@ export function ProductDetailView({
         </Tabs>
       </CardContent>
     </Card>
-  );
+  )
 }

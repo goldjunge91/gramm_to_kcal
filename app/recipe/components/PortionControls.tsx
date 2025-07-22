@@ -1,33 +1,33 @@
-import type { JSX } from "react";
+import type { JSX } from 'react'
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useDeferredInput } from "@/hooks/useDeferredInput";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { useDeferredInput } from '@/hooks/useDeferredInput'
 
 interface PortionControlsProps {
-  originalPortions: number;
-  desiredPortions: number;
-  onOriginalPortionsChange: (value: number) => void;
-  onDesiredPortionsChange: (value: number) => void;
-  onScaleFactorChange: (scaleFactor: number) => void;
+  originalPortions: number
+  desiredPortions: number
+  onOriginalPortionsChange: (value: number) => void
+  onDesiredPortionsChange: (value: number) => void
+  onScaleFactorChange: (scaleFactor: number) => void
 }
 
 // Deferred Original Portions Input Component
-const DeferredOriginalPortionsInput = ({
+function DeferredOriginalPortionsInput({
   value,
   onChange,
 }: {
-  value: number;
-  onChange: (value: number) => void;
-}) => {
-  const { displayValue, isDirty, handleChange, handleBlur, handleKeyDown } =
-    useDeferredInput({
+  value: number
+  onChange: (value: number) => void
+}) {
+  const { displayValue, isDirty, handleChange, handleBlur, handleKeyDown }
+    = useDeferredInput({
       initialValue: value,
       onCommit: onChange,
-      validator: (val) => !Number.isNaN(val) && val >= 1,
-      formatter: (val) => Number.parseFloat(val) || 1,
-    });
+      validator: val => !Number.isNaN(val) && val >= 1,
+      formatter: val => Number.parseFloat(val) || 1,
+    })
 
   return (
     <Input
@@ -41,26 +41,26 @@ const DeferredOriginalPortionsInput = ({
       min="1"
       step="1"
       placeholder="z.B. 1"
-      className={`text-center ${isDirty ? "ring-2 ring-blue-200 dark:ring-blue-800" : ""}`}
+      className={`text-center ${isDirty ? 'ring-2 ring-blue-200 dark:ring-blue-800' : ''}`}
     />
-  );
-};
+  )
+}
 
 // Deferred Desired Portions Input Component
-const DeferredDesiredPortionsInput = ({
+function DeferredDesiredPortionsInput({
   value,
   onChange,
 }: {
-  value: number;
-  onChange: (value: number) => void;
-}) => {
-  const { displayValue, isDirty, handleChange, handleBlur, handleKeyDown } =
-    useDeferredInput({
+  value: number
+  onChange: (value: number) => void
+}) {
+  const { displayValue, isDirty, handleChange, handleBlur, handleKeyDown }
+    = useDeferredInput({
       initialValue: value,
       onCommit: onChange,
-      validator: (val) => !Number.isNaN(val) && val >= 1,
-      formatter: (val) => Number.parseFloat(val) || 1,
-    });
+      validator: val => !Number.isNaN(val) && val >= 1,
+      formatter: val => Number.parseFloat(val) || 1,
+    })
 
   return (
     <Input
@@ -74,26 +74,26 @@ const DeferredDesiredPortionsInput = ({
       min="1"
       step="1"
       placeholder="z.B. 2"
-      className={`text-center ${isDirty ? "ring-2 ring-blue-200 dark:ring-blue-800" : ""}`}
+      className={`text-center ${isDirty ? 'ring-2 ring-blue-200 dark:ring-blue-800' : ''}`}
     />
-  );
-};
+  )
+}
 
 // Deferred Scale Factor Input Component
-const DeferredScaleFactorInput = ({
+function DeferredScaleFactorInput({
   value,
   onChange,
 }: {
-  value: number;
-  onChange: (value: number) => void;
-}) => {
-  const { displayValue, isDirty, handleChange, handleBlur, handleKeyDown } =
-    useDeferredInput({
+  value: number
+  onChange: (value: number) => void
+}) {
+  const { displayValue, isDirty, handleChange, handleBlur, handleKeyDown }
+    = useDeferredInput({
       initialValue: value,
       onCommit: onChange,
-      validator: (val) => !Number.isNaN(val) && val >= 0.1,
-      formatter: (val) => Number.parseFloat(val) || 1,
-    });
+      validator: val => !Number.isNaN(val) && val >= 0.1,
+      formatter: val => Number.parseFloat(val) || 1,
+    })
 
   return (
     <Input
@@ -107,21 +107,21 @@ const DeferredScaleFactorInput = ({
       min="0.1"
       step="0.1"
       placeholder="z.B. 1.5"
-      className={`text-center ${isDirty ? "ring-2 ring-blue-200 dark:ring-blue-800" : ""}`}
+      className={`text-center ${isDirty ? 'ring-2 ring-blue-200 dark:ring-blue-800' : ''}`}
     />
-  );
-};
+  )
+}
 
 /** Component for controlling recipe portion scaling */
-export const PortionControls = ({
+export function PortionControls({
   originalPortions,
   desiredPortions,
   onOriginalPortionsChange,
   onDesiredPortionsChange,
   onScaleFactorChange,
-}: PortionControlsProps): JSX.Element => {
-  const scaleFactor =
-    originalPortions > 0 ? desiredPortions / originalPortions : 1;
+}: PortionControlsProps): JSX.Element {
+  const scaleFactor
+    = originalPortions > 0 ? desiredPortions / originalPortions : 1
 
   return (
     <Card>
@@ -157,16 +157,20 @@ export const PortionControls = ({
 
         <div className="mt-4 text-center">
           <p className="text-sm text-muted-foreground">
-            Aktueller Skalierungsfaktor:{" "}
-            <strong>{scaleFactor.toFixed(2)}x</strong>
+            Aktueller Skalierungsfaktor:
+            {' '}
+            <strong>
+              {scaleFactor.toFixed(2)}
+              x
+            </strong>
             {scaleFactor > 1
-              ? " (hochskaliert)"
+              ? ' (hochskaliert)'
               : scaleFactor < 1
-                ? " (herunterskaliert)"
-                : " (original)"}
+                ? ' (herunterskaliert)'
+                : ' (original)'}
           </p>
         </div>
       </CardContent>
     </Card>
-  );
-};
+  )
+}

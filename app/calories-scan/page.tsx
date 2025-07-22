@@ -1,35 +1,37 @@
-"use client";
+'use client'
 
-import { Plus, RefreshCw, Scan } from "lucide-react";
-import Link from "next/link";
-import { useState, type JSX } from "react";
+import type { JSX } from 'react'
 
-import type { Product } from "@/lib/types/types";
+import { Plus, RefreshCw, Scan } from 'lucide-react'
+import Link from 'next/link'
+import { useState } from 'react'
+
+import type { Product } from '@/lib/types/types'
 
 // import { MobileOfflineStatus } from "@/components/MobileOfflineStatus";
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button'
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { useIsMobile } from "@/hooks/use-mobile";
+} from '@/components/ui/card'
+import { useIsMobile } from '@/hooks/use-mobile'
 import {
   useProductsUnified,
   useProductsUnifiedStates,
-} from "@/hooks/use-products-unified";
+} from '@/hooks/use-products-unified'
 
-import { ComparisonTable } from "./components/ComparisonTable";
-import { ProductForm } from "./components/product-form";
+import { ComparisonTable } from './components/ComparisonTable'
+import { ProductForm } from './components/product-form'
 
 export default function CaloriesScanPage(): JSX.Element {
   // TODO: Implement offline functionality
-  const isOnline = true;
-  const syncInProgress = false;
-  const isMobile = useIsMobile();
-  const [showForm, setShowForm] = useState(false);
+  const isOnline = true
+  const syncInProgress = false
+  const isMobile = useIsMobile()
+  const [showForm, setShowForm] = useState(false)
 
   const {
     data: products = [],
@@ -39,24 +41,24 @@ export default function CaloriesScanPage(): JSX.Element {
     refetch,
     isAuthenticated,
     storageType,
-  } = useProductsUnified();
+  } = useProductsUnified()
 
-  const { isCreating, isDeleting } = useProductsUnifiedStates();
+  const { isCreating, isDeleting } = useProductsUnifiedStates()
 
   const handleAddProduct = async (
-    productData: Omit<Product, "id">,
+    productData: Omit<Product, 'id'>,
   ): Promise<void> => {
-    await addProduct(productData);
+    await addProduct(productData)
 
     // Close form on mobile after adding
     if (isMobile) {
-      setShowForm(false);
+      setShowForm(false)
     }
-  };
+  }
 
   const handleDeleteProduct = async (id: string): Promise<void> => {
-    await deleteProduct(id);
-  };
+    await deleteProduct(id)
+  }
 
   return (
     <div className="container mx-auto px-4 py-8 space-y-4">
@@ -75,8 +77,8 @@ export default function CaloriesScanPage(): JSX.Element {
               </CardTitle>
               <CardDescription className="text-sm">
                 Scanne Barcodes für automatische Produktdaten
-                {!isAuthenticated && " (Temporäre Sitzung)"}
-                {isAuthenticated && !isOnline && " (Offline-Modus)"}
+                {!isAuthenticated && ' (Temporäre Sitzung)'}
+                {isAuthenticated && !isOnline && ' (Offline-Modus)'}
               </CardDescription>
             </div>
 
@@ -104,7 +106,7 @@ export default function CaloriesScanPage(): JSX.Element {
           {/* Desktop: Always show form, Mobile: Toggle */}
           {(!isMobile || showForm) && (
             // <>
-            <div className={isMobile ? "border rounded-lg p-4" : ""}>
+            <div className={isMobile ? 'border rounded-lg p-4' : ''}>
               <ProductForm
                 onSubmit={handleAddProduct}
                 isLoading={isCreating}
@@ -136,7 +138,7 @@ export default function CaloriesScanPage(): JSX.Element {
                 disabled={isLoading}
               >
                 <RefreshCw
-                  className={`h-4 w-4 mr-2 ${isLoading ? "animate-spin" : ""}`}
+                  className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`}
                 />
                 Refresh from cache
               </Button>
@@ -147,11 +149,11 @@ export default function CaloriesScanPage(): JSX.Element {
             <div className="text-center py-8">
               <RefreshCw className="h-6 w-6 animate-spin mx-auto mb-2" />
               <p className="text-muted-foreground text-sm">
-                {storageType === "localStorage"
-                  ? "Loading from session storage..."
+                {storageType === 'localStorage'
+                  ? 'Loading from session storage...'
                   : isOnline
-                    ? "Loading products..."
-                    : "Loading from offline storage..."}
+                    ? 'Loading products...'
+                    : 'Loading from offline storage...'}
               </p>
             </div>
           ) : (
@@ -166,17 +168,19 @@ export default function CaloriesScanPage(): JSX.Element {
           {/* Mobile: Show product count and storage info */}
           {isMobile && products.length > 0 && (
             <div className="text-center text-xs text-muted-foreground pt-2 border-t">
-              {products.length} products •
-              {storageType === "localStorage"
-                ? " Session only"
+              {products.length}
+              {' '}
+              products •
+              {storageType === 'localStorage'
+                ? ' Session only'
                 : isOnline
-                  ? " Synced"
-                  : " Cached offline"}
-              {isAuthenticated && syncInProgress && " • Syncing..."}
+                  ? ' Synced'
+                  : ' Cached offline'}
+              {isAuthenticated && syncInProgress && ' • Syncing...'}
             </div>
           )}
         </CardContent>
       </Card>
     </div>
-  );
+  )
 }

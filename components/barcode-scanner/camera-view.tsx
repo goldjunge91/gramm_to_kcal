@@ -1,47 +1,47 @@
 // components/barcode-scanner/CameraView.tsx
 
-"use client";
+'use client'
 
-import { Loader2 } from "lucide-react";
-import { useEffect } from "react";
+import { Loader2 } from 'lucide-react'
+import { useEffect } from 'react'
 
-import type { CameraViewProps } from "@/lib/types/scanner-types";
+import type { CameraViewProps } from '@/lib/types/scanner-types'
 
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
-import { useHtml5QrCode } from "@/hooks/use-html5-qr-code";
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Button } from '@/components/ui/button'
+import { useHtml5QrCode } from '@/hooks/use-html5-qr-code'
 
 // Unique element IDs for the scanner container
-const DESKTOP_ELEMENT_ID = "desktop-barcode-scanner-view";
-const MOBILE_ELEMENT_ID = "mobile-barcode-scanner-view";
+const DESKTOP_ELEMENT_ID = 'desktop-barcode-scanner-view'
+const MOBILE_ELEMENT_ID = 'mobile-barcode-scanner-view'
 
 export function CameraView({ onScan, onClose, onError }: CameraViewProps) {
   const { isLoading, error, startScanning, stopScanning } = useHtml5QrCode({
     onScanSuccess: (decodedText: string) => {
-      onScan(decodedText);
-      onClose();
+      onScan(decodedText)
+      onClose()
     },
     onError,
-  });
+  })
 
   // Determine the correct element ID based on screen size
   const getElementId = () =>
-    window.innerWidth < 640 ? MOBILE_ELEMENT_ID : DESKTOP_ELEMENT_ID;
+    window.innerWidth < 640 ? MOBILE_ELEMENT_ID : DESKTOP_ELEMENT_ID
 
   // Start scanning when the component is mounted
   useEffect(() => {
-    const elementId = getElementId();
-    const timer = setTimeout(() => startScanning(elementId), 100);
+    const elementId = getElementId()
+    const timer = setTimeout(() => startScanning(elementId), 100)
     return () => {
-      clearTimeout(timer);
-      stopScanning();
-    };
-  }, []); // Run only once on mount
+      clearTimeout(timer)
+      stopScanning()
+    }
+  }, []) // Run only once on mount
 
   const handleRetry = () => {
-    const elementId = getElementId();
-    startScanning(elementId);
-  };
+    const elementId = getElementId()
+    startScanning(elementId)
+  }
 
   return (
     <div className="relative w-full h-full bg-black">
@@ -77,5 +77,5 @@ export function CameraView({ onScan, onClose, onError }: CameraViewProps) {
         </div>
       )}
     </div>
-  );
+  )
 }

@@ -1,50 +1,50 @@
-import type { JSX } from "react";
+import type { JSX } from 'react'
 
-import type { ImageSettings } from "@/lib/types/types";
+import type { ImageSettings } from '@/lib/types/types'
 
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Slider } from "@/components/ui/slider";
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Label } from '@/components/ui/label'
+import { Slider } from '@/components/ui/slider'
 
 interface ImageEditorProps {
-  image?: string;
-  settings: ImageSettings;
-  onSettingsChange: (settings: ImageSettings) => void;
+  image?: string
+  settings: ImageSettings
+  onSettingsChange: (settings: ImageSettings) => void
 }
 
 /** Image editor component for adjusting size, position and quality */
-export const ImageEditor = ({
+export function ImageEditor({
   image,
   settings,
   onSettingsChange,
-}: ImageEditorProps): JSX.Element => {
+}: ImageEditorProps): JSX.Element {
   const handleWidthChange = (values: number[]): void => {
-    onSettingsChange({ ...settings, width: values[0] });
-  };
+    onSettingsChange({ ...settings, width: values[0] })
+  }
 
   const handleHeightChange = (values: number[]): void => {
-    onSettingsChange({ ...settings, height: values[0] });
-  };
+    onSettingsChange({ ...settings, height: values[0] })
+  }
 
   const handleQualityChange = (values: number[]): void => {
-    onSettingsChange({ ...settings, quality: values[0] });
-  };
+    onSettingsChange({ ...settings, quality: values[0] })
+  }
 
   const handlePositionChange = (
-    position: "left" | "center" | "right",
+    position: 'left' | 'center' | 'right',
   ): void => {
-    onSettingsChange({ ...settings, position });
-  };
+    onSettingsChange({ ...settings, position })
+  }
 
   const resetToDefaults = (): void => {
     onSettingsChange({
       width: 200,
       height: 150,
-      position: "center",
+      position: 'center',
       quality: 80,
-    });
-  };
+    })
+  }
 
   if (!image) {
     return (
@@ -60,7 +60,7 @@ export const ImageEditor = ({
           </p>
         </CardContent>
       </Card>
-    );
+    )
   }
 
   return (
@@ -79,11 +79,11 @@ export const ImageEditor = ({
               className="flex"
               style={{
                 justifyContent:
-                  settings.position === "left"
-                    ? "flex-start"
-                    : settings.position === "right"
-                      ? "flex-end"
-                      : "center",
+                  settings.position === 'left'
+                    ? 'flex-start'
+                    : settings.position === 'right'
+                      ? 'flex-end'
+                      : 'center',
               }}
             >
               <img
@@ -92,7 +92,7 @@ export const ImageEditor = ({
                 style={{
                   width: `${settings.width}px`,
                   height: `${settings.height}px`,
-                  objectFit: "cover",
+                  objectFit: 'cover',
                   filter: `contrast(${settings.quality}%)`,
                 }}
                 className="rounded border"
@@ -103,7 +103,11 @@ export const ImageEditor = ({
 
         {/* Width Control */}
         <div className="space-y-2">
-          <Label>Breite: {settings.width}px</Label>
+          <Label>
+            Breite:
+            {settings.width}
+            px
+          </Label>
           <Slider
             value={[settings.width]}
             onValueChange={handleWidthChange}
@@ -116,7 +120,11 @@ export const ImageEditor = ({
 
         {/* Height Control */}
         <div className="space-y-2">
-          <Label>Höhe: {settings.height}px</Label>
+          <Label>
+            Höhe:
+            {settings.height}
+            px
+          </Label>
           <Slider
             value={[settings.height]}
             onValueChange={handleHeightChange}
@@ -132,14 +140,14 @@ export const ImageEditor = ({
           <Label>Position</Label>
           <div className="flex gap-2">
             {[
-              { value: "left" as const, label: "⬅️ Links" },
-              { value: "center" as const, label: "⬆️ Mitte" },
-              { value: "right" as const, label: "➡️ Rechts" },
+              { value: 'left' as const, label: '⬅️ Links' },
+              { value: 'center' as const, label: '⬆️ Mitte' },
+              { value: 'right' as const, label: '➡️ Rechts' },
             ].map(({ value, label }) => (
               <Button
                 key={value}
                 type="button"
-                variant={settings.position === value ? "default" : "outline"}
+                variant={settings.position === value ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => handlePositionChange(value)}
                 className="flex-1"
@@ -152,7 +160,11 @@ export const ImageEditor = ({
 
         {/* Quality Control */}
         <div className="space-y-2">
-          <Label>Bildqualität: {settings.quality}%</Label>
+          <Label>
+            Bildqualität:
+            {settings.quality}
+            %
+          </Label>
           <Slider
             value={[settings.quality]}
             onValueChange={handleQualityChange}
@@ -174,5 +186,5 @@ export const ImageEditor = ({
         </Button>
       </CardContent>
     </Card>
-  );
-};
+  )
+}

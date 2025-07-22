@@ -1,84 +1,86 @@
-"use client";
+'use client'
 
-import { useCallback, useRef, type JSX } from "react";
+import type { JSX } from 'react'
 
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useCallback, useRef } from 'react'
+
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 interface RichTextEditorProps {
-  value: string;
-  onChange: (value: string) => void;
-  placeholder?: string;
+  value: string
+  onChange: (value: string) => void
+  placeholder?: string
 }
 
 /** Rich text editor component with formatting toolbar */
-export const RichTextEditor = ({
+export function RichTextEditor({
   value,
   onChange,
-  placeholder = "Schritt-Anleitung eingeben...",
-}: RichTextEditorProps): JSX.Element => {
-  const editorRef = useRef<HTMLDivElement>(null);
+  placeholder = 'Schritt-Anleitung eingeben...',
+}: RichTextEditorProps): JSX.Element {
+  const editorRef = useRef<HTMLDivElement>(null)
 
   const executeCommand = useCallback(
     (command: string, value?: string): void => {
-      document.execCommand(command, false, value);
+      document.execCommand(command, false, value)
       if (editorRef.current) {
-        onChange(editorRef.current.innerHTML);
+        onChange(editorRef.current.innerHTML)
       }
     },
     [onChange],
-  );
+  )
 
   const handleInput = useCallback((): void => {
     if (editorRef.current) {
-      onChange(editorRef.current.innerHTML);
+      onChange(editorRef.current.innerHTML)
     }
-  }, [onChange]);
+  }, [onChange])
 
   const handleKeyDown = useCallback(
     (event: React.KeyboardEvent): void => {
       // Handle keyboard shortcuts
       if (event.ctrlKey || event.metaKey) {
         switch (event.key) {
-          case "b":
-            event.preventDefault();
-            executeCommand("bold");
-            break;
-          case "i":
-            event.preventDefault();
-            executeCommand("italic");
-            break;
-          case "u":
-            event.preventDefault();
-            executeCommand("underline");
-            break;
-          case "z":
-            event.preventDefault();
-            executeCommand("undo");
-            break;
-          case "y":
-            event.preventDefault();
-            executeCommand("redo");
-            break;
+          case 'b':
+            event.preventDefault()
+            executeCommand('bold')
+            break
+          case 'i':
+            event.preventDefault()
+            executeCommand('italic')
+            break
+          case 'u':
+            event.preventDefault()
+            executeCommand('underline')
+            break
+          case 'z':
+            event.preventDefault()
+            executeCommand('undo')
+            break
+          case 'y':
+            event.preventDefault()
+            executeCommand('redo')
+            break
         }
       }
     },
     [executeCommand],
-  );
+  )
 
   const formatButtons = [
-    { command: "bold", icon: "𝐁", title: "Fett (Strg+B)" },
-    { command: "italic", icon: "𝐼", title: "Kursiv (Strg+I)" },
-    { command: "underline", icon: "𝐔", title: "Unterstrichen (Strg+U)" },
-    { command: "insertUnorderedList", icon: "•", title: "Aufzählung" },
+    { command: 'bold', icon: '𝐁', title: 'Fett (Strg+B)' },
+    { command: 'italic', icon: '𝐼', title: 'Kursiv (Strg+I)' },
+    { command: 'underline', icon: '𝐔', title: 'Unterstrichen (Strg+U)' },
+    { command: 'insertUnorderedList', icon: '•', title: 'Aufzählung' },
     {
-      command: "insertOrderedList",
-      icon: "1.",
-      title: "Nummerierte Liste",
+      command: 'insertOrderedList',
+      icon: '1.',
+      title: 'Nummerierte Liste',
     },
-    { command: "undo", icon: "↶", title: "Rückgängig (Strg+Z)" },
-    { command: "redo", icon: "↷", title: "Wiederholen (Strg+Y)" },
-  ];
+    { command: 'undo', icon: '↶', title: 'Rückgängig (Strg+Z)' },
+    { command: 'redo', icon: '↷', title: 'Wiederholen (Strg+Y)' },
+  ]
 
   return (
     <Card>
@@ -114,8 +116,8 @@ export const RichTextEditor = ({
           dangerouslySetInnerHTML={{ __html: value }}
           className="min-h-[120px] p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-ring bg-background"
           style={{
-            lineHeight: "1.6",
-            fontSize: "14px",
+            lineHeight: '1.6',
+            fontSize: '14px',
           }}
           data-placeholder={placeholder}
         />
@@ -127,5 +129,5 @@ export const RichTextEditor = ({
         </div>
       </CardContent>
     </Card>
-  );
-};
+  )
+}

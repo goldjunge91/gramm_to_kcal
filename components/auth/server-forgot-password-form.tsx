@@ -1,23 +1,23 @@
-import Link from "next/link";
-import React from "react";
+import Link from 'next/link'
+import React from 'react'
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button'
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { resetPasswordAction } from "@/lib/actions/auth";
-import { cn } from "@/lib/utils";
+} from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { resetPasswordAction } from '@/lib/actions/auth'
+import { cn } from '@/lib/utils'
 
 interface ServerForgotPasswordFormProps {
-  className?: string;
-  error?: string;
-  success?: string;
+  className?: string
+  error?: string
+  success?: string
 }
 
 /**
@@ -31,7 +31,7 @@ export function ServerForgotPasswordForm({
 }: ServerForgotPasswordFormProps) {
   if (success) {
     return (
-      <div className={cn("flex flex-col gap-6", className)}>
+      <div className={cn('flex flex-col gap-6', className)}>
         <Card>
           <CardHeader>
             <CardTitle className="text-2xl">Check your email</CardTitle>
@@ -56,31 +56,32 @@ export function ServerForgotPasswordForm({
           </CardContent>
         </Card>
       </div>
-    );
+    )
   }
 
   const [localError, setLocalError] = React.useState<string | undefined>(
     undefined,
-  );
+  )
   const [localSuccess, setLocalSuccess] = React.useState<string | undefined>(
     undefined,
-  );
+  )
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setLocalError(undefined);
-    setLocalSuccess(undefined);
-    const formData = new FormData(e.currentTarget);
-    const result = await resetPasswordAction(formData);
+    e.preventDefault()
+    setLocalError(undefined)
+    setLocalSuccess(undefined)
+    const formData = new FormData(e.currentTarget)
+    const result = await resetPasswordAction(formData)
     if (result.success) {
-      setLocalSuccess(result.message || "Check your email for the reset link.");
-    } else {
-      setLocalError(result.error || "An error occurred.");
+      setLocalSuccess(result.message || 'Check your email for the reset link.')
     }
-  };
+    else {
+      setLocalError(result.error || 'An error occurred.')
+    }
+  }
 
   return (
-    <div className={cn("flex flex-col gap-6", className)}>
+    <div className={cn('flex flex-col gap-6', className)}>
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl">Forgot password</CardTitle>
@@ -119,7 +120,8 @@ export function ServerForgotPasswordForm({
               </Button>
             </div>
             <div className="mt-4 text-center text-sm">
-              Remember your password?{" "}
+              Remember your password?
+              {' '}
               <Link href="/auth/login" className="underline underline-offset-4">
                 Back to login
               </Link>
@@ -128,5 +130,5 @@ export function ServerForgotPasswordForm({
         </CardContent>
       </Card>
     </div>
-  );
+  )
 }

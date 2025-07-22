@@ -1,29 +1,31 @@
 // components/barcode-scanner/BarcodeScanner.tsx
 
-"use client";
+'use client'
 
-import { Html5Qrcode, Html5QrcodeScannerState } from "html5-qrcode";
-import { Camera, Loader2, Upload, X } from "lucide-react";
-import { useCallback, useEffect, useRef, useState, type JSX } from "react";
+import type { JSX } from 'react'
 
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
+import { Html5Qrcode, Html5QrcodeScannerState } from 'html5-qrcode'
+import { Camera, Loader2, Upload, X } from 'lucide-react'
+import { useCallback, useEffect, useRef, useState } from 'react'
+
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from '@/components/ui/dialog'
 
 // Typen direkt hier definieren, um Abhängigkeiten zu reduzieren
-type ScanMode = "camera" | "upload";
+type ScanMode = 'camera' | 'upload'
 
 interface BarcodeScannerProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onScan: (decodedText: string) => void;
-  onError?: (errorMessage: string) => void;
+  isOpen: boolean
+  onClose: () => void
+  onScan: (decodedText: string) => void
+  onError?: (errorMessage: string) => void
 }
 
 export function BarcodeScanner({
@@ -32,37 +34,39 @@ export function BarcodeScanner({
   onScan,
   onError,
 }: BarcodeScannerProps): JSX.Element {
-  const [scanMode, setScanMode] = useState<ScanMode>("camera");
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [isSuccess, setIsSuccess] = useState(false); // Für den grünen "Blitz"-Effekt
-  const [lastScannedCode, setLastScannedCode] = useState(""); // Zeigt den letzten Scan an
+  const [scanMode, setScanMode] = useState<ScanMode>('camera')
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [isSuccess, setIsSuccess] = useState(false) // Für den grünen "Blitz"-Effekt
+  const [lastScannedCode, setLastScannedCode] = useState('') // Zeigt den letzten Scan an
 
-  const [isProcessingFile, setIsProcessingFile] = useState(false);
-  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [isProcessingFile, setIsProcessingFile] = useState(false)
+  const [uploadError, setUploadError] = useState<string | null>(null)
 
-  const scannerRef = useRef<Html5Qrcode | null>(null);
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const containerRef = useRef<HTMLDivElement | null>(null);
+  const scannerRef = useRef<Html5Qrcode | null>(null)
+  const fileInputRef = useRef<HTMLInputElement | null>(null)
+  const containerRef = useRef<HTMLDivElement | null>(null)
 
-  const mobileElementId = "mobile-barcode-scanner-container";
-  const desktopElementId = "desktop-barcode-scanner-container";
+  const mobileElementId = 'mobile-barcode-scanner-container'
+  const desktopElementId = 'desktop-barcode-scanner-container'
 
   const stopScanning = useCallback(async () => {
-    const scanner = scannerRef.current;
+    const scanner = scannerRef.current
     if (scanner) {
       try {
         if (scanner.getState() === Html5QrcodeScannerState.SCANNING) {
-          await scanner.stop();
+          await scanner.stop()
         }
-        await scanner.clear();
-      } catch (error_) {
-        console.warn("Error during scanner cleanup, ignoring:", error_);
-      } finally {
-        scannerRef.current = null;
+        await scanner.clear()
+      }
+      catch (error_) {
+        console.warn('Error during scanner cleanup, ignoring:', error_)
+      }
+      finally {
+        scannerRef.current = null
       }
     }
-  }, []);
+  }, [])
 
   // --- KORRIGIERTER HANDLER, UM RE-RENDER-SCHLEIFE ZU VERHINDERN ---
   const handleScanSuccess = useCallback(
@@ -72,200 +76,213 @@ export function BarcodeScanner({
       setLastScannedCode((prevCode) => {
         if (decodedText !== prevCode) {
           // Aktionen nur für NEUE Codes ausführen
-          setIsSuccess(true);
-          setTimeout(() => setIsSuccess(false), 500); // Blitz für 500ms
-          onScan(decodedText);
+          setIsSuccess(true)
+          setTimeout(() => setIsSuccess(false), 500) // Blitz für 500ms
+          onScan(decodedText)
         }
         // Den Zustand immer auf den zuletzt gescannten Code aktualisieren
-        return decodedText;
-      });
+        return decodedText
+      })
     },
     [onScan], // Die Abhängigkeit von lastScannedCode wurde entfernt, um die Schleife zu durchbrechen.
-  );
+  )
 
   const handleScanFailure = useCallback(() => {
     // Diese Funktion wird ständig aufgerufen, daher keine Logs hier
-  }, []);
+  }, [])
 
   const startScanning = useCallback(
     async (elementId: string) => {
       if (!document.querySelector<HTMLElement>(`#${elementId}`)) {
-        console.warn(`Scanner container #${elementId} not found in DOM.`);
-        return;
+        console.warn(`Scanner container #${elementId} not found in DOM.`)
+        return
       }
 
       if (scannerRef.current) {
-        await stopScanning();
+        await stopScanning()
       }
 
-      setIsLoading(true);
-      setError(null);
-      setIsSuccess(false);
-      setLastScannedCode("");
+      setIsLoading(true)
+      setError(null)
+      setIsSuccess(false)
+      setLastScannedCode('')
 
-      const html5QrCode = new Html5Qrcode(elementId, { verbose: false });
-      scannerRef.current = html5QrCode;
+      const html5QrCode = new Html5Qrcode(elementId, { verbose: false })
+      scannerRef.current = html5QrCode
 
       try {
-        const cameras = await Html5Qrcode.getCameras();
+        const cameras = await Html5Qrcode.getCameras()
         if (!cameras || cameras.length === 0) {
-          throw new Error("No cameras found on this device.");
+          throw new Error('No cameras found on this device.')
         }
 
-        const rearCamera =
-          cameras.find((c) => /back|environment/i.test(c.label)) || cameras[0];
+        const rearCamera
+          = cameras.find(c => /back|environment/i.test(c.label)) || cameras[0]
 
         const config = {
           fps: 10,
           qrbox: { width: 280, height: 180 }, // Box leicht vergrößert
           aspectRatio: 1.777778,
-        };
+        }
 
         await html5QrCode.start(
           rearCamera.id,
           config,
           handleScanSuccess,
           handleScanFailure,
-        );
-      } catch (error_) {
-        const message =
-          error_ instanceof Error ? error_.message : "Failed to start camera.";
-        setError(message);
-        if (onError) onError(message);
-        await stopScanning();
-      } finally {
-        setIsLoading(false);
+        )
+      }
+      catch (error_) {
+        const message
+          = error_ instanceof Error ? error_.message : 'Failed to start camera.'
+        setError(message)
+        if (onError)
+          onError(message)
+        await stopScanning()
+      }
+      finally {
+        setIsLoading(false)
       }
     },
     [handleScanSuccess, handleScanFailure, onError, stopScanning],
-  );
+  )
 
   useEffect(() => {
-    if (isOpen && scanMode === "camera") {
+    if (isOpen && scanMode === 'camera') {
       const timer = setTimeout(() => {
-        const elementId =
-          window.innerWidth < 640 ? mobileElementId : desktopElementId;
-        startScanning(elementId);
-      }, 150);
-      return () => clearTimeout(timer);
-    } else if (!isOpen) {
-      stopScanning();
+        const elementId
+          = window.innerWidth < 640 ? mobileElementId : desktopElementId
+        startScanning(elementId)
+      }, 150)
+      return () => clearTimeout(timer)
     }
-  }, [isOpen, scanMode, startScanning, stopScanning]);
+    else if (!isOpen) {
+      stopScanning()
+    }
+  }, [isOpen, scanMode, startScanning, stopScanning])
 
   useEffect(() => {
     return () => {
-      stopScanning();
-    };
-  }, [stopScanning]);
+      stopScanning()
+    }
+  }, [stopScanning])
 
   const handleFileUpload = useCallback(
     async (file: File) => {
-      setUploadError(null);
-      if (!file.type.startsWith("image/")) {
-        setUploadError("Bitte wähle eine Bilddatei aus.");
-        return;
+      setUploadError(null)
+      if (!file.type.startsWith('image/')) {
+        setUploadError('Bitte wähle eine Bilddatei aus.')
+        return
       }
       if (file.size > 10 * 1024 * 1024) {
-        setUploadError("Datei ist zu groß (max. 10MB).");
-        return;
+        setUploadError('Datei ist zu groß (max. 10MB).')
+        return
       }
 
-      const body = document.body;
+      const body = document.body
       if (!body) {
         setUploadError(
-          "Interner Fehler: document.body konnte nicht gefunden werden.",
-        );
-        return;
+          'Interner Fehler: document.body konnte nicht gefunden werden.',
+        )
+        return
       }
 
-      setIsProcessingFile(true);
+      setIsProcessingFile(true)
 
-      const tempElement = document.createElement("div");
-      tempElement.id = `temp-scanner-${Date.now()}`;
-      tempElement.style.display = "none";
-      body.append(tempElement);
+      const tempElement = document.createElement('div')
+      tempElement.id = `temp-scanner-${Date.now()}`
+      tempElement.style.display = 'none'
+      body.append(tempElement)
 
-      const tempScanner = new Html5Qrcode(tempElement.id);
+      const tempScanner = new Html5Qrcode(tempElement.id)
 
       try {
-        const result = await tempScanner.scanFile(file, false);
-        onScan(result);
-        onClose(); // Bei Upload direkt schließen
-      } catch {
-        setUploadError("Kein Barcode im Bild gefunden.");
-      } finally {
-        await tempScanner.clear();
-        tempElement.remove();
-        setIsProcessingFile(false);
+        const result = await tempScanner.scanFile(file, false)
+        onScan(result)
+        onClose() // Bei Upload direkt schließen
+      }
+      catch {
+        setUploadError('Kein Barcode im Bild gefunden.')
+      }
+      finally {
+        await tempScanner.clear()
+        tempElement.remove()
+        setIsProcessingFile(false)
       }
     },
     [onScan, onClose],
-  );
+  )
 
   const handleFileInputChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
-      const file = event.target.files?.[0];
-      if (file) handleFileUpload(file);
+      const file = event.target.files?.[0]
+      if (file)
+        handleFileUpload(file)
     },
     [handleFileUpload],
-  );
+  )
 
   const handleFileDrop = useCallback(
     (event: React.DragEvent<HTMLDivElement>) => {
-      event.preventDefault();
-      const file = event.dataTransfer.files[0];
-      if (file) handleFileUpload(file);
+      event.preventDefault()
+      const file = event.dataTransfer.files[0]
+      if (file)
+        handleFileUpload(file)
     },
     [handleFileUpload],
-  );
+  )
 
   const handleDragOver = useCallback(
     (event: React.DragEvent<HTMLDivElement>) => {
-      event.preventDefault();
+      event.preventDefault()
     },
     [],
-  );
+  )
 
   const handleModeSwitch = useCallback(
     (mode: ScanMode) => {
-      if (mode === scanMode) return;
-      if (scanMode === "camera") {
-        stopScanning();
+      if (mode === scanMode)
+        return
+      if (scanMode === 'camera') {
+        stopScanning()
       }
-      setScanMode(mode);
-      setError(null);
-      setUploadError(null);
+      setScanMode(mode)
+      setError(null)
+      setUploadError(null)
     },
     [scanMode, stopScanning],
-  );
-  // @ts-ignore
-  if (!isOpen) return null;
+  )
+  if (!isOpen)
+    return <></>
 
   const modeToggle = (
     <div className="flex mt-3 bg-muted rounded-lg p-1">
       <Button
-        variant={scanMode === "camera" ? "default" : "ghost"}
+        variant={scanMode === 'camera' ? 'default' : 'ghost'}
         size="sm"
-        onClick={() => handleModeSwitch("camera")}
+        onClick={() => handleModeSwitch('camera')}
         className="flex-1 h-8"
       >
-        <Camera className="h-3 w-3 mr-1" /> Kamera
+        <Camera className="h-3 w-3 mr-1" />
+        {' '}
+        Kamera
       </Button>
       <Button
-        variant={scanMode === "upload" ? "default" : "ghost"}
+        variant={scanMode === 'upload' ? 'default' : 'ghost'}
         size="sm"
-        onClick={() => handleModeSwitch("upload")}
+        onClick={() => handleModeSwitch('upload')}
         className="flex-1 h-8"
       >
-        <Upload className="h-3 w-3 mr-1" /> Hochladen
+        <Upload className="h-3 w-3 mr-1" />
+        {' '}
+        Hochladen
       </Button>
     </div>
-  );
+  )
 
   const cameraView = (elementId: string) => (
     <div
-      className={`w-full h-full relative flex items-center justify-center overflow-hidden transition-all duration-300 ${isSuccess ? "shadow-[inset_0_0_0_6px_#22c55e]" : "shadow-[inset_0_0_0_0px_#22c55e]"}`}
+      className={`w-full h-full relative flex items-center justify-center overflow-hidden transition-all duration-300 ${isSuccess ? 'shadow-[inset_0_0_0_6px_#22c55e]' : 'shadow-[inset_0_0_0_0px_#22c55e]'}`}
     >
       <div
         id={elementId}
@@ -292,7 +309,7 @@ export function BarcodeScanner({
       {/* --- ANGEPASSTES LIVE-FEEDBACK --- */}
       {lastScannedCode && (
         <div
-          className={`absolute bottom-4 left-4 right-4 text-white text-center p-2 rounded-lg z-10 backdrop-blur-sm transition-colors duration-300 ${isSuccess ? "bg-green-600/90" : "bg-black/60"}`}
+          className={`absolute bottom-4 left-4 right-4 text-white text-center p-2 rounded-lg z-10 backdrop-blur-sm transition-colors duration-300 ${isSuccess ? 'bg-green-600/90' : 'bg-black/60'}`}
         >
           <div className="flex items-center justify-center gap-2">
             <p className="text-xs font-semibold uppercase">Letzter Scan:</p>
@@ -301,7 +318,7 @@ export function BarcodeScanner({
         </div>
       )}
     </div>
-  );
+  )
 
   const uploadView = (
     <div
@@ -310,31 +327,35 @@ export function BarcodeScanner({
       onDragOver={handleDragOver}
     >
       <div className="text-center p-8">
-        {isProcessingFile ? (
-          <>
-            <Loader2 className="h-12 w-12 animate-spin mx-auto mb-4 text-muted-foreground" />
-            <p className="font-medium">Barcode wird gescannt...</p>
-          </>
-        ) : (
-          <>
-            <Upload className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
-            <h3 className="font-medium mb-2">Bild hochladen</h3>
-            <p className="text-sm text-muted-foreground mb-6">
-              Bild hierher ziehen oder klicken
-            </p>
-            <Button
-              onClick={() => fileInputRef.current?.click()}
-              disabled={isProcessingFile}
-            >
-              <Upload className="h-4 w-4 mr-2" /> Bild auswählen
-            </Button>
-            {uploadError && (
-              <Alert variant="destructive" className="mt-4 text-left">
-                <AlertDescription>{uploadError}</AlertDescription>
-              </Alert>
+        {isProcessingFile
+          ? (
+              <>
+                <Loader2 className="h-12 w-12 animate-spin mx-auto mb-4 text-muted-foreground" />
+                <p className="font-medium">Barcode wird gescannt...</p>
+              </>
+            )
+          : (
+              <>
+                <Upload className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
+                <h3 className="font-medium mb-2">Bild hochladen</h3>
+                <p className="text-sm text-muted-foreground mb-6">
+                  Bild hierher ziehen oder klicken
+                </p>
+                <Button
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={isProcessingFile}
+                >
+                  <Upload className="h-4 w-4 mr-2" />
+                  {' '}
+                  Bild auswählen
+                </Button>
+                {uploadError && (
+                  <Alert variant="destructive" className="mt-4 text-left">
+                    <AlertDescription>{uploadError}</AlertDescription>
+                  </Alert>
+                )}
+              </>
             )}
-          </>
-        )}
       </div>
       <input
         ref={fileInputRef}
@@ -344,7 +365,7 @@ export function BarcodeScanner({
         className="hidden"
       />
     </div>
-  );
+  )
 
   return (
     <>
@@ -361,7 +382,7 @@ export function BarcodeScanner({
             {modeToggle}
           </div>
           <div className="flex-1 relative bg-black">
-            {scanMode === "camera" ? cameraView(mobileElementId) : uploadView}
+            {scanMode === 'camera' ? cameraView(mobileElementId) : uploadView}
           </div>
         </div>
       </div>
@@ -370,7 +391,7 @@ export function BarcodeScanner({
       <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent
           className="hidden sm:block w-auto max-w-none p-0"
-          style={{ width: "520px" }}
+          style={{ width: '520px' }}
         >
           <DialogHeader className="p-6 pb-0">
             <DialogTitle>Barcode Scanner</DialogTitle>
@@ -381,7 +402,7 @@ export function BarcodeScanner({
           </DialogHeader>
           <div className="p-6 pt-4">
             <div className="relative w-[470px] h-[264px] bg-black rounded-lg overflow-hidden mx-auto">
-              {scanMode === "camera"
+              {scanMode === 'camera'
                 ? cameraView(desktopElementId)
                 : uploadView}
             </div>
@@ -392,5 +413,5 @@ export function BarcodeScanner({
         </DialogContent>
       </Dialog>
     </>
-  );
+  )
 }

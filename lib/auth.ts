@@ -1,17 +1,18 @@
-import { betterAuth } from "better-auth";
-import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { db } from "@/lib/db";
-import { 
-  user, 
-  session, 
-  account, 
-  verification 
-} from "@/lib/db/schemas";
-import { env } from "@/lib/env";
+import { betterAuth } from 'better-auth'
+import { drizzleAdapter } from 'better-auth/adapters/drizzle'
+
+import { db } from '@/lib/db'
+import {
+  account,
+  session,
+  user,
+  verification,
+} from '@/lib/db/schemas'
+import { env } from '@/lib/env'
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
-    provider: "pg", // PostgreSQL
+    provider: 'pg', // PostgreSQL
     schema: {
       user,
       session,
@@ -22,16 +23,18 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
   },
-  socialProviders: env.AUTH_GOOGLE_ID && env.AUTH_GOOGLE_SECRET ? {
-    google: {
-      clientId: env.AUTH_GOOGLE_ID,
-      clientSecret: env.AUTH_GOOGLE_SECRET,
-    },
-  } : {},
+  socialProviders: env.AUTH_GOOGLE_ID && env.AUTH_GOOGLE_SECRET
+    ? {
+        google: {
+          clientId: env.AUTH_GOOGLE_ID,
+          clientSecret: env.AUTH_GOOGLE_SECRET,
+        },
+      }
+    : {},
   session: {
     cookieCache: {
       enabled: true,
       maxAge: 5 * 60, // 5 minutes cache
     },
   },
-});
+})

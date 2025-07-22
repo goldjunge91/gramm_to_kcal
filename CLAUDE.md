@@ -31,24 +31,24 @@ This is a CalorieTracker application built with Next.js 15 App Router, focused o
 
 ```typescript
 interface Product {
-  id: string;
-  name: string;
-  quantity: number; // in grams
-  kcal: number;
+  id: string
+  name: string
+  quantity: number // in grams
+  kcal: number
 }
 
 interface Ingredient {
-  id: string;
-  name: string;
-  quantity: number;
-  unit: "g" | "ml" | "TL" | "EL" | string;
+  id: string
+  name: string
+  quantity: number
+  unit: 'g' | 'ml' | 'TL' | 'EL' | string
 }
 
 interface Recipe {
-  id: string;
-  name: string;
-  originalPortions: number;
-  ingredients: Ingredient[];
+  id: string
+  name: string
+  originalPortions: number
+  ingredients: Ingredient[]
 }
 ```
 
@@ -175,7 +175,7 @@ This project uses pnpm with workspace configuration. Always use `pnpm` commands 
 - **Destructure props**:
 
   ```ts
-  const MyComp = ({ id, name }: Props) => {};
+  function MyComp({ id, name }: Props) {}
   ```
 
 - **Avoid `any`**. Use `unknown` or strict generics.
@@ -228,3 +228,7 @@ This project uses pnpm with workspace configuration. Always use `pnpm` commands 
 
 - **NEVER USE MOCK**
 - **NEVER TOUCH .ENV.\* FILES**
+
+## UI Component Guidelines
+
+- **do not touch components/ui**

@@ -1,46 +1,46 @@
-"use client";
+'use client'
 
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react'
 
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { env } from "@/lib/env";
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { env } from '@/lib/env'
 
 interface RouteDebugInfo {
-  pathname: string;
+  pathname: string
   result: {
-    matches: boolean;
-    group: string | null;
-    pattern?: string;
-    description?: string;
-  };
+    matches: boolean
+    group: string | null
+    pattern?: string
+    description?: string
+  }
   allMatches: Array<{
-    pattern: string;
-    group: string;
-    matches: boolean;
-  }>;
+    pattern: string
+    group: string
+    matches: boolean
+  }>
 }
 
 interface TestResult {
-  path: string;
-  pathname: string;
+  path: string
+  pathname: string
   result: {
-    matches: boolean;
-    group: string | null;
-    pattern?: string;
-    description?: string;
-  };
+    matches: boolean
+    group: string | null
+    pattern?: string
+    description?: string
+  }
   allMatches: Array<{
-    pattern: string;
-    group: string;
-    matches: boolean;
-  }>;
+    pattern: string
+    group: string
+    matches: boolean
+  }>
 }
 
 export default function MiddlewareDebugPage() {
-  const isDev = env.NEXT_PUBLIC_NODE_ENV === "development";
+  const isDev = env.NEXT_PUBLIC_NODE_ENV === 'development'
   if (!isDev) {
     return (
       <div className="container mx-auto p-4">
@@ -52,49 +52,51 @@ export default function MiddlewareDebugPage() {
           </CardContent>
         </Card>
       </div>
-    );
+    )
   }
 
-  const [debugInfo, setDebugInfo] = useState<RouteDebugInfo | null>(null);
-  const [testResults, setTestResults] = useState<TestResult[]>([]);
-  const [testPath, setTestPath] = useState("/");
-  const [loading, setLoading] = useState(false);
-  const fetchDebugInfo = async (path: string = "/") => {
-    setLoading(true);
+  const [debugInfo, setDebugInfo] = useState<RouteDebugInfo | null>(null)
+  const [testResults, setTestResults] = useState<TestResult[]>([])
+  const [testPath, setTestPath] = useState('/')
+  const [loading, setLoading] = useState(false)
+  const fetchDebugInfo = async (path: string = '/') => {
+    setLoading(true)
     try {
       const response = await fetch(
         `/api/debug/middleware?path=${encodeURIComponent(path)}`,
-      );
-      const data = await response.json();
-      setDebugInfo(data.debugInfo);
-      setTestResults(data.testResults);
-    } catch (error) {
-      console.error("Failed to fetch debug info:", error);
-    } finally {
-      setLoading(false);
+      )
+      const data = await response.json()
+      setDebugInfo(data.debugInfo)
+      setTestResults(data.testResults)
     }
-  };
+    catch (error) {
+      console.error('Failed to fetch debug info:', error)
+    }
+    finally {
+      setLoading(false)
+    }
+  }
 
   useEffect(() => {
-    fetchDebugInfo();
-  }, []);
+    fetchDebugInfo()
+  }, [])
 
   const getGroupColor = (group: string | null) => {
     switch (group) {
-      case "PUBLIC":
-        return "bg-green-100 text-green-800";
-      case "AUTH":
-        return "bg-blue-100 text-blue-800";
-      case "PROTECTED":
-        return "bg-red-100 text-red-800";
-      case "API_PUBLIC":
-        return "bg-emerald-100 text-emerald-800";
-      case "API_PROTECTED":
-        return "bg-orange-100 text-orange-800";
+      case 'PUBLIC':
+        return 'bg-green-100 text-green-800'
+      case 'AUTH':
+        return 'bg-blue-100 text-blue-800'
+      case 'PROTECTED':
+        return 'bg-red-100 text-red-800'
+      case 'API_PUBLIC':
+        return 'bg-emerald-100 text-emerald-800'
+      case 'API_PROTECTED':
+        return 'bg-orange-100 text-orange-800'
       default:
-        return "bg-gray-100 text-gray-800";
+        return 'bg-gray-100 text-gray-800'
     }
-  };
+  }
 
   return (
     <div className="container mx-auto p-4 space-y-6">
@@ -106,12 +108,12 @@ export default function MiddlewareDebugPage() {
           <div className="flex gap-2">
             <Input
               value={testPath}
-              onChange={(e) => setTestPath(e.target.value)}
+              onChange={e => setTestPath(e.target.value)}
               placeholder="Enter path to test (e.g., /account, /api/products)"
               className="flex-1"
             />
             <Button onClick={() => fetchDebugInfo(testPath)} disabled={loading}>
-              {loading ? "Testing..." : "Test Path"}
+              {loading ? 'Testing...' : 'Test Path'}
             </Button>
           </div>
 
@@ -119,7 +121,9 @@ export default function MiddlewareDebugPage() {
             <Card>
               <CardHeader>
                 <CardTitle className="text-lg">
-                  Path: {debugInfo.pathname}
+                  Path:
+                  {' '}
+                  {debugInfo.pathname}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -127,7 +131,7 @@ export default function MiddlewareDebugPage() {
                   <div className="flex items-center gap-2">
                     <span className="font-medium">Route Group:</span>
                     <Badge className={getGroupColor(debugInfo.result.group)}>
-                      {debugInfo.result.group || "UNKNOWN"}
+                      {debugInfo.result.group || 'UNKNOWN'}
                     </Badge>
                   </div>
                   {debugInfo.result.pattern && (
@@ -169,7 +173,7 @@ export default function MiddlewareDebugPage() {
                     {result.path}
                   </code>
                   <Badge className={getGroupColor(result.result.group)}>
-                    {result.result.group || "UNKNOWN"}
+                    {result.result.group || 'UNKNOWN'}
                   </Badge>
                 </div>
                 <div className="text-sm text-muted-foreground">
@@ -215,5 +219,5 @@ export default function MiddlewareDebugPage() {
         </CardContent>
       </Card>
     </div>
-  );
+  )
 }

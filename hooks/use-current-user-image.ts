@@ -1,6 +1,6 @@
-import { useSession } from "@/lib/auth-client";
+import { useSession } from '@/lib/auth-client'
 
-export const useCurrentUserImage = () => {
-  const { data: session } = useSession();
-  return session?.user?.image || null;
-};
+export function useCurrentUserImage() {
+  const { data: session } = useSession()
+  return session?.user?.image || null
+}

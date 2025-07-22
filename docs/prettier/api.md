@@ -6,7 +6,7 @@ title: API
 If you want to run Prettier programmatically, check this page out.
 
 ```js
-import * as prettier from "prettier";
+import * as prettier from 'prettier'
 ```
 
 Our public APIs are all asynchronous, if you must use synchronous version for some reason, you can try [`@prettier/sync`](https://github.com/prettier/prettier-synchronized).
@@ -16,7 +16,7 @@ Our public APIs are all asynchronous, if you must use synchronous version for so
 `format` is used to format text using Prettier. `options.parser` must be set according to the language you are formatting (see the [list of available parsers](options.md#parser)). Alternatively, `options.filepath` can be specified for Prettier to infer the parser from the file extension. Other [options](options.md) may be provided to override the defaults.
 
 ```js
-await prettier.format("foo ( );", { semi: false, parser: "babel" });
+await prettier.format('foo ( );', { semi: false, parser: 'babel' })
 // -> 'foo()\n'
 ```
 
@@ -31,7 +31,7 @@ await prettier.format("foo ( );", { semi: false, parser: "babel" });
 The `cursorOffset` option should be provided, to specify where the cursor is.
 
 ```js
-await prettier.formatWithCursor(" 1", { cursorOffset: 2, parser: "babel" });
+await prettier.formatWithCursor(' 1', { cursorOffset: 2, parser: 'babel' })
 // -> { formatted: '1;\n', cursorOffset: 1 }
 ```
 
@@ -47,12 +47,12 @@ The promise will be rejected if there was an error parsing the configuration fil
 If `options.useCache` is `false`, all caching will be bypassed.
 
 ```js
-const text = await fs.readFile(filePath, "utf8");
-const options = await prettier.resolveConfig(filePath);
+const text = await fs.readFile(filePath, 'utf8')
+const options = await prettier.resolveConfig(filePath)
 const formatted = await prettier.format(text, {
   ...options,
   filepath: filePath,
-});
+})
 ```
 
 If `options.editorconfig` is `true` and an [`.editorconfig` file](https://editorconfig.org/) is in your project, Prettier will parse it and convert its properties to the corresponding Prettier configuration. This configuration will be overridden by `.prettierrc`, etc. Currently, the following EditorConfig properties are supported:
@@ -74,7 +74,7 @@ The promise will be rejected if there was an error parsing the configuration fil
 The search starts at `process.cwd()`, or at the directory of `fileUrlOrPath` if provided.
 
 ```js
-const configFile = await prettier.resolveConfigFile(filePath);
+const configFile = await prettier.resolveConfigFile(filePath)
 // you got the path of the configuration file
 ```
 
@@ -88,8 +88,8 @@ When Prettier loads configuration files and plugins, the file system structure i
 
 ```ts
 {
-  boolean;
-  string | null;
+  boolean
+  string | null
 }
 ```
 
@@ -112,20 +112,20 @@ The support information looks like this:
 ```ts
 {
   Array<{
-    name: string;
-    parsers: string[];
-    group?: string;
-    tmScope?: string;
-    aceMode?: string;
-    codemirrorMode?: string;
-    codemirrorMimeType?: string;
-    aliases?: string[];
-    extensions?: string[];
-    filenames?: string[];
-    linguistLanguageId?: number;
-    vscodeLanguageIds?: string[];
-    isSupported?: (options: { filepath: string }) => boolean;
-  }>;
+    name: string
+    parsers: string[]
+    group?: string
+    tmScope?: string
+    aceMode?: string
+    codemirrorMode?: string
+    codemirrorMimeType?: string
+    aliases?: string[]
+    extensions?: string[]
+    filenames?: string[]
+    linguistLanguageId?: number
+    vscodeLanguageIds?: string[]
+    isSupported?: (options: { filepath: string }) => boolean
+  }>
 }
 ```
 
@@ -147,41 +147,41 @@ Before [plugins](plugins.md) were a thing, Prettier had a similar but more limit
 ❌ Custom parser API (removed):
 
 ```js
-import { format } from "prettier";
+import { format } from 'prettier'
 
-format("lodash ( )", {
+format('lodash ( )', {
   parser(text, { babel }) {
-    const ast = babel(text);
-    ast.program.body[0].expression.callee.name = "_";
-    return ast;
+    const ast = babel(text)
+    ast.program.body[0].expression.callee.name = '_'
+    return ast
   },
-});
+})
 // -> "_();\n"
 ```
 
 ✔️ Plugin API:
 
 ```js
-import { format } from "prettier";
-import * as prettierPluginBabel from "prettier/plugins/babel";
+import { format } from 'prettier'
+import * as prettierPluginBabel from 'prettier/plugins/babel'
 
 const myCustomPlugin = {
   parsers: {
-    "my-custom-parser": {
+    'my-custom-parser': {
       async parse(text) {
-        const ast = await prettierPluginBabel.parsers.babel.parse(text);
-        ast.program.body[0].expression.callee.name = "_";
-        return ast;
+        const ast = await prettierPluginBabel.parsers.babel.parse(text)
+        ast.program.body[0].expression.callee.name = '_'
+        return ast
       },
-      astFormat: "estree",
+      astFormat: 'estree',
     },
   },
-};
+}
 
-await format("lodash ( )", {
-  parser: "my-custom-parser",
+await format('lodash ( )', {
+  parser: 'my-custom-parser',
   plugins: [myCustomPlugin],
-});
+})
 // -> "_();\n"
 ```
 

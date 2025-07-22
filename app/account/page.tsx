@@ -1,20 +1,20 @@
-import { headers } from "next/headers";
-import { redirect } from "next/navigation";
+import { headers } from 'next/headers'
+import { redirect } from 'next/navigation'
 
-import { auth } from "@/lib/auth";
+import { auth } from '@/lib/auth'
 
-import AccountForm from "./account-form";
+import AccountForm from './account-form'
 
 export default async function Account() {
   const session = await auth.api.getSession({
     headers: await headers(),
-  });
+  })
 
   if (!session?.user) {
-    redirect("/auth/login");
+    redirect('/auth/login')
   }
 
-  const user = session.user;
+  const user = session.user
 
   return (
     <div className="container mx-auto py-8 px-4">
@@ -29,5 +29,5 @@ export default async function Account() {
         <AccountForm user={user} />
       </div>
     </div>
-  );
+  )
 }

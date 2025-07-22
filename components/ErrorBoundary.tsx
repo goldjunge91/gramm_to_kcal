@@ -1,24 +1,26 @@
-"use client";
+'use client'
 
-import { Component, type ErrorInfo, type ReactNode } from "react";
+import type { ErrorInfo, ReactNode } from 'react'
 
-import { Button } from "@/components/ui/button";
+import { Component } from 'react'
+
+import { Button } from '@/components/ui/button'
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from '@/components/ui/card'
 
 interface Props {
-  children: ReactNode;
-  fallback?: ReactNode;
+  children: ReactNode
+  fallback?: ReactNode
 }
 
 interface State {
-  hasError: boolean;
-  error?: Error;
+  hasError: boolean
+  error?: Error
 }
 
 /**
@@ -27,28 +29,28 @@ interface State {
 export class ErrorBoundary extends Component<Props, State> {
   public state: State = {
     hasError: false,
-  };
+  }
 
   public static getDerivedStateFromError(error: Error): State {
-    return { hasError: true, error };
+    return { hasError: true, error }
   }
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error("ErrorBoundary caught an error:", error, errorInfo);
+    console.error('ErrorBoundary caught an error:', error, errorInfo)
   }
 
   private handleReset = () => {
-    this.setState({ hasError: false, error: undefined });
-  };
+    this.setState({ hasError: false, error: undefined })
+  }
 
   private handleReload = () => {
-    window.location.reload();
-  };
+    window.location.reload()
+  }
 
   public render() {
     if (this.state.hasError) {
       if (this.props.fallback) {
-        return this.props.fallback;
+        return this.props.fallback
       }
 
       return (
@@ -79,9 +81,9 @@ export class ErrorBoundary extends Component<Props, State> {
             </CardContent>
           </Card>
         </div>
-      );
+      )
     }
 
-    return this.props.children;
+    return this.props.children
   }
 }

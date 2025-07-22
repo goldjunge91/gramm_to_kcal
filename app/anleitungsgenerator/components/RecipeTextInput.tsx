@@ -1,41 +1,41 @@
-import type { JSX } from "react";
+import type { JSX } from 'react'
 
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
 
 interface RecipeTextInputProps {
-  value: string;
-  onChange: (value: string) => void;
-  onParse: () => void;
+  value: string
+  onChange: (value: string) => void
+  onParse: () => void
 }
 
 /** Component for inputting recipe text to be parsed */
-export const RecipeTextInput = ({
+export function RecipeTextInput({
   value,
   onChange,
   onParse,
-}: RecipeTextInputProps): JSX.Element => {
+}: RecipeTextInputProps): JSX.Element {
   const handlePaste = (
     event: React.ClipboardEvent<HTMLTextAreaElement>,
   ): void => {
     // Allow default paste behavior, the onChange will handle the state update
     setTimeout(() => {
-      const target = event.target as HTMLTextAreaElement;
-      onChange(target.value);
-    }, 0);
-  };
+      const target = event.target as HTMLTextAreaElement
+      onChange(target.value)
+    }, 0)
+  }
 
   const handleKeyDown = (
     event: React.KeyboardEvent<HTMLTextAreaElement>,
   ): void => {
     // Allow Ctrl+Enter to trigger parsing
-    if (event.ctrlKey && event.key === "Enter") {
-      event.preventDefault();
-      onParse();
+    if (event.ctrlKey && event.key === 'Enter') {
+      event.preventDefault()
+      onParse()
     }
-  };
+  }
 
   return (
     <Card>
@@ -50,7 +50,7 @@ export const RecipeTextInput = ({
           <Textarea
             id="recipe-text"
             value={value}
-            onChange={(e) => onChange(e.target.value)}
+            onChange={e => onChange(e.target.value)}
             onPaste={handlePaste}
             onKeyDown={handleKeyDown}
             placeholder="🤤😋🐷Pudding-Oats mit Blaubeeren mhm🤤😋🤤
@@ -85,5 +85,5 @@ Anleitung für 1 Portion:
         </div>
       </CardContent>
     </Card>
-  );
-};
+  )
+}

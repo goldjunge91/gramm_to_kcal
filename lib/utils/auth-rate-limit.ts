@@ -3,9 +3,11 @@
  * Protects authentication endpoints with Redis-based rate limiting
  */
 
-import type { SupabaseClient } from "@supabase/supabase-js";
+// TODO: Replace with Better Auth types
+import { getRedis } from '@/lib/redis'
 
-import { getRedis } from "@/lib/redis";
+// Unused type - can be removed when Better Auth migration is complete
+// type AuthClient = any
 
 // Rate limiting configurations for different auth operations
 const AUTH_RATE_LIMITS = {
@@ -49,35 +51,35 @@ const AUTH_RATE_LIMITS = {
     window: 300, // 20 attempts per 5 minutes
     blockDuration: 300, // 5 minute block
   },
-} as const;
+} as const
 
-type AuthOperation = keyof typeof AUTH_RATE_LIMITS;
+type AuthOperation = keyof typeof AUTH_RATE_LIMITS
 
 interface AuthRateLimitResult {
-  allowed: boolean;
-  remaining: number;
-  resetTime: number;
-  blocked: boolean;
-  blockExpiry?: number;
+  allowed: boolean
+  remaining: number
+  resetTime: number
+  blocked: boolean
+  blockExpiry?: number
 }
 
 // Enhanced rate limiter for auth operations
 export class SupabaseAuthRateLimiter {
-  private redis = getRedis();
+  private redis = getRedis()
 
   /**
    * Für Tests: Setzt die Redis-Instanz manuell.
    */
   public setRedis(redis: any) {
-    this.redis = redis;
+    this.redis = redis
   }
 
   private getKey(operation: AuthOperation, identifier: string): string {
-    return `auth:rate-limit:${operation}:${identifier}`;
+    return `auth:rate-limit:${operation}:${identifier}`
   }
 
   private getBlockKey(operation: AuthOperation, identifier: string): string {
-    return `auth:block:${operation}:${identifier}`;
+    return `auth:block:${operation}:${identifier}`
   }
 
   async checkRateLimit(
@@ -86,24 +88,24 @@ export class SupabaseAuthRateLimiter {
   ): Promise<AuthRateLimitResult> {
     if (!this.redis) {
       // No Redis - allow but log warning
-      console.warn("Auth rate limiting unavailable - Redis not configured");
+      console.warn('Auth rate limiting unavailable - Redis not configured')
       return {
         allowed: true,
         remaining: AUTH_RATE_LIMITS[operation].requests,
         resetTime: Date.now() + AUTH_RATE_LIMITS[operation].window * 1000,
         blocked: false,
-      };
+      }
     }
 
-    const config = AUTH_RATE_LIMITS[operation];
-    const key = this.getKey(operation, identifier);
-    const blockKey = this.getBlockKey(operation, identifier);
+    const config = AUTH_RATE_LIMITS[operation]
+    const key = this.getKey(operation, identifier)
+    const blockKey = this.getBlockKey(operation, identifier)
 
     try {
       // Check if currently blocked
-      const blockExpiry = await this.redis.get(blockKey);
-      if (typeof blockExpiry === "string" && blockExpiry.length > 0) {
-        const expiryTime = Number.parseInt(blockExpiry, 10);
+      const blockExpiry = await this.redis.get(blockKey)
+      if (typeof blockExpiry === 'string' && blockExpiry.length > 0) {
+        const expiryTime = Number.parseInt(blockExpiry, 10)
         if (Date.now() < expiryTime) {
           return {
             allowed: false,
@@ -111,37 +113,37 @@ export class SupabaseAuthRateLimiter {
             resetTime: expiryTime,
             blocked: true,
             blockExpiry: expiryTime,
-          };
+          }
         }
         // Block expired, remove it
-        await this.redis.del(blockKey);
+        await this.redis.del(blockKey)
       }
 
       // Check current rate limit
-      const pipeline = this.redis.pipeline();
-      pipeline.incr(key);
-      pipeline.expire(key, config.window);
-      const results = (await pipeline.exec()) as [any, any][];
+      const pipeline = this.redis.pipeline()
+      pipeline.incr(key)
+      pipeline.expire(key, config.window)
+      const results = (await pipeline.exec()) as [any, any][]
 
-      let currentCount = 0;
+      let currentCount = 0
       if (
-        Array.isArray(results) &&
-        results[0] &&
-        typeof results[0][1] === "number"
+        Array.isArray(results)
+        && results[0]
+        && typeof results[0][1] === 'number'
       ) {
-        currentCount = results[0][1];
+        currentCount = results[0][1]
       }
-      const remaining = Math.max(0, config.requests - currentCount);
-      const resetTime = Date.now() + config.window * 1000;
+      const remaining = Math.max(0, config.requests - currentCount)
+      const resetTime = Date.now() + config.window * 1000
 
       // If exceeded, create block
       if (currentCount > config.requests) {
-        const blockExpiryTime = Date.now() + config.blockDuration * 1000;
+        const blockExpiryTime = Date.now() + config.blockDuration * 1000
         await this.redis.setex(
           blockKey,
           config.blockDuration,
           blockExpiryTime.toString(),
-        );
+        )
 
         return {
           allowed: false,
@@ -149,7 +151,7 @@ export class SupabaseAuthRateLimiter {
           resetTime: blockExpiryTime,
           blocked: true,
           blockExpiry: blockExpiryTime,
-        };
+        }
       }
 
       return {
@@ -157,16 +159,17 @@ export class SupabaseAuthRateLimiter {
         remaining,
         resetTime,
         blocked: false,
-      };
-    } catch (error) {
-      console.error("Auth rate limit check failed:", error);
+      }
+    }
+    catch (error) {
+      console.error('Auth rate limit check failed:', error)
       // Fail open for auth operations
       return {
         allowed: true,
         remaining: config.requests,
         resetTime: Date.now() + config.window * 1000,
         blocked: false,
-      };
+      }
     }
   }
 
@@ -174,47 +177,50 @@ export class SupabaseAuthRateLimiter {
     operation: AuthOperation,
     identifier: string,
   ): Promise<void> {
-    if (!this.redis) return;
+    if (!this.redis)
+      return
 
     try {
-      const key = this.getKey(operation, identifier);
-      const blockKey = this.getBlockKey(operation, identifier);
+      const key = this.getKey(operation, identifier)
+      const blockKey = this.getBlockKey(operation, identifier)
 
-      await Promise.all([this.redis.del(key), this.redis.del(blockKey)]);
-    } catch (error) {
-      console.error("Failed to reset auth rate limit:", error);
+      await Promise.all([this.redis.del(key), this.redis.del(blockKey)])
+    }
+    catch (error) {
+      console.error('Failed to reset auth rate limit:', error)
     }
   }
 
   async getStatus(operation: AuthOperation, identifier: string) {
-    if (!this.redis) return null;
+    if (!this.redis)
+      return null
 
     try {
-      const key = this.getKey(operation, identifier);
-      const blockKey = this.getBlockKey(operation, identifier);
+      const key = this.getKey(operation, identifier)
+      const blockKey = this.getBlockKey(operation, identifier)
 
       const [count, blockExpiry] = await Promise.all([
         this.redis.get(key),
         this.redis.get(blockKey),
-      ]);
+      ])
 
-      const config = AUTH_RATE_LIMITS[operation];
-      let currentCount = 0;
-      if (typeof count === "string" && count.length > 0) {
-        currentCount = Number.parseInt(count, 10);
+      const config = AUTH_RATE_LIMITS[operation]
+      let currentCount = 0
+      if (typeof count === 'string' && count.length > 0) {
+        currentCount = Number.parseInt(count, 10)
       }
-      let isBlocked = false;
-      if (typeof blockExpiry === "string" && blockExpiry.length > 0) {
-        isBlocked = Date.now() < Number.parseInt(blockExpiry, 10);
+      let isBlocked = false
+      if (typeof blockExpiry === 'string' && blockExpiry.length > 0) {
+        isBlocked = Date.now() < Number.parseInt(blockExpiry, 10)
       }
 
-      let blockExpiryValue: number | null = null;
+      let blockExpiryValue: number | null = null
       if (
-        isBlocked &&
-        typeof blockExpiry === "string" &&
-        blockExpiry.length > 0
+        isBlocked
+        && typeof blockExpiry === 'string'
+        && blockExpiry.length > 0
       ) {
-        blockExpiryValue = Number.parseInt(blockExpiry, 10);
+        blockExpiryValue = Number.parseInt(blockExpiry, 10)
       }
       return {
         operation,
@@ -226,276 +232,279 @@ export class SupabaseAuthRateLimiter {
         blockExpiry: blockExpiryValue,
         window: config.window,
         blockDuration: config.blockDuration,
-      };
-    } catch (error) {
-      console.error("Failed to get auth rate limit status:", error);
-      return null;
+      }
+    }
+    catch (error) {
+      console.error('Failed to get auth rate limit status:', error)
+      return null
     }
   }
 }
 
 // Global instance
-export const authRateLimiter = new SupabaseAuthRateLimiter();
+export const authRateLimiter = new SupabaseAuthRateLimiter()
 
 // Helper functions for different auth operations
 export async function checkSignInRateLimit(
   identifier: string,
 ): Promise<AuthRateLimitResult> {
-  return await authRateLimiter.checkRateLimit("SIGN_IN", identifier);
+  return await authRateLimiter.checkRateLimit('SIGN_IN', identifier)
 }
 
 export async function checkSignUpRateLimit(
   identifier: string,
 ): Promise<AuthRateLimitResult> {
-  return await authRateLimiter.checkRateLimit("SIGN_UP", identifier);
+  return await authRateLimiter.checkRateLimit('SIGN_UP', identifier)
 }
 
 export async function checkPasswordResetRateLimit(
   identifier: string,
 ): Promise<AuthRateLimitResult> {
-  return await authRateLimiter.checkRateLimit("PASSWORD_RESET", identifier);
+  return await authRateLimiter.checkRateLimit('PASSWORD_RESET', identifier)
 }
 
 export async function checkEmailVerifyRateLimit(
   identifier: string,
 ): Promise<AuthRateLimitResult> {
-  return await authRateLimiter.checkRateLimit("EMAIL_VERIFY", identifier);
+  return await authRateLimiter.checkRateLimit('EMAIL_VERIFY', identifier)
 }
 
-// Enhanced Supabase client wrapper with rate limiting
-export function createRateLimitedSupabaseClient(supabase: SupabaseClient) {
-  const originalAuth = supabase.auth;
+// Enhanced Supabase client wrapper with rate limiting - DISABLED for Better Auth migration
+export function createRateLimitedSupabaseClient(supabase: any) {
+  const originalAuth = supabase.auth
 
   // Create a wrapper that preserves the original auth methods while adding rate limiting
   const rateLimitedAuth = new Proxy(originalAuth, {
-    get(target, prop, receiver) {
+    get(target, prop, _receiver) {
       // Handle specific methods that need rate limiting
       if (prop === 'signInWithPassword') {
-        return async (credentials: { email: string; password: string; }) => {
-          const rateLimit = await checkSignInRateLimit(credentials.email);
+        return async (credentials: { email: string, password: string }) => {
+          const rateLimit = await checkSignInRateLimit(credentials.email)
           if (!rateLimit.allowed) {
             throw new Error(
               `Too many sign-in attempts. ${rateLimit.blocked
-                ? "Account temporarily blocked."
-                : "Please try again later."
+                ? 'Account temporarily blocked.'
+                : 'Please try again later.'
               }`,
-            );
+            )
           }
-          return originalAuth.signInWithPassword(credentials);
-        };
+          return originalAuth.signInWithPassword(credentials)
+        }
       }
 
       if (prop === 'signInWithOAuth') {
         return async (options: {
-          provider: import("@supabase/supabase-js").Provider;
-          options?: any;
+          provider: any // import('@supabase/supabase-js').Provider
+          options?: any
         }) => {
           // No rate limiting for OAuth to avoid issues
-          return await originalAuth.signInWithOAuth(options);
-        };
+          return await originalAuth.signInWithOAuth(options)
+        }
       }
 
       if (prop === 'signUp') {
         return async (credentials: {
-          email: string;
-          password: string;
-          options?: any;
+          email: string
+          password: string
+          options?: any
         }) => {
-          const rateLimit = await checkSignUpRateLimit(credentials.email);
+          const rateLimit = await checkSignUpRateLimit(credentials.email)
           if (!rateLimit.allowed) {
             throw new Error(
               `Too many sign-up attempts. ${rateLimit.blocked
-                ? "Account temporarily blocked."
-                : "Please try again later."
+                ? 'Account temporarily blocked.'
+                : 'Please try again later.'
               }`,
-            );
+            )
           }
-          return originalAuth.signUp(credentials);
-        };
+          return originalAuth.signUp(credentials)
+        }
       }
 
       if (prop === 'resetPasswordForEmail') {
         return async (email: string, options?: any) => {
-          const rateLimit = await checkPasswordResetRateLimit(email);
+          const rateLimit = await checkPasswordResetRateLimit(email)
           if (!rateLimit.allowed) {
             throw new Error(
               `Too many password reset attempts. ${rateLimit.blocked
-                ? "Account temporarily blocked."
-                : "Please try again later."
+                ? 'Account temporarily blocked.'
+                : 'Please try again later.'
               }`,
-            );
+            )
           }
-          return originalAuth.resetPasswordForEmail(email, options);
-        };
+          return originalAuth.resetPasswordForEmail(email, options)
+        }
       }
 
       if (prop === 'resend') {
         return async (credentials: {
-          type: "signup" | "email_change";
-          email: string;
-          options?: any;
+          type: 'signup' | 'email_change'
+          email: string
+          options?: any
         }) => {
-          const rateLimit = await checkEmailVerifyRateLimit(credentials.email);
+          const rateLimit = await checkEmailVerifyRateLimit(credentials.email)
           if (!rateLimit.allowed) {
             throw new Error(
               `Too many verification attempts. ${rateLimit.blocked
-                ? "Account temporarily blocked."
-                : "Please try again later."
+                ? 'Account temporarily blocked.'
+                : 'Please try again later.'
               }`,
-            );
+            )
           }
-          return originalAuth.resend(credentials);
-        };
+          return originalAuth.resend(credentials)
+        }
       }
 
       if (prop === 'updateUser') {
         return async (attributes: {
-          password?: string;
-          email?: string;
-          data?: object;
+          password?: string
+          email?: string
+          data?: object
         }) => {
           const rateLimit = await authRateLimiter.checkRateLimit(
-            "GENERAL",
-            "user-update",
-          );
+            'GENERAL',
+            'user-update',
+          )
           if (!rateLimit.allowed) {
             throw new Error(
               `Too many update attempts. ${rateLimit.blocked
-                ? "Account temporarily blocked."
-                : "Please try again later."
+                ? 'Account temporarily blocked.'
+                : 'Please try again later.'
               }`,
-            );
+            )
           }
-          return originalAuth.updateUser(attributes);
-        };
+          return originalAuth.updateUser(attributes)
+        }
       }
 
       // For all other methods (including exchangeCodeForSession), return the original method
       // bound to the original auth object
-      const value = target[prop as keyof typeof target];
+      const value = target[prop as keyof typeof target]
       if (typeof value === 'function') {
-        return value.bind(target);
+        return value.bind(target)
       }
-      return value;
-    }
-  });
-
+      return value
+    },
+  })
 
   return {
     ...supabase,
     auth: rateLimitedAuth,
     from: (table: string) => supabase.from(table),
     // from: (...args) => supabase.from(...args),
-  };
+  }
 }
 
 // Suspicious activity detection
 export class AuthSecurityMonitor {
-  private redis = getRedis();
+  private redis = getRedis()
 
   async logAuthAttempt(
     operation: AuthOperation,
     identifier: string,
     success: boolean,
     metadata: {
-      ip?: string;
-      userAgent?: string;
-      timestamp?: number;
+      ip?: string
+      userAgent?: string
+      timestamp?: number
     } = {},
   ) {
-    if (!this.redis) return;
+    if (!this.redis)
+      return
 
     try {
-      const logKey = `auth:log:${operation}:${identifier}`;
+      const logKey = `auth:log:${operation}:${identifier}`
       const logEntry = {
         success,
         timestamp: metadata.timestamp || Date.now(),
         ip: metadata.ip,
         userAgent: metadata.userAgent,
-      };
+      }
 
       // Store last 10 attempts
-      await this.redis.lpush(logKey, JSON.stringify(logEntry));
-      await this.redis.ltrim(logKey, 0, 9);
-      await this.redis.expire(logKey, 86400); // 24 hours
-    } catch (error) {
-      console.error("Failed to log auth attempt:", error);
+      await this.redis.lpush(logKey, JSON.stringify(logEntry))
+      await this.redis.ltrim(logKey, 0, 9)
+      await this.redis.expire(logKey, 86400) // 24 hours
+    }
+    catch (error) {
+      console.error('Failed to log auth attempt:', error)
     }
   }
 
   async detectSuspiciousActivity(identifier: string): Promise<{
-    suspicious: boolean;
-    reasons: string[];
-    riskScore: number;
+    suspicious: boolean
+    reasons: string[]
+    riskScore: number
   }> {
     if (!this.redis) {
-      return { suspicious: false, reasons: [], riskScore: 0 };
+      return { suspicious: false, reasons: [], riskScore: 0 }
     }
 
     try {
-      const logKey = `auth:log:SIGN_IN:${identifier}`;
-      const logs = await this.redis.lrange(logKey, 0, -1);
+      const logKey = `auth:log:SIGN_IN:${identifier}`
+      const logs = await this.redis.lrange(logKey, 0, -1)
 
       if (!logs || logs.length === 0) {
-        return { suspicious: false, reasons: [], riskScore: 0 };
+        return { suspicious: false, reasons: [], riskScore: 0 }
       }
 
-      const attempts = logs.map((log) => JSON.parse(log));
+      const attempts = logs.map(log => JSON.parse(log))
       const recentAttempts = attempts.filter(
-        (attempt) => Date.now() - attempt.timestamp < 3600000, // Last hour
-      );
+        attempt => Date.now() - attempt.timestamp < 3600000, // Last hour
+      )
 
-      const reasons: string[] = [];
-      let riskScore = 0;
+      const reasons: string[] = []
+      let riskScore = 0
 
       // Multiple failed attempts
-      const failedAttempts = recentAttempts.filter((a) => !a.success);
+      const failedAttempts = recentAttempts.filter(a => !a.success)
       if (failedAttempts.length >= 3) {
-        reasons.push("Multiple failed login attempts");
-        riskScore += 30;
+        reasons.push('Multiple failed login attempts')
+        riskScore += 30
       }
 
       // Rapid succession attempts
       if (recentAttempts.length >= 5) {
-        reasons.push("High frequency login attempts");
-        riskScore += 20;
+        reasons.push('High frequency login attempts')
+        riskScore += 20
       }
 
       // Multiple IP addresses
       const uniqueIPs = new Set(
-        recentAttempts.map((a) => a.ip).filter(Boolean),
-      );
+        recentAttempts.map(a => a.ip).filter(Boolean),
+      )
       if (uniqueIPs.size >= 3) {
-        reasons.push("Multiple IP addresses");
-        riskScore += 25;
+        reasons.push('Multiple IP addresses')
+        riskScore += 25
       }
 
       // Multiple user agents
       const uniqueUAs = new Set(
-        recentAttempts.map((a) => a.userAgent).filter(Boolean),
-      );
+        recentAttempts.map(a => a.userAgent).filter(Boolean),
+      )
       if (uniqueUAs.size >= 3) {
-        reasons.push("Multiple user agents");
-        riskScore += 15;
+        reasons.push('Multiple user agents')
+        riskScore += 15
       }
 
       return {
         suspicious: riskScore >= 40,
         reasons,
         riskScore,
-      };
-    } catch (error) {
-      console.error("Failed to detect suspicious activity:", error);
-      return { suspicious: false, reasons: [], riskScore: 0 };
+      }
+    }
+    catch (error) {
+      console.error('Failed to detect suspicious activity:', error)
+      return { suspicious: false, reasons: [], riskScore: 0 }
     }
   }
 }
 
-export const authSecurityMonitor = new AuthSecurityMonitor();
+export const authSecurityMonitor = new AuthSecurityMonitor()
 
 // Health check for auth rate limiting
 export async function getAuthRateLimitHealth() {
-  const redis = await getRedis();
+  const redis = await getRedis()
 
   return {
     enabled: !!redis,
@@ -512,32 +521,32 @@ export async function getAuthRateLimitHealth() {
       suspiciousActivityDetection: !!redis,
     },
     timestamp: new Date().toISOString(),
-  };
+  }
 }
 
 // DB Rate Limiting
 export async function checkDbRateLimit(
   identifier: string,
 ): Promise<AuthRateLimitResult> {
-  const redis = getRedis();
-  const config = AUTH_RATE_LIMITS.DB_RATE_LIMIT;
-  const key = `db:rate-limit:${identifier}`;
-  const blockKey = `db:block:${identifier}`;
+  const redis = getRedis()
+  const config = AUTH_RATE_LIMITS.DB_RATE_LIMIT
+  const key = `db:rate-limit:${identifier}`
+  const blockKey = `db:block:${identifier}`
 
   if (!redis) {
-    console.warn("DB rate limiting unavailable - Redis not configured");
+    console.warn('DB rate limiting unavailable - Redis not configured')
     return {
       allowed: true,
       remaining: config.requests,
       resetTime: Date.now() + config.window * 1000,
       blocked: false,
-    };
+    }
   }
 
   // Check block
-  const blockExpiry = await redis.get(blockKey);
-  if (typeof blockExpiry === "string" && blockExpiry.length > 0) {
-    const expiryTime = Number.parseInt(blockExpiry, 10);
+  const blockExpiry = await redis.get(blockKey)
+  if (typeof blockExpiry === 'string' && blockExpiry.length > 0) {
+    const expiryTime = Number.parseInt(blockExpiry, 10)
     if (Date.now() < expiryTime) {
       return {
         allowed: false,
@@ -545,42 +554,42 @@ export async function checkDbRateLimit(
         resetTime: expiryTime,
         blocked: true,
         blockExpiry: expiryTime,
-      };
+      }
     }
-    await redis.del(blockKey);
+    await redis.del(blockKey)
   }
 
   // Check current rate limit
-  const pipeline = redis.pipeline();
-  pipeline.incr(key);
-  pipeline.expire(key, config.window);
-  const results = (await pipeline.exec()) as [any, any][];
-  let currentCount = 0;
+  const pipeline = redis.pipeline()
+  pipeline.incr(key)
+  pipeline.expire(key, config.window)
+  const results = (await pipeline.exec()) as [any, any][]
+  let currentCount = 0
   if (
-    Array.isArray(results) &&
-    results[0] &&
-    typeof results[0][1] === "number"
+    Array.isArray(results)
+    && results[0]
+    && typeof results[0][1] === 'number'
   ) {
-    currentCount = results[0][1];
+    currentCount = results[0][1]
   }
-  const remaining = Math.max(0, config.requests - currentCount);
-  const resetTime = Date.now() + config.window * 1000;
+  const remaining = Math.max(0, config.requests - currentCount)
+  const resetTime = Date.now() + config.window * 1000
 
   // If exceeded, create block
   if (currentCount > config.requests) {
-    const blockExpiryTime = Date.now() + config.blockDuration * 1000;
+    const blockExpiryTime = Date.now() + config.blockDuration * 1000
     await redis.setex(
       blockKey,
       config.blockDuration,
       blockExpiryTime.toString(),
-    );
+    )
     return {
       allowed: false,
       remaining: 0,
       resetTime: blockExpiryTime,
       blocked: true,
       blockExpiry: blockExpiryTime,
-    };
+    }
   }
 
   return {
@@ -588,60 +597,60 @@ export async function checkDbRateLimit(
     remaining,
     resetTime,
     blocked: false,
-  };
+  }
 }
 
 // Wrapper für Supabase-Client mit DB-Rate-Limit
 export function createDbRateLimitedSupabaseClient(
-  supabase: SupabaseClient,
+  supabase: any, // SupabaseClient - disabled for Better Auth migration
   identifier: string,
 ) {
   // Alle Properties des originalen Supabase-Clients durchreichen
-  const wrapper: any = { ...supabase };
+  const wrapper: any = { ...supabase }
   wrapper.from = function (table: string) {
-    const base = supabase.from(table);
+    const base = supabase.from(table)
     return {
       async select(...args: [string?, ...any[]]) {
-        const rateLimit = await checkDbRateLimit(identifier);
+        const rateLimit = await checkDbRateLimit(identifier)
         if (!rateLimit.allowed) {
-          throw new Error("DB Rate limit exceeded. Please try again später.");
+          throw new Error('DB Rate limit exceeded. Please try again später.')
         }
-        return base.select(...args);
+        return base.select(...args)
       },
       async insert(values: any, ...rest: any[]) {
-        const rateLimit = await checkDbRateLimit(identifier);
+        const rateLimit = await checkDbRateLimit(identifier)
         if (!rateLimit.allowed) {
-          throw new Error("DB Rate limit exceeded. Please try again später.");
+          throw new Error('DB Rate limit exceeded. Please try again später.')
         }
-        return base.insert(values, ...rest);
+        return base.insert(values, ...rest)
       },
       async update(values: any, ...rest: any[]) {
-        const rateLimit = await checkDbRateLimit(identifier);
+        const rateLimit = await checkDbRateLimit(identifier)
         if (!rateLimit.allowed) {
-          throw new Error("DB Rate limit exceeded. Please try again später.");
+          throw new Error('DB Rate limit exceeded. Please try again später.')
         }
-        return base.update(values, ...rest);
+        return base.update(values, ...rest)
       },
       async delete(...args: any[]) {
-        const rateLimit = await checkDbRateLimit(identifier);
+        const rateLimit = await checkDbRateLimit(identifier)
         if (!rateLimit.allowed) {
-          throw new Error("DB Rate limit exceeded. Please try again später.");
+          throw new Error('DB Rate limit exceeded. Please try again später.')
         }
-        return base.delete(...args);
+        return base.delete(...args)
       },
       // ...weitere Methoden nach Bedarf
-    };
-  };
+    }
+  }
   // Auth bleibt original!
-  wrapper.auth = supabase.auth;
+  wrapper.auth = supabase.auth
   // Weitere Properties wie .realtime, .storage, .rpc etc. durchreichen
-  wrapper.realtime = supabase.realtime;
-  wrapper.storage = supabase.storage;
-  wrapper.rpc = supabase.rpc?.bind(supabase);
-  wrapper.channel = supabase.channel?.bind(supabase);
-  wrapper.removeChannel = supabase.removeChannel?.bind(supabase);
-  wrapper.getChannels = supabase.getChannels?.bind(supabase);
+  wrapper.realtime = supabase.realtime
+  wrapper.storage = supabase.storage
+  wrapper.rpc = supabase.rpc?.bind(supabase)
+  wrapper.channel = supabase.channel?.bind(supabase)
+  wrapper.removeChannel = supabase.removeChannel?.bind(supabase)
+  wrapper.getChannels = supabase.getChannels?.bind(supabase)
   // Die Properties supabaseUrl, supabaseKey, realtimeUrl, authUrl sind protected und können nicht durchgereicht werden.
   // ... ggf. weitere Properties
-  return wrapper;
+  return wrapper
 }

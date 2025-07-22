@@ -52,12 +52,12 @@ Example `package.json`:
 
 ```js
 const config = {
-  trailingComma: "es5",
+  trailingComma: 'es5',
   tabWidth: 4,
   singleQuote: true,
-};
+}
 
-export default config;
+export default config
 ```
 
 An example shared configuration repository is available [here](https://github.com/azz/prettier-config).
@@ -126,7 +126,7 @@ If you don’t want to use `package.json`, you can use any of the supported exte
 To _extend_ the configuration to overwrite some properties from the shared configuration, import the file in a `.prettierrc.mjs` file and export the modifications, e.g:
 
 ```js
-import usernamePrettierConfig from "@username/prettier-config";
+import usernamePrettierConfig from '@username/prettier-config'
 
 /**
  * @type {import("prettier").Config}
@@ -134,9 +134,9 @@ import usernamePrettierConfig from "@username/prettier-config";
 const config = {
   ...usernamePrettierConfig,
   semi: false,
-};
+}
 
-export default config;
+export default config
 ```
 
 ## Other examples
@@ -150,13 +150,13 @@ You can get type safety and autocomplete support in your shared configuration by
  * @type {import("prettier").Config}
  */
 const config = {
-  trailingComma: "es5",
+  trailingComma: 'es5',
   tabWidth: 4,
   semi: false,
   singleQuote: true,
-};
+}
 
-export default config;
+export default config
 ```
 
 In order to make this work, you have to [install `prettier`](./install.md) for the project.
@@ -191,10 +191,10 @@ In case you want to use [plugins](./plugins.md) in your shared configuration, yo
 // index.js
 const config = {
   singleQuote: true,
-  plugins: ["prettier-plugin-xml"],
-};
+  plugins: ['prettier-plugin-xml'],
+}
 
-export default config;
+export default config
 ```
 
 ```diff

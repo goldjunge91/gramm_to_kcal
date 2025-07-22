@@ -3,14 +3,16 @@
  * Allows quick selection and form population for authenticated users
  */
 
-"use client";
+'use client'
 
-import { Check, Clock, X } from "lucide-react";
-import { useState, type JSX } from "react";
+import type { JSX } from 'react'
 
-import type { RecentScan } from "@/hooks/use-recent-scans";
+import { Check, Clock, X } from 'lucide-react'
+import { useState } from 'react'
 
-import { Button } from "@/components/ui/button";
+import type { RecentScan } from '@/hooks/use-recent-scans'
+
+import { Button } from '@/components/ui/button'
 import {
   Command,
   CommandEmpty,
@@ -18,20 +20,20 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@/components/ui/command";
+} from '@/components/ui/command'
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
+} from '@/components/ui/popover'
 
 interface RecentScansDropdownProps {
-  recentScans: RecentScan[];
-  onSelect: (scan: RecentScan) => void;
-  onRemove?: (scanId: string) => void;
-  trigger: React.ReactNode;
-  placeholder?: string;
-  className?: string;
+  recentScans: RecentScan[]
+  onSelect: (scan: RecentScan) => void
+  onRemove?: (scanId: string) => void
+  trigger: React.ReactNode
+  placeholder?: string
+  className?: string
 }
 
 export function RecentScansDropdown({
@@ -39,38 +41,40 @@ export function RecentScansDropdown({
   onSelect,
   onRemove,
   trigger,
-  placeholder = "Suche in letzten Scans...",
+  placeholder = 'Suche in letzten Scans...',
   className,
 }: RecentScansDropdownProps): JSX.Element {
-  const [open, setOpen] = useState(false);
-  const [search, setSearch] = useState("");
+  const [open, setOpen] = useState(false)
+  const [search, setSearch] = useState('')
 
   const handleSelect = (scan: RecentScan) => {
-    onSelect(scan);
-    setOpen(false);
-    setSearch("");
-  };
+    onSelect(scan)
+    setOpen(false)
+    setSearch('')
+  }
 
   const handleRemove = (scanId: string, event: React.MouseEvent) => {
-    event.stopPropagation();
-    onRemove?.(scanId);
-  };
+    event.stopPropagation()
+    onRemove?.(scanId)
+  }
 
   // Format date for display
   const formatDate = (dateString: string): string => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffInHours = (now.getTime() - date.getTime()) / (1000 * 60 * 60);
+    const date = new Date(dateString)
+    const now = new Date()
+    const diffInHours = (now.getTime() - date.getTime()) / (1000 * 60 * 60)
 
     if (diffInHours < 1) {
-      return "Vor wenigen Minuten";
-    } else if (diffInHours < 24) {
-      return `Vor ${Math.floor(diffInHours)} Stunden`;
-    } else {
-      const diffInDays = Math.floor(diffInHours / 24);
-      return `Vor ${diffInDays} Tag${diffInDays > 1 ? "en" : ""}`;
+      return 'Vor wenigen Minuten'
     }
-  };
+    else if (diffInHours < 24) {
+      return `Vor ${Math.floor(diffInHours)} Stunden`
+    }
+    else {
+      const diffInDays = Math.floor(diffInHours / 24)
+      return `Vor ${diffInDays} Tag${diffInDays > 1 ? 'en' : ''}`
+    }
+  }
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -87,12 +91,12 @@ export function RecentScansDropdown({
           <CommandList>
             <CommandEmpty>
               {recentScans.length === 0
-                ? "Noch keine Scans vorhanden"
-                : "Keine passenden Scans gefunden"}
+                ? 'Noch keine Scans vorhanden'
+                : 'Keine passenden Scans gefunden'}
             </CommandEmpty>
             {recentScans.length > 0 && (
               <CommandGroup heading="Letzte Scans">
-                {recentScans.map((scan) => (
+                {recentScans.map(scan => (
                   <CommandItem
                     key={scan.id}
                     value={scan.productName}
@@ -108,13 +112,23 @@ export function RecentScansDropdown({
                           {scan.productName}
                         </div>
                         <div className="text-xs text-muted-foreground space-x-2">
-                          <span>{scan.quantity}g</span>
+                          <span>
+                            {scan.quantity}
+                            g
+                          </span>
                           <span>•</span>
-                          <span>{scan.kcal} kcal</span>
+                          <span>
+                            {scan.kcal}
+                            {' '}
+                            kcal
+                          </span>
                           {scan.barcode && (
                             <>
                               <span>•</span>
-                              <span>📱 {scan.barcode}</span>
+                              <span>
+                                📱
+                                {scan.barcode}
+                              </span>
                             </>
                           )}
                         </div>
@@ -139,7 +153,7 @@ export function RecentScansDropdown({
                           variant="ghost"
                           size="sm"
                           className="h-6 w-6 p-0 opacity-60 hover:opacity-100 text-destructive"
-                          onClick={(e) => handleRemove(scan.id, e)}
+                          onClick={e => handleRemove(scan.id, e)}
                         >
                           <X className="h-3 w-3" />
                           <span className="sr-only">Entfernen</span>
@@ -156,11 +170,13 @@ export function RecentScansDropdown({
         {recentScans.length > 0 && (
           <div className="border-t p-2">
             <div className="text-xs text-muted-foreground text-center">
-              {recentScans.length} von maximal 20 Scans gespeichert
+              {recentScans.length}
+              {' '}
+              von maximal 20 Scans gespeichert
             </div>
           </div>
         )}
       </PopoverContent>
     </Popover>
-  );
+  )
 }

@@ -1,7 +1,6 @@
-/* eslint-disable require-await */
-import { NextResponse } from "next/server";
+import { NextResponse } from 'next/server'
 
-import { env } from "@/lib/env";
+import { env } from '@/lib/env'
 
 export async function GET() {
   // Test if environment variables are available
@@ -13,7 +12,7 @@ export async function GET() {
     // Show first few characters for debugging (never expose full keys)
     supabaseUrlPreview: `${process.env.NEXT_PUBLIC_SUPABASE_URL?.slice(0, 20)}...`,
     timestamp: new Date().toISOString(),
-  };
+  }
 
-  return NextResponse.json(envStatus);
+  return NextResponse.json(envStatus)
 }

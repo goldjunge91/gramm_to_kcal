@@ -29,7 +29,7 @@ description: "Example description"
 - **Destructure props**:
 
   ```ts
-  const MyComp = ({ id, name }: Props) => {};
+  function MyComp({ id, name }: Props) {}
   ```
 
 - **Avoid `any`**. Use `unknown` or strict generics.

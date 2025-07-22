@@ -56,29 +56,47 @@ For example:
 <!-- prettier-ignore -->
 ```js
 matrix(
-  1, 0, 0,
-  0, 1, 0,
-  0, 0, 1
+  1,
+  0,
+  0,
+  0,
+  1,
+  0,
+  0,
+  0,
+  1
 )
 
 // prettier-ignore
 matrix(
-  1, 0, 0,
-  0, 1, 0,
-  0, 0, 1
+  1,
+  0,
+  0,
+  0,
+  1,
+  0,
+  0,
+  0,
+  1
 )
 ```
 
 will be transformed to:
 
 ```js
-matrix(1, 0, 0, 0, 1, 0, 0, 0, 1);
+matrix(1, 0, 0, 0, 1, 0, 0, 0, 1)
 
 // prettier-ignore
 matrix(
-  1, 0, 0,
-  0, 1, 0,
-  0, 0, 1
+  1,
+  0,
+  0,
+  0,
+  1,
+  0,
+  0,
+  0,
+  1
 )
 ```
 
@@ -87,7 +105,7 @@ matrix(
 ```jsx
 <div>
   {/* prettier-ignore */}
-  <span     ugly  format=''   />
+  <span ugly format="" />
 </div>
 ```
 
@@ -98,16 +116,10 @@ matrix(
 <div         class="x"       >hello world</div            >
 
 <!-- prettier-ignore-attribute -->
-<div
-  (mousedown)="       onStart    (    )         "
-  (mouseup)="         onEnd      (    )         "
-></div>
+<div (mousedown)="       onStart    (    )         " (mouseup)="         onEnd      (    )         "></div>
 
 <!-- prettier-ignore-attribute (mouseup) -->
-<div
-  (mousedown)="onStart()"
-  (mouseup)="         onEnd      (    )         "
-></div>
+<div (mousedown)="onStart()" (mouseup)="         onEnd      (    )         "></div>
 ```
 
 ## CSS
@@ -153,7 +165,7 @@ To ignore a part of a YAML file, `# prettier-ignore` should be placed on the lin
 
 ```yaml
 # prettier-ignore
-key  : value
+key: value
 hello: world
 ```
 

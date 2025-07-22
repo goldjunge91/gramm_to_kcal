@@ -20,75 +20,75 @@ function createEnv() {
     AUTH_GOOGLE_ID: process.env.AUTH_GOOGLE_ID,
     ANALYZE: process.env.ANALYZE,
 
-  } as const;
+  } as const
 
   // Log environment status for debugging (only in development)
-  if (process.env.NODE_ENV === "development") {
-    console.log("Environment Variables Status:");
+  if (process.env.NODE_ENV === 'development') {
+    console.log('Environment Variables Status:')
     Object.entries(env).forEach(([key, value]) => {
-      console.log(`${key}: ${value ? "✅ Set" : "❌ Missing"}`);
-    });
+      console.log(`${key}: ${value ? '✅ Set' : '❌ Missing'}`)
+    })
   }
 
   // Validate required environment variables
   const requiredEnvVars = [
-    "NEXT_PUBLIC_SUPABASE_URL",
-    "NEXT_PUBLIC_SUPABASE_ANON_KEY",
-    "NODE_ENV",
-    "NEXT_PUBLIC_NODE_ENV",
-    "STORAGE_KEY",
-    "RECENT_SCANS_KEY",
-  ] as const;
+    'NEXT_PUBLIC_SUPABASE_URL',
+    'NEXT_PUBLIC_SUPABASE_ANON_KEY',
+    'NODE_ENV',
+    'NEXT_PUBLIC_NODE_ENV',
+    'STORAGE_KEY',
+    'RECENT_SCANS_KEY',
+  ] as const
 
   // Optional environment variables - features will be disabled if missing
   const optionalEnvVars = [
-    "UPSTASH_REDIS_REST_URL",
-    "UPSTASH_REDIS_REST_TOKEN",
-    "AUTH_GOOGLE_ID",
-    "AUTH_GOOGLE_SECRET",
-  ] as const;
+    'UPSTASH_REDIS_REST_URL',
+    'UPSTASH_REDIS_REST_TOKEN',
+    'AUTH_GOOGLE_ID',
+    'AUTH_GOOGLE_SECRET',
+  ] as const
 
   const missingVars = requiredEnvVars.filter(
-    (key) => !env[key] || env[key] === "<>" || env[key] === "",
-  );
+    key => !env[key] || env[key] === '<>' || env[key] === '',
+  )
 
   if (missingVars.length > 0) {
     throw new Error(
-      `Missing required environment variables: ${missingVars.join(", ")}\n` +
-        "Please check your Vercel environment variables configuration.\n" +
-        "See: https://vercel.com/docs/projects/environment-variables",
-    );
+      `Missing required environment variables: ${missingVars.join(', ')}\n`
+      + 'Please check your Vercel environment variables configuration.\n'
+      + 'See: https://vercel.com/docs/projects/environment-variables',
+    )
   }
 
   // Warn about missing optional variables
   const missingOptionalVars = optionalEnvVars.filter(
-    (key) => !env[key] || env[key] === "<>" || env[key] === "",
-  );
+    key => !env[key] || env[key] === '<>' || env[key] === '',
+  )
 
   if (
-    missingOptionalVars.length > 0 &&
-    process.env.NODE_ENV === "development"
+    missingOptionalVars.length > 0
+    && process.env.NODE_ENV === 'development'
   ) {
     // Only warn about Redis if actually missing
-    const missingRedis = missingOptionalVars.filter(v => v.includes('REDIS'));
-    const missingAuth = missingOptionalVars.filter(v => v.includes('AUTH_GOOGLE'));
-    
+    const missingRedis = missingOptionalVars.filter(v => v.includes('REDIS'))
+    const missingAuth = missingOptionalVars.filter(v => v.includes('AUTH_GOOGLE'))
+
     if (missingRedis.length > 0) {
       console.warn(
-        `⚠️ Optional Redis variables missing: ${missingRedis.join(", ")}\n` +
-          "Rate limiting will use in-memory storage. For production, configure Redis.",
-      );
+        `⚠️ Optional Redis variables missing: ${missingRedis.join(', ')}\n`
+        + 'Rate limiting will use in-memory storage. For production, configure Redis.',
+      )
     }
-    
+
     if (missingAuth.length > 0) {
       console.warn(
-        `⚠️ Google OAuth not configured: ${missingAuth.join(", ")}\n` +
-          "Google OAuth login will be disabled.",
-      );
+        `⚠️ Google OAuth not configured: ${missingAuth.join(', ')}\n`
+        + 'Google OAuth login will be disabled.',
+      )
     }
   }
 
-  return env;
+  return env
 }
 
-export const env = createEnv();
+export const env = createEnv()

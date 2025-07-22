@@ -3,27 +3,27 @@
  * Protects against XSS, injection attacks, and malformed data
  */
 
-import type { NextRequest } from "next/server";
+import type { NextRequest } from 'next/server'
 
-import { z } from "zod";
+import { z } from 'zod'
 
 // Common validation schemas
 export const CommonSchemas = {
   // Barcode validation (EAN13)
   barcode: z
     .string()
-    .regex(/^\d{13}$/, "Invalid barcode format")
-    .refine(isValidEAN13, "Invalid EAN13 checksum"),
+    .regex(/^\d{13}$/, 'Invalid barcode format')
+    .refine(isValidEAN13, 'Invalid EAN13 checksum'),
 
   // Email validation with domain filtering
   email: z
     .string()
-    .email("Invalid email format")
+    .email('Invalid email format')
     .min(3)
     .max(254)
     .refine(
-      (email) => !isDisposableEmail(email),
-      "Disposable emails not allowed",
+      email => !isDisposableEmail(email),
+      'Disposable emails not allowed',
     ),
 
   // Safe string validation (prevents XSS)
@@ -32,42 +32,42 @@ export const CommonSchemas = {
     .min(1)
     .max(1000)
     .refine(
-      (str) => !containsXSSPatterns(str),
-      "Potentially unsafe content detected",
+      str => !containsXSSPatterns(str),
+      'Potentially unsafe content detected',
     ),
 
   // Product name validation
   productName: z
     .string()
-    .min(1, "Product name required")
-    .max(200, "Product name too long")
+    .min(1, 'Product name required')
+    .max(200, 'Product name too long')
     .refine(
-      (str) => !containsXSSPatterns(str),
-      "Invalid characters in product name",
+      str => !containsXSSPatterns(str),
+      'Invalid characters in product name',
     ),
 
   // Numeric validation
   positiveNumber: z
     .number()
-    .positive("Must be a positive number")
-    .finite("Must be a finite number"),
+    .positive('Must be a positive number')
+    .finite('Must be a finite number'),
 
   // Search query validation
   searchQuery: z
     .string()
-    .min(2, "Search query too short")
-    .max(100, "Search query too long")
-    .refine((str) => !containsSQLInjection(str), "Invalid search query"),
+    .min(2, 'Search query too short')
+    .max(100, 'Search query too long')
+    .refine(str => !containsSQLInjection(str), 'Invalid search query'),
 
   // IP address validation
-  ipAddress: z.string().refine(isValidIP, "Invalid IP address"),
+  ipAddress: z.string().refine(isValidIP, 'Invalid IP address'),
 
   // User agent validation
   userAgent: z
     .string()
-    .max(512, "User agent too long")
-    .refine((str) => !isSuspiciousUserAgent(str), "Suspicious user agent"),
-} as const;
+    .max(512, 'User agent too long')
+    .refine(str => !isSuspiciousUserAgent(str), 'Suspicious user agent'),
+} as const
 
 // Request validation schemas for different endpoints
 export const RequestSchemas = {
@@ -79,7 +79,7 @@ export const RequestSchemas = {
   }),
 
   updateProduct: z.object({
-    id: z.string().uuid("Invalid product ID"),
+    id: z.string().uuid('Invalid product ID'),
     name: CommonSchemas.productName.optional(),
     quantity: CommonSchemas.positiveNumber.optional(),
     kcal: CommonSchemas.positiveNumber.optional(),
@@ -101,52 +101,53 @@ export const RequestSchemas = {
     email: CommonSchemas.email,
     password: z
       .string()
-      .min(8, "Password too short")
-      .max(128, "Password too long"),
+      .min(8, 'Password too short')
+      .max(128, 'Password too long'),
   }),
 
   signUp: z.object({
     email: CommonSchemas.email,
     password: z
       .string()
-      .min(8, "Password must be at least 8 characters")
-      .max(128, "Password too long")
-      .refine(isStrongPassword, "Password not strong enough"),
+      .min(8, 'Password must be at least 8 characters')
+      .max(128, 'Password too long')
+      .refine(isStrongPassword, 'Password not strong enough'),
   }),
 
   passwordReset: z.object({
     email: CommonSchemas.email,
   }),
-} as const;
+} as const
 
 // Validation helper functions
 function isValidEAN13(barcode: string): boolean {
-  if (!/^\d{13}$/.test(barcode)) return false;
+  if (!/^\d{13}$/.test(barcode))
+    return false
 
-  const digits = barcode.split("").map(Number);
-  const checksum = digits.pop()!;
+  const digits = barcode.split('').map(Number)
+  const checksum = digits.pop()!
 
-  let sum = 0;
+  let sum = 0
   for (let i = 0; i < 12; i++) {
-    sum += digits[i] * (i % 2 === 0 ? 1 : 3);
+    sum += digits[i] * (i % 2 === 0 ? 1 : 3)
   }
 
-  const calculatedChecksum = (10 - (sum % 10)) % 10;
-  return calculatedChecksum === checksum;
+  const calculatedChecksum = (10 - (sum % 10)) % 10
+  return calculatedChecksum === checksum
 }
 
 function isDisposableEmail(email: string): boolean {
   const disposableDomains = [
-    "10minutemail.com",
-    "tempmail.org",
-    "guerrillamail.com",
-    "mailinator.com",
-    "throwaway.email",
+    '10minutemail.com',
+    'tempmail.org',
+    'guerrillamail.com',
+    'mailinator.com',
+    'throwaway.email',
     // Add more disposable email domains as needed
-  ];
+  ]
 
-  const domain = email.split("@")[1]?.toLowerCase();
-  return disposableDomains.includes(domain);
+  const domain = email.split('@')[1]?.toLowerCase()
+  return disposableDomains.includes(domain)
 }
 
 function containsXSSPatterns(str: string): boolean {
@@ -162,9 +163,9 @@ function containsXSSPatterns(str: string): boolean {
     /expression\s*\(/gi,
     /vbscript:/gi,
     /data:text\/html/gi,
-  ];
+  ]
 
-  return xssPatterns.some((pattern) => pattern.test(str));
+  return xssPatterns.some(pattern => pattern.test(str))
 }
 
 function containsSQLInjection(str: string): boolean {
@@ -174,20 +175,20 @@ function containsSQLInjection(str: string): boolean {
     /(;\s*--)/g,
     /('\s*(OR|AND)\s*')/gi,
     /(\bUNION\s+SELECT\b)/gi,
-  ];
+  ]
 
-  return sqlPatterns.some((pattern) => pattern.test(str));
+  return sqlPatterns.some(pattern => pattern.test(str))
 }
 
 function isValidIP(ip: string): boolean {
   // Simple IPv4 validation
-  const ipv4Regex =
-    /^(?:(?:25[0-5]|2[0-4]\d|[01]?\d{1,2})\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d{1,2})$/;
+  const ipv4Regex
+    = /^(?:(?:25[0-5]|2[0-4]\d|[01]?\d{1,2})\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d{1,2})$/
 
   // Simple IPv6 validation (basic)
-  const ipv6Regex = /^(?:[0-9a-f]{1,4}:){7}[0-9a-f]{1,4}$/i;
+  const ipv6Regex = /^(?:[0-9a-f]{1,4}:){7}[0-9a-f]{1,4}$/i
 
-  return ipv4Regex.test(ip) || ipv6Regex.test(ip) || ip === "unknown";
+  return ipv4Regex.test(ip) || ipv6Regex.test(ip) || ip === 'unknown'
 }
 
 function isSuspiciousUserAgent(userAgent: string): boolean {
@@ -206,36 +207,36 @@ function isSuspiciousUserAgent(userAgent: string): boolean {
     /hack/i,
     /exploit/i,
     /injection/i,
-  ];
+  ]
 
-  return suspiciousPatterns.some((pattern) => pattern.test(userAgent));
+  return suspiciousPatterns.some(pattern => pattern.test(userAgent))
 }
 
 function isStrongPassword(password: string): boolean {
   // At least 8 characters, one uppercase, one lowercase, one number
-  const strongPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
-  return strongPasswordRegex.test(password);
+  const strongPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/
+  return strongPasswordRegex.test(password)
 }
 
 // Request sanitization functions
 export function sanitizeString(input: string): string {
   return input
     .trim()
-    .replaceAll(/[<>]/g, "") // Remove angle brackets
-    .replaceAll(/javascript:/gi, "") // Remove javascript: protocol
-    .replaceAll(/on\w+\s*=/gi, "") // Remove event handlers
-    .slice(0, 1000); // Limit length
+    .replaceAll(/[<>]/g, '') // Remove angle brackets
+    .replaceAll(/javascript:/gi, '') // Remove javascript: protocol
+    .replaceAll(/on\w+\s*=/gi, '') // Remove event handlers
+    .slice(0, 1000) // Limit length
 }
 
 export function sanitizeEmail(email: string): string {
-  return email.toLowerCase().trim();
+  return email.toLowerCase().trim()
 }
 
 export function sanitizeSearchQuery(query: string): string {
   return query
     .trim()
-    .replaceAll(/[^\w\s-]/g, "") // Keep only alphanumeric, spaces, and hyphens
-    .slice(0, 100);
+    .replaceAll(/[^\w\s-]/g, '') // Keep only alphanumeric, spaces, and hyphens
+    .slice(0, 100)
 }
 
 // Request validation middleware
@@ -243,115 +244,117 @@ export async function validateRequest<T>(
   request: NextRequest,
   schema: z.ZodSchema<T>,
   options: {
-    source?: "body" | "query" | "params";
-    sanitize?: boolean;
+    source?: 'body' | 'query' | 'params'
+    sanitize?: boolean
   } = {},
-): Promise<{ success: true; data: T } | { success: false; error: string }> {
-  const { source = "body", sanitize = true } = options;
+): Promise<{ success: true, data: T } | { success: false, error: string }> {
+  const { source = 'body', sanitize = true } = options
 
   try {
-    let data: any;
+    let data: any
 
     switch (source) {
-      case "body":
+      case 'body':
         try {
-          data = await request.json();
-        } catch {
+          data = await request.json()
+        }
+        catch {
           return {
             success: false,
-            error: "Invalid JSON in request body",
-          };
+            error: 'Invalid JSON in request body',
+          }
         }
-        break;
+        break
 
-      case "query": {
-        const url = new URL(request.url);
-        data = Object.fromEntries(url.searchParams.entries());
+      case 'query': {
+        const url = new URL(request.url)
+        data = Object.fromEntries(url.searchParams.entries())
         // Konvertiere numerische Query-Parameter
         if (data.limit !== undefined) {
-          const parsed = Number(data.limit);
-          data.limit = Number.isNaN(parsed) ? data.limit : parsed;
+          const parsed = Number(data.limit)
+          data.limit = Number.isNaN(parsed) ? data.limit : parsed
         }
-        break;
+        break
       }
 
-      case "params":
+      case 'params':
         // For params, we'd need to pass them separately
         return {
           success: false,
-          error: "Params validation not implemented in this context",
-        };
+          error: 'Params validation not implemented in this context',
+        }
     }
 
     // Sanitize strings if requested
     if (sanitize) {
-      data = sanitizeObject(data);
+      data = sanitizeObject(data)
     }
 
     // Validate with schema
-    const result = schema.safeParse(data);
+    const result = schema.safeParse(data)
 
     if (!result.success) {
       const errorMessage = result.error.issues
-        .map((err) => `${err.path.join(".")}: ${err.message}`)
-        .join(", ");
+        .map(err => `${err.path.join('.')}: ${err.message}`)
+        .join(', ')
 
-      return { success: false, error: errorMessage };
+      return { success: false, error: errorMessage }
     }
 
-    return { success: true, data: result.data };
-  } catch (error) {
+    return { success: true, data: result.data }
+  }
+  catch (error) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Validation failed",
-    };
+      error: error instanceof Error ? error.message : 'Validation failed',
+    }
   }
 }
 
 // Recursive object sanitization
 function sanitizeObject(obj: any): any {
-  if (typeof obj === "string") {
-    return sanitizeString(obj);
+  if (typeof obj === 'string') {
+    return sanitizeString(obj)
   }
 
   if (Array.isArray(obj)) {
-    return obj.map(sanitizeObject);
+    return obj.map(sanitizeObject)
   }
 
-  if (obj && typeof obj === "object") {
-    const sanitized: any = {};
+  if (obj && typeof obj === 'object') {
+    const sanitized: any = {}
     for (const [key, value] of Object.entries(obj)) {
-      sanitized[key] = sanitizeObject(value);
+      sanitized[key] = sanitizeObject(value)
     }
-    return sanitized;
+    return sanitized
   }
 
-  return obj;
+  return obj
 }
 
 // Security headers for responses
 export function getSecurityHeaders(): Headers {
-  const headers = new Headers();
+  const headers = new Headers()
 
   // XSS Protection
-  headers.set("X-XSS-Protection", "1; mode=block");
+  headers.set('X-XSS-Protection', '1; mode=block')
 
   // Content Type Options
-  headers.set("X-Content-Type-Options", "nosniff");
+  headers.set('X-Content-Type-Options', 'nosniff')
 
   // Frame Options
-  headers.set("X-Frame-Options", "DENY");
+  headers.set('X-Frame-Options', 'DENY')
 
   // Referrer Policy
-  headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
+  headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
 
   // Content Security Policy (basic)
   headers.set(
-    "Content-Security-Policy",
-    "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'",
-  );
+    'Content-Security-Policy',
+    'default-src \'self\'; script-src \'self\' \'unsafe-inline\'; style-src \'self\' \'unsafe-inline\'',
+  )
 
-  return headers;
+  return headers
 }
 
 // Request size validation
@@ -359,20 +362,21 @@ export function validateRequestSize(
   request: NextRequest,
   maxSize: number = 1024 * 1024,
 ): boolean {
-  const contentLength = request.headers.get("content-length");
+  const contentLength = request.headers.get('content-length')
   if (contentLength && Number.parseInt(contentLength, 10) > maxSize) {
-    return false;
+    return false
   }
-  return true;
+  return true
 }
 
 // Content type validation
 export function validateContentType(
   request: NextRequest,
-  allowedTypes: string[] = ["application/json"],
+  allowedTypes: string[] = ['application/json'],
 ): boolean {
-  const contentType = request.headers.get("content-type");
-  if (!contentType) return true; // Allow requests without content-type for GET requests
+  const contentType = request.headers.get('content-type')
+  if (!contentType)
+    return true // Allow requests without content-type for GET requests
 
-  return allowedTypes.some((type) => contentType.includes(type));
+  return allowedTypes.some(type => contentType.includes(type))
 }

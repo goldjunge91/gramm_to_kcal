@@ -15,19 +15,19 @@ const nextConfig: NextConfig = env.FORCE_BUILD
         ignoreDuringBuilds: true,
       },
     }
-  : baseConfig;
+  : baseConfig
 ```
 
 **Erklärung Schritt für Schritt:**
 
-1. **Bedingung:**  
-   `env.FORCE_BUILD`  
+1. **Bedingung:**
+   `env.FORCE_BUILD`
    Das ist die Bedingung, die geprüft wird. Sie sollte ein boolean (true/false) sein.
 
-2. **? (Fragezeichen):**  
+2. **? (Fragezeichen):**
    Wenn die Bedingung **wahr** ist (`true`), wird der Wert **nach dem Fragezeichen** genommen.
 
-3. **: (Doppelpunkt):**  
+3. **: (Doppelpunkt):**
    Wenn die Bedingung **falsch** ist (`false`), wird der Wert **nach dem Doppelpunkt** genommen.
 
 **In deinem Beispiel:**
@@ -41,20 +41,21 @@ const nextConfig: NextConfig = env.FORCE_BUILD
 **Vergleich mit if/else:**
 
 ```typescript
-let nextConfig: NextConfig;
+let nextConfig: NextConfig
 if (env.FORCE_BUILD) {
   nextConfig = {
     ...baseConfig,
     typescript: { ignoreBuildErrors: true },
     eslint: { ignoreDuringBuilds: true },
-  };
-} else {
-  nextConfig = baseConfig;
+  }
+}
+else {
+  nextConfig = baseConfig
 }
 ```
 
-**Tipp:**  
+**Tipp:**
 Der ternäre Operator ist praktisch für kurze, einfache Bedingungen. Bei komplexeren Logiken ist ein normales `if/else` oft besser lesbar.
 
-**Gotcha:**  
+**Gotcha:**
 Achte darauf, dass `env.FORCE_BUILD` wirklich ein boolean ist. Wenn es z.B. ein String wie `"true"` ist, kann es zu unerwartetem Verhalten kommen.

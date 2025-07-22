@@ -1,37 +1,39 @@
-"use client";
+'use client'
+
+import type { DragEndEvent } from '@dnd-kit/core'
+import type { Cell, ColumnDef, Header, SortingState } from '@tanstack/react-table'
+import type { CSSProperties } from 'react'
 
 import {
   closestCenter,
   DndContext,
+
   KeyboardSensor,
   MouseSensor,
   TouchSensor,
   useSensor,
   useSensors,
-  type DragEndEvent,
-} from "@dnd-kit/core";
-import { restrictToHorizontalAxis } from "@dnd-kit/modifiers";
+} from '@dnd-kit/core'
+import { restrictToHorizontalAxis } from '@dnd-kit/modifiers'
 import {
   arrayMove,
   horizontalListSortingStrategy,
   SortableContext,
   useSortable,
-} from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
+} from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
 import {
+
   flexRender,
   getCoreRowModel,
   getSortedRowModel,
-  useReactTable,
-  type Cell,
-  type ColumnDef,
-  type Header,
-  type SortingState,
-} from "@tanstack/react-table";
-import { ChevronDownIcon, ChevronUpIcon, GripVerticalIcon } from "lucide-react";
-import { useEffect, useId, useState, type CSSProperties } from "react";
 
-import { Button } from "@/components/ui/button";
+  useReactTable,
+} from '@tanstack/react-table'
+import { ChevronDownIcon, ChevronUpIcon, GripVerticalIcon } from 'lucide-react'
+import { useEffect, useId, useState } from 'react'
+
+import { Button } from '@/components/ui/button'
 import {
   Table,
   TableBody,
@@ -39,87 +41,88 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from '@/components/ui/table'
 
-type Item = {
-  id: string;
-  name: string;
-  email: string;
-  location: string;
-  flag: string;
-  status: "Active" | "Inactive" | "Pending";
-  balance: number;
-};
+interface Item {
+  id: string
+  name: string
+  email: string
+  location: string
+  flag: string
+  status: 'Active' | 'Inactive' | 'Pending'
+  balance: number
+}
 
 const columns: ColumnDef<Item>[] = [
   {
-    id: "name",
-    header: "Name",
-    accessorKey: "name",
+    id: 'name',
+    header: 'Name',
+    accessorKey: 'name',
     cell: ({ row }) => (
-      <div className="truncate font-medium">{row.getValue("name")}</div>
+      <div className="truncate font-medium">{row.getValue('name')}</div>
     ),
-    sortUndefined: "last",
+    sortUndefined: 'last',
     sortDescFirst: false,
   },
   {
-    id: "email",
-    header: "Email",
-    accessorKey: "email",
+    id: 'email',
+    header: 'Email',
+    accessorKey: 'email',
   },
   {
-    id: "location",
-    header: "Location",
-    accessorKey: "location",
+    id: 'location',
+    header: 'Location',
+    accessorKey: 'location',
     cell: ({ row }) => (
       <div className="truncate">
-        <span className="text-lg leading-none">{row.original.flag}</span>{" "}
-        {row.getValue("location")}
+        <span className="text-lg leading-none">{row.original.flag}</span>
+        {' '}
+        {row.getValue('location')}
       </div>
     ),
   },
   {
-    id: "status",
-    header: "Status",
-    accessorKey: "status",
+    id: 'status',
+    header: 'Status',
+    accessorKey: 'status',
   },
   {
-    id: "balance",
-    header: "Balance",
-    accessorKey: "balance",
+    id: 'balance',
+    header: 'Balance',
+    accessorKey: 'balance',
     cell: ({ row }) => {
-      const amount = Number.parseFloat(row.getValue("balance"));
-      const formatted = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-      }).format(amount);
-      return formatted;
+      const amount = Number.parseFloat(row.getValue('balance'))
+      const formatted = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+      }).format(amount)
+      return formatted
     },
   },
-];
+]
 
 export default function Component() {
-  const [data, setData] = useState<Item[]>([]);
-  const [sorting, setSorting] = useState<SortingState>([]);
+  const [data, setData] = useState<Item[]>([])
+  const [sorting, setSorting] = useState<SortingState>([])
   const [columnOrder, setColumnOrder] = useState<string[]>(
-    columns.map((column) => column.id as string),
-  );
+    columns.map(column => column.id as string),
+  )
 
   useEffect(() => {
     async function fetchPosts() {
       const res = await fetch(
-        "https://raw.githubusercontent.com/origin-space/origin-images/refs/heads/main/users-01_fertyx.json",
-      );
-      const data = await res.json();
-      setData(data.slice(0, 5)); // Limit to 5 items
+        'https://raw.githubusercontent.com/origin-space/origin-images/refs/heads/main/users-01_fertyx.json',
+      )
+      const data = await res.json()
+      setData(data.slice(0, 5)) // Limit to 5 items
     }
-    fetchPosts();
-  }, []);
+    fetchPosts()
+  }, [])
 
   const table = useReactTable({
     data,
     columns,
-    columnResizeMode: "onChange",
+    columnResizeMode: 'onChange',
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     onSortingChange: setSorting,
@@ -129,17 +132,17 @@ export default function Component() {
     },
     onColumnOrderChange: setColumnOrder,
     enableSortingRemoval: false,
-  });
+  })
 
   // reorder columns after drag & drop
   function handleDragEnd(event: DragEndEvent) {
-    const { active, over } = event;
+    const { active, over } = event
     if (active && over && active.id !== over.id) {
       setColumnOrder((columnOrder) => {
-        const oldIndex = columnOrder.indexOf(active.id as string);
-        const newIndex = columnOrder.indexOf(over.id as string);
-        return arrayMove(columnOrder, oldIndex, newIndex); //this is just a splice util
-      });
+        const oldIndex = columnOrder.indexOf(active.id as string)
+        const newIndex = columnOrder.indexOf(over.id as string)
+        return arrayMove(columnOrder, oldIndex, newIndex) // this is just a splice util
+      })
     }
   }
 
@@ -147,7 +150,7 @@ export default function Component() {
     useSensor(MouseSensor, {}),
     useSensor(TouchSensor, {}),
     useSensor(KeyboardSensor, {}),
-  );
+  )
 
   return (
     <DndContext
@@ -159,13 +162,13 @@ export default function Component() {
     >
       <Table>
         <TableHeader>
-          {table.getHeaderGroups().map((headerGroup) => (
+          {table.getHeaderGroups().map(headerGroup => (
             <TableRow key={headerGroup.id} className="bg-muted/50">
               <SortableContext
                 items={columnOrder}
                 strategy={horizontalListSortingStrategy}
               >
-                {headerGroup.headers.map((header) => (
+                {headerGroup.headers.map(header => (
                   <DraggableTableHeader key={header.id} header={header} />
                 ))}
               </SortableContext>
@@ -173,34 +176,37 @@ export default function Component() {
           ))}
         </TableHeader>
         <TableBody>
-          {table.getRowModel().rows?.length ? (
-            table.getRowModel().rows.map((row) => (
-              <TableRow
-                key={row.id}
-                data-state={row.getIsSelected() && "selected"}
-              >
-                {row.getVisibleCells().map((cell) => (
-                  <SortableContext
-                    key={cell.id}
-                    items={columnOrder}
-                    strategy={horizontalListSortingStrategy}
+          {table.getRowModel().rows?.length
+            ? (
+                table.getRowModel().rows.map(row => (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && 'selected'}
                   >
-                    <DragAlongCell key={cell.id} cell={cell} />
-                  </SortableContext>
-                ))}
-              </TableRow>
-            ))
-          ) : (
-            <TableRow>
-              <TableCell colSpan={columns.length} className="h-24 text-center">
-                No results.
-              </TableCell>
-            </TableRow>
-          )}
+                    {row.getVisibleCells().map(cell => (
+                      <SortableContext
+                        key={cell.id}
+                        items={columnOrder}
+                        strategy={horizontalListSortingStrategy}
+                      >
+                        <DragAlongCell key={cell.id} cell={cell} />
+                      </SortableContext>
+                    ))}
+                  </TableRow>
+                ))
+              )
+            : (
+                <TableRow>
+                  <TableCell colSpan={columns.length} className="h-24 text-center">
+                    No results.
+                  </TableCell>
+                </TableRow>
+              )}
         </TableBody>
       </Table>
       <p className="text-muted-foreground mt-4 text-center text-sm">
-        Draggable columns made with{" "}
+        Draggable columns made with
+        {' '}
         <a
           className="hover:text-foreground underline"
           href="https://tanstack.com/table"
@@ -208,21 +214,23 @@ export default function Component() {
           rel="noopener noreferrer"
         >
           TanStack Table
-        </a>{" "}
-        and{" "}
+        </a>
+        {' '}
+        and
+        {' '}
         <a href="https://dndkit.com/" target="_blank" rel="noopener noreferrer">
           dnd kit
         </a>
       </p>
     </DndContext>
-  );
+  )
 }
 
-const DraggableTableHeader = ({
+function DraggableTableHeader({
   header,
 }: {
-  header: Header<Item, unknown>;
-}) => {
+  header: Header<Item, unknown>
+}) {
   const {
     attributes,
     isDragging,
@@ -232,17 +240,17 @@ const DraggableTableHeader = ({
     transition,
   } = useSortable({
     id: header.column.id,
-  });
+  })
 
   const style: CSSProperties = {
     opacity: isDragging ? 0.8 : 1,
-    position: "relative",
+    position: 'relative',
     transform: CSS.Translate.toString(transform),
     transition,
-    whiteSpace: "nowrap",
+    whiteSpace: 'nowrap',
     width: header.column.getSize(),
     zIndex: isDragging ? 1 : 0,
-  };
+  }
 
   return (
     <TableHead
@@ -250,11 +258,11 @@ const DraggableTableHeader = ({
       className="before:bg-border relative h-10 border-t before:absolute before:inset-y-0 before:start-0 before:w-px first:before:bg-transparent"
       style={style}
       aria-sort={
-        header.column.getIsSorted() === "asc"
-          ? "ascending"
-          : header.column.getIsSorted() === "desc"
-            ? "descending"
-            : "none"
+        header.column.getIsSorted() === 'asc'
+          ? 'ascending'
+          : header.column.getIsSorted() === 'desc'
+            ? 'descending'
+            : 'none'
       }
     >
       <div className="flex items-center justify-start gap-0.5">
@@ -285,11 +293,11 @@ const DraggableTableHeader = ({
           onKeyDown={(e) => {
             // Enhanced keyboard handling for sorting
             if (
-              header.column.getCanSort() &&
-              (e.key === "Enter" || e.key === " ")
+              header.column.getCanSort()
+              && (e.key === 'Enter' || e.key === ' ')
             ) {
-              e.preventDefault();
-              header.column.getToggleSortingHandler()?.(e);
+              e.preventDefault()
+              header.column.getToggleSortingHandler()?.(e)
             }
           }}
         >
@@ -318,26 +326,26 @@ const DraggableTableHeader = ({
         </Button>
       </div>
     </TableHead>
-  );
-};
+  )
+}
 
-const DragAlongCell = ({ cell }: { cell: Cell<Item, unknown> }) => {
+function DragAlongCell({ cell }: { cell: Cell<Item, unknown> }) {
   const { isDragging, setNodeRef, transform, transition } = useSortable({
     id: cell.column.id,
-  });
+  })
 
   const style: CSSProperties = {
     opacity: isDragging ? 0.8 : 1,
-    position: "relative",
+    position: 'relative',
     transform: CSS.Translate.toString(transform),
     transition,
     width: cell.column.getSize(),
     zIndex: isDragging ? 1 : 0,
-  };
+  }
 
   return (
     <TableCell ref={setNodeRef} className="truncate" style={style}>
       {flexRender(cell.column.columnDef.cell, cell.getContext())}
     </TableCell>
-  );
-};
+  )
+}

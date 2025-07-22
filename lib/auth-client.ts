@@ -1,10 +1,10 @@
-import { createAuthClient } from "better-auth/react";
+import { createAuthClient } from 'better-auth/react'
 
-import { env } from "./env";
+import { env } from './env'
 
 export const authClient = createAuthClient({
-  baseURL: `${env.NEXT_PUBLIC_URL  }/api/auth`,
-});
+  baseURL: `${env.NEXT_PUBLIC_URL}/api/auth`,
+})
 
 export const {
   signIn,
@@ -12,4 +12,4 @@ export const {
   signOut,
   useSession,
   getSession,
-} = authClient;
+} = authClient

@@ -4,24 +4,25 @@
  * Implements the recommended 30 req/min for products and 10 req/s for search
  */
 
-import type { Product } from "@/lib/types/types";
+import type { Product } from '@/lib/types/types'
 
-import { getRedis } from "@/lib/redis";
+import { getRedis } from '@/lib/redis'
 
-import { circuitBreakers } from "../circuit-breaker";
+import { circuitBreakers } from '../circuit-breaker'
 import {
   isValidEAN13,
   lookupProductByBarcode,
   searchProductsByName,
-} from "./product-lookup";
-type RedisPipelineResult = [unknown, unknown][];
+} from './product-lookup'
+
+type RedisPipelineResult = [unknown, unknown][]
 
 // Cache configuration
 const CACHE_CONFIG = {
   PRODUCT_TTL: 24 * 60 * 60, // 24 hours for product data
   SEARCH_TTL: 1 * 60 * 60, // 1 hour for search results
   FAILURE_TTL: 5 * 60, // 5 minutes for failed lookups
-} as const;
+} as const
 
 // Rate limiting configuration (aligned with OpenFoodFacts recommendations)
 const RATE_LIMITS = {
@@ -33,17 +34,17 @@ const RATE_LIMITS = {
     requests: 10,
     window: 1, // 10 requests per second
   },
-} as const;
+} as const
 
 interface RateLimitInfo {
-  remaining: number;
-  resetTime: number;
-  blocked: boolean;
+  remaining: number
+  resetTime: number
+  blocked: boolean
 }
 
 // Rate limiter for OpenFoodFacts API
 class OpenFoodFactsRateLimiter {
-  private redis = getRedis();
+  private redis = getRedis()
 
   private async checkRateLimit(
     key: string,
@@ -52,93 +53,96 @@ class OpenFoodFactsRateLimiter {
   ): Promise<RateLimitInfo> {
     if (!this.redis) {
       // No Redis - allow all requests but log warning
-      console.warn("Rate limiting unavailable - Redis not configured");
+      console.warn('Rate limiting unavailable - Redis not configured')
       return {
         remaining: limit,
         resetTime: Date.now() + windowSeconds * 1000,
         blocked: false,
-      };
+      }
     }
 
     try {
-      const pipeline = this.redis.pipeline();
-      pipeline.incr(key);
-      pipeline.expire(key, windowSeconds);
-      const results = (await pipeline.exec()) as RedisPipelineResult;
+      const pipeline = this.redis.pipeline()
+      pipeline.incr(key)
+      pipeline.expire(key, windowSeconds)
+      const results = (await pipeline.exec()) as RedisPipelineResult
 
-      let currentCount = 0;
+      let currentCount = 0
       if (
-        Array.isArray(results) &&
-        Array.isArray(results[0]) &&
-        typeof results[0][1] === "number"
+        Array.isArray(results)
+        && Array.isArray(results[0])
+        && typeof results[0][1] === 'number'
       ) {
-        currentCount = results[0][1] as number;
+        currentCount = results[0][1] as number
       }
-      const remaining = Math.max(0, limit - currentCount);
-      const resetTime = Date.now() + windowSeconds * 1000;
+      const remaining = Math.max(0, limit - currentCount)
+      const resetTime = Date.now() + windowSeconds * 1000
 
       return {
         remaining,
         resetTime,
         blocked: currentCount > limit,
-      };
-    } catch (error) {
-      console.error("Rate limit check failed:", error);
+      }
+    }
+    catch (error) {
+      console.error('Rate limit check failed:', error)
       // Fail open
       return {
         remaining: limit,
         resetTime: Date.now() + windowSeconds * 1000,
         blocked: false,
-      };
+      }
     }
   }
 
   async checkProductLookup(clientIP: string): Promise<RateLimitInfo> {
-    const key = `openfoodfacts:product:${clientIP}`;
+    const key = `openfoodfacts:product:${clientIP}`
     return await this.checkRateLimit(
       key,
       RATE_LIMITS.PRODUCT_LOOKUP.requests,
       RATE_LIMITS.PRODUCT_LOOKUP.window,
-    );
+    )
   }
 
   async checkSearch(clientIP: string): Promise<RateLimitInfo> {
-    const key = `openfoodfacts:search:${clientIP}`;
+    const key = `openfoodfacts:search:${clientIP}`
     return await this.checkRateLimit(
       key,
       RATE_LIMITS.SEARCH.requests,
       RATE_LIMITS.SEARCH.window,
-    );
+    )
   }
 }
 
 // Cache manager for products
 class ProductCacheManager {
-  private redis = getRedis();
+  private redis = getRedis()
 
-  private getCacheKey(type: "product" | "search", identifier: string): string {
-    return `openfoodfacts:${type}:${identifier}`;
+  private getCacheKey(type: 'product' | 'search', identifier: string): string {
+    return `openfoodfacts:${type}:${identifier}`
   }
 
   async getProduct(barcode: string): Promise<any | null> {
-    if (!this.redis) return null;
+    if (!this.redis)
+      return null
 
     try {
-      const key = this.getCacheKey("product", barcode);
-      const cached = await this.redis.get(key);
+      const key = this.getCacheKey('product', barcode)
+      const cached = await this.redis.get(key)
 
-      if (typeof cached === "string") {
-        const parsed = JSON.parse(cached);
+      if (typeof cached === 'string') {
+        const parsed = JSON.parse(cached)
         return {
           ...parsed,
-          source: "cache",
-        };
+          source: 'cache',
+        }
       }
-    } catch (error) {
-      console.error("Cache read error:", error);
+    }
+    catch (error) {
+      console.error('Cache read error:', error)
     }
 
-    return null;
+    return null
   }
 
   async setProduct(
@@ -146,13 +150,14 @@ class ProductCacheManager {
     data: any,
     isFailure = false,
   ): Promise<void> {
-    if (!this.redis) return;
+    if (!this.redis)
+      return
 
     try {
-      const key = this.getCacheKey("product", barcode);
+      const key = this.getCacheKey('product', barcode)
       const ttl = isFailure
         ? CACHE_CONFIG.FAILURE_TTL
-        : CACHE_CONFIG.PRODUCT_TTL;
+        : CACHE_CONFIG.PRODUCT_TTL
 
       await this.redis.setex(
         key,
@@ -162,63 +167,69 @@ class ProductCacheManager {
           cached_at: Date.now(),
           is_failure: isFailure,
         }),
-      );
-    } catch (error) {
-      console.error("Cache write error:", error);
+      )
+    }
+    catch (error) {
+      console.error('Cache write error:', error)
     }
   }
 
   async getSearchResults(query: string): Promise<any[] | null> {
-    if (!this.redis) return null;
+    if (!this.redis)
+      return null
 
     try {
-      const key = this.getCacheKey("search", query.toLowerCase().trim());
-      const cached = await this.redis.get(key);
+      const key = this.getCacheKey('search', query.toLowerCase().trim())
+      const cached = await this.redis.get(key)
 
-      if (typeof cached === "string") {
-        const parsed = JSON.parse(cached);
+      if (typeof cached === 'string') {
+        const parsed = JSON.parse(cached)
         return parsed.map((item: any) => ({
           ...item,
-          source: "cache",
-        }));
+          source: 'cache',
+        }))
       }
-    } catch (error) {
-      console.error("Search cache read error:", error);
+    }
+    catch (error) {
+      console.error('Search cache read error:', error)
     }
 
-    return null;
+    return null
   }
 
   async setSearchResults(query: string, data: any[]): Promise<void> {
-    if (!this.redis) return;
+    if (!this.redis)
+      return
 
     try {
-      const key = this.getCacheKey("search", query.toLowerCase().trim());
+      const key = this.getCacheKey('search', query.toLowerCase().trim())
       await this.redis.setex(
         key,
         CACHE_CONFIG.SEARCH_TTL,
         JSON.stringify(data),
-      );
-    } catch (error) {
-      console.error("Search cache write error:", error);
+      )
+    }
+    catch (error) {
+      console.error('Search cache write error:', error)
     }
   }
 }
 
 // Initialize instances
-const rateLimiter = new OpenFoodFactsRateLimiter();
-const cacheManager = new ProductCacheManager();
+const rateLimiter = new OpenFoodFactsRateLimiter()
+const cacheManager = new ProductCacheManager()
 
 // Helper to get client IP from request
 function getClientIP(request?: Request): string {
-  if (!request) return "unknown";
+  if (!request)
+    return 'unknown'
 
-  const forwardedFor = request.headers.get("x-forwarded-for");
+  const forwardedFor = request.headers.get('x-forwarded-for')
   if (forwardedFor) {
-    return forwardedFor.split(",")[0].trim();
+    return forwardedFor.split(',')[0].trim()
   }
 
-  return request.headers.get("x-real-ip") || "unknown";
+  return request.headers.get('x-real-ip') || 'unknown'
 }
 
 // Enhanced product lookup with caching and rate limiting
@@ -226,103 +237,103 @@ export async function cachedLookupProductByBarcode(
   barcode: string,
   request?: Request,
 ): Promise<{
-  success: boolean;
-  product?: Omit<Product, "id">;
-  error?: string;
-  source?: "cache" | "api" | "openfoodfacts";
-  rateLimit?: RateLimitInfo;
-  cached?: boolean;
+  success: boolean
+  product?: Omit<Product, 'id'>
+  error?: string
+  source?: 'cache' | 'api' | 'openfoodfacts'
+  rateLimit?: RateLimitInfo
+  cached?: boolean
   circuitBreaker?: {
-    state: string;
-    metrics: any;
-  };
+    state: string
+    metrics: any
+  }
 }> {
   // Validate barcode first
   if (!barcode || !isValidEAN13(barcode)) {
     return {
       success: false,
-      error: "Invalid barcode format",
-    };
+      error: 'Invalid barcode format',
+    }
   }
 
-  const clientIP = getClientIP(request);
+  const clientIP = getClientIP(request)
 
   // Check rate limit
-  const rateLimitInfo = await rateLimiter.checkProductLookup(clientIP);
+  const rateLimitInfo = await rateLimiter.checkProductLookup(clientIP)
 
   if (rateLimitInfo.blocked) {
     return {
       success: false,
-      error: "Rate limit exceeded. Please try again later.",
+      error: 'Rate limit exceeded. Please try again later.',
       rateLimit: rateLimitInfo,
-    };
+    }
   }
 
   // Check cache first
-  const cached = await cacheManager.getProduct(barcode);
+  const cached = await cacheManager.getProduct(barcode)
   if (cached) {
     if (cached.is_failure) {
       return {
         success: false,
-        error: cached.error || "Product not found (cached)",
-        source: "cache",
+        error: cached.error || 'Product not found (cached)',
+        source: 'cache',
         cached: true,
         rateLimit: rateLimitInfo,
-      };
+      }
     }
 
     return {
       success: true,
       product: cached.product,
-      source: "cache",
+      source: 'cache',
       cached: true,
       rateLimit: rateLimitInfo,
-    };
+    }
   }
 
   // Fetch from API with circuit breaker protection
   const circuitResult = await circuitBreakers.openFoodFacts.execute(
     async () => {
-      return await lookupProductByBarcode(barcode);
+      return await lookupProductByBarcode(barcode)
     },
-  );
+  )
 
   if (!circuitResult.success) {
     // Circuit breaker failed - cache the failure and return error
     const errorResult = {
       success: false,
-      error: circuitResult.error || "Service temporarily unavailable",
-    };
+      error: circuitResult.error || 'Service temporarily unavailable',
+    }
 
-    await cacheManager.setProduct(barcode, errorResult, true);
+    await cacheManager.setProduct(barcode, errorResult, true)
 
     return {
       ...errorResult,
-      source: "api",
+      source: 'api',
       cached: false,
       rateLimit: rateLimitInfo,
       circuitBreaker: {
         state: circuitResult.state,
         metrics: circuitResult.metrics,
       },
-    };
+    }
   }
 
-  const result = circuitResult.data!;
+  const result = circuitResult.data!
 
   // Cache the result (success or failure)
-  await cacheManager.setProduct(barcode, result, !result.success);
+  await cacheManager.setProduct(barcode, result, !result.success)
 
   return {
     ...result,
-    source: "api",
+    source: 'api',
     cached: false,
     rateLimit: rateLimitInfo,
     circuitBreaker: {
       state: circuitResult.state,
       metrics: circuitResult.metrics,
     },
-  };
+  }
 }
 
 // Enhanced search with caching and rate limiting
@@ -331,57 +342,57 @@ export async function cachedSearchProductsByName(
   limit = 5,
   request?: Request,
 ): Promise<{
-  success: boolean;
-  products: any[];
-  source?: "cache" | "api";
-  rateLimit?: RateLimitInfo;
-  cached?: boolean;
+  success: boolean
+  products: any[]
+  source?: 'cache' | 'api'
+  rateLimit?: RateLimitInfo
+  cached?: boolean
   circuitBreaker?: {
-    state: string;
-    metrics: any;
-  };
+    state: string
+    metrics: any
+  }
 }> {
   if (!query || query.trim().length < 2) {
     return {
       success: false,
       products: [],
-    };
+    }
   }
 
-  const clientIP = getClientIP(request);
+  const clientIP = getClientIP(request)
 
   // Check rate limit (stricter for search)
-  const rateLimitInfo = await rateLimiter.checkSearch(clientIP);
+  const rateLimitInfo = await rateLimiter.checkSearch(clientIP)
 
   if (rateLimitInfo.blocked) {
     return {
       success: false,
       products: [],
       rateLimit: rateLimitInfo,
-    };
+    }
   }
 
   // Check cache first
-  const cached = await cacheManager.getSearchResults(query);
+  const cached = await cacheManager.getSearchResults(query)
   if (cached) {
     return {
       success: true,
       products: cached,
-      source: "cache",
+      source: 'cache',
       cached: true,
       rateLimit: rateLimitInfo,
-    };
+    }
   }
 
   // Fetch from API with circuit breaker protection
   const circuitResult = await circuitBreakers.openFoodFacts.execute(
     async () => {
-      return await searchProductsByName(query, limit);
+      return await searchProductsByName(query, limit)
     },
-  );
+  )
 
   if (!circuitResult.success) {
-    console.error("Search API error:", circuitResult.error);
+    console.error('Search API error:', circuitResult.error)
     return {
       success: false,
       products: [],
@@ -390,31 +401,31 @@ export async function cachedSearchProductsByName(
         state: circuitResult.state,
         metrics: circuitResult.metrics,
       },
-    };
+    }
   }
 
-  const results = circuitResult.data!;
+  const results = circuitResult.data!
 
   // Cache the results
-  await cacheManager.setSearchResults(query, results);
+  await cacheManager.setSearchResults(query, results)
 
   return {
     success: true,
     products: results,
-    source: "api",
+    source: 'api',
     cached: false,
     rateLimit: rateLimitInfo,
     circuitBreaker: {
       state: circuitResult.state,
       metrics: circuitResult.metrics,
     },
-  };
+  }
 }
 
 // Health check for OpenFoodFacts integration
 export async function getOpenFoodFactsHealth() {
-  const redis = getRedis();
-  const circuitStatus = await circuitBreakers.openFoodFacts.getStatus();
+  const redis = getRedis()
+  const circuitStatus = await circuitBreakers.openFoodFacts.getStatus()
 
   return {
     rateLimit: {
@@ -440,8 +451,8 @@ export async function getOpenFoodFactsHealth() {
       },
     },
     timestamp: new Date().toISOString(),
-  };
+  }
 }
 
 // Export circuit breaker for direct access
-export { circuitBreakers as openFoodFactsCircuitBreaker };
+export { circuitBreakers as openFoodFactsCircuitBreaker }

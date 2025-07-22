@@ -35,12 +35,12 @@ See below for examples.
 <script src="https://unpkg.com/prettier@%PRETTIER_VERSION%/standalone.js"></script>
 <script src="https://unpkg.com/prettier@%PRETTIER_VERSION%/plugins/graphql.js"></script>
 <script>
-  (async () => {
-    const formatted = await prettier.format("type Query { hello: String }", {
-      parser: "graphql",
+  ;(async () => {
+    const formatted = await prettier.format('type Query { hello: String }', {
+      parser: 'graphql',
       plugins: prettierPlugins,
-    });
-  })();
+    })
+  })()
 </script>
 ```
 
@@ -50,13 +50,13 @@ Note that the [`unpkg` field](https://unpkg.com/#examples) in Prettier’s `pack
 
 ```html
 <script type="module">
-  import * as prettier from "https://unpkg.com/prettier@%PRETTIER_VERSION%/standalone.mjs";
-  import * as prettierPluginGraphql from "https://unpkg.com/prettier@%PRETTIER_VERSION%/plugins/graphql.mjs";
+  import * as prettier from 'https://unpkg.com/prettier@%PRETTIER_VERSION%/standalone.mjs'
+  import * as prettierPluginGraphql from 'https://unpkg.com/prettier@%PRETTIER_VERSION%/plugins/graphql.mjs'
 
-  const formatted = await prettier.format("type Query { hello: String }", {
-    parser: "graphql",
+  const formatted = await prettier.format('type Query { hello: String }', {
+    parser: 'graphql',
     plugins: [prettierPluginGraphql],
-  });
+  })
 </script>
 ```
 
@@ -64,28 +64,28 @@ Note that the [`unpkg` field](https://unpkg.com/#examples) in Prettier’s `pack
 
 ```js
 define([
-  "https://unpkg.com/prettier@%PRETTIER_VERSION%/standalone.js",
-  "https://unpkg.com/prettier@%PRETTIER_VERSION%/plugins/graphql.js",
+  'https://unpkg.com/prettier@%PRETTIER_VERSION%/standalone.js',
+  'https://unpkg.com/prettier@%PRETTIER_VERSION%/plugins/graphql.js',
 ], async (prettier, ...plugins) => {
-  const formatted = await prettier.format("type Query { hello: String }", {
-    parser: "graphql",
+  const formatted = await prettier.format('type Query { hello: String }', {
+    parser: 'graphql',
     plugins,
-  });
-});
+  })
+})
 ```
 
 ### CommonJS
 
 ```js
-const prettier = require("prettier/standalone");
-const plugins = [require("prettier/plugins/graphql")];
+const prettier = require('prettier/standalone')
+const plugins = [require('prettier/plugins/graphql')];
 
 (async () => {
-  const formatted = await prettier.format("type Query { hello: String }", {
-    parser: "graphql",
+  const formatted = await prettier.format('type Query { hello: String }', {
+    parser: 'graphql',
     plugins,
-  });
-})();
+  })
+})()
 ```
 
 This syntax doesn’t necessarily work in the browser, but it can be used when bundling the code with browserify, Rollup, webpack, or another bundler.
@@ -96,13 +96,13 @@ This syntax doesn’t necessarily work in the browser, but it can be used when b
 <TabItem value="module" label="Module worker">
 
 ```js
-import * as prettier from "https://unpkg.com/prettier@%PRETTIER_VERSION%/standalone.mjs";
-import * as prettierPluginGraphql from "https://unpkg.com/prettier@%PRETTIER_VERSION%1/plugins/graphql.mjs";
+import * as prettierPluginGraphql from 'https://unpkg.com/prettier@%PRETTIER_VERSION%1/plugins/graphql.mjs'
+import * as prettier from 'https://unpkg.com/prettier@%PRETTIER_VERSION%/standalone.mjs'
 
-const formatted = await prettier.format("type Query { hello: String }", {
-  parser: "graphql",
+const formatted = await prettier.format('type Query { hello: String }', {
+  parser: 'graphql',
   plugins: [prettierPluginGraphql],
-});
+})
 ```
 
 </TabItem>
@@ -110,16 +110,16 @@ const formatted = await prettier.format("type Query { hello: String }", {
 
 ```js
 importScripts(
-  "https://unpkg.com/prettier@%PRETTIER_VERSION%/standalone.js",
-  "https://unpkg.com/prettier@%PRETTIER_VERSION%/plugins/graphql.js",
+  'https://unpkg.com/prettier@%PRETTIER_VERSION%/standalone.js',
+  'https://unpkg.com/prettier@%PRETTIER_VERSION%/plugins/graphql.js',
 );
 
 (async () => {
-  const formatted = await prettier.format("type Query { hello: String }", {
-    parser: "graphql",
+  const formatted = await prettier.format('type Query { hello: String }', {
+    parser: 'graphql',
     plugins: prettierPlugins,
-  });
-})();
+  })
+})()
 ```
 
 </TabItem>
@@ -131,16 +131,16 @@ If you want to format [embedded code](options.md#embedded-language-formatting), 
 
 ```html
 <script type="module">
-  import * as prettier from "https://unpkg.com/prettier@%PRETTIER_VERSION%/standalone.mjs";
-  import * as prettierPluginBabel from "https://unpkg.com/prettier@%PRETTIER_VERSION%/plugins/babel.mjs";
-  import * as prettierPluginEstree from "https://unpkg.com/prettier@%PRETTIER_VERSION%/plugins/estree.mjs";
+  import * as prettier from 'https://unpkg.com/prettier@%PRETTIER_VERSION%/standalone.mjs'
+  import * as prettierPluginBabel from 'https://unpkg.com/prettier@%PRETTIER_VERSION%/plugins/babel.mjs'
+  import * as prettierPluginEstree from 'https://unpkg.com/prettier@%PRETTIER_VERSION%/plugins/estree.mjs'
 
   console.log(
-    await prettier.format("const html=/* HTML */ `<DIV> </DIV>`", {
-      parser: "babel",
+    await prettier.format('const html=/* HTML */ `<DIV> </DIV>`', {
+      parser: 'babel',
       plugins: [prettierPluginBabel, prettierPluginEstree],
     }),
-  );
+  )
   // Output: const html = /* HTML */ `<DIV> </DIV>`;
 </script>
 ```
@@ -149,17 +149,17 @@ The HTML code embedded in JavaScript stays unformatted because the `html` parser
 
 ```html
 <script type="module">
-  import * as prettier from "https://unpkg.com/prettier@%PRETTIER_VERSION%/standalone.mjs";
-  import * as prettierPluginBabel from "https://unpkg.com/prettier@%PRETTIER_VERSION%/plugins/babel.mjs";
-  import * as prettierPluginEstree from "https://unpkg.com/prettier@%PRETTIER_VERSION%/plugins/estree.mjs";
-  import * as prettierPluginHtml from "https://unpkg.com/prettier@%PRETTIER_VERSION%/plugins/html.mjs";
+  import * as prettier from 'https://unpkg.com/prettier@%PRETTIER_VERSION%/standalone.mjs'
+  import * as prettierPluginBabel from 'https://unpkg.com/prettier@%PRETTIER_VERSION%/plugins/babel.mjs'
+  import * as prettierPluginEstree from 'https://unpkg.com/prettier@%PRETTIER_VERSION%/plugins/estree.mjs'
+  import * as prettierPluginHtml from 'https://unpkg.com/prettier@%PRETTIER_VERSION%/plugins/html.mjs'
 
   console.log(
-    await prettier.format("const html=/* HTML */ `<DIV> </DIV>`", {
-      parser: "babel",
+    await prettier.format('const html=/* HTML */ `<DIV> </DIV>`', {
+      parser: 'babel',
       plugins: [prettierPluginBabel, prettierPluginEstree, prettierPluginHtml],
     }),
-  );
+  )
   // Output: const html = /* HTML */ `<div></div>`;
 </script>
 ```

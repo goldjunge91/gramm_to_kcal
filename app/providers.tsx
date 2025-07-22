@@ -1,12 +1,12 @@
-"use client";
+'use client'
 
-import type { JSX, ReactNode } from "react";
+import type { JSX, ReactNode } from 'react'
 
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 
-import { ThemeProvider } from "@/components/layout/ThemeProvider";
-import { signOut, useSession } from "@/lib/auth-client";
+import { ThemeProvider } from '@/components/layout/ThemeProvider'
+import { signOut, useSession } from '@/lib/auth-client'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -15,7 +15,7 @@ const queryClient = new QueryClient({
       gcTime: 10 * 60 * 1000, // 10 minutes cache
     },
   },
-});
+})
 
 export function Providers({ children }: { children: ReactNode }): JSX.Element {
   return (
@@ -25,18 +25,18 @@ export function Providers({ children }: { children: ReactNode }): JSX.Element {
         <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
     </ThemeProvider>
-  );
+  )
 }
 
 // Better Auth version - uses Better Auth useSession directly
-export const useAuth = () => {
-  const { data: session, isPending } = useSession();
-  
+export function useAuth() {
+  const { data: session, isPending } = useSession()
+
   return {
     user: session?.user || null,
     loading: isPending,
     signOut: async () => {
-      await signOut();
+      await signOut()
     },
-  };
-};
+  }
+}

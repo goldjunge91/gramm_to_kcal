@@ -62,13 +62,13 @@ JS (ES Modules):
  * @type {import("prettier").Config}
  */
 const config = {
-  trailingComma: "es5",
+  trailingComma: 'es5',
   tabWidth: 4,
   semi: false,
   singleQuote: true,
-};
+}
 
-export default config;
+export default config
 ```
 
 JS (CommonJS):
@@ -81,13 +81,13 @@ JS (CommonJS):
  * @type {import("prettier").Config}
  */
 const config = {
-  trailingComma: "es5",
+  trailingComma: 'es5',
   tabWidth: 4,
   semi: false,
   singleQuote: true,
-};
+}
 
-module.exports = config;
+module.exports = config
 ```
 
 TypeScript (ES Modules):
@@ -95,13 +95,13 @@ TypeScript (ES Modules):
 ```ts
 // prettier.config.ts, .prettierrc.ts, prettier.config.mts, or .prettierrc.mts
 
-import type { Config } from "prettier";
+import type { Config } from 'prettier'
 
 const config: Config = {
-  trailingComma: "none",
-};
+  trailingComma: 'none',
+}
 
-export default config;
+export default config
 ```
 
 TypeScript (CommonJS):
@@ -109,13 +109,13 @@ TypeScript (CommonJS):
 ```ts
 // prettier.config.ts, .prettierrc.ts, prettier.config.cts, or .prettierrc.cts
 
-import type { Config } from "prettier";
+import type { Config } from 'prettier'
 
 const config: Config = {
-  trailingComma: "none",
-};
+  trailingComma: 'none',
+}
 
-module.exports = config;
+module.exports = config
 ```
 
 YAML:
@@ -171,12 +171,12 @@ YAML:
 ```yaml
 semi: false
 overrides:
-  - files: "*.test.js"
+  - files: '*.test.js'
     options:
       semi: true
   - files:
-      - "*.html"
-      - "legacy/**/*.js"
+      - '*.html'
+      - 'legacy/**/*.js'
     options:
       tabWidth: 4
 ```

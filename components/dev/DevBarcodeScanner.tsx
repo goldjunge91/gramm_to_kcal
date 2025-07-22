@@ -3,9 +3,11 @@
  * Enthält Diagnose, Leistungsmetriken und Geräteinformationen
  */
 
-"use client";
+'use client'
 
-import { Html5Qrcode, Html5QrcodeScannerState } from "html5-qrcode";
+import type { JSX } from 'react'
+
+import { Html5Qrcode, Html5QrcodeScannerState } from 'html5-qrcode'
 import {
   Activity,
   Camera,
@@ -15,32 +17,32 @@ import {
   Smartphone,
   Upload,
   X,
-} from "lucide-react";
-import { useCallback, useEffect, useRef, useState, type JSX } from "react";
+} from 'lucide-react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
-import type { ScanDiagnostics } from "@/lib/types/dev-scanner";
+import type { ScanDiagnostics } from '@/lib/types/dev-scanner'
 
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Progress } from "@/components/ui/progress";
+} from '@/components/ui/dialog'
+import { Progress } from '@/components/ui/progress'
 
 interface DevBarcodeScannerProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onScan: (barcode: string, diagnostics: ScanDiagnostics) => void;
-  onError?: (error: string) => void;
+  isOpen: boolean
+  onClose: () => void
+  onScan: (barcode: string, diagnostics: ScanDiagnostics) => void
+  onError?: (error: string) => void
 }
 
-type ScanMode = "camera" | "upload";
+type ScanMode = 'camera' | 'upload'
 
 export function DevBarcodeScanner({
   isOpen,
@@ -49,33 +51,33 @@ export function DevBarcodeScanner({
   onError,
 }: DevBarcodeScannerProps): JSX.Element {
   // Core scanner state
-  const [scanMode, setScanMode] = useState<ScanMode>("camera");
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [isProcessingFile, setIsProcessingFile] = useState(false);
-  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [scanMode, setScanMode] = useState<ScanMode>('camera')
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [isProcessingFile, setIsProcessingFile] = useState(false)
+  const [uploadError, setUploadError] = useState<string | null>(null)
 
   // Diagnostics state
-  const scanStartTimeRef = useRef<number>(0);
+  const scanStartTimeRef = useRef<number>(0)
   const [deviceInfo, setDeviceInfo] = useState<
-    ScanDiagnostics["deviceInfo"] | null
-  >(null);
+    ScanDiagnostics['deviceInfo'] | null
+  >(null)
   const [scannerSettings, setScannerSettings] = useState<
-    ScanDiagnostics["scannerSettings"] | null
-  >(null);
-  const [scanProgress, setScanProgress] = useState(0);
-  const [fps, setFps] = useState(0);
+    ScanDiagnostics['scannerSettings'] | null
+  >(null)
+  const [scanProgress, setScanProgress] = useState(0)
+  const [fps, setFps] = useState(0)
   const [flashFeedback, setFlashFeedback] = useState<
-    "success" | "error" | null
-  >(null);
+    'success' | 'error' | null
+  >(null)
 
   // Refs
-  const scannerRef = useRef<Html5Qrcode | null>(null);
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const scannerRef = useRef<Html5Qrcode | null>(null)
+  const fileInputRef = useRef<HTMLInputElement | null>(null)
 
   // Scanner ID for HTML5-QRCode
-  const scannerId = "dev-barcode-scanner";
-  const tempElementId = "dev-temp-scanner";
+  const scannerId = 'dev-barcode-scanner'
+  const tempElementId = 'dev-temp-scanner'
 
   // Initialize device info
   useEffect(() => {
@@ -89,14 +91,14 @@ export function DevBarcodeScanner({
           ),
         hasCamera: false, // Will be updated when camera is accessed
         cameraCount: 0, // Will be updated when cameras are enumerated
-      });
+      })
     }
-  }, [isOpen]);
+  }, [isOpen])
 
   // Generate unique scan ID
   const generateScanId = (): string => {
-    return `scan_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`;
-  };
+    return `scan_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`
+  }
 
   // Create diagnostics object
   const createDiagnostics = useCallback(
@@ -104,11 +106,11 @@ export function DevBarcodeScanner({
       barcode: string,
       success: boolean,
       scanStart: number,
-      currentDeviceInfo?: ScanDiagnostics["deviceInfo"],
-      currentScannerSettings?: ScanDiagnostics["scannerSettings"],
+      currentDeviceInfo?: ScanDiagnostics['deviceInfo'],
+      currentScannerSettings?: ScanDiagnostics['scannerSettings'],
       error?: string,
     ): ScanDiagnostics => {
-      const endTime = performance.now();
+      const endTime = performance.now()
       return {
         scanId: generateScanId(),
         timestamp: new Date().toISOString(),
@@ -120,18 +122,19 @@ export function DevBarcodeScanner({
         error,
         deviceInfo: currentDeviceInfo,
         scannerSettings: currentScannerSettings,
-      };
+      }
     },
     [scanMode], // Only scanMode dependency
-  );
+  )
 
   // Start camera scanning
   const startScanning = useCallback(async () => {
-    if (scannerRef.current || scanMode !== "camera") return;
+    if (scannerRef.current || scanMode !== 'camera')
+      return
 
-    setIsLoading(true);
-    setError(null);
-    scanStartTimeRef.current = performance.now();
+    setIsLoading(true)
+    setError(null)
+    scanStartTimeRef.current = performance.now()
 
     // Wait for DOM element to be available
     const waitForElement = (
@@ -139,40 +142,42 @@ export function DevBarcodeScanner({
       maxAttempts = 10,
     ): Promise<HTMLElement> => {
       return new Promise((resolve, reject) => {
-        let attempts = 0;
+        let attempts = 0
 
         const checkElement = () => {
-          const element = document.querySelector<HTMLElement>(`#${elementId}`);
+          const element = document.querySelector<HTMLElement>(`#${elementId}`)
           if (element) {
-            resolve(element);
-          } else if (attempts < maxAttempts) {
-            attempts++;
-            setTimeout(checkElement, 100); // Wait 100ms between attempts
-          } else {
+            resolve(element)
+          }
+          else if (attempts < maxAttempts) {
+            attempts++
+            setTimeout(checkElement, 100) // Wait 100ms between attempts
+          }
+          else {
             reject(
               new Error(
                 `Element with id '${elementId}' not found after ${maxAttempts} attempts`,
               ),
-            );
+            )
           }
-        };
+        }
 
-        checkElement();
-      });
-    };
+        checkElement()
+      })
+    }
 
     try {
       // Wait for the scanner element to be available in the DOM
-      await waitForElement(scannerId);
+      await waitForElement(scannerId)
 
       // Create scanner instance
-      const scanner = new Html5Qrcode(scannerId);
-      scannerRef.current = scanner;
+      const scanner = new Html5Qrcode(scannerId)
+      scannerRef.current = scanner
 
       // Enumerate cameras for device info
       try {
-        const cameras = await Html5Qrcode.getCameras();
-        setDeviceInfo((prev) =>
+        const cameras = await Html5Qrcode.getCameras()
+        setDeviceInfo(prev =>
           prev
             ? {
                 ...prev,
@@ -180,9 +185,10 @@ export function DevBarcodeScanner({
                 cameraCount: cameras.length,
               }
             : null,
-        );
-      } catch (enumError) {
-        console.warn("Could not enumerate cameras:", enumError);
+        )
+      }
+      catch (enumError) {
+        console.warn('Could not enumerate cameras:', enumError)
       }
 
       // Configure scanner with performance monitoring
@@ -190,121 +196,125 @@ export function DevBarcodeScanner({
         fps: 10,
         qrbox: { width: 280, height: 280 }, // Larger qrbox to fill most of the 320px container
         aspectRatio: 1,
-      };
+      }
 
-      setScannerSettings(config);
+      setScannerSettings(config)
 
       // Monitor FPS
       const fpsInterval = setInterval(() => {
-        setFps(config.fps);
-        setScanProgress((prev) => Math.min(prev + 10, 90));
-      }, 1000);
+        setFps(config.fps)
+        setScanProgress(prev => Math.min(prev + 10, 90))
+      }, 1000)
 
       // Start scanning
       await scanner.start(
-        { facingMode: "environment" },
+        { facingMode: 'environment' },
         config,
         (decodedText) => {
           // Success callback - flash green
-          setFlashFeedback("success");
-          setTimeout(() => setFlashFeedback(null), 1000); // Clear after 1 second
+          setFlashFeedback('success')
+          setTimeout(() => setFlashFeedback(null), 1000) // Clear after 1 second
 
-          clearInterval(fpsInterval);
+          clearInterval(fpsInterval)
           const diagnostics = createDiagnostics(
             decodedText,
             true,
             scanStartTimeRef.current,
             deviceInfo || undefined,
             config,
-          );
-          onScan(decodedText, diagnostics);
+          )
+          onScan(decodedText, diagnostics)
           // Don't stop scanning for speed tests - keep it running
           // stopScanning();
         },
         (errorMessage) => {
           // Error callback - don't spam console for scan attempts
-          if (!errorMessage.includes("NotFoundException")) {
-            console.debug("Scan attempt:", errorMessage);
+          if (!errorMessage.includes('NotFoundException')) {
+            console.debug('Scan attempt:', errorMessage)
           }
         },
-      );
+      )
 
-      setScanProgress(100);
-      setIsLoading(false);
+      setScanProgress(100)
+      setIsLoading(false)
 
       // Cleanup FPS monitor after 30 seconds
       setTimeout(() => {
-        clearInterval(fpsInterval);
-      }, 30000);
-    } catch (error) {
-      console.error("Scanner start error:", error);
-      const errorMessage =
-        error instanceof Error
-          ? error.message.includes("not found")
-            ? "Scanner initialization failed - dialog not ready. Please try again."
-            : error.message
-          : "Failed to start camera";
-      setError(errorMessage);
-      setIsLoading(false);
-      onError?.(errorMessage);
+        clearInterval(fpsInterval)
+      }, 30000)
     }
-  }, [scanMode, onScan, onError]);
+    catch (error) {
+      console.error('Scanner start error:', error)
+      const errorMessage
+        = error instanceof Error
+          ? error.message.includes('not found')
+            ? 'Scanner initialization failed - dialog not ready. Please try again.'
+            : error.message
+          : 'Failed to start camera'
+      setError(errorMessage)
+      setIsLoading(false)
+      onError?.(errorMessage)
+    }
+  }, [scanMode, onScan, onError])
 
   // Stop scanning
   const stopScanning = useCallback(async () => {
-    if (!scannerRef.current) return;
+    if (!scannerRef.current)
+      return
 
     try {
-      const scanner = scannerRef.current;
+      const scanner = scannerRef.current
 
       if (scanner.getState() === Html5QrcodeScannerState.SCANNING) {
-        await scanner.stop();
+        await scanner.stop()
       }
 
-      await scanner.clear();
-      scannerRef.current = null;
-      setScanProgress(0);
-      setFps(0);
-    } catch (error) {
-      console.error("Scanner stop error:", error);
+      await scanner.clear()
+      scannerRef.current = null
+      setScanProgress(0)
+      setFps(0)
     }
-  }, []);
+    catch (error) {
+      console.error('Scanner stop error:', error)
+    }
+  }, [])
 
   // Handle mode switch
   const handleModeSwitch = useCallback(
     async (newMode: ScanMode) => {
-      if (newMode === scanMode) return;
+      if (newMode === scanMode)
+        return
 
-      await stopScanning();
-      setScanMode(newMode);
-      setError(null);
-      setUploadError(null);
-      setScanProgress(0);
+      await stopScanning()
+      setScanMode(newMode)
+      setError(null)
+      setUploadError(null)
+      setScanProgress(0)
     },
     [scanMode, stopScanning],
-  );
+  )
 
   // Handle file upload
   const handleFileUpload = useCallback(
     async (file: File) => {
-      setIsProcessingFile(true);
-      setUploadError(null);
-      scanStartTimeRef.current = performance.now();
+      setIsProcessingFile(true)
+      setUploadError(null)
+      scanStartTimeRef.current = performance.now()
 
       try {
         // Create temporary scanner for file processing
-        const tempElement = document.createElement("div");
-        tempElement.id = tempElementId;
-        tempElement.style.display = "none";
-        document.body.append(tempElement);
+        const tempElement = document.createElement('div')
+        tempElement.id = tempElementId
+        tempElement.style.display = 'none'
+        document.body.append(tempElement)
 
-        const tempScanner = new Html5Qrcode(tempElementId);
+        const tempScanner = new Html5Qrcode(tempElementId)
 
-        const result = await tempScanner.scanFile(file, false);
+        const result = await tempScanner.scanFile(file, false)
 
         // Cleanup
-        await tempScanner.clear();
-        tempElement.remove();
+        await tempScanner.clear()
+        tempElement.remove()
 
         const diagnostics = createDiagnostics(
           result,
@@ -313,82 +323,85 @@ export function DevBarcodeScanner({
           deviceInfo || undefined,
           undefined, // No scanner settings for file upload
           undefined, // No error
-        );
-        onScan(result, diagnostics);
-        onClose();
-      } catch (error) {
-        console.error("File scan error:", error);
-        const errorMessage =
-          error instanceof Error ? error.message : "Failed to scan file";
-        setUploadError(errorMessage);
+        )
+        onScan(result, diagnostics)
+        onClose()
+      }
+      catch (error) {
+        console.error('File scan error:', error)
+        const errorMessage
+          = error instanceof Error ? error.message : 'Failed to scan file'
+        setUploadError(errorMessage)
 
-        onError?.(errorMessage);
+        onError?.(errorMessage)
 
         // Cleanup temp element if it exists
-        const tempElement = document.querySelector(`#${tempElementId}`);
+        const tempElement = document.querySelector(`#${tempElementId}`)
         if (tempElement) {
-          tempElement.remove();
+          tempElement.remove()
         }
-      } finally {
-        setIsProcessingFile(false);
+      }
+      finally {
+        setIsProcessingFile(false)
       }
     },
     [onScan, onClose, onError],
-  );
+  )
 
   // File input change handler
   const handleFileInputChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
-      const file = event.target.files?.[0];
+      const file = event.target.files?.[0]
       if (file) {
-        handleFileUpload(file);
+        handleFileUpload(file)
       }
     },
     [handleFileUpload],
-  );
+  )
 
   // Drag and drop handlers
   const handleDragOver = useCallback((event: React.DragEvent) => {
-    event.preventDefault();
-    event.stopPropagation();
-  }, []);
+    event.preventDefault()
+    event.stopPropagation()
+  }, [])
 
   const handleDrop = useCallback(
     (event: React.DragEvent) => {
-      event.preventDefault();
-      event.stopPropagation();
+      event.preventDefault()
+      event.stopPropagation()
 
-      const files = Array.from(event.dataTransfer.files);
-      const imageFile = files.find((file) => file.type.startsWith("image/"));
+      const files = Array.from(event.dataTransfer.files)
+      const imageFile = files.find(file => file.type.startsWith('image/'))
 
       if (imageFile) {
-        handleFileUpload(imageFile);
+        handleFileUpload(imageFile)
       }
     },
     [handleFileUpload],
-  );
+  )
 
   // Effects
   useEffect(() => {
-    if (isOpen && scanMode === "camera") {
-      startScanning();
-    } else {
-      stopScanning();
+    if (isOpen && scanMode === 'camera') {
+      startScanning()
+    }
+    else {
+      stopScanning()
     }
 
     return () => {
-      stopScanning();
-    };
-  }, [isOpen, scanMode]);
+      stopScanning()
+    }
+  }, [isOpen, scanMode])
 
   // Cleanup on unmount
   useEffect(() => {
     return () => {
       if (scannerRef.current) {
-        stopScanning();
+        stopScanning()
       }
-    };
-  }, []);
+    }
+  }, [])
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -423,10 +436,10 @@ export function DevBarcodeScanner({
                 <div className="flex justify-between">
                   <span>Mobil:</span>
                   <Badge
-                    variant={deviceInfo.isMobile ? "default" : "secondary"}
+                    variant={deviceInfo.isMobile ? 'default' : 'secondary'}
                     className="text-xs"
                   >
-                    {deviceInfo.isMobile ? "Ja" : "Nein"}
+                    {deviceInfo.isMobile ? 'Ja' : 'Nein'}
                   </Badge>
                 </div>
                 <div className="flex justify-between">
@@ -449,8 +462,8 @@ export function DevBarcodeScanner({
         {/* Mode Selection */}
         <div className="flex gap-2 mb-4">
           <Button
-            variant={scanMode === "camera" ? "default" : "outline"}
-            onClick={() => handleModeSwitch("camera")}
+            variant={scanMode === 'camera' ? 'default' : 'outline'}
+            onClick={() => handleModeSwitch('camera')}
             className="flex-1"
             disabled={isLoading || isProcessingFile}
           >
@@ -458,8 +471,8 @@ export function DevBarcodeScanner({
             Kamera Scannen
           </Button>
           <Button
-            variant={scanMode === "upload" ? "default" : "outline"}
-            onClick={() => handleModeSwitch("upload")}
+            variant={scanMode === 'upload' ? 'default' : 'outline'}
+            onClick={() => handleModeSwitch('upload')}
             className="flex-1"
             disabled={isLoading || isProcessingFile}
           >
@@ -469,7 +482,7 @@ export function DevBarcodeScanner({
         </div>
 
         {/* Scanner Progress */}
-        {scanMode === "camera" && (isLoading || scanProgress > 0) && (
+        {scanMode === 'camera' && (isLoading || scanProgress > 0) && (
           <div className="mb-4">
             <div className="flex items-center gap-2 mb-2">
               <Clock className="h-4 w-4" />
@@ -477,14 +490,17 @@ export function DevBarcodeScanner({
             </div>
             <Progress value={scanProgress} className="w-full" />
             <div className="flex justify-between text-xs text-muted-foreground mt-1">
-              <span>{isLoading ? "Initialisiere..." : "Bereit"}</span>
-              <span>{scanProgress}%</span>
+              <span>{isLoading ? 'Initialisiere...' : 'Bereit'}</span>
+              <span>
+                {scanProgress}
+                %
+              </span>
             </div>
           </div>
         )}
 
         {/* Scanner Settings */}
-        {scannerSettings && scanMode === "camera" && (
+        {scannerSettings && scanMode === 'camera' && (
           <Card className="mb-4">
             <CardHeader className="pb-3">
               <CardTitle className="text-sm flex items-center gap-2">
@@ -500,7 +516,9 @@ export function DevBarcodeScanner({
                 </div>
                 <div className="text-center">
                   <div className="font-medium">
-                    {scannerSettings.qrbox.width}×{scannerSettings.qrbox.height}
+                    {scannerSettings.qrbox.width}
+                    ×
+                    {scannerSettings.qrbox.height}
                   </div>
                   <div className="text-muted-foreground">Scanbereich</div>
                 </div>
@@ -517,16 +535,16 @@ export function DevBarcodeScanner({
 
         {/* Scanner Display */}
         <div className="relative mb-4">
-          {scanMode === "camera" ? (
+          {scanMode === 'camera' ? (
             <div className="relative">
               <div
                 id={scannerId}
                 className={`w-80 h-80 mx-auto border-2 border-dashed rounded-lg overflow-hidden transition-all duration-300 ${
-                  flashFeedback === "success"
-                    ? "border-green-500 bg-green-50 shadow-lg shadow-green-200"
-                    : flashFeedback === "error"
-                      ? "border-red-500 bg-red-50 shadow-lg shadow-red-200"
-                      : "border-gray-300"
+                  flashFeedback === 'success'
+                    ? 'border-green-500 bg-green-50 shadow-lg shadow-green-200'
+                    : flashFeedback === 'error'
+                      ? 'border-red-500 bg-red-50 shadow-lg shadow-red-200'
+                      : 'border-gray-300'
                 }`}
               />
 
@@ -534,19 +552,19 @@ export function DevBarcodeScanner({
               {flashFeedback && (
                 <div
                   className={`absolute inset-0 flex items-center justify-center rounded-lg transition-all duration-300 ${
-                    flashFeedback === "success"
-                      ? "bg-green-500/30 border-2 border-green-500"
-                      : "bg-red-500/30 border-2 border-red-500"
+                    flashFeedback === 'success'
+                      ? 'bg-green-500/30 border-2 border-green-500'
+                      : 'bg-red-500/30 border-2 border-red-500'
                   }`}
                 >
                   <div
                     className={`text-center font-bold text-2xl ${
-                      flashFeedback === "success"
-                        ? "text-green-800"
-                        : "text-red-800"
+                      flashFeedback === 'success'
+                        ? 'text-green-800'
+                        : 'text-red-800'
                     }`}
                   >
-                    {flashFeedback === "success" ? "✓ DETECTED!" : "✗ ERROR!"}
+                    {flashFeedback === 'success' ? '✓ DETECTED!' : '✗ ERROR!'}
                   </div>
                 </div>
               )}
@@ -567,23 +585,25 @@ export function DevBarcodeScanner({
               onDrop={handleDrop}
               onClick={() => fileInputRef.current?.click()}
             >
-              {isProcessingFile ? (
-                <div className="text-center">
-                  <Loader2 className="h-8 w-8 animate-spin mx-auto mb-2" />
-                  <p>Verarbeite Bild...</p>
-                </div>
-              ) : (
-                <div className="text-center">
-                  <Upload className="h-8 w-8 mx-auto mb-2 text-gray-400" />
-                  <p className="text-lg font-medium">Barcode-Bild hochladen</p>
-                  <p className="text-sm text-gray-500 mt-1">
-                    Klicken zum Auswählen oder Bild hierher ziehen
-                  </p>
-                  <p className="text-xs text-gray-400 mt-2">
-                    Unterstützt: JPG, PNG, GIF, WebP
-                  </p>
-                </div>
-              )}
+              {isProcessingFile
+                ? (
+                    <div className="text-center">
+                      <Loader2 className="h-8 w-8 animate-spin mx-auto mb-2" />
+                      <p>Verarbeite Bild...</p>
+                    </div>
+                  )
+                : (
+                    <div className="text-center">
+                      <Upload className="h-8 w-8 mx-auto mb-2 text-gray-400" />
+                      <p className="text-lg font-medium">Barcode-Bild hochladen</p>
+                      <p className="text-sm text-gray-500 mt-1">
+                        Klicken zum Auswählen oder Bild hierher ziehen
+                      </p>
+                      <p className="text-xs text-gray-400 mt-2">
+                        Unterstützt: JPG, PNG, GIF, WebP
+                      </p>
+                    </div>
+                  )}
             </div>
           )}
 
@@ -612,5 +632,5 @@ export function DevBarcodeScanner({
         </div>
       </DialogContent>
     </Dialog>
-  );
+  )
 }

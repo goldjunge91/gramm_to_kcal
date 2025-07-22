@@ -194,25 +194,14 @@ Valid options:
 
 <!-- prettier-ignore -->
 ```html
-<button
-  className="prettier-class"
-  id="prettier-id"
-  onClick={this.handleClick}>
-  Click Here
-</button>
+<button className="prettier-class" id="prettier-id" onClick="{this.handleClick}">Click Here</button>
 ```
 
 - `false` - Example:
 
 <!-- prettier-ignore -->
 ```html
-<button
-  className="prettier-class"
-  id="prettier-id"
-  onClick={this.handleClick}
->
-  Click Here
-</button>
+<button className="prettier-class" id="prettier-id" onClick="{this.handleClick}">Click Here</button>
 ```
 
 | Default | CLI Override          | API Override              |
@@ -238,7 +227,8 @@ Valid options:
 <button
   className="prettier-class"
   id="prettier-id"
-  onClick={this.handleClick}>
+  onClick={this.handleClick}
+>
   Click Here
 </button>
 ```

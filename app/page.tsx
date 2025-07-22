@@ -1,14 +1,14 @@
-import { Calculator, ChefHat, Combine } from "lucide-react";
-import Link from "next/link";
+import { Calculator, ChefHat, Combine } from 'lucide-react'
+import Link from 'next/link'
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button'
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from '@/components/ui/card'
 
 export default function Home() {
   return (
@@ -67,5 +67,5 @@ export default function Home() {
         </Card>
       </div>
     </div>
-  );
+  )
 }

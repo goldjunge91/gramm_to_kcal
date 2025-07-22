@@ -37,24 +37,22 @@ You can disable this conditional behavior with the [`objectWrap`](options.md#obj
 
 ```js
 const user = {
-  name: "John Doe",
+  name: 'John Doe',
   age: 30,
-};
+}
 ```
 
 …all you need to do is remove the newline after `{`:
 
 <!-- prettier-ignore -->
 ```js
-const user = {  name: "John Doe",
-  age: 30
-};
+const user = { name: 'John Doe', age: 30 }
 ```
 
 …and then run Prettier:
 
 ```js
-const user = { name: "John Doe", age: 30 };
+const user = { name: 'John Doe', age: 30 }
 ```
 
 And if you’d like to go multi-line again, add in a newline after `{`:
@@ -62,16 +60,18 @@ And if you’d like to go multi-line again, add in a newline after `{`:
 <!-- prettier-ignore -->
 ```js
 const user = {
- name: "John Doe", age: 30 };
+  name: 'John Doe',
+  age: 30
+}
 ```
 
 …and run Prettier:
 
 ```js
 const user = {
-  name: "John Doe",
+  name: 'John Doe',
   age: 30,
-};
+}
 ```
 
 [object lists]: https://github.com/prettier/prettier/issues/74#issue-199965534
@@ -93,19 +93,19 @@ Just like with objects, decorators are used for a lot of different things. Somet
 
 ```ts
 @Component({
-  selector: "hero-button",
+  selector: 'hero-button',
   template: `<button>{{ label }}</button>`,
 })
 class HeroButtonComponent {
   // These decorators were written inline and fit on the line so they stay
   // inline.
-  @Output() change = new EventEmitter();
-  @Input() label: string;
+  @Output() change = new EventEmitter()
+  @Input() label: string
 
   // These were written multiline, so they stay multiline.
   @readonly
   @nonenumerable
-  NODE_TYPE: 2;
+  NODE_TYPE: 2
 }
 ```
 
@@ -115,7 +115,7 @@ There’s one exception: classes. We don’t think it ever makes sense to inline
 ```ts
 // Before running Prettier:
 @observer class OrderLine {
-  @observable price: number = 0;
+  @observable price: number = 0
 }
 ```
 
@@ -123,7 +123,7 @@ There’s one exception: classes. We don’t think it ever makes sense to inline
 // After running Prettier:
 @observer
 class OrderLine {
-  @observable price: number = 0;
+  @observable price: number = 0
 }
 ```
 
@@ -132,9 +132,9 @@ Note: Prettier 1.14.x and older tried to automatically move your decorators, so 
 ```ts
 @observer
 class OrderLine {
-  @observable price: number = 0;
+  @observable price: number = 0
   @observable
-  amount: number = 0;
+  amount: number = 0
 }
 ```
 
@@ -146,7 +146,7 @@ This means that a literal like the following will not be broken onto multiple li
 
 <!-- prettier-ignore -->
 ```js
-`this is a long message which contains an interpolation: ${format(data)} <- like this`;
+`this is a long message which contains an interpolation: ${format(data)} <- like this`
 ```
 
 If you want Prettier to split up an interpolation, you'll need to ensure there's a linebreak somewhere within the `${...}`. Otherwise it will keep everything on a single line, no matter how long it is.
@@ -210,9 +210,9 @@ console.log('Running a background task')
 If you feed this into Prettier, it will not alter the behavior of this code, instead, it will reformat it in a way that shows how this code will actually behave when ran.
 
 ```js
-console.log("Running a background task")(async () => {
-  await doBackgroundWork();
-})();
+console.log('Running a background task')(async () => {
+  await doBackgroundWork()
+})()
 ```
 
 [standard]: https://standardjs.com/rules.html#semicolons
@@ -233,13 +233,13 @@ Prettier can break long `import` statements across several lines:
 import {
   CollectionDashboard,
   DashboardPlaceholder,
-} from "../components/collections/collection-dashboard/main";
+} from '../components/collections/collection-dashboard/main'
 ```
 
 The following example doesn’t fit within the print width, but Prettier prints it in a single line anyway:
 
 ```js
-import { CollectionDashboard } from "../components/collections/collection-dashboard/main";
+import { CollectionDashboard } from '../components/collections/collection-dashboard/main'
 ```
 
 This might be unexpected by some, but we do it this way since it was a common request to keep `import`s with single elements in a single line. The same applies for `require` calls.
@@ -249,11 +249,11 @@ This might be unexpected by some, but we do it this way since it was a common re
 Another common request was to keep lengthy test descriptions in one line, even if it gets too long. In such cases, wrapping the arguments to new lines doesn’t help much.
 
 ```js
-describe("NodeRegistry", () => {
-  it("makes no request if there are no nodes to prefetch, even if the cache is stale", async () => {
+describe('NodeRegistry', () => {
+  it('makes no request if there are no nodes to prefetch, even if the cache is stale', async () => {
     // The above line exceeds the print width but stayed on one line anyway.
-  });
-});
+  })
+})
 ```
 
 Prettier has special cases for common testing framework functions such as `describe`, `it` and `test`.
@@ -266,19 +266,25 @@ Prettier prints things a little differently compared to other JS when JSX is inv
 function greet(user) {
   return user
     ? `Welcome back, ${user.name}!`
-    : "Greetings, traveler! Sign up today!";
+    : 'Greetings, traveler! Sign up today!'
 }
 
 function Greet({ user }) {
   return (
     <div>
-      {user ? (
-        <p>Welcome back, {user.name}!</p>
-      ) : (
-        <p>Greetings, traveler! Sign up today!</p>
-      )}
+      {user
+        ? (
+            <p>
+              Welcome back,
+              {user.name}
+              !
+            </p>
+          )
+        : (
+            <p>Greetings, traveler! Sign up today!</p>
+          )}
     </div>
-  );
+  )
 }
 ```
 
@@ -290,7 +296,9 @@ Secondly, [the alternate formatting makes it easier to edit the JSX](https://git
 
 ```jsx
 <div>
-  <p>Greetings, traveler! Sign up today!</p>; {/* <-- Oops! */}
+  <p>Greetings, traveler! Sign up today!</p>
+  ;
+  {/* <-- Oops! */}
 </div>
 ```
 
@@ -307,29 +315,28 @@ Note that “magic comments” such as `eslint-disable-next-line` and `$FlowFixM
 Imagine this piece of code:
 
 ```js
-const result = safeToEval ? eval(input) : fallback(input);
+const result = safeToEval ? eval(input) : fallback(input)
 ```
 
 Then you need to add another condition:
 
 <!-- prettier-ignore -->
 ```js
- 
-const result = safeToEval && settings.allowNativeEval ? eval(input) : fallback(input);
+const result = safeToEval && settings.allowNativeEval ? eval(input) : fallback(input)
 ```
 
 Prettier will turn the above into:
 
 ```js
-const result =
-  safeToEval && settings.allowNativeEval ? eval(input) : fallback(input);
+const result
+  = safeToEval && settings.allowNativeEval ? eval(input) : fallback(input)
 ```
 
 Which means that the `eslint-disable-next-line` comment is no longer effective. In this case you need to move the comment:
 
 ```js
-const result =
-  safeToEval && settings.allowNativeEval ? eval(input) : fallback(input);
+const result
+  = safeToEval && settings.allowNativeEval ? eval(input) : fallback(input)
 ```
 
 If possible, prefer comments that operate on line ranges (e.g. `eslint-disable` and `eslint-enable`) or on the statement level (e.g. `/* istanbul ignore next */`), they are even safer. It’s possible to disallow using `eslint-disable-line` and `eslint-disable-next-line` comments using [`eslint-plugin-eslint-comments`](https://github.com/mysticatea/eslint-plugin-eslint-comments).

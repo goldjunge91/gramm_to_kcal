@@ -1,64 +1,67 @@
-"use client";
+'use client'
 
-import { useState, type JSX } from "react";
-import { toast } from "sonner";
+import type { JSX } from 'react'
 
-import type { ParsedRecipe, RecipeStep } from "@/lib/types/types";
+import { useState } from 'react'
+import { toast } from 'sonner'
 
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { parseRecipeText } from "@/lib/parsing/recipeParser";
+import type { ParsedRecipe, RecipeStep } from '@/lib/types/types'
 
-import { RecipeCard } from "./components/RecipeCard";
-import { RecipePreview } from "./components/RecipePreview";
-import { RecipeTextInput } from "./components/RecipeTextInput";
-import { UnifiedStepEditor } from "./components/UnifiedStepEditor";
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { parseRecipeText } from '@/lib/parsing/recipeParser'
+
+import { RecipeCard } from './components/RecipeCard'
+import { RecipePreview } from './components/RecipePreview'
+import { RecipeTextInput } from './components/RecipeTextInput'
+import { UnifiedStepEditor } from './components/UnifiedStepEditor'
 
 /** Anleitungsgenerator page for converting recipe text to A4 formatted cards */
 export default function AnleitungsgeneratorPage(): JSX.Element {
-  const [inputText, setInputText] = useState<string>("");
-  const [parsedRecipe, setParsedRecipe] = useState<ParsedRecipe | null>(null);
-  const [showPreview, setShowPreview] = useState<boolean>(false);
-  const [showStepEditor, setShowStepEditor] = useState<boolean>(false);
-  const [showPreviewPanel, setShowPreviewPanel] = useState<boolean>(false);
-  const [previewMode, setPreviewMode] = useState<"compact" | "full">("compact");
+  const [inputText, setInputText] = useState<string>('')
+  const [parsedRecipe, setParsedRecipe] = useState<ParsedRecipe | null>(null)
+  const [showPreview, setShowPreview] = useState<boolean>(false)
+  const [showStepEditor, setShowStepEditor] = useState<boolean>(false)
+  const [showPreviewPanel, setShowPreviewPanel] = useState<boolean>(false)
+  const [previewMode, setPreviewMode] = useState<'compact' | 'full'>('compact')
 
   const handleParseRecipe = (): void => {
     if (!inputText.trim()) {
-      toast.error("Bitte geben Sie einen Rezepttext ein");
-      return;
+      toast.error('Bitte geben Sie einen Rezepttext ein')
+      return
     }
 
     try {
-      const parsed = parseRecipeText(inputText);
-      setParsedRecipe(parsed);
-      setShowPreview(true);
-      toast.success("Rezept erfolgreich geparst!");
-    } catch (error) {
-      toast.error("Fehler beim Parsen des Rezepts");
-      console.error("Parse error:", error);
+      const parsed = parseRecipeText(inputText)
+      setParsedRecipe(parsed)
+      setShowPreview(true)
+      toast.success('Rezept erfolgreich geparst!')
     }
-  };
+    catch (error) {
+      toast.error('Fehler beim Parsen des Rezepts')
+      console.error('Parse error:', error)
+    }
+  }
 
   const handleReset = (): void => {
-    setInputText("");
-    setParsedRecipe(null);
-    setShowPreview(false);
-    setShowStepEditor(false);
-    setShowPreviewPanel(false);
-    toast.info("Formular zurückgesetzt");
-  };
+    setInputText('')
+    setParsedRecipe(null)
+    setShowPreview(false)
+    setShowStepEditor(false)
+    setShowPreviewPanel(false)
+    toast.info('Formular zurückgesetzt')
+  }
 
   const handleStepsChange = (steps: RecipeStep[]): void => {
     if (parsedRecipe) {
-      setParsedRecipe({ ...parsedRecipe, steps });
+      setParsedRecipe({ ...parsedRecipe, steps })
     }
-  };
+  }
 
   const handlePrint = (): void => {
-    window.print();
-    toast.info("Druckvorschau geöffnet");
-  };
+    window.print()
+    toast.info('Druckvorschau geöffnet')
+  }
 
   return (
     <div className="container mx-auto p-6 space-y-6">
@@ -115,13 +118,13 @@ export default function AnleitungsgeneratorPage(): JSX.Element {
               </Button>
               <Button
                 onClick={() => setShowPreviewPanel(!showPreviewPanel)}
-                variant={showPreviewPanel ? "default" : "outline"}
+                variant={showPreviewPanel ? 'default' : 'outline'}
               >
                 👁️ Live-Vorschau
               </Button>
               <Button
                 onClick={() => setShowStepEditor(!showStepEditor)}
-                variant={showStepEditor ? "default" : "outline"}
+                variant={showStepEditor ? 'default' : 'outline'}
               >
                 ✍️ Schritte bearbeiten
               </Button>
@@ -137,15 +140,15 @@ export default function AnleitungsgeneratorPage(): JSX.Element {
             {showPreviewPanel && (
               <div className="flex gap-2 justify-center">
                 <Button
-                  onClick={() => setPreviewMode("compact")}
-                  variant={previewMode === "compact" ? "default" : "outline"}
+                  onClick={() => setPreviewMode('compact')}
+                  variant={previewMode === 'compact' ? 'default' : 'outline'}
                   size="sm"
                 >
                   📱 Kompakt
                 </Button>
                 <Button
-                  onClick={() => setPreviewMode("full")}
-                  variant={previewMode === "full" ? "default" : "outline"}
+                  onClick={() => setPreviewMode('full')}
+                  variant={previewMode === 'full' ? 'default' : 'outline'}
                   size="sm"
                 >
                   📄 A4-Format
@@ -166,7 +169,7 @@ export default function AnleitungsgeneratorPage(): JSX.Element {
           {showPreviewPanel && parsedRecipe && (
             <RecipePreview
               recipe={parsedRecipe}
-              showFullCard={previewMode === "full"}
+              showFullCard={previewMode === 'full'}
             />
           )}
 
@@ -177,5 +180,5 @@ export default function AnleitungsgeneratorPage(): JSX.Element {
         </>
       )}
     </div>
-  );
+  )
 }
