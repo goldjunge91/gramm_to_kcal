@@ -1,0 +1,3363 @@
+This file is a merged representation of a subset of the codebase, containing specifically included files, combined into a single document by Repomix.
+The content has been processed where security check has been disabled.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Only files matching these patterns are included: components/user/**, actions/**, lib/**, e2e-tests/**, data/**, app/(auth)/**, middleware.*.ts, routes, admin*, access-control/**, auth/**, user/**
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Security check has been disabled - content may contain sensitive information
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+actions/
+  admin.ts
+  login.ts
+  logout.ts
+  magic-link.ts
+  new-password.ts
+  new-verification.ts
+  register.ts
+  reset-password.ts
+  settings.ts
+app/
+  (auth)/
+    login/
+      magic-link/
+        page.tsx
+      page.tsx
+    loginerror/
+      page.tsx
+    new-password/
+      page.tsx
+    new-verification/
+      page.tsx
+    register/
+      page.tsx
+    reset-password/
+      page.tsx
+    layout.tsx
+components/
+  user/
+    actions/
+      LogoutButton.tsx
+    profile/
+      UserInfo.tsx
+data/
+  db/
+    account/
+      helpers.ts
+    tokens/
+      password-reset/
+        create.ts
+        delete.ts
+        helpers.ts
+      two-factor/
+        create.ts
+        helpers.ts
+      verification-email/
+        create.ts
+        delete.ts
+        helpers.ts
+      verification-tokens/
+        magic-link/
+          helpers.ts
+    unstable-cache/
+      helpers.ts
+    user/
+      create.ts
+      helpers.ts
+      login.ts
+      reset-password.ts
+      settings.ts
+e2e-tests/
+  config/
+    test-config.ts
+  helpers/
+    mailsac/
+      mailsac.ts
+    helper-functions.ts
+    tests.ts
+  credentials-2FA.spec.ts
+  credentials-registration-flow.spec.ts
+  forgot-password.spec.ts
+  navigation.spec.ts
+  rolegate.spec.ts
+lib/
+  auth/
+    auth-utils.ts
+    hooks.ts
+    types.d.ts
+  constants/
+    errors/
+      errors.ts
+    messages/
+      actions/
+        messages.ts
+  crypto/
+    hash-edge-compatible.ts
+  mail/
+    mail.ts
+  nextjs/
+    headers.ts
+  db.ts
+  utils.ts
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path="actions/admin.ts">
+'use server';
+
+import { sessionHasRole } from '@/lib/auth/auth-utils';
+import { messages } from '@/lib/constants/messages/actions/messages';
+
+export const adminAction = async () => {
+  const isAdmin = await sessionHasRole('ADMIN');
+  if (!isAdmin) {
+    return { error: messages.admin.errors.FORBIDDEN_SA };
+  }
+
+  return { success: messages.admin.success.ALLOWED_SA };
+};
+</file>
+
+<file path="actions/login.ts">
+'use server';
+
+import { PrismaClientKnownRequestError, PrismaClientInitializationError } from '@prisma/client/runtime/library';
+import { AuthError } from 'next-auth';
+import * as zod from 'zod';
+
+import { signIn } from '@/auth';
+import { generateTwoFactorToken } from '@/data/db/tokens/two-factor/create';
+import { generateCustomVerificationToken } from '@/data/db/tokens/verification-email/create';
+import { deleteCustomVerificationTokenById } from '@/data/db/tokens/verification-email/delete';
+import { consumeTwoFactorToken, getUserLoginAuthData } from '@/data/db/user/login';
+import { CustomLoginAuthError } from '@/lib/constants/errors/errors';
+import { messages } from '@/lib/constants/messages/actions/messages';
+import { verifyPassword } from '@/lib/crypto/hash-edge-compatible';
+import { sendVerificationEmail, sendTwoFactorTokenEmail } from '@/lib/mail/mail';
+import { DEFAULT_LOGIN_REDIRECT } from '@/routes';
+import { CallbackUrlSchema, LoginSchema } from '@/schemas';
+
+import type { VerifiedUserForAuth } from '@/lib/auth/types';
+
+type LoginActionResult =
+  | { success: string; error?: never; twoFactor?: never }
+  | { error: string; success?: never; twoFactor?: never }
+  | { twoFactor: true; success?: never; error?: never };
+
+/**
+ * Server action to handle user authentication with support for 2FA and email verification
+ *
+ * Manages the complete login flow including credentials verification, 2FA handling,
+ * email verification status, and proper session creation. Supports callback URLs
+ * and handles various authentication scenarios.
+ *
+ * 1. Validate input fields and callback URL
+ * 2. Fetch user authentication data
+ * 3. Verify password
+ *    - Check needs update to Reset Password
+ * 4. Check email verification status
+ *    - Send verification email if needed
+ * 5. Handle 2FA if enabled
+ *    - Generate and send 2FA token if needed
+ *    - Send user to 2FA form
+ *    - Verify 2FA code if provided
+ * 6. Create authenticated session with auth.js
+ *
+ * @notes
+ * - Successful login throws NEXT_REDIRECT (normal Auth.js behavior)
+ * - 2FA tokens are single-use
+ * - Email verification tokens are reissued if expired
+ * - Supports custom callback URLs with validation
+ */
+export const loginAction = async (
+  values: zod.infer<typeof LoginSchema>,
+  callbackUrl: string | null
+): Promise<LoginActionResult> => {
+  try {
+    const validatedFields = LoginSchema.safeParse(values);
+    const validatedCallbackUrl = CallbackUrlSchema.safeParse(callbackUrl);
+
+    if (!validatedFields.success) {
+      throw new CustomLoginAuthError('InvalidFields');
+    }
+
+    callbackUrl = validatedCallbackUrl.success ? validatedCallbackUrl.data : null;
+    const { email, password, twoFactorCode } = validatedFields.data;
+
+    // Get all user auth data in a single query
+    const { user, activeCustomVerificationToken, activeTwoFactorToken } = await getUserLoginAuthData(email);
+
+    if (!user?.email || !user?.password) {
+      throw new CustomLoginAuthError('WrongCredentials');
+    }
+
+    // Verify password, this handles crypto version changes
+    const { isPasswordValid, passwordNeedsUpdate } = await verifyPassword(password, user.password);
+    if (passwordNeedsUpdate) {
+      throw new CustomLoginAuthError('PasswordNeedUpdate');
+    }
+    if (!isPasswordValid) {
+      throw new CustomLoginAuthError('WrongCredentials');
+    }
+
+    // Handle email verification
+    if (!user.emailVerified) {
+      if (activeCustomVerificationToken) {
+        throw new CustomLoginAuthError('ConfirmationEmailAlreadySent');
+      }
+
+      const customVerificationToken = await generateCustomVerificationToken({
+        email,
+        userId: user.id,
+      });
+
+      const emailResponse = await sendVerificationEmail(customVerificationToken.email, customVerificationToken.token);
+      if (emailResponse.error) {
+        await deleteCustomVerificationTokenById(customVerificationToken.id);
+        throw new CustomLoginAuthError('ResendEmailError');
+      }
+      throw new CustomLoginAuthError('NewConfirmationEmailSent');
+    }
+
+    // Handle 2FA
+    if (user.isTwoFactorEnabled) {
+      if (twoFactorCode) {
+        if (!activeTwoFactorToken) {
+          throw new CustomLoginAuthError('TwoFactorTokenNotExists');
+        }
+
+        if (activeTwoFactorToken.token !== twoFactorCode) {
+          throw new CustomLoginAuthError('TwoFactorCodeInvalid');
+        }
+
+        await consumeTwoFactorToken(activeTwoFactorToken.token, user.id);
+      } else {
+        // At this point user is logging in and have 2FA Activated
+        if (!activeTwoFactorToken) {
+          const twoFactorToken = await generateTwoFactorToken(user.email, user.id);
+          const emailResponse = await sendTwoFactorTokenEmail(user.email, twoFactorToken.token);
+          if (emailResponse.error) {
+            throw new CustomLoginAuthError('ResendEmailError');
+          }
+        }
+        // We send user to the 2FA Code Form
+        return { twoFactor: true };
+      }
+    }
+    const verifiedUser: VerifiedUserForAuth = {
+      id: user.id,
+      email: user.email,
+      name: user.name ?? null,
+      role: user.role,
+      isTwoFactorEnabled: user.isTwoFactorEnabled,
+      emailVerified: user.emailVerified,
+      image: user.image,
+      isOauth: false,
+    };
+    // Stringify user object since Auth.js credentials only accept strings
+    // Will be JSON.parsed in the auth callback
+    // by doing JSON.stringify, is easier to construct the object again.
+    // Could use formData too
+    await signIn('credentials', {
+      user: JSON.stringify(verifiedUser),
+      redirectTo: callbackUrl ?? DEFAULT_LOGIN_REDIRECT,
+    });
+  } catch (error) {
+    if (error instanceof CustomLoginAuthError) {
+      switch (error.type) {
+        case 'InvalidFields':
+          return { error: messages.login.errors.INVALID_FIELDS };
+        case 'WrongCredentials':
+          return { error: messages.login.errors.WRONG_CREDENTIALS };
+        case 'ConfirmationEmailAlreadySent':
+          return { error: messages.login.errors.CONFIRMATION_EMAIL_ALREADY_SENT };
+        case 'ResendEmailError':
+          return { error: messages.login.errors.RESEND_EMAIL_ERROR };
+        case 'NewConfirmationEmailSent':
+          return { error: messages.login.errors.NEW_CONFIRMATION_EMAIL_SENT };
+        case 'TwoFactorTokenNotExists':
+          return { error: messages.login.errors.TWO_FACTOR_TOKEN_NOT_EXISTS };
+        case 'TwoFactorCodeInvalid':
+          return { error: messages.login.errors.TWO_FACTOR_CODE_INVALID };
+        case 'PasswordNeedUpdate':
+          return { error: messages.login.errors.ASK_USER_RESET_PASSWORD };
+        default:
+          return { error: messages.generic.errors.UNKNOWN_ERROR };
+      }
+    }
+
+    if (error instanceof PrismaClientKnownRequestError || error instanceof PrismaClientInitializationError) {
+      console.error('Database error:', error);
+      return { error: messages.generic.errors.DB_CONNECTION_ERROR };
+    }
+
+    if (error instanceof AuthError) {
+      switch (error.type) {
+        case 'CredentialsSignin':
+          return { error: messages.login.errors.AUTH_ERROR };
+        default:
+          return { error: messages.login.errors.AUTH_ERROR };
+      }
+    }
+
+    if (error instanceof Error && error.message?.includes('NEXT_REDIRECT')) {
+      throw error; // This is necessary for the redirect to work
+    }
+
+    return { error: messages.generic.errors.UNEXPECTED_ERROR };
+  }
+
+  return { error: messages.generic.errors.NASTY_WEIRD_ERROR };
+};
+</file>
+
+<file path="actions/logout.ts">
+'use server';
+
+import { signOut } from '@/auth';
+
+export const logoutAction = async () => {
+  // some server stuff
+  await signOut({ redirectTo: '/' });
+};
+</file>
+
+<file path="actions/magic-link.ts">
+'use server';
+
+import { AuthError } from 'next-auth';
+
+import { signIn } from '@/auth';
+import { CustomMagicLinkError } from '@/lib/constants/errors/errors';
+import { messages } from '@/lib/constants/messages/actions/messages';
+
+type MagicLinkActionResult = { success: string; error?: never } | { error: string; success?: never };
+
+/**
+ * Server action to handle magic link authentication requests
+ *
+ * Processes email-based authentication by sending a magic link to the user's email.
+ * Uses the Resend provider from Auth.js to handle email delivery and implements
+ * rate limiting and security checks.
+ *
+ * @note Handles NEXT_REDIRECT errors differently than standard Auth.js flow:
+ * Instead of redirecting, returns a success message
+ *
+ * @securityNotes
+ * - Uses built-in Resend email normalization
+ */
+export async function magicLinkAction(formData: FormData): Promise<MagicLinkActionResult> {
+  try {
+    // This is a example sending raw formData
+    await signIn('resend', formData);
+    return { success: messages.magicLink.success.SENT };
+  } catch (error) {
+    if (error instanceof AuthError) {
+      if (error.cause?.err instanceof CustomMagicLinkError) {
+        switch (error.cause.err.errorType) {
+          case 'IpInvalid':
+            return { error: messages.magicLink.errors.GENERIC_FAILED };
+          case 'IpLimit':
+            return { error: messages.magicLink.errors.IP_LIMIT };
+          case 'TokenExists':
+            return { error: messages.magicLink.errors.EMAIL_ALREADY_SENT };
+          default:
+            return { error: messages.magicLink.errors.GENERIC_CUSTOMMAGICLINKERROR };
+        }
+      }
+      return { error: messages.magicLink.errors.GENERIC_AUTHERROR };
+    }
+
+    if (error instanceof Error && error.message?.includes('NEXT_REDIRECT')) {
+      /*throw error;// This is necessary for the redirect to work*/
+      // Not redirecting, returning a success instead
+      return { success: messages.magicLink.success.SENT };
+    }
+
+    return { error: messages.generic.errors.UNEXPECTED_ERROR };
+  }
+}
+</file>
+
+<file path="actions/new-password.ts">
+'use server';
+
+import { PrismaClientKnownRequestError, PrismaClientInitializationError } from '@prisma/client/runtime/library';
+import * as zod from 'zod';
+
+import { getValidPasswordResetToken } from '@/data/db/tokens/password-reset/helpers';
+import { CustomNewPasswordError } from '@/lib/constants/errors/errors';
+import { messages } from '@/lib/constants/messages/actions/messages';
+import { hashPassword } from '@/lib/crypto/hash-edge-compatible';
+import { db } from '@/lib/db';
+import { NewPasswordSchema, PasswordResetTokenSchema } from '@/schemas';
+
+type NewPasswordActionResult = { success: string; error?: never } | { error: string; success?: never };
+
+/**
+ * Server action to handle password reset after user clicks email link
+ *
+ * This action is triggered when a user submits the new password form after clicking
+ * the reset password link from their email. It validates the token from the URL
+ *
+ * @note Uses a database transaction to ensure token is invalidated when password is updated
+ * @note Passwords are hashed before storage
+ * @note Tokens are single-use and removed
+ */
+export const newPasswordAction = async (
+  values: zod.infer<typeof NewPasswordSchema>,
+  token?: string | null
+): Promise<NewPasswordActionResult> => {
+  try {
+    // Validate inputs
+    const validatedToken = PasswordResetTokenSchema.safeParse(token);
+    if (!validatedToken.success || !validatedToken.data) {
+      throw new CustomNewPasswordError('InvalidToken');
+    }
+
+    const validatedFields = NewPasswordSchema.safeParse(values);
+    if (!validatedFields.success || !validatedFields.data) {
+      throw new CustomNewPasswordError('InvalidFields');
+    }
+
+    const existingToken = await getValidPasswordResetToken(validatedToken.data);
+    if (!existingToken) {
+      throw new CustomNewPasswordError('TokenNotExist');
+    }
+
+    const { password } = validatedFields.data;
+    // Hash the new password
+    const hashedPassword = await hashPassword(password);
+
+    // Update password and delete token to prevent token reuse
+    await db.$transaction(async (tx) => {
+      // Update user password
+      await tx.user.update({
+        where: {
+          id: existingToken.userId,
+        },
+        data: {
+          password: hashedPassword,
+        },
+      });
+
+      // Delete the used token
+      await tx.passwordResetToken.delete({
+        where: {
+          id: existingToken.id,
+        },
+      });
+    });
+
+    return { success: messages.new_password.success.UPDATE_SUCCESSFUL };
+  } catch (error) {
+    if (error instanceof CustomNewPasswordError) {
+      switch (error.type) {
+        case 'InvalidToken':
+          return { error: messages.new_password.errors.INVALID_TOKEN };
+        case 'InvalidFields':
+          return { error: messages.new_password.errors.INVALID_PASSWORD };
+        case 'TokenNotExist':
+          return { error: messages.new_password.errors.REQUEST_NEW_PASSWORD_RESET };
+        default:
+          return { error: messages.generic.errors.UNKNOWN_ERROR };
+      }
+    }
+    if (error instanceof PrismaClientKnownRequestError || error instanceof PrismaClientInitializationError) {
+      console.error('Database error:', error);
+      return { error: messages.generic.errors.DB_CONNECTION_ERROR };
+    }
+
+    return { error: messages.generic.errors.UNEXPECTED_ERROR };
+  }
+};
+</file>
+
+<file path="actions/new-verification.ts">
+'use server';
+
+import { PrismaClientInitializationError, PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+
+import { generateCustomVerificationToken } from '@/data/db/tokens/verification-email/create';
+import { deleteCustomVerificationTokenById } from '@/data/db/tokens/verification-email/delete';
+import { CustomNewVerificationEmailError } from '@/lib/constants/errors/errors';
+import { messages } from '@/lib/constants/messages/actions/messages';
+import { db } from '@/lib/db';
+import { sendVerificationEmail } from '@/lib/mail/mail';
+import { NewVerificationEmailTokenSchema } from '@/schemas';
+
+type NewVerificationActionResult = { success: string; error?: never } | { error: string; success?: never };
+
+/**
+ * Server action to handle email verification token processing
+ *
+ * Validates and processes email verification tokens, handling various scenarios
+ * including token expiration, already verified emails, and automatic token renewal.
+ * Uses transactions to ensure data consistency when updating verification status.
+ *
+ * 1. Validate token format
+ * 2. Find token in database with user data
+ * 3. Check if email already verified
+ * 4. Check token expiration
+ *    - If expired, generate and send new token
+ * 5. Update user verification status
+ * 6. Delete used token
+ */
+export const newVerificationAction = async (token: string): Promise<NewVerificationActionResult> => {
+  try {
+    const validatedToken = NewVerificationEmailTokenSchema.safeParse(token);
+    if (!validatedToken.success) {
+      throw new CustomNewVerificationEmailError('InvalidToken');
+    }
+
+    const verificationData = await db.customVerificationToken.findUnique({
+      where: {
+        token: validatedToken.data,
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            email: true,
+            emailVerified: true,
+          },
+        },
+      },
+    });
+
+    if (!verificationData) {
+      throw new CustomNewVerificationEmailError('InvalidTokenOrVerified');
+    }
+
+    // Check if email is already verified
+    // This should not happen
+    if (verificationData.user.emailVerified) {
+      await db.customVerificationToken.delete({
+        where: { id: verificationData.id },
+      });
+      throw new CustomNewVerificationEmailError('EmailAlreadyVerified');
+    }
+
+    // Check if token has expired
+    const now = new Date();
+    if (verificationData.expires <= now) {
+      const newToken = await generateCustomVerificationToken({
+        userId: verificationData.user.id,
+        email: verificationData.email,
+      });
+
+      // Send new verification email
+      const emailResponse = await sendVerificationEmail(newToken.email, newToken.token);
+      if (emailResponse.error) {
+        await deleteCustomVerificationTokenById(newToken.id);
+        throw new CustomNewVerificationEmailError('ResendEmailError');
+      }
+      throw new CustomNewVerificationEmailError('TokenExpiredSentNewEmail');
+    }
+
+    // Verify email and delete token
+    await db.$transaction(async (tx) => {
+      await tx.user.update({
+        where: {
+          id: verificationData.user.id,
+        },
+        data: {
+          emailVerified: new Date(),
+          email: verificationData.email,
+        },
+      });
+
+      await tx.customVerificationToken.delete({
+        where: {
+          id: verificationData.id,
+        },
+      });
+    });
+
+    return { success: messages.new_verification_email.success.EMAIL_VERIFIED };
+  } catch (error) {
+    if (error instanceof CustomNewVerificationEmailError) {
+      switch (error.type) {
+        case 'InvalidToken':
+          return { error: messages.new_verification_email.errors.INVALID_TOKEN };
+        case 'EmailNotFound':
+          return { error: messages.new_verification_email.errors.EMAIL_NOT_FOUND };
+        case 'EmailAlreadyVerified':
+          return { error: messages.new_verification_email.errors.EMAIL_ALREADY_VERIFIED };
+        case 'ResendEmailError':
+          return { error: messages.new_verification_email.errors.TOKEN_EXPIRED_FAILED_SEND_EMAIL };
+        case 'TokenExpiredSentNewEmail':
+          return { error: messages.new_verification_email.errors.TOKEN_EXPIRED_SENT_NEW };
+        case 'InvalidTokenOrVerified':
+          return { error: messages.new_verification_email.errors.INVALID_TOKEN_OR_VERIFIED };
+        default:
+          return { error: messages.generic.errors.UNKNOWN_ERROR };
+      }
+    }
+
+    if (error instanceof PrismaClientInitializationError || error instanceof PrismaClientKnownRequestError) {
+      console.error('Database error:', error);
+      return { error: messages.generic.errors.DB_CONNECTION_ERROR };
+    }
+
+    console.error('Verification error:', error);
+    return { error: messages.generic.errors.UNEXPECTED_ERROR };
+  }
+};
+</file>
+
+<file path="actions/register.ts">
+'use server';
+
+import { PrismaClientInitializationError, PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import * as zod from 'zod';
+
+import { deleteCustomVerificationTokenById } from '@/data/db/tokens/verification-email/delete';
+import { createNewCredentialsUser } from '@/data/db/user/create';
+import { countUserRegistrationsByIp } from '@/data/db/user/helpers';
+import { CustomRegisterCredentialsUserError } from '@/lib/constants/errors/errors';
+import { messages } from '@/lib/constants/messages/actions/messages';
+import { db } from '@/lib/db';
+import { sendVerificationEmail } from '@/lib/mail/mail';
+import { getHashedUserIpFromHeaders } from '@/lib/nextjs/headers';
+import { RegisterSchema } from '@/schemas';
+
+type RegisterActionResult = { success: string; error?: never } | { error: string; success?: never };
+
+/**
+ * Server action to handle new user registration with email verification
+ *
+ * Manages the entire registration process including input validation, IP-based
+ * rate limiting, user creation, and email verification token generation/sending.
+ * Implements security measures like IP tracking and account limits.
+ *
+ * 1. Validate input fields
+ * 2. Get and validate IP address
+ * 3. Check account limits per IP (production only)
+ * 4. Verify email uniqueness
+ * 5. Create user and customVerification token
+ * 6. Send verification email
+ * 7. Delete the created token when send email fail
+ *
+ * @securityFeatures
+ * - IP-based rate limiting (max 2 accounts per IP in production)
+ * - Email uniqueness validation
+ * - IP tracking for registrations
+ *
+ */
+export const registerAction = async (values: zod.infer<typeof RegisterSchema>): Promise<RegisterActionResult> => {
+  try {
+    const validatedFields = RegisterSchema.safeParse(values);
+    if (!validatedFields.success) {
+      throw new CustomRegisterCredentialsUserError('InvalidFields');
+    }
+
+    const { email, password, name } = validatedFields.data;
+    const hashedIp = await getHashedUserIpFromHeaders();
+
+    if (!hashedIp) {
+      throw new CustomRegisterCredentialsUserError('IpValidation');
+    }
+    // Check account limit per IP
+    if (process.env.NODE_ENV === 'production') {
+      const accountCount = await countUserRegistrationsByIp({
+        hashedIp,
+      });
+
+      if (accountCount >= 2) {
+        throw new CustomRegisterCredentialsUserError('AccountLimit');
+      }
+    }
+
+    // check existing email
+    const existingUser = await db.user.findUnique({
+      where: { email: email },
+      select: { id: true },
+    });
+
+    if (existingUser) {
+      throw new CustomRegisterCredentialsUserError('EmailExists');
+    }
+
+    // Create user and verification token
+    const { emailCustomVerificationToken } = await createNewCredentialsUser({
+      name,
+      email,
+      password,
+      hashedIp,
+    });
+
+    // Send email for email-verification.
+
+    const emailResponse = await sendVerificationEmail(
+      emailCustomVerificationToken.email,
+      emailCustomVerificationToken.token
+    );
+
+    // If it fails we still send success message. Account is Registered at this point!
+    if (emailResponse.error) {
+      await deleteCustomVerificationTokenById(emailCustomVerificationToken.id);
+      return { success: messages.register.success.ACC_CREATED_EMAIL_SEND_FAILED };
+    }
+
+    return { success: messages.register.success.REGISTRATION_COMPLETE };
+  } catch (error) {
+    if (error instanceof CustomRegisterCredentialsUserError) {
+      switch (error.type) {
+        case 'InvalidFields':
+          return { error: messages.generic.errors.INVALID_FIELDS };
+        case 'IpValidation':
+          return { error: messages.register.errors.IP_VALIDATION_FAILED };
+        case 'AccountLimit':
+          return { error: messages.register.errors.ACCOUNT_LIMIT };
+        case 'EmailExists':
+          return { error: messages.register.errors.EMAIL_EXISTS };
+        default:
+          return { error: messages.generic.errors.GENERIC_ERROR };
+      }
+    }
+
+    if (error instanceof PrismaClientKnownRequestError && error.code === 'P2002') {
+      return { error: messages.register.errors.EMAIL_EXISTS };
+    }
+
+    if (error instanceof PrismaClientInitializationError) {
+      console.error('Database connection error:', error);
+      return { error: messages.generic.errors.DB_CONNECTION_ERROR };
+    }
+
+    console.error('Unknown registration error:', error);
+    return { error: messages.generic.errors.GENERIC_ERROR };
+  }
+};
+</file>
+
+<file path="actions/reset-password.ts">
+'use server';
+
+import { PrismaClientKnownRequestError, PrismaClientInitializationError } from '@prisma/client/runtime/library';
+import * as zod from 'zod';
+
+import { generatePasswordResetToken } from '@/data/db/tokens/password-reset/create';
+import { deletePasswordResetTokenById } from '@/data/db/tokens/password-reset/delete';
+import { getUserResetPasswordData } from '@/data/db/user/reset-password';
+import { CustomResetPasswordError } from '@/lib/constants/errors/errors';
+import { messages } from '@/lib/constants/messages/actions/messages';
+import { sendPasswordResetEmail } from '@/lib/mail/mail';
+import { ResetPasswordSchema } from '@/schemas';
+
+type ResetPasswordActionResult = { success: string; error?: never } | { error: string; success?: never };
+
+/**
+ * Server action to initiate password reset process
+ *
+ * Handles the first step of password reset where user requests a reset link.
+ * Performs validations, generates a reset token, and sends an email
+ * with the reset link to the user.
+ *
+ * 1. Validate email format
+ * 2. Check if user exists and can reset password
+ * 3. Check for existing valid reset tokens
+ * 4. Generate new reset token
+ * 5. Send reset email
+ * 6. Clean up token if email fails
+ *
+ * @securityNotes
+ * - Validates email format before processing
+ * - Prevents multiple active reset tokens
+ * - Deletes token if email sending fails
+ * - Prevents OAuth-only accounts from password reset
+ */
+export const resetPasswordAction = async (
+  values: zod.infer<typeof ResetPasswordSchema>
+): Promise<ResetPasswordActionResult> => {
+  try {
+    const validatedFields = ResetPasswordSchema.safeParse(values);
+    if (!validatedFields.success) {
+      throw new CustomResetPasswordError('InvalidFields');
+    }
+
+    const { email } = validatedFields.data;
+
+    const { userId, canResetPassword, activeResetToken } = await getUserResetPasswordData(email);
+
+    if (!userId) {
+      throw new CustomResetPasswordError('EmailNotFound');
+    }
+
+    if (!canResetPassword) {
+      throw new CustomResetPasswordError('NoPasswordToReset');
+    }
+
+    if (activeResetToken) {
+      throw new CustomResetPasswordError('TokenStillValid');
+    }
+
+    const passwordResetToken = await generatePasswordResetToken(email, userId);
+    const emailResponse = await sendPasswordResetEmail(passwordResetToken.email, passwordResetToken.token);
+    if (emailResponse.error) {
+      await deletePasswordResetTokenById(passwordResetToken.id);
+      throw new CustomResetPasswordError('ResendEmailError');
+    }
+    return { success: messages.reset_password.success.PASSWORD_RESET_EMAIL_SENT };
+  } catch (error) {
+    if (error instanceof CustomResetPasswordError) {
+      switch (error.type) {
+        case 'InvalidFields':
+          return { error: messages.reset_password.errors.INVALID_EMAIL };
+        case 'EmailNotFound':
+          return { error: messages.reset_password.errors.EMAIL_NOT_FOUND };
+        case 'NoPasswordToReset':
+          return { error: messages.reset_password.errors.OAUTH_USER_ONLY };
+        case 'TokenStillValid':
+          return { error: messages.reset_password.errors.TOKEN_STILL_VALID };
+        case 'ResendEmailError':
+          return { error: messages.reset_password.errors.SEND_EMAIL_ERROR };
+        default:
+          return { error: messages.generic.errors.UNKNOWN_ERROR };
+      }
+    }
+
+    if (error instanceof PrismaClientKnownRequestError || error instanceof PrismaClientInitializationError) {
+      console.error('Database error:', error);
+      return { error: messages.generic.errors.DB_CONNECTION_ERROR };
+    }
+
+    return { error: messages.generic.errors.UNEXPECTED_ERROR };
+  }
+};
+</file>
+
+<file path="actions/settings.ts">
+'use server';
+
+import { PrismaClientInitializationError } from '@prisma/client/runtime/library';
+import * as zod from 'zod';
+
+import { unstable_update } from '@/auth';
+import { getUserSettingsData } from '@/data/db/user/settings';
+import { currentSessionUser } from '@/lib/auth/auth-utils';
+import { CustomSettingsError } from '@/lib/constants/errors/errors';
+import { messages } from '@/lib/constants/messages/actions/messages';
+import { hashPassword, verifyPassword } from '@/lib/crypto/hash-edge-compatible';
+import { db } from '@/lib/db';
+import { SettingsSchema } from '@/schemas';
+
+type SettingsActionResult = { success: string; error?: never } | { error: string; success?: never };
+
+/**
+ * Server action to handle user settings updates
+ *
+ * Manages user profile updates of a logged-in user.
+ * Handles different update scenarios for OAuth and password-based users, with
+ * appropriate validations and restrictions.
+ *
+ * @specialBehavior
+ * - OAuth users cannot change password or 2FA settings
+ * - Password changes require current password verification
+ * - Returns dynamic success message based on updated fields
+ * - Updates user session to reflect changes immediately
+ *
+ * @helper getValuesWeAreUpdating
+ * Helper function that:
+ * - Determines which fields have actually changed
+ * - Builds update data object for database
+ * - Tracks changed fields for success message
+ * - Prevents unnecessary database updates
+ */
+export const settingsAction = async (values: zod.infer<typeof SettingsSchema>): Promise<SettingsActionResult> => {
+  try {
+    const authUser = await currentSessionUser();
+    if (!authUser?.id || !authUser.email) {
+      throw new CustomSettingsError('Unauthorized');
+    }
+
+    const validatedFields = SettingsSchema.safeParse(values);
+    if (!validatedFields.success) {
+      throw new CustomSettingsError('InvalidFields');
+    }
+
+    let { name, password, newPassword, isTwoFactorEnabled, role } = validatedFields.data;
+    /* Fields that users from oauth should not be able to change */
+    if (authUser.isOauth) {
+      password = undefined;
+      newPassword = undefined;
+      isTwoFactorEnabled = undefined;
+    }
+
+    const userData = await getUserSettingsData(authUser.id);
+    if (!userData?.email) {
+      throw new CustomSettingsError('Unauthorized');
+    }
+
+    /* Password change logic */
+    let hashedNewPassword = undefined;
+    if (password && newPassword && userData.password) {
+      const { isPasswordValid, passwordNeedsUpdate } = await verifyPassword(password, userData.password);
+      if (passwordNeedsUpdate) {
+        throw new CustomSettingsError('PasswordNeedUpdate');
+      }
+      if (!isPasswordValid) {
+        throw new CustomSettingsError('IncorrectPassword');
+      }
+      if (password === newPassword) {
+        throw new CustomSettingsError('SamePassword');
+      }
+      hashedNewPassword = await hashPassword(newPassword);
+    }
+
+    const { updateData, updatedFields, hasChanges } = getValuesWeAreUpdating({
+      name,
+      hashedNewPassword,
+      isTwoFactorEnabled,
+      role,
+      userData: {
+        name: userData.name ?? '',
+        isTwoFactorEnabled: userData.isTwoFactorEnabled,
+        role: userData.role,
+      },
+    });
+    if (!hasChanges) {
+      throw new CustomSettingsError('NoChangesToBeMade');
+    }
+
+    const updatedUser = await db.user.update({
+      where: { id: userData.id },
+      data: updateData,
+    });
+
+    await unstable_update({
+      user: {
+        id: updatedUser.id,
+        email: updatedUser.email,
+        image: updatedUser.image,
+        isOauth: true,
+        isTwoFactorEnabled: updatedUser.isTwoFactorEnabled,
+        role: updatedUser.role,
+        name: updatedUser.name ?? undefined,
+      },
+    });
+    // Create update message
+    const updatedMessage =
+      updatedFields.length === 1
+        ? `Updated ${updatedFields[0]}`
+        : `Updated ${updatedFields.slice(0, -1).join(', ')} and ${updatedFields[updatedFields.length - 1]}`;
+    return { success: updatedMessage };
+  } catch (error) {
+    if (error instanceof CustomSettingsError) {
+      switch (error.type) {
+        case 'Unauthorized':
+          return { error: messages.settings.errors.UNAUTHORIZED };
+        case 'InvalidFields':
+          return { error: messages.settings.errors.INVALID_FIELDS };
+        case 'IncorrectPassword':
+          return { error: messages.settings.errors.INCORRECT_PASSWORD };
+        case 'SamePassword':
+          return { error: messages.settings.errors.SAME_PASSWORD };
+        case 'NoChangesToBeMade':
+          return { error: messages.settings.errors.NO_CHANGES_REQUIRED };
+        case 'PasswordNeedUpdate':
+          return { error: messages.settings.errors.PASSWORD_NEEDS_UPDATE };
+        default:
+          return { error: messages.generic.errors.UNKNOWN_ERROR };
+      }
+    }
+
+    if (error instanceof PrismaClientInitializationError) {
+      console.error('Database connection error:', error);
+      return { error: messages.generic.errors.DB_CONNECTION_ERROR };
+    }
+
+    console.error('Settings update error:', error);
+    return { error: messages.generic.errors.GENERIC_ERROR };
+  }
+};
+
+interface GetUpdateValuesParams {
+  name?: string;
+  hashedNewPassword?: string;
+  isTwoFactorEnabled?: boolean;
+  role?: string;
+  userData: {
+    name: string;
+    isTwoFactorEnabled: boolean;
+    role: string;
+  };
+}
+
+function getValuesWeAreUpdating({
+  name,
+  hashedNewPassword,
+  isTwoFactorEnabled,
+  role,
+  userData,
+}: GetUpdateValuesParams) {
+  const updateData: Record<string, any> = {};
+  const updatedFields: string[] = [];
+
+  if (name && name !== userData.name) {
+    updateData.name = name;
+    updatedFields.push('name');
+  }
+
+  if (hashedNewPassword) {
+    updateData.password = hashedNewPassword;
+    updatedFields.push('password');
+  }
+
+  if (typeof isTwoFactorEnabled === 'boolean' && isTwoFactorEnabled !== userData.isTwoFactorEnabled) {
+    updateData.isTwoFactorEnabled = isTwoFactorEnabled;
+    updatedFields.push('2FA');
+  }
+
+  if (role && role !== userData.role) {
+    updateData.role = role;
+    updatedFields.push('role');
+  }
+
+  return {
+    updateData,
+    updatedFields,
+    hasChanges: updatedFields.length > 0,
+  };
+}
+</file>
+
+<file path="app/(auth)/login/magic-link/page.tsx">
+import { MagicLinkForm } from '@/components/auth/forms/MagicLinkForm';
+
+export default function MagicLinkPage() {
+  return <MagicLinkForm />;
+}
+</file>
+
+<file path="app/(auth)/login/page.tsx">
+import { Suspense } from 'react';
+
+import { LoginForm } from '@/components/auth/forms/LoginForm';
+
+export default function LoginPage() {
+  return (
+    <Suspense>
+      <LoginForm />
+    </Suspense>
+  );
+}
+</file>
+
+<file path="app/(auth)/loginerror/page.tsx">
+import { ErrorCard } from '@/components/auth/shared/ErrorCard';
+
+export default function LoginErrorPage() {
+  return <ErrorCard />;
+}
+</file>
+
+<file path="app/(auth)/new-password/page.tsx">
+import { Suspense } from 'react';
+
+import { NewPasswordForm } from '@/components/auth/forms/NewPasswordForm';
+
+export default function NewPasswordPage() {
+  return (
+    <div>
+      <Suspense>
+        <NewPasswordForm />
+      </Suspense>
+    </div>
+  );
+}
+</file>
+
+<file path="app/(auth)/new-verification/page.tsx">
+import { Suspense } from 'react';
+
+import { NewVerificationForm } from '@/components/auth/forms/NewVerificationForm';
+
+export default function NewVerificationPage() {
+  return (
+    <div>
+      <Suspense>
+        <NewVerificationForm />
+      </Suspense>
+    </div>
+  );
+}
+</file>
+
+<file path="app/(auth)/register/page.tsx">
+import { Suspense } from 'react';
+
+import { RegisterForm } from '@/components/auth/forms/RegisterForm';
+
+export default function RegisterPage() {
+  return (
+    <Suspense>
+      <RegisterForm />
+    </Suspense>
+  );
+}
+</file>
+
+<file path="app/(auth)/reset-password/page.tsx">
+import { ResetPasswordForm } from '@/components/auth/forms/ResetPasswordForm';
+
+export default function ResetPasswordPage() {
+  return <ResetPasswordForm />;
+}
+</file>
+
+<file path="app/(auth)/layout.tsx">
+import type { ReactNode } from 'react';
+
+export default function AuthLayout({ children }: { children: ReactNode }) {
+  return (
+    <>
+      <div className='flex h-full items-center justify-center bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-sky-400 to-blue-800'>
+        {children}
+      </div>
+    </>
+  );
+}
+</file>
+
+<file path="components/user/actions/LogoutButton.tsx">
+'use client';
+
+import { logoutAction } from '@/actions/logout';
+
+import type { ReactNode } from 'react';
+
+export const LogoutButton = (props: { children: ReactNode }) => {
+  return (
+    <span
+      className='cursor-pointer'
+      onClick={async () => {
+        await logoutAction();
+      }}
+    >
+      {props.children}
+    </span>
+  );
+};
+</file>
+
+<file path="components/user/profile/UserInfo.tsx">
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+
+import type { Session } from 'next-auth';
+
+interface UserInfoProps {
+  user?: Session['user'];
+  label: string;
+}
+
+export const UserInfo = ({ user, label }: UserInfoProps) => {
+  return (
+    <Card className='w-[600px] shadow-md'>
+      <CardHeader>
+        <p className='text-2x text-center font-semibold'>{label}</p>
+      </CardHeader>
+      <CardContent className='space-y-4'>
+        {/* ID */}
+        <div className='flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm'>
+          <p className='text-sm font-medium'>ID</p>
+          <p className='max-w-[180px] truncate rounded-md bg-slate-100 p-1 font-mono text-xs'>{user?.id}</p>
+        </div>
+        {/* Name */}
+        <div className='flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm'>
+          <p className='text-sm font-medium'>Name</p>
+          <p className='max-w-[180px] truncate rounded-md bg-slate-100 p-1 font-mono text-xs'>{user?.name}</p>
+        </div>
+        {/* Email */}
+        <div className='flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm'>
+          <p className='text-sm font-medium'>Email</p>
+          <p className='max-w-[180px] truncate rounded-md bg-slate-100 p-1 font-mono text-xs'>{user?.email}</p>
+        </div>
+        {/* Role */}
+        <div className='flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm'>
+          <p className='text-sm font-medium'>Role</p>
+          <p className='max-w-[180px] truncate rounded-md bg-slate-100 p-1 font-mono text-xs'>{user?.role}</p>
+        </div>
+        {/* 2FA */}
+        <div className='flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm'>
+          <p className='text-sm font-medium'>Two Factor Authentication</p>
+          <Badge variant={user?.isTwoFactorEnabled ? 'success' : 'destructive'}>
+            {user?.isTwoFactorEnabled ? 'ON' : 'OFF'}
+          </Badge>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
+</file>
+
+<file path="data/db/account/helpers.ts">
+import { unstable_cache } from 'next/cache';
+
+import { db } from '@/lib/db';
+
+export const getAccountByUserId = async (userId: string) => {
+  const account = await db.account.findFirst({
+    where: { userId },
+  });
+
+  return account;
+};
+
+// For a possible 'database' session strategy database;
+export async function getCachedInfoForJwtByUserId(userId: string) {
+  const tags = [`jwt-info-tag-${userId}`];
+  const cacheKey = [`jwt-info-key-${userId}`];
+
+  return unstable_cache(
+    async () => {
+      console.log('🔍 Fetching user and account info from DB...');
+      const userWithAccount = await db.user.findUnique({
+        where: { id: userId },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          role: true,
+          isTwoFactorEnabled: true,
+          _count: {
+            select: {
+              accounts: true,
+            },
+          },
+        },
+      });
+      console.log('✅ DB fetch completed', userWithAccount ? 'Data found' : 'No data found');
+
+      return {
+        user: userWithAccount
+          ? {
+              id: userWithAccount.id,
+              name: userWithAccount.name,
+              email: userWithAccount.email,
+              role: userWithAccount.role,
+              isTwoFactorEnabled: userWithAccount.isTwoFactorEnabled,
+            }
+          : null,
+        hasOAuthAccount: (userWithAccount?._count?.accounts ?? 0) > 0,
+      };
+    },
+    cacheKey,
+    {
+      tags,
+      revalidate: 3600,
+    }
+  )();
+}
+</file>
+
+<file path="data/db/tokens/password-reset/create.ts">
+import { PasswordResetToken } from '@prisma/client';
+import { v4 as uuidv4 } from 'uuid';
+
+import { db } from '@/lib/db';
+
+export const generatePasswordResetToken = async (email: string, userId: string): Promise<PasswordResetToken> => {
+  const token = uuidv4();
+  const expires = new Date(new Date().getTime() + 3600 * 1000); // 1hr
+
+  // Clean up any existing tokens for this email
+  await db.passwordResetToken.deleteMany({
+    where: { email },
+  });
+
+  const passwordResetToken = await db.passwordResetToken.upsert({
+    where: {
+      email,
+    },
+    update: {
+      token,
+      expires,
+      userId,
+    },
+    create: {
+      email,
+      token,
+      expires,
+      userId,
+    },
+  });
+
+  return passwordResetToken;
+};
+</file>
+
+<file path="data/db/tokens/password-reset/delete.ts">
+import { db } from '@/lib/db';
+
+export const deletePasswordResetTokenById = async (tokenId: string): Promise<void> => {
+  await db.passwordResetToken.delete({
+    where: { id: tokenId },
+  });
+};
+</file>
+
+<file path="data/db/tokens/password-reset/helpers.ts">
+import { PasswordResetToken, Prisma } from '@prisma/client';
+
+import { db } from '@/lib/db';
+
+export const getPasswordResetTokenByToken = async (token: string): Promise<PasswordResetToken | null> => {
+  const passwordToken = await db.passwordResetToken.findUnique({
+    where: { token },
+  });
+
+  return passwordToken;
+};
+
+export const getPasswordResetTokenByEmail = async (email: string): Promise<PasswordResetToken | null> => {
+  const passwordResetToken = await db.passwordResetToken.findUnique({
+    where: { email },
+  });
+
+  return passwordResetToken;
+};
+
+type TokenWithUser = Prisma.PasswordResetTokenGetPayload<{
+  include: {
+    user: {
+      select: {
+        id: true;
+        email: true;
+      };
+    };
+  };
+}>;
+
+/**
+ * Retrieves a password reset token and its associated user information in a single query
+ * @param {string} token - The password reset token string to look up
+ * @returns {Promise<TokenWithUser | null>} The token with user data if found, null otherwise
+ *
+ * @throws Will throw an error if the database query fails
+ */
+export const getPasswordResetTokenWithUserByTokenId = async (token: string): Promise<TokenWithUser | null> => {
+  return db.passwordResetToken.findUnique({
+    where: {
+      token,
+    },
+    include: {
+      user: {
+        select: {
+          id: true,
+          email: true,
+        },
+      },
+    },
+  });
+};
+
+/**
+ * Retrieves a valid (non-expired) password reset token
+ * @param {string} token - The password reset token string to look up
+ * @returns {Promise<PasswordResetToken | null>} The token if found and valid, null otherwise
+ *
+ * @throws - Will throw an error if the database query fails
+ */
+export const getValidPasswordResetToken = async (token: string): Promise<PasswordResetToken | null> => {
+  const now = new Date();
+
+  return db.passwordResetToken.findFirst({
+    where: {
+      token,
+      expires: {
+        gt: now,
+      },
+    },
+  });
+};
+</file>
+
+<file path="data/db/tokens/two-factor/create.ts">
+import crypto from 'crypto';
+
+import { TwoFactorToken } from '@prisma/client';
+
+import { getTwoFactorTokenByEmail } from '@/data/db/tokens/two-factor/helpers';
+import { db } from '@/lib/db';
+
+export const generateTwoFactorToken = async (email: string, userId: string): Promise<TwoFactorToken> => {
+  const token = crypto.randomInt(100_000, 1_000_000).toString();
+  const expires = new Date(new Date().getTime() + 3600 * 1000); // 1hr
+
+  const existingToken = await getTwoFactorTokenByEmail(email);
+  if (existingToken) {
+    await db.twoFactorToken.delete({
+      where: { id: existingToken.id },
+    });
+  }
+
+  const twoFactorToken = await db.twoFactorToken.create({
+    data: {
+      email,
+      token,
+      expires,
+      userId,
+    },
+  });
+
+  return twoFactorToken;
+};
+</file>
+
+<file path="data/db/tokens/two-factor/helpers.ts">
+import { TwoFactorToken } from '@prisma/client';
+
+import { db } from '@/lib/db';
+
+export const getTwoFactorTokenByToken = async (token: string): Promise<TwoFactorToken | null> => {
+  const twoFactorToken = await db.twoFactorToken.findUnique({
+    where: { token },
+  });
+  return twoFactorToken;
+};
+
+export const getTwoFactorTokenByEmail = async (email: string): Promise<TwoFactorToken | null> => {
+  const twoFactorToken = await db.twoFactorToken.findFirst({
+    where: { email },
+  });
+  return twoFactorToken;
+};
+</file>
+
+<file path="data/db/tokens/verification-email/create.ts">
+import { CustomVerificationToken, Prisma } from '@prisma/client';
+import { v4 as uuidv4 } from 'uuid';
+
+import { db } from '@/lib/db';
+
+/**
+ * Generates a verification token for a user
+ * Uses upsert with compound unique constraint
+ *
+ * @param {Object} params - The parameters for token generation
+ * @param {string} params.userId - User's ID
+ * @param {string} params.email - User's email
+ * @param {Prisma.TransactionClient} [params.prisma=db] - Optional transaction client defaults to db from @/lib/db
+ * @returns {Promise<CustomVerificationToken>} The created verification token
+ */
+export const generateCustomVerificationToken = async ({
+  userId,
+  email,
+  prisma = db,
+}: {
+  userId: string;
+  email: string;
+  prisma?: typeof db | Prisma.TransactionClient;
+}): Promise<CustomVerificationToken> => {
+  const token = uuidv4();
+  const expires = new Date(new Date().getTime() + 3600 * 1000); // 1hr
+
+  // First, delete any existing tokens for this email
+  await prisma.customVerificationToken.deleteMany({
+    where: { email },
+  });
+
+  // Then create a new token
+  return prisma.customVerificationToken.create({
+    data: {
+      email,
+      token,
+      expires,
+      userId,
+    },
+  });
+};
+</file>
+
+<file path="data/db/tokens/verification-email/delete.ts">
+import { db } from '@/lib/db';
+
+export const deleteCustomVerificationTokenById = async (tokenId: string): Promise<void> => {
+  await db.customVerificationToken.delete({
+    where: { id: tokenId },
+  });
+};
+</file>
+
+<file path="data/db/tokens/verification-email/helpers.ts">
+import { db } from '@/lib/db';
+
+export const getCustomVerificationTokenByToken = async (token: string) => {
+  const customVerificationToken = await db.customVerificationToken.findUnique({
+    where: { token },
+  });
+  return customVerificationToken;
+};
+</file>
+
+<file path="data/db/tokens/verification-tokens/magic-link/helpers.ts">
+import { CustomMagicLinkError } from '@/lib/constants/errors/errors';
+import { db } from '@/lib/db';
+
+export async function validateMagicLinkRequest(email: string, hashedIp: string) {
+  // Check IP limit
+  const activeTokensCountSameIp = await db.verificationToken.count({
+    where: {
+      hashedIp,
+      expires: { gt: new Date() },
+    },
+  });
+
+  if (activeTokensCountSameIp >= 2) {
+    throw new CustomMagicLinkError('IpLimit');
+  }
+
+  // Check for existing token
+  const existingToken = await db.verificationToken.findFirst({
+    where: {
+      identifier: email,
+      expires: { gt: new Date() },
+    },
+  });
+
+  if (existingToken) {
+    throw new CustomMagicLinkError('TokenExists');
+  }
+}
+
+export async function cleanupExpiredVerificationTokens() {
+  await db.verificationToken.deleteMany({
+    where: {
+      expires: { lt: new Date() },
+    },
+  });
+}
+</file>
+
+<file path="data/db/unstable-cache/helpers.ts">
+import { revalidateTag } from 'next/cache';
+
+export const clearUnstableCachedInfoForJwtByUserId = async (userId: string) => {
+  revalidateTag(`jwt-info-tag-${userId}`);
+};
+</file>
+
+<file path="data/db/user/create.ts">
+import { v4 as uuidv4 } from 'uuid';
+
+import { hashPassword } from '@/lib/crypto/hash-edge-compatible';
+import { db } from '@/lib/db';
+
+type CreateCredentialsUserData = {
+  name: string;
+  email: string;
+  password: string;
+  hashedIp: string;
+};
+
+type CreateCredentialsUserResponse = {
+  emailCustomVerificationToken: {
+    id: string;
+    token: string;
+    email: string;
+  };
+};
+
+/**
+ * Creates a new credentials-based user with email verification token
+ *
+ * Creates a user account in the database with a hashed password and generates
+ * an email verification token. Uses a single transaction.
+ *
+ * @param {CreateCredentialsUserData} params - name, email, password, hashedIp
+ * @returns {Promise<CreateCredentialsUserResponse>} CustomVerificationToken data of created user
+ *
+ * @throws {PrismaClientKnownRequestError}
+ * - P2002: Email already exists
+ * - Other Prisma errors for database operation failures
+ *
+ * @note
+ * - Verification token expires in 1 hour
+ * - Password is automatically hashed
+ * - Uses UUID v4 for token generation
+ * - Returns the necessary token data for email sending
+ */
+export const createNewCredentialsUser = async ({
+  name,
+  email,
+  password,
+  hashedIp,
+}: CreateCredentialsUserData): Promise<CreateCredentialsUserResponse> => {
+  const token = uuidv4();
+
+  // Hash the password
+  const hashedPassword = await hashPassword(password);
+
+  // Create user and verification token
+  const newUser = await db.user.create({
+    data: {
+      name: name,
+      email: email,
+      password: hashedPassword,
+      ip: hashedIp,
+      customVerificationTokens: {
+        create: {
+          email: email,
+          token: token,
+          expires: new Date(new Date().getTime() + 3600 * 1000), // 1hr
+        },
+      },
+    },
+    select: {
+      customVerificationTokens: {
+        where: {
+          token: token,
+        },
+        select: {
+          id: true,
+          token: true,
+          email: true,
+        },
+      },
+    },
+  });
+  const [verificationToken] = newUser.customVerificationTokens;
+
+  return {
+    emailCustomVerificationToken: verificationToken,
+  };
+};
+</file>
+
+<file path="data/db/user/helpers.ts">
+import { type User } from '@prisma/client';
+
+import { db } from '@/lib/db';
+
+/**
+ * Gets the number of accounts registered with a given IP address
+ * @param data - Configuration options
+ * @param data.hashedIp - User's hashed IP address
+ * @throws {Error} When database operation fails
+ * @returns {Promise<number>} Number of accounts registered with the IP
+ */
+export const countUserRegistrationsByIp = async ({ hashedIp }: { hashedIp: string }): Promise<number> => {
+  const existingAccounts = await db.user.count({
+    where: { ip: hashedIp },
+  });
+
+  return existingAccounts;
+};
+
+export const getUserByEmail = async (email: string): Promise<User | null> => {
+  const user = await db.user.findUnique({ where: { email } });
+
+  return user;
+};
+
+export const getUserById = async (id: string): Promise<User | null> => {
+  const user = await db.user.findUnique({ where: { id } });
+
+  return user;
+};
+</file>
+
+<file path="data/db/user/login.ts">
+import { db } from '@/lib/db';
+
+import type { TwoFactorConfirmation, TwoFactorToken, User, CustomVerificationToken } from '@prisma/client';
+
+//Complete user data with authentication-related associations
+interface UserLoginAuthData {
+  user: CompleteUserWithAuth | null;
+  activeCustomVerificationToken: CustomVerificationToken | null;
+  activeTwoFactorToken: TwoFactorToken | null;
+}
+
+// Combined user authentication data
+type CompleteUserWithAuth = User & {
+  customVerificationTokens: CustomVerificationToken[];
+  twoFactorTokens: TwoFactorToken[];
+  twoFactorConfirmation: TwoFactorConfirmation | null;
+};
+
+/**
+ * Retrieves all authentication-related data for a user
+ *
+ * Fetches user data along with their active verification tokens and 2FA status.
+ * Only returns one non-expired tokens, ordered by expiration date.
+ *
+ * @note
+ * - Tokens are filtered by expiration date
+ * - Returns only the most recent tokens (ordered by expiration)
+ * - Returns null values if user not found
+ */
+export const getUserLoginAuthData = async (email: string): Promise<UserLoginAuthData> => {
+  const now = new Date(Date.now());
+  const userData = await db.user.findUnique({
+    where: { email },
+    include: {
+      customVerificationTokens: {
+        where: {
+          expires: { gt: now },
+        },
+        orderBy: {
+          expires: 'desc',
+        },
+      },
+      twoFactorTokens: {
+        where: {
+          expires: { gt: now },
+        },
+        orderBy: {
+          expires: 'desc',
+        },
+      },
+      twoFactorConfirmation: true,
+    },
+  });
+
+  if (!userData) {
+    return {
+      user: null,
+      activeCustomVerificationToken: null,
+      activeTwoFactorToken: null,
+    };
+  }
+
+  const [customVerificationToken] = userData.customVerificationTokens;
+  const [twoFactorToken] = userData.twoFactorTokens;
+  return {
+    user: userData,
+    activeCustomVerificationToken: customVerificationToken || null,
+    activeTwoFactorToken: twoFactorToken || null,
+  };
+};
+
+/**
+ * Processes a successful 2FA verification
+ *
+ * Handles the complete 2FA verification flow in a transaction:
+ * 1. Deletes the used 2FA token
+ * 2. Removes any existing 2FA confirmations
+ * 3. Creates a new 2FA confirmation
+ *
+ * @throws {PrismaClientKnownRequestError}
+ * - If token doesn't exist
+ * - If user doesn't exist
+ * - If database transaction fails
+ */
+export const consumeTwoFactorToken = async (token: string, userId: string): Promise<void> => {
+  await db.$transaction(async (tx) => {
+    // Delete the used token
+    await tx.twoFactorToken.delete({
+      where: { token: token },
+    });
+
+    await tx.twoFactorConfirmation.deleteMany({
+      where: { userId },
+    });
+
+    // Create new confirmation
+    await tx.twoFactorConfirmation.create({
+      data: { userId },
+    });
+  });
+};
+</file>
+
+<file path="data/db/user/reset-password.ts">
+import { db } from '@/lib/db';
+
+import type { PasswordResetToken, User } from '@prisma/client';
+
+type UserResetPasswordData = {
+  userId: User['id'] | null;
+  canResetPassword: boolean;
+  activeResetToken: PasswordResetToken | null;
+};
+
+/**
+ * Retrieves user data for password reset flow
+ *
+ * Fetches necessary user information to determine if and how a password reset
+ * can proceed. Checks for existing valid reset tokens and whether the user
+ * is eligible for password reset.
+ *
+ * @param {string} email - User's email address
+ *
+ * @returns {Promise<UserResetPasswordData>} Object containing:
+ * - userId: User's ID if found
+ * - canResetPassword: Whether user can reset password (has password auth)
+ * - activeResetToken: Currently active reset token, if any
+ *
+ * @Notes
+ * - Only returns one active (non-expired) reset tokens
+ * - Orders tokens by expiration to get most recent
+ * - Checks if user has password-based authentication
+ *
+ * @returns {Promise<{
+ *   userId: string | null;
+ *   canResetPassword: boolean;
+ *   activeResetToken: PasswordResetToken | null;
+ * }>}
+ */
+export const getUserResetPasswordData = async (email: string): Promise<UserResetPasswordData> => {
+  const now = new Date();
+
+  const userData = await db.user.findUnique({
+    where: { email },
+    select: {
+      id: true,
+      password: true,
+      passwordResetTokens: {
+        where: {
+          expires: { gt: now },
+        },
+        orderBy: {
+          expires: 'desc',
+        },
+        take: 1,
+      },
+    },
+  });
+
+  if (!userData) {
+    return {
+      userId: null,
+      canResetPassword: false,
+      activeResetToken: null,
+    };
+  }
+  const canResetPassword = userData.password !== null;
+  const [passwordResetToken] = userData.passwordResetTokens;
+
+  return {
+    userId: userData.id,
+    canResetPassword,
+    activeResetToken: passwordResetToken || null,
+  };
+};
+</file>
+
+<file path="data/db/user/settings.ts">
+import { UserRole } from '@prisma/client';
+
+import { db } from '@/lib/db';
+
+type UserSettingsDataReturn = {
+  name: string | null;
+  id: string;
+  email: string;
+  emailVerified: Date | null;
+  password: string | null;
+  role: UserRole;
+  isTwoFactorEnabled: boolean;
+};
+
+/**
+ * Retrieves user settings data with specific field selection
+ *
+ * Fetches essential user data needed for settings management, including
+ * authentication status, role, and security preferences.
+ *
+ * @param {string} userId - The user's ID
+ */
+export const getUserSettingsData = async (userId: string): Promise<UserSettingsDataReturn | null> => {
+  return db.user.findUnique({
+    where: { id: userId },
+    select: {
+      id: true,
+      email: true,
+      emailVerified: true,
+      password: true,
+      name: true,
+      role: true,
+      isTwoFactorEnabled: true,
+    },
+  });
+};
+</file>
+
+<file path="e2e-tests/config/test-config.ts">
+export const TEST_CONFIG = {
+  MAILSAC_API_KEY: process.env.MAILSAC_API_KEY!,
+  DATABASE_URL: process.env.DATABASE_URL!,
+  TEST_EMAIL: 'zenwainextauthtesting@mailsac.com',
+  TEST_PASSWORD: '1234567',
+  TEST_NAME: 'faketesting',
+};
+
+if (!TEST_CONFIG.MAILSAC_API_KEY) {
+  throw new Error('MAILSAC_API_KEY is required');
+}
+
+if (!TEST_CONFIG.DATABASE_URL) {
+  throw new Error('DATABASE_URL is required');
+}
+</file>
+
+<file path="e2e-tests/helpers/mailsac/mailsac.ts">
+type EmailMessage = {
+  _id: string;
+  subject: string;
+};
+
+type EmailFetchOptions = {
+  retries?: number;
+  delay?: number;
+  exactMatch?: boolean;
+};
+
+/**
+ * Fetches email content from Mailsac by searching for a specific subject
+ * @param email - The email address to check
+ * @param apiKey - Mailsac API key
+ * @param subject - The subject to search for
+ * @param options - Optional configuration for retries, delay and match type
+ * @returns Promise<string> - The email content
+ * @throws Error if email is not found after retries or if API calls fail
+ */
+export async function getEmailContent(
+  email: string,
+  apiKey: string,
+  subject: string,
+  options: EmailFetchOptions = {}
+): Promise<string> {
+  const { retries = 10, delay = 2000, exactMatch = false } = options;
+
+  for (let i = 0; i < retries; i++) {
+    try {
+      // Get all messages for the email address
+      const response = await fetch(`https://mailsac.com/api/addresses/${email}/messages`, {
+        headers: {
+          'Mailsac-Key': apiKey,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch messages: ${response.status} ${response.statusText}`);
+      }
+
+      const messages: EmailMessage[] = await response.json();
+
+      // Find the email with matching subject
+      const targetEmail = messages.find((msg) =>
+        exactMatch ? msg.subject === subject : msg.subject.includes(subject)
+      );
+
+      if (targetEmail) {
+        // Get the full email content
+        const fullEmailResponse = await fetch(`https://mailsac.com/api/text/${email}/${targetEmail._id}`, {
+          headers: {
+            'Mailsac-Key': apiKey,
+          },
+        });
+
+        if (!fullEmailResponse.ok) {
+          throw new Error(`Failed to fetch email content: ${fullEmailResponse.status} ${fullEmailResponse.statusText}`);
+        }
+
+        return await fullEmailResponse.text();
+      }
+
+      console.log(`Attempt ${i + 1}: Email with subject "${subject}" not found. Retrying...`);
+    } catch (error) {
+      console.error(`Attempt ${i + 1} failed:`, error);
+    }
+
+    // Wait before next retry
+    await new Promise((resolve) => setTimeout(resolve, delay));
+  }
+
+  throw new Error(`Email with subject "${subject}" not found after ${retries} attempts`);
+}
+
+/**
+ * Extracts the verification token from an email content
+ * @param emailContent The raw email content
+ * @returns The verification token
+ */
+export async function extractCustomVerificationToken(emailContent: string): Promise<string> {
+  // Look for the token in the verification URL
+  const tokenMatch = emailContent.match(/token=([0-9a-f-]+)/i);
+
+  if (!tokenMatch || !tokenMatch[1]) {
+    throw new Error('Verification token not found in email');
+  }
+
+  return tokenMatch[1];
+}
+
+/**
+ * Deletes all messages from the Mailsac Inbox
+ * Ensures a clean inbox
+ * @return 204
+ * @throws Error if not authorized or other issue
+ */
+export async function cleanupMailsacInbox(email: string, apiKey: string): Promise<number> {
+  const response = await fetch(`https://mailsac.com/api/addresses/${email}/messages`, {
+    method: 'DELETE',
+    headers: {
+      'Mailsac-Key': apiKey,
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text().catch(() => 'No error details available');
+    throw new Error(`Failed to cleanup inbox (${response.status}): ${errorText}`);
+  }
+
+  return response.status;
+}
+</file>
+
+<file path="e2e-tests/helpers/helper-functions.ts">
+import { UserRole, Prisma } from '@prisma/client';
+
+import { hashIp, hashPassword } from '@/lib/crypto/hash-edge-compatible';
+import { db } from '@/lib/db';
+
+/**
+ * Checks if a user exists with the given email and deletes them if found.
+ * Ensures clean user test state before registration tests
+ */
+export async function cleanupTestUserFromDB(email: string): Promise<void> {
+  try {
+    const existingUser = await db.user.findUnique({
+      where: { email },
+    });
+
+    if (existingUser) {
+      await db.user.delete({
+        where: { email },
+      });
+    }
+    console.log(`Cleaned up test user: ${email}`);
+  } catch (error) {
+    console.error(`Error cleaning up test user ${email}:`, error);
+    throw error;
+  }
+}
+
+/**
+ * Creates a credentials user.
+ * @param name
+ * @param email
+ * @param password
+ * @param options - Optional Configuration options
+ * @param options.emailVerified - Defaults to false.
+ * @param options.isTwoFactorEnabled - Defaults to false.
+ * @param options.role - Defaults to "USER".
+ *
+ * @returns Promise<void>
+ * @throws Error
+ */
+export async function createCredentialsTestUser(
+  name: string,
+  email: string,
+  password: string,
+  options: { emailVerified?: boolean; isTwoFactorEnabled?: boolean; role?: UserRole } = {
+    emailVerified: false,
+    isTwoFactorEnabled: false,
+    role: UserRole.USER,
+  }
+): Promise<void> {
+  try {
+    const existingUser = await db.user.findUnique({
+      where: { email },
+    });
+
+    if (existingUser) {
+      await cleanupTestUserFromDB(email);
+    }
+
+    const hashedPassword = await hashPassword(password);
+
+    const userData: Prisma.UserCreateInput = {
+      name,
+      email,
+      password: hashedPassword,
+      emailVerified: options.emailVerified ? new Date() : null,
+      isTwoFactorEnabled: options.isTwoFactorEnabled,
+      role: options.role,
+    };
+
+    await db.user.create({ data: userData });
+    console.log(`Created test user: ${email}`);
+  } catch (error) {
+    console.error('Error creating test user with 2FA:', error);
+    throw error;
+  }
+}
+
+/**
+ * Cleans up all test accounts that were created with localhost IP (127.0.0.1).
+ * Designed to be run before registration tests to ensure a clean test state.
+ *
+ * @returns Promise<number> - Number of accounts deleted
+ * @throws Error - If database operation fails
+ */
+export async function cleanupLocalhostTestAccounts(): Promise<void> {
+  try {
+    const hashedLocalhost = await hashIp('127.0.0.1');
+
+    await db.user.deleteMany({
+      where: {
+        ip: hashedLocalhost,
+      },
+    });
+  } catch (error) {
+    console.error('Error cleaning up localhost test accounts:', error);
+    throw error;
+  }
+}
+</file>
+
+<file path="e2e-tests/helpers/tests.ts">
+import type { Page } from '@playwright/test';
+
+type LoginFormData = {
+  email: string | null;
+  password: string | null;
+};
+
+/**
+ * Fill out the Login form
+ */
+export async function fillLoginForm(page: Page, data: LoginFormData): Promise<void> {
+  const TEST_EMAIL = data.email;
+  const TEST_PASSWORD = data.password;
+
+  if (TEST_EMAIL) await page.locator('input[name="email"]').fill(TEST_EMAIL);
+  if (TEST_PASSWORD) await page.locator('input[name="password"]').fill(TEST_PASSWORD);
+}
+
+type RegistrationFormData = {
+  email: string | null;
+  password: string | null;
+  name: string | null;
+};
+
+/**
+ * Fill out the Registration form
+ */
+export async function fillRegistrationForm(page: Page, data: RegistrationFormData): Promise<void> {
+  const TEST_EMAIL = data.email;
+  const TEST_PASSWORD = data.password;
+  const TEST_NAME = data.name;
+
+  if (TEST_EMAIL) await page.locator('input[name="email"]').fill(TEST_EMAIL);
+  if (TEST_PASSWORD) await page.locator('input[name="password"]').fill(TEST_PASSWORD);
+  if (TEST_NAME) await page.locator('input[name="name"]').fill(TEST_NAME);
+}
+</file>
+
+<file path="e2e-tests/credentials-2FA.spec.ts">
+import { expect, Page, test } from '@playwright/test';
+
+import { TEST_CONFIG } from '@/e2e-tests/config/test-config';
+import { cleanupTestUserFromDB, createCredentialsTestUser } from '@/e2e-tests/helpers/helper-functions';
+import { cleanupMailsacInbox, getEmailContent } from '@/e2e-tests/helpers/mailsac/mailsac';
+import { fillLoginForm } from '@/e2e-tests/helpers/tests';
+import { messages } from '@/lib/constants/messages/actions/messages';
+
+test.describe('2FA Authentication Flow', () => {
+  const { MAILSAC_API_KEY, TEST_EMAIL, TEST_PASSWORD, TEST_NAME } = TEST_CONFIG;
+
+  async function cleanupState() {
+    await cleanupTestUserFromDB(TEST_EMAIL);
+    const mailsacResponseStatus = await cleanupMailsacInbox(TEST_EMAIL, MAILSAC_API_KEY);
+    expect(mailsacResponseStatus).toBe(204);
+  }
+
+  async function createTwoFactorUser() {
+    await createCredentialsTestUser(TEST_NAME, TEST_EMAIL, TEST_PASSWORD, {
+      isTwoFactorEnabled: true,
+      emailVerified: true,
+    });
+  }
+
+  async function initiateLogin(page: Page) {
+    await page.goto('/login');
+    await fillLoginForm(page, {
+      email: TEST_EMAIL,
+      password: TEST_PASSWORD,
+    });
+    await page.locator('button[type="submit"]').click();
+  }
+
+  async function getTwoFactorCode(): Promise<string> {
+    const emailContent = await getEmailContent(TEST_EMAIL, MAILSAC_API_KEY, '2FA Code', {
+      retries: 5,
+      delay: 2000,
+      exactMatch: false,
+    });
+
+    const twoFactorCode = emailContent.match(/(\d{6})/)?.[1];
+
+    if (!twoFactorCode) {
+      throw new Error('Could not extract 2FA code from email');
+    }
+
+    return twoFactorCode;
+  }
+
+  async function submitTwoFactorCode(page: Page, code: string) {
+    await page.locator('input[name="twoFactorCode"]').fill(code);
+    await page.locator('button[type="submit"]').click();
+  }
+
+  test('should successfully authenticate user with valid 2FA code', async ({ page }) => {
+    await test.step('Setup test environment', async () => {
+      await cleanupState();
+      await createTwoFactorUser();
+    });
+
+    await test.step('Initiate login process', async () => {
+      await initiateLogin(page);
+    });
+
+    await test.step('Process 2FA verification', async () => {
+      const twoFactorCode = await getTwoFactorCode();
+      await submitTwoFactorCode(page, twoFactorCode);
+      await page.waitForURL('**/settings');
+      await expect(page).toHaveURL('/settings');
+    });
+  });
+
+  test('should reject login attempt with invalid 2FA code', async ({ page }) => {
+    await test.step('Setup test environment', async () => {
+      await cleanupState();
+      await createTwoFactorUser();
+    });
+
+    await test.step('Attempt login with invalid 2FA code', async () => {
+      await initiateLogin(page);
+      await submitTwoFactorCode(page, '000000');
+      await expect(page.getByText(messages.login.errors.TWO_FACTOR_CODE_INVALID)).toBeVisible();
+    });
+  });
+});
+</file>
+
+<file path="e2e-tests/credentials-registration-flow.spec.ts">
+import { test, expect, type Page } from '@playwright/test';
+
+import { TEST_CONFIG } from '@/e2e-tests/config/test-config';
+import { cleanupLocalhostTestAccounts, cleanupTestUserFromDB } from '@/e2e-tests/helpers/helper-functions';
+import {
+  cleanupMailsacInbox,
+  extractCustomVerificationToken,
+  getEmailContent,
+} from '@/e2e-tests/helpers/mailsac/mailsac';
+import { fillLoginForm, fillRegistrationForm } from '@/e2e-tests/helpers/tests';
+import { messages } from '@/lib/constants/messages/actions/messages';
+
+test.describe('User Registration and Email Verification Flow', () => {
+  const { MAILSAC_API_KEY, TEST_EMAIL, TEST_PASSWORD, TEST_NAME } = TEST_CONFIG;
+
+  async function cleanupState() {
+    const mailsacResponseStatus = await cleanupMailsacInbox(TEST_EMAIL, MAILSAC_API_KEY);
+    expect(mailsacResponseStatus).toBe(204);
+    await cleanupTestUserFromDB(TEST_EMAIL);
+    await cleanupLocalhostTestAccounts();
+  }
+
+  async function registerNewUser(page: Page) {
+    await page.goto('/register');
+
+    await test.step('Fill out registration form', async () => {
+      await fillRegistrationForm(page, {
+        email: TEST_EMAIL,
+        password: TEST_PASSWORD,
+        name: TEST_NAME,
+      });
+    });
+
+    await test.step('Submit registration and verify response', async () => {
+      const [response] = await Promise.all([
+        page.waitForResponse((response) => response.url().endsWith('/register'), { timeout: 10000 }),
+        page.locator('button[type="submit"]').click(),
+      ]);
+      expect(response.status()).toBe(200);
+    });
+
+    await test.step('Verify success message', async () => {
+      const expectedMessage = messages.register.success.REGISTRATION_COMPLETE;
+      await expect(page.getByText(expectedMessage, { exact: false })).toBeVisible({ timeout: 5000 });
+    });
+  }
+
+  async function attemptLoginBeforeConfirmationEmailHandled(page: Page) {
+    await page.goto('/login');
+
+    await test.step('Attempt login before doing the email confirmation', async () => {
+      await fillLoginForm(page, {
+        email: TEST_EMAIL,
+        password: TEST_PASSWORD,
+      });
+      await page.locator('button[type="submit"]').click();
+    });
+
+    await test.step('Verify confirmation requirement message', async () => {
+      await expect(page.getByText(messages.login.errors.CONFIRMATION_EMAIL_ALREADY_SENT, { exact: true })).toBeVisible({
+        timeout: 5000,
+      });
+    });
+  }
+
+  async function verifyEmailAndLogin(page: Page) {
+    await test.step('Process verification email', async () => {
+      const emailContent = await getEmailContent(TEST_EMAIL, MAILSAC_API_KEY, 'Please confirm your email');
+      expect(emailContent).toBeTruthy();
+
+      const customVerificationToken = await extractCustomVerificationToken(emailContent);
+      expect(customVerificationToken).toBeTruthy();
+
+      await page.goto(`/new-verification?token=${customVerificationToken}`);
+      await expect(page.getByText(messages.new_verification_email.success.EMAIL_VERIFIED)).toBeVisible();
+    });
+
+    await test.step('Navigate to login', async () => {
+      await page.getByRole('link', { name: 'Back to login' }).click();
+      await page.waitForURL('**/login');
+    });
+
+    await test.step('Complete login process', async () => {
+      await fillLoginForm(page, {
+        email: TEST_EMAIL,
+        password: TEST_PASSWORD,
+      });
+
+      const [response] = await Promise.all([
+        page.waitForResponse((response) => response.url().endsWith('/login'), { timeout: 10000 }),
+        page.locator('button[type="submit"]').click(),
+      ]);
+
+      expect(response.status()).toBe(303);
+      await page.waitForURL('**/settings');
+    });
+  }
+
+  test('should complete full registration flow with email verification', async ({ page }) => {
+    await test.step('Start with a clean state', async () => {
+      await cleanupState();
+    });
+
+    await test.step('Register new user', async () => {
+      await registerNewUser(page);
+    });
+
+    await test.step('Login attempts should be blocked until email verification', async () => {
+      await attemptLoginBeforeConfirmationEmailHandled(page);
+    });
+
+    await test.step('After email verification, login should succeed', async () => {
+      await verifyEmailAndLogin(page);
+    });
+  });
+});
+</file>
+
+<file path="e2e-tests/forgot-password.spec.ts">
+import { expect, test, type Page } from '@playwright/test';
+
+import { TEST_CONFIG } from '@/e2e-tests/config/test-config';
+import { cleanupTestUserFromDB, createCredentialsTestUser } from '@/e2e-tests/helpers/helper-functions';
+import { cleanupMailsacInbox, getEmailContent } from '@/e2e-tests/helpers/mailsac/mailsac';
+import { fillLoginForm } from '@/e2e-tests/helpers/tests';
+import { messages } from '@/lib/constants/messages/actions/messages';
+
+test.describe('Password Reset Flow', () => {
+  const { MAILSAC_API_KEY, TEST_EMAIL, TEST_PASSWORD, TEST_NAME } = TEST_CONFIG;
+  const NEW_PASSWORD = 'newpassword123';
+
+  async function setupTestUser() {
+    await cleanupTestUserFromDB(TEST_EMAIL);
+    const mailsacResponseStatus = await cleanupMailsacInbox(TEST_EMAIL, MAILSAC_API_KEY);
+    expect(mailsacResponseStatus).toBe(204);
+
+    await createCredentialsTestUser(TEST_NAME, TEST_EMAIL, TEST_PASSWORD, {
+      emailVerified: true,
+      isTwoFactorEnabled: false,
+    });
+  }
+
+  async function requestPasswordReset(page: Page) {
+    await page.goto('/login');
+    await page.getByRole('link', { name: 'Forgot password?' }).click();
+    await page.waitForURL('**/reset-password');
+
+    await page.locator('input[name="email"]').fill(TEST_EMAIL);
+
+    const [response] = await Promise.all([
+      page.waitForResponse((response) => response.url().endsWith('/reset-password'), { timeout: 10000 }),
+      page.locator('button[type="submit"]').click(),
+    ]);
+
+    expect(response.status()).toBe(200);
+
+    await expect(page.getByText(messages.reset_password.success.PASSWORD_RESET_EMAIL_SENT)).toBeVisible();
+  }
+
+  async function getResetToken(): Promise<string> {
+    const emailContent = await getEmailContent(TEST_EMAIL, MAILSAC_API_KEY, 'Reset your password', {
+      retries: 5,
+      delay: 2000,
+      exactMatch: false,
+    });
+
+    const resetTokenMatch = emailContent.match(/token=([a-zA-Z0-9-]+)/);
+    const resetToken = resetTokenMatch?.[1];
+
+    if (!resetToken) {
+      throw new Error('Could not extract reset token from email');
+    }
+
+    return resetToken;
+  }
+
+  async function resetPassword(page: Page, token: string) {
+    await page.goto(`/new-password?token=${token}`);
+    await expect(page.getByText('Enter a new password')).toBeVisible();
+
+    await page.locator('input[name="password"]').fill(NEW_PASSWORD);
+    const [response] = await Promise.all([
+      page.waitForResponse((response) => response.url().endsWith(`/new-password?token=${token}`), { timeout: 10000 }),
+      page.locator('button[type="submit"]').click(),
+    ]);
+
+    expect(response.status()).toBe(200);
+  }
+
+  async function verifyNewPassword(page: Page) {
+    await page.goto('/login');
+    await fillLoginForm(page, {
+      email: TEST_EMAIL,
+      password: NEW_PASSWORD,
+    });
+    await page.locator('button[type="submit"]').click();
+
+    await page.waitForURL('**/settings');
+    await expect(page).toHaveURL('/settings');
+  }
+
+  test('Completes full password reset flow', async ({ page }) => {
+    await test.step('Setup test environment', async () => {
+      await setupTestUser();
+    });
+
+    await test.step('Request password reset', async () => {
+      await requestPasswordReset(page);
+    });
+
+    await test.step('Process reset token and change password', async () => {
+      const resetToken = await getResetToken();
+      await resetPassword(page, resetToken);
+      await expect(page.getByText(messages.new_password.success.UPDATE_SUCCESSFUL)).toBeVisible();
+    });
+
+    await test.step('Should be able to login with new password', async () => {
+      await verifyNewPassword(page);
+    });
+  });
+
+  test('Should show error for invalid reset token', async ({ page }) => {
+    await resetPassword(page, 'invalid-token');
+
+    await expect(page.getByText(messages.new_password.errors.INVALID_TOKEN)).toBeVisible();
+  });
+});
+</file>
+
+<file path="e2e-tests/navigation.spec.ts">
+import { expect, test, type Page } from '@playwright/test';
+
+import { TEST_CONFIG } from '@/e2e-tests/config/test-config';
+import { cleanupTestUserFromDB, createCredentialsTestUser } from '@/e2e-tests/helpers/helper-functions';
+import { fillLoginForm } from '@/e2e-tests/helpers/tests';
+
+test.describe('Authentication-based Navigation and Routing Tests', () => {
+  const { TEST_EMAIL, TEST_PASSWORD, TEST_NAME } = TEST_CONFIG;
+  const protectedRoutes = ['/admin', '/client', '/server', '/settings'];
+  const authRoutes = ['/', '/login', '/register', '/loginerror', '/reset-password', '/new-password'];
+
+  async function CreateAndLoginUser(page: Page) {
+    await cleanupTestUserFromDB(TEST_EMAIL);
+    await createCredentialsTestUser(TEST_NAME, TEST_EMAIL, TEST_PASSWORD, {
+      emailVerified: true,
+      isTwoFactorEnabled: false,
+    });
+    await fillLoginForm(page, {
+      email: TEST_EMAIL,
+      password: TEST_PASSWORD,
+    });
+    await page.locator('button[type="submit"]').click();
+  }
+
+  async function navigateAndCheckRedirect(page: Page, route: string, expectedRedirect: string, expectedStatus = 307) {
+    const [response] = await Promise.all([
+      page.waitForResponse((response) => response.url().endsWith(route), { timeout: 10000 }),
+      page.goto(route),
+    ]);
+
+    expect(response.status()).toBe(expectedStatus);
+    await page.waitForURL(`**/${expectedRedirect}**`);
+  }
+
+  test('should redirect unauthenticated users to login page with correct callback URL', async ({ page }) => {
+    await test.step('Verify initial state shows login page', async () => {
+      await page.goto('/login');
+      await page.waitForURL('**/login');
+    });
+
+    await test.step('Verify protected routes require authentication', async () => {
+      for (const route of protectedRoutes) {
+        await test.step(`When accessing ${route}, should redirect to login with correct callback`, async () => {
+          await navigateAndCheckRedirect(page, route, 'login');
+
+          const url = new URL(page.url());
+          expect(url.searchParams.get('callbackUrl')).toBe(route);
+        });
+      }
+    });
+  });
+
+  test('should redirect authenticated users from auth routes to settings page', async ({ page }) => {
+    await test.step('Login user', async () => {
+      await page.goto('/login');
+      await CreateAndLoginUser(page);
+      await page.waitForURL('**/settings');
+    });
+
+    await test.step('Verify authentication routes redirect back to settings', async () => {
+      for (const route of authRoutes) {
+        await test.step(`When accessing ${route}, should redirect to settings page`, async () => {
+          await navigateAndCheckRedirect(page, route, 'settings');
+          expect(page.url()).toContain('/settings');
+        });
+      }
+    });
+  });
+
+  test('should redirect to originally requested protected page after successful login', async ({ page }) => {
+    await test.step('Given an unauthenticated user accessing admin page', async () => {
+      await navigateAndCheckRedirect(page, '/admin', 'login');
+    });
+
+    await test.step('When user logs in, should redirect to originally requested admin page', async () => {
+      await CreateAndLoginUser(page);
+      await page.waitForURL('**/admin');
+      expect(page.url()).toContain('/admin');
+    });
+  });
+});
+</file>
+
+<file path="e2e-tests/rolegate.spec.ts">
+import { expect, Page, test } from '@playwright/test';
+
+import { TEST_CONFIG } from '@/e2e-tests/config/test-config';
+import { cleanupTestUserFromDB, createCredentialsTestUser } from '@/e2e-tests/helpers/helper-functions';
+import { cleanupMailsacInbox } from '@/e2e-tests/helpers/mailsac/mailsac';
+import { fillLoginForm } from '@/e2e-tests/helpers/tests';
+
+test.describe('Role-based Access Control Tests', () => {
+  const { MAILSAC_API_KEY, TEST_EMAIL, TEST_PASSWORD, TEST_NAME } = TEST_CONFIG;
+  let bundleChecksCompleted = false;
+  const ADMIN_CONTENT = 'This is a example of secret content';
+  const PERMISSION_DENIED = 'You do not have permission to view this content!';
+
+  test.beforeEach('Clean up User state, clean up mailbox', async () => {
+    await cleanupTestUserFromDB(TEST_EMAIL);
+    const mailsacResponseStatus = await cleanupMailsacInbox(TEST_EMAIL, MAILSAC_API_KEY);
+    expect(mailsacResponseStatus).toBe(204);
+  });
+
+  async function checkContentVisibility(page: Page, isAdmin: boolean) {
+    if (isAdmin) {
+      await expect(page.getByText(ADMIN_CONTENT)).toBeVisible();
+
+      await expect(page.getByText(PERMISSION_DENIED)).not.toBeVisible();
+    } else {
+      await expect(page.getByText(ADMIN_CONTENT)).not.toBeVisible();
+
+      await expect(page.getByText(PERMISSION_DENIED)).toBeVisible();
+    }
+  }
+
+  async function checkSourceContent(page: Page, isAdmin: boolean) {
+    const html = await page.content();
+    if (isAdmin) {
+      expect(html).toContain(ADMIN_CONTENT);
+    } else {
+      expect(html).not.toContain(ADMIN_CONTENT);
+    }
+
+    const [response] = await Promise.all([
+      page.waitForResponse((response) => response.url().endsWith('/admin')),
+      page.reload(),
+    ]);
+    const responseText = await response.text();
+
+    if (isAdmin) {
+      expect(responseText).toContain(ADMIN_CONTENT);
+    } else {
+      expect(responseText).not.toContain(ADMIN_CONTENT);
+    }
+
+    await checkJSBundlesForSensitiveData(page);
+  }
+
+  type ActionType = 'Route Handler' | 'Server Action';
+  type ActionOutcome = 'Allowed' | 'Forbidden';
+
+  async function checkAdminAction(page: Page, actionType: ActionType, expectedOutcome: ActionOutcome) {
+    const buttonText = `Admin-only ${actionType}`;
+    const toastText = `${expectedOutcome} ${actionType === 'Route Handler' ? 'RH call' : 'Server Action!'}`;
+
+    // Find and click the action button
+    const button = page
+      .locator('div.flex.flex-row', {
+        has: page.getByText(buttonText, { exact: true }),
+      })
+      .getByRole('button');
+
+    await button.click();
+    // Check toast message
+    await expect(
+      page.locator('[data-sonner-toast] [data-title]', {
+        hasText: toastText,
+      })
+    ).toBeVisible();
+  }
+
+  async function checkJSBundlesForSensitiveData(page: Page) {
+    if (bundleChecksCompleted) {
+      return;
+    }
+
+    const scriptUrls = await page.evaluate(() => {
+      return Array.from(document.getElementsByTagName('script'))
+        .map((script) => script.src)
+        .filter((src) => src.includes('/_next/static/chunks/'))
+        .filter((src) => !src.includes('webpack') && !src.includes('framework'));
+    });
+
+    for (const url of scriptUrls) {
+      const response = await page.request.get(url);
+      const content = await response.text();
+
+      expect(content).not.toContain('This is a example of secret content');
+    }
+
+    bundleChecksCompleted = true;
+  }
+
+  async function loginWithRole(page: Page, role: 'USER' | 'ADMIN') {
+    await createCredentialsTestUser(TEST_NAME, TEST_EMAIL, TEST_PASSWORD, {
+      isTwoFactorEnabled: false,
+      emailVerified: true,
+      role,
+    });
+
+    await page.goto('/login');
+    await fillLoginForm(page, {
+      email: TEST_EMAIL,
+      password: TEST_PASSWORD,
+    });
+    await page.locator('button[type="submit"]').click();
+    await page.waitForURL('**/settings');
+  }
+
+  test('Should restrict access for User role', async ({ page }) => {
+    await loginWithRole(page, 'USER');
+    await page.goto('/admin');
+
+    await test.step('Should prevent access to admin content', async () => {
+      await checkContentVisibility(page, false);
+    });
+
+    await test.step('Should not expose sensitive data in page source', async () => {
+      await checkSourceContent(page, false);
+    });
+
+    await test.step('Should block admin route handler access', async () => {
+      await checkAdminAction(page, 'Route Handler', 'Forbidden');
+    });
+
+    await test.step('Should block admin server action access', async () => {
+      await checkAdminAction(page, 'Server Action', 'Forbidden');
+    });
+  });
+
+  test('Should grant full access for Admin role', async ({ page }) => {
+    await loginWithRole(page, 'ADMIN');
+    await page.goto('/admin');
+
+    await test.step('Should display admin content', async () => {
+      await checkContentVisibility(page, true);
+    });
+
+    await test.step('Should include sensitive data in DOM', async () => {
+      await checkSourceContent(page, true);
+    });
+
+    await test.step('Should allow admin route handler access', async () => {
+      await checkAdminAction(page, 'Route Handler', 'Allowed');
+    });
+
+    await test.step('Should allow admin server action access', async () => {
+      await checkAdminAction(page, 'Server Action', 'Allowed');
+    });
+  });
+});
+</file>
+
+<file path="lib/auth/auth-utils.ts">
+import 'server-only';
+
+import { auth } from '@/auth';
+
+import type { Session } from 'next-auth';
+
+/**
+ * Retrieves the current user from session in server components
+ *
+ * @serverOnly This function can only be used in server components or server-side code
+ *
+ * @returns {Promise<Session['user'] | undefined>} Current user object from session or undefined if not authenticated
+ */
+export const currentSessionUser = async (): Promise<Session['user'] | undefined> => {
+  const session = await auth();
+
+  return session?.user;
+};
+
+/**
+ * Retrieves the current user's role from session in server components
+ *
+ * @serverOnly This function can only be used in server components or server-side code
+ *
+ * @returns {Promise<Session['user']['role'] | undefined>} User's role or undefined if not authenticated
+ */
+export const currentSessionRole = async (): Promise<Session['user']['role'] | undefined> => {
+  const session = await auth();
+
+  return session?.user?.role;
+};
+
+/**
+ * Checks if current user's session has a specific role
+ *
+ * @serverOnly This function can only be used in server components or server-side code
+ *
+ * @param {string} role - The role to check against (e.g., 'ADMIN', 'USER')
+ * @returns {Promise<boolean>} True if user has the specified role, false otherwise
+ */
+export const sessionHasRole = async (role: string): Promise<boolean> => {
+  const session = await auth();
+
+  return session?.user?.role === role;
+};
+</file>
+
+<file path="lib/auth/hooks.ts">
+'use client';
+
+import { useSession } from 'next-auth/react';
+
+import type { Session } from 'next-auth';
+
+/**
+ * Custom hook to access the current user session on client components.
+ *
+ * @deprecated Consider using server components with auth() instead.
+ * This hook should only be used when client-side session access is absolutely necessary.
+ * Server components provide better performance and security by fetching session data on the server.
+ *
+ * @example
+ * // Client Component usage (not recommended)
+ * const user = useCurrentUser();
+ *
+ * @returns {Session['user'] | undefined} The current user data from the session
+ */
+export const useCurrentUser = (): Session['user'] | undefined => {
+  const session = useSession();
+
+  return session.data?.user;
+};
+
+/**
+ * Custom hook to access the current user role on client components.
+ *
+ * @deprecated Consider using server components with auth() instead.
+ * This hook should only be used when client-side session access is absolutely necessary.
+ * Server components provide better performance and security by fetching session data on the server.
+ *
+ * @example
+ * // Client Component usage (not recommended)
+ * const userRole = useCurrentRole();
+ *
+ * @returns {Session['user'] | undefined} The current user data from the session
+ */
+export const useCurrentRole = (): Session['user']['role'] | undefined => {
+  const session = useSession();
+  return session?.data?.user?.role;
+};
+</file>
+
+<file path="lib/auth/types.d.ts">
+import { UserRole } from '@prisma/client';
+import NextAuth, { type DefaultSession } from 'next-auth';
+
+declare module 'next-auth' {
+  /**
+   * Returned by `useSession`, `auth`, contains information about the active session.
+   */
+  interface Session {
+    user: {
+      id: string;
+      role: UserRole;
+      isTwoFactorEnabled: boolean;
+      isOauth: boolean;
+    } & DefaultSession['user']; // This adds name, email, image
+  }
+
+  /**
+   * The shape of the user object returned in the OAuth providers' `profile` callback,
+   * or the second parameter of the `session` callback, when using a database.
+   */
+  interface User {
+    id: string;
+    name: string | null;
+    email: string;
+    emailVerified: Date | null;
+    image: string | null;
+    role: UserRole;
+    isTwoFactorEnabled: boolean;
+    password?: string | null;
+    ip?: string | null;
+  }
+
+  interface VerificationToken {
+    identifier: string;
+    expires: Date;
+    token: string;
+    hashedIp: string;
+  }
+}
+
+// Custom type for the verified user we pass to signIn Credentials
+export interface VerifiedUserForAuth {
+  id: string;
+  email: string;
+  name: string | null;
+  role: UserRole;
+  isTwoFactorEnabled: boolean;
+  isOauth: boolean;
+  emailVerified: Date | null;
+  image: string | null;
+}
+
+declare module '@auth/core/adapters' {
+  interface AdapterUser {
+    role: UserRole;
+    isTwoFactorEnabled: boolean;
+    isOauth: boolean;
+  }
+}
+
+declare module 'next-auth/jwt' {
+  interface JWT {
+    // Default
+    name?: string | null;
+    email?: string | null;
+    picture?: string | null;
+    sub?: string;
+    // standard
+    iat?: number;
+    exp?: number;
+    jti?: string;
+    // custom
+    id?: string;
+    role?: UserRole;
+    isTwoFactorEnabled?: boolean;
+    isOauth?: boolean;
+  }
+}
+</file>
+
+<file path="lib/constants/errors/errors.ts">
+import { AuthError } from 'next-auth';
+
+type CustomLoginErrorType =
+  | 'InvalidFields'
+  | 'WrongCredentials'
+  | 'ConfirmationEmailAlreadySent'
+  | 'ResendEmailError'
+  | 'NewConfirmationEmailSent'
+  | 'TwoFactorTokenNotExists'
+  | 'TwoFactorCodeInvalid'
+  | 'PasswordNeedUpdate';
+
+export class CustomLoginAuthError extends Error {
+  constructor(public type: CustomLoginErrorType) {
+    super();
+    this.name = 'CustomLoginAuthError';
+  }
+}
+
+type CustomNewPasswordErrorType = 'InvalidToken' | 'InvalidFields' | 'TokenNotExist';
+
+export class CustomNewPasswordError extends Error {
+  constructor(public type: CustomNewPasswordErrorType) {
+    super();
+    this.name = 'CustomNewPasswordError';
+  }
+}
+
+type CustomResetPasswordErrorType =
+  | 'InvalidFields'
+  | 'EmailNotFound'
+  | 'NoPasswordToReset'
+  | 'TokenStillValid'
+  | 'ResendEmailError';
+
+export class CustomResetPasswordError extends Error {
+  constructor(public type: CustomResetPasswordErrorType) {
+    super();
+    this.name = 'CustomResetPasswordError';
+  }
+}
+
+type CustomNewVerificationEmailErrorType =
+  | 'InvalidToken'
+  | 'TokenExpired'
+  | 'EmailNotFound'
+  | 'EmailAlreadyVerified'
+  | 'ResendEmailError'
+  | 'TokenExpiredSentNewEmail'
+  | 'InvalidTokenOrVerified';
+
+export class CustomNewVerificationEmailError extends Error {
+  constructor(public type: CustomNewVerificationEmailErrorType) {
+    super();
+    this.name = 'CustomNewVerificationEmailError';
+  }
+}
+
+type CustomSettingsErrorType =
+  | 'Unauthorized'
+  | 'InvalidFields'
+  | 'IncorrectPassword'
+  | 'SamePassword'
+  | 'NoChangesToBeMade'
+  | 'PasswordNeedUpdate';
+
+export class CustomSettingsError extends Error {
+  constructor(public type: CustomSettingsErrorType) {
+    super();
+    this.name = 'CustomSettingsError';
+  }
+}
+
+type CustomRegisterCredentialsUserErrorType = 'InvalidFields' | 'IpValidation' | 'AccountLimit' | 'EmailExists';
+
+export class CustomRegisterCredentialsUserError extends Error {
+  constructor(public type: CustomRegisterCredentialsUserErrorType) {
+    super();
+    this.name = 'CustomRegisterCredentialsUserError';
+  }
+}
+
+type CustomMagicLinkErrorType = 'IpLimit' | 'IpInvalid' | 'TokenExists' | 'InvalidEmail' | 'NoUserExists';
+
+export class CustomMagicLinkError extends AuthError {
+  constructor(public errorType: CustomMagicLinkErrorType) {
+    super();
+    this.name = 'CustomMagicLinkError';
+  }
+}
+</file>
+
+<file path="lib/constants/messages/actions/messages.ts">
+export const messages = {
+  generic: {
+    errors: {
+      GENERIC_ERROR: 'Something went wrong!',
+      DB_CONNECTION_ERROR: 'Unable to connect to the database. Please try again later.',
+      INVALID_FIELDS: 'Invalid fields',
+      UNEXPECTED_ERROR: 'An unexpected error occurred. Try again!',
+      NASTY_WEIRD_ERROR: 'Something weird went wrong', // wtf just happened
+      UNKNOWN_ERROR: 'Unknown Error. Try Again!',
+    },
+  },
+  admin: {
+    success: {
+      ALLOWED_SA: 'Allowed Server Action!',
+    },
+    errors: {
+      FORBIDDEN_SA: 'Forbidden Server Action!',
+    },
+  },
+  register: {
+    errors: {
+      EMAIL_EXISTS: 'Email already registered!',
+      ACCOUNT_LIMIT: 'You are not allowed to register more accounts on this app preview',
+      IP_VALIDATION_FAILED: 'Sorry! Something went wrong. Could not identify you as a human',
+    },
+    success: {
+      REGISTRATION_COMPLETE: 'Success! Check your inbox to verify your account',
+      ACC_CREATED_EMAIL_SEND_FAILED: 'Account created but Failed to send your email for email verification.',
+    },
+  },
+  new_verification_email: {
+    success: {
+      EMAIL_VERIFIED: 'Email verified successfully! You can now login',
+    },
+    errors: {
+      EMAIL_NOT_FOUND: 'Error - try again',
+      EMAIL_ALREADY_VERIFIED: 'Your email is already verified',
+      INVALID_TOKEN: 'Error - Can not complete verification',
+      TOKEN_EXPIRED_FAILED_SEND_EMAIL: 'Expired',
+      TOKEN_EXPIRED_SENT_NEW: 'Expired - Check your inbox for a new link to confirm your email',
+      INVALID_TOKEN_OR_VERIFIED: 'Invalid request or email already verified',
+    },
+  },
+  reset_password: {
+    success: {
+      PASSWORD_RESET_EMAIL_SENT: 'Reset email sent!',
+    },
+    errors: {
+      INVALID_EMAIL: 'Invalid email!',
+      EMAIL_NOT_FOUND: 'Invalid email!',
+      OAUTH_USER_ONLY: 'Email registered with a provider! Login with your Email Provider!',
+      TOKEN_STILL_VALID: 'Reset password email already sent! Check your inbox!',
+      SEND_EMAIL_ERROR: 'Error - Could not send you a email to reset your password',
+    },
+  },
+  new_password: {
+    success: {
+      UPDATE_SUCCESSFUL: 'Password updated successfully',
+    },
+    errors: {
+      REQUEST_NEW_PASSWORD_RESET: 'Expired! Please request a new Password Reset!',
+      INVALID_PASSWORD: 'Invalid password format',
+      INVALID_TOKEN: 'Error - Please request a new Password Reset!',
+    },
+  },
+  login: {
+    errors: {
+      WRONG_CREDENTIALS: 'Invalid credentials',
+      CONFIRMATION_EMAIL_ALREADY_SENT: 'Confirmation email already sent! Check your inbox!',
+      NEW_CONFIRMATION_EMAIL_SENT: 'Sent new confirmation email! Check your inbox!',
+      INVALID_FIELDS: 'Invalid fields!',
+      RESEND_EMAIL_ERROR: 'Something went wrong while sending your email! Try again!',
+      TWO_FACTOR_TOKEN_NOT_EXISTS: 'Two-factor authentication code required',
+      TWO_FACTOR_CODE_INVALID: 'Invalid authentication code',
+      GENERIC_ERROR: 'Something went wrong!',
+      AUTH_ERROR: 'An authentication error occurred',
+      ASK_USER_RESET_PASSWORD: 'You need to reset your password. Please use the password reset option.',
+    },
+    success: {
+      LOGIN_COMPLETE: 'Successfully logged in',
+    },
+  },
+  settings: {
+    success: {
+      SETTINGS_UPDATED: 'Settings updated!',
+      VERIFICATION_EMAIL_SENT: 'Verification email sent!',
+    },
+    errors: {
+      UNAUTHORIZED: 'Unauthorized!',
+      INVALID_FIELDS: 'Invalid fields!',
+      EMAIL_IN_USE: 'Email already in use!',
+      VERIFICATION_EMAIL_ALREADY_SENT: 'Verification email already sent! Confirm your inbox!',
+      EMAIL_CHANGE_REQUEST_EXISTS:
+        'You have already requested to change your email! You need to wait 1hour to change again',
+      INCORRECT_PASSWORD: 'Incorrect Password!',
+      SAME_PASSWORD: 'Your new password is equal to your old password',
+      NO_CHANGES_REQUIRED: 'No changes required! Your settings are already perfect? ☜(ˆ▽ˆ)',
+      PASSWORD_NEEDS_UPDATE: 'You are currently in need of a password reset. Please proceed, and do a password reset.',
+    },
+  },
+  magicLink: {
+    errors: {
+      IP_LIMIT: 'Too many attempts. Please try again later.',
+      GENERIC_FAILED: 'Failed to send your link. Try again later!',
+      GENERIC_AUTHERROR: 'Failed to send your link. Try again later!',
+      GENERIC_CUSTOMMAGICLINKERROR: 'Failed to send your link. Try again later!',
+      INVALID_EMAIL: 'Invalid email address!',
+      INVALID_IP: 'Can not process more requests! Try again later!',
+      EMAIL_ALREADY_SENT: 'Email already sent! Check your inbox!',
+    },
+    success: {
+      SENT: 'Magic link sent! Click the link send to your email.',
+    },
+  },
+} as const;
+</file>
+
+<file path="lib/crypto/hash-edge-compatible.ts">
+// This is an example with web crypto api
+// The hashIp cryptography is not viable for passwords
+export { hashIp, hashPassword, verifyPassword };
+
+const CURRENT_VERSION = 'v1';
+const ITERATIONS = 310000;
+const HASH_LENGTH = 256; // bits
+const SALT_LENGTH = 16; // bytes
+
+/**
+ * Creates a deterministic SHA-256 hash of an IP address
+ * Using Web Crypto API compatible with edge
+ * Used for storing IPs in the database
+ */
+const hashIp = async (ipAddress: string): Promise<string> => {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(ipAddress);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  return bufferToHex(hashBuffer);
+};
+
+/**
+ * Hashes a password using PBKDF2
+ * Compatible with edge
+ * @param password - The password to hash
+ * @returns A versioned, salted hash string
+ */
+const hashPassword = async (password: string): Promise<string> => {
+  const salt = generateSalt();
+  const hash = await generateHash(password, salt);
+  return formatHash(salt, hash);
+};
+
+/**
+ * Verifies a password against a stored hash and checks if the hash needs upgrading
+ * @param password - The password to verify
+ * @param storedHash - The stored hash to verify against
+ * @returns An object containing:
+ *          - isPasswordValid: boolean - True if password matches
+ *          - passwordNeedsUpdate: boolean - True if the hash should be upgraded to current version
+ */
+const verifyPassword = async (
+  password: string,
+  storedHash: string
+): Promise<{
+  isPasswordValid: boolean;
+  passwordNeedsUpdate: boolean;
+}> => {
+  if (storedHash.startsWith('$2')) {
+    return {
+      isPasswordValid: false,
+      passwordNeedsUpdate: true,
+    };
+  }
+  try {
+    const { version, salt, hash } = parseHash(storedHash);
+    const newHash = await generateHash(password, salt);
+    return {
+      isPasswordValid: newHash === hash,
+      passwordNeedsUpdate: version !== CURRENT_VERSION,
+    };
+  } catch (error) {
+    // likely an invalid or corrupted hash
+    console.error(error);
+    return { isPasswordValid: false, passwordNeedsUpdate: true };
+  }
+};
+
+// Helper functions (not exported)
+function generateSalt(): Uint8Array {
+  return crypto.getRandomValues(new Uint8Array(SALT_LENGTH));
+}
+
+async function generateHash(password: string, salt: Uint8Array): Promise<string> {
+  const encoder = new TextEncoder();
+  const passwordData = encoder.encode(password);
+  const keyMaterial = await crypto.subtle.importKey('raw', passwordData, 'PBKDF2', false, ['deriveBits']);
+  const hashBuffer = await crypto.subtle.deriveBits(
+    {
+      name: 'PBKDF2',
+      salt,
+      iterations: ITERATIONS,
+      hash: 'SHA-256',
+    },
+    keyMaterial,
+    HASH_LENGTH
+  );
+  return bufferToHex(hashBuffer);
+}
+
+function formatHash(salt: Uint8Array, hash: string): string {
+  const saltHex = bufferToHex(salt);
+  return `${CURRENT_VERSION}.${saltHex}.${hash}`;
+}
+
+/**
+ * Parses a stored hash string into its components
+ * @throws Error if the hash format is invalid
+ */
+function parseHash(storedHash: string): {
+  version: string;
+  salt: Uint8Array;
+  hash: string;
+} {
+  const [version, saltHex, hash] = storedHash.split('.');
+  if (!version || !saltHex || !hash) {
+    throw new Error('Invalid hash format');
+  }
+  const salt = hexToBuffer(saltHex);
+  return { version, salt, hash };
+}
+
+function bufferToHex(buffer: ArrayBuffer | Uint8Array): string {
+  return Array.from(new Uint8Array(buffer))
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('');
+}
+
+function hexToBuffer(hex: string): Uint8Array {
+  const pairs = hex.match(/.{1,2}/g) || [];
+  return new Uint8Array(pairs.map((byte) => parseInt(byte, 16)));
+}
+</file>
+
+<file path="lib/mail/mail.ts">
+import { Resend } from 'resend';
+
+import type { CreateEmailResponse } from 'resend';
+
+const resend = new Resend(process.env.RESEND_API_KEY);
+const domain = process.env.NEXT_PUBLIC_APP_URL;
+
+export const sendTwoFactorTokenEmail = async (email: string, token: string) => {
+  const htmlContent = `
+  <div style="font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif; color: #333;">
+    <h2>Secure Your Account</h2>
+    <p>Your 2FA code is:</p>
+    <p><strong>${token}</strong></p>
+    <p>This code will expire in 1h. Please enter it promptly.</p>
+  </div>`;
+
+  return await resend.emails.send({
+    from: 'noreply@fpresa.org',
+    to: email,
+    subject: 'Next-auth Example || 2FA Code',
+    html: htmlContent,
+  });
+};
+
+export const sendPasswordResetEmail = async (email: string, token: string): Promise<CreateEmailResponse> => {
+  const resetLink = `${domain}/new-password?token=${token}`;
+  const htmlContent = `
+  <div style="font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif; color: #333;">
+    <h2>Reset Your Password</h2>
+    <p>Click the button below to reset your password:</p>
+    <p><a href="${resetLink}" style="display: inline-block; background-color: #007bff; color: #ffffff; padding: 10px 20px; font-size: 16px; text-decoration: none; border-radius: 5px;">Reset Password</a></p>
+    <p>Or manually visit: <a href="${resetLink}">${resetLink}</a></p>
+    <p>If you did not request a password reset, please ignore this email.</p>
+  </div>`;
+
+  return await resend.emails.send({
+    from: 'noreply@fpresa.org',
+    to: email,
+    subject: 'Next-auth Example || Reset your password',
+    html: htmlContent,
+  });
+};
+
+export const sendVerificationEmail = async (email: string, token: string): Promise<CreateEmailResponse> => {
+  const confirmLink = `${domain}/new-verification?token=${token}`;
+  const htmlContent = `
+  <div style="font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif; color: #333;">
+    <h2>Confirm Your Email Address</h2>
+    <p>Click the button below to confirm your email address:</p>
+    <p><a href="${confirmLink}" style="display: inline-block; background-color: #28a745; color: #ffffff; padding: 10px 20px; font-size: 16px; text-decoration: none; border-radius: 5px;">Confirm Email</a></p>
+    <p>Or manually visit: <a href="${confirmLink}">${confirmLink}</a></p>
+    <p>If you did not request this verification, please ignore this email.</p>
+  </div>`;
+
+  return await resend.emails.send({
+    from: 'noreply@fpresa.org',
+    to: email,
+    subject: 'Next-auth Example || Please confirm your email',
+    html: htmlContent,
+  });
+};
+</file>
+
+<file path="lib/nextjs/headers.ts">
+import { headers } from 'next/headers';
+
+import { hashIp } from '@/lib/crypto/hash-edge-compatible';
+
+/**
+ * Retrieves and hashes the user IP from Next.js request headers
+ * @returns Promise resolving to hashedIp or null if IP is not present
+ */
+export const getHashedUserIpFromHeaders = async (): Promise<string | null> => {
+  const userIp = headers().get('request-ip');
+  return userIp ? await hashIp(userIp) : null;
+};
+</file>
+
+<file path="lib/db.ts">
+import { PrismaClient } from '@prisma/client';
+
+const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
+
+export const db = globalForPrisma.prisma || new PrismaClient();
+// For prisma to not be affected by hot reload from nextjs
+if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = db;
+</file>
+
+<file path="lib/utils.ts">
+import { type ClassValue, clsx } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
+</file>
+
+</files>
