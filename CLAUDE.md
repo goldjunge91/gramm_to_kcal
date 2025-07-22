@@ -1,6 +1,7 @@
 # CLAUDE.md
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
 ## 🚫 Core Rules
 
 1. **ALWAYS prefer editing existing files in the codebase.**
@@ -29,7 +30,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 - **Never** use npm or yarn, only pnpm
 - **Never** run `pnpm dev` or `pnpm build` automatically - ask user first
-- **Dont run pnpm * commands ask the user to excute it.**
+- **Dont run pnpm \* commands ask the user to excute it.**
 - **Always** update DrizzleAdapter mapping in `auth.ts` when changing schema
 - **Never** NEVER NEVER NEVER send plain text to server
 - **Always** use existing patterns and components from the codebase
@@ -55,17 +56,17 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Always specify **explicit return types**.
 - **Destructure props**:
 
-  ```ts
-  function MyComp({ id, name }: Props) {}
-  ```
+    ```ts
+    function MyComp({ id, name }: Props) {}
+    ```
 
 - **Avoid `any`**. Use `unknown` or strict generics.
 - **Import order**:
-  1. `react`
-  2. `next`
-  3. External libs
-  4. Local imports: `@/`…
-  5. Relative imports: `./`…
+    1. `react`
+    2. `next`
+    3. External libs
+    4. Local imports: `@/`…
+    5. Relative imports: `./`…
 
 ---
 
@@ -74,9 +75,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Each component/hook gets a **1-line JSDoc** comment describing its purpose.
 - **Top-of-file comments** required for config files (e.g. `tailwind.config.ts`).
 - Keep `project_status.md` updated with:
-  - Getting-started steps
-  - Design tokens (colors, font sizes)
-  - Guide for reusable components
+    - Getting-started steps
+    - Design tokens (colors, font sizes)
+    - Guide for reusable components
 
 ---
 

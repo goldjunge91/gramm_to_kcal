@@ -5,7 +5,7 @@
 This file is used to define constants and environment variables for the application.
 
 ```ts
-import { API_CONFIG, MAX_RECENT_SCANS, SCAN_CONFIG } from '@/server/config'
+import { API_CONFIG, MAX_RECENT_SCANS, SCAN_CONFIG } from "@/server/config";
 
 // Direkt als Wert:
 ```

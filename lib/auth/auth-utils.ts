@@ -1,6 +1,6 @@
-import 'server-only'
+import "server-only";
 
-import { auth } from '@/lib/auth/auth'
+import { auth } from "@/lib/auth/auth";
 
 /**
  * Retrieves the current user from session in server components
@@ -9,21 +9,21 @@ import { auth } from '@/lib/auth/auth'
  * @returns The current user or null if not authenticated
  */
 export async function currentSessionUser() {
-  try {
-    const session = await auth.api.getSession({
-      headers: new Headers(),
-    })
+    try {
+        const session = await auth.api.getSession({
+            headers: new Headers(),
+        });
 
-    if (!session?.user) {
-      return null
+        if (!session?.user) {
+            return null;
+        }
+
+        return session.user;
     }
-
-    return session.user
-  }
-  catch (error) {
-    console.error('Error getting current session user:', error)
-    return null
-  }
+    catch (error) {
+        console.error("Error getting current session user:", error);
+        return null;
+    }
 }
 
 /**
@@ -34,24 +34,24 @@ export async function currentSessionUser() {
  * @returns True if user has the role, false otherwise
  */
 export async function sessionHasRole(role: string): Promise<boolean> {
-  try {
-    const session = await auth.api.getSession({
-      headers: new Headers(),
-    })
+    try {
+        const session = await auth.api.getSession({
+            headers: new Headers(),
+        });
 
-    if (!session?.user) {
-      return false
+        if (!session?.user) {
+            return false;
+        }
+
+        // Better Auth typically stores roles in user.role or user.roles
+        // Check for admin plugin role structure
+        const userRole = (session.user as any).role;
+        return userRole === role;
     }
-
-    // Better Auth typically stores roles in user.role or user.roles
-    // Check for admin plugin role structure
-    const userRole = (session.user as any).role
-    return userRole === role
-  }
-  catch (error) {
-    console.error('Error checking user role:', error)
-    return false
-  }
+    catch (error) {
+        console.error("Error checking user role:", error);
+        return false;
+    }
 }
 
 /**
@@ -62,13 +62,13 @@ export async function sessionHasRole(role: string): Promise<boolean> {
  * @throws {Error} If user is not authenticated
  */
 export async function requireAuth() {
-  const user = await currentSessionUser()
+    const user = await currentSessionUser();
 
-  if (!user) {
-    throw new Error('Authentication required')
-  }
+    if (!user) {
+        throw new Error("Authentication required");
+    }
 
-  return user
+    return user;
 }
 
 /**
@@ -80,12 +80,12 @@ export async function requireAuth() {
  * @throws {Error} If user is not authenticated or doesn't have the role
  */
 export async function requireRole(role: string) {
-  const user = await requireAuth()
-  const hasRole = await sessionHasRole(role)
+    const user = await requireAuth();
+    const hasRole = await sessionHasRole(role);
 
-  if (!hasRole) {
-    throw new Error(`Role '${role}' required`)
-  }
+    if (!hasRole) {
+        throw new Error(`Role '${role}' required`);
+    }
 
-  return user
+    return user;
 }

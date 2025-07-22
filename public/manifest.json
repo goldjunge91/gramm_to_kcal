@@ -1,41 +1,41 @@
 {
-  "name": "CalorieTracker - Offline-First Nutrition App",
-  "short_name": "CalorieTracker",
-  "description": "Compare calories and manage recipes offline",
-  "start_url": "/",
-  "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#000000",
-  "orientation": "portrait-primary",
-  "icons": [
-    {
-      "src": "/gunter.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "maskable"
-    },
-    {
-      "src": "/gunter.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
-    }
-  ],
-  "categories": ["health", "lifestyle", "productivity"],
-  "shortcuts": [
-    {
-      "name": "Compare Calories",
-      "short_name": "Calories",
-      "description": "Compare product calories",
-      "url": "/calories",
-      "icons": [{ "src": "/gunter.png", "sizes": "192x192" }]
-    },
-    {
-      "name": "Manage Recipes",
-      "short_name": "Recipes",
-      "description": "Scale and manage recipes",
-      "url": "/recipe",
-      "icons": [{ "src": "/gunter.png", "sizes": "192x192" }]
-    }
-  ]
+    "name": "CalorieTracker - Offline-First Nutrition App",
+    "short_name": "CalorieTracker",
+    "description": "Compare calories and manage recipes offline",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#000000",
+    "orientation": "portrait-primary",
+    "icons": [
+        {
+            "src": "/gunter.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "maskable"
+        },
+        {
+            "src": "/gunter.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
+        }
+    ],
+    "categories": ["health", "lifestyle", "productivity"],
+    "shortcuts": [
+        {
+            "name": "Compare Calories",
+            "short_name": "Calories",
+            "description": "Compare product calories",
+            "url": "/calories",
+            "icons": [{ "src": "/gunter.png", "sizes": "192x192" }]
+        },
+        {
+            "name": "Manage Recipes",
+            "short_name": "Recipes",
+            "description": "Scale and manage recipes",
+            "url": "/recipe",
+            "icons": [{ "src": "/gunter.png", "sizes": "192x192" }]
+        }
+    ]
 }

@@ -1,258 +1,258 @@
 /* eslint-disable unicorn/no-new-array */
-'use client'
+"use client";
 
-import type { MotionProps, Variants } from 'framer-motion'
+import type { MotionProps, Variants } from "framer-motion";
 
 import {
-  AnimatePresence,
-  motion,
+    AnimatePresence,
+    motion,
 
-} from 'framer-motion'
-import * as React from 'react'
+} from "framer-motion";
+import * as React from "react";
 
-import { Label } from '@/components/ui/label'
-import { Switch } from '@/components/ui/switch'
-import { cn } from '@/lib/utils'
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { cn } from "@/lib/utils";
 
 type DayNightSwitchProps = {
-  defaultChecked?: boolean
-  checked?: boolean
-  onToggle?: (checked: boolean) => void
+    defaultChecked?: boolean;
+    checked?: boolean;
+    onToggle?: (checked: boolean) => void;
 } & React.HTMLAttributes<HTMLDivElement>
-& MotionProps
+& MotionProps;
 
-type AnimationMode = keyof typeof backgroundVariants
+type AnimationMode = keyof typeof backgroundVariants;
 
 const backgroundVariants: Variants = {
-  day: {
-    background: 'linear-gradient(to bottom, #87CEEB, #E0F7FA)',
-    transition: { duration: 0.7 },
-  },
-  sunset: {
-    background: 'linear-gradient(to bottom, #FF7E5F, #FEB47B, #D76D77)',
-    transition: { duration: 0.7 },
-  },
-  night: {
-    background: 'linear-gradient(to bottom, #0F2027, #203A43, #2C5364)',
-    transition: { duration: 0.7 },
-  },
-}
+    day: {
+        background: "linear-gradient(to bottom, #87CEEB, #E0F7FA)",
+        transition: { duration: 0.7 },
+    },
+    sunset: {
+        background: "linear-gradient(to bottom, #FF7E5F, #FEB47B, #D76D77)",
+        transition: { duration: 0.7 },
+    },
+    night: {
+        background: "linear-gradient(to bottom, #0F2027, #203A43, #2C5364)",
+        transition: { duration: 0.7 },
+    },
+};
 
 const sunVariants: Variants = {
-  visible: { y: 0, opacity: 1 },
-  sunset: { y: 24, opacity: 0.9, scale: 1.2, transition: { duration: 0.7 } },
-  hidden: { y: 40, opacity: 0, transition: { duration: 0.4 } },
-}
+    visible: { y: 0, opacity: 1 },
+    sunset: { y: 24, opacity: 0.9, scale: 1.2, transition: { duration: 0.7 } },
+    hidden: { y: 40, opacity: 0, transition: { duration: 0.4 } },
+};
 
 const moonVariants: Variants = {
-  hidden: { y: -30, opacity: 0 },
-  rising: { y: 0, opacity: 1, transition: { delay: 0.5, duration: 0.7 } },
-}
+    hidden: { y: -30, opacity: 0 },
+    rising: { y: 0, opacity: 1, transition: { delay: 0.5, duration: 0.7 } },
+};
 
 const cloudVariants: Variants = {
-  visible: { opacity: 0.9, x: 0 },
-  hidden: { opacity: 0, x: -30, transition: { duration: 0.5 } },
-}
+    visible: { opacity: 0.9, x: 0 },
+    hidden: { opacity: 0, x: -30, transition: { duration: 0.5 } },
+};
 
 function createStarVariants(index: number): Variants {
-  return {
-    hidden: { opacity: 0, scale: 0 },
-    visible: {
-      opacity: [0, 0.8, 0.6 + Math.random() * 0.4],
-      scale: [0, 0.8 + Math.random() * 0.4, 0.6 + Math.random() * 0.4],
-      transition: {
-        delay: 0.7 + index * 0.12,
-        duration: 0.8,
-      },
-    },
-  }
+    return {
+        hidden: { opacity: 0, scale: 0 },
+        visible: {
+            opacity: [0, 0.8, 0.6 + Math.random() * 0.4],
+            scale: [0, 0.8 + Math.random() * 0.4, 0.6 + Math.random() * 0.4],
+            transition: {
+                delay: 0.7 + index * 0.12,
+                duration: 0.8,
+            },
+        },
+    };
 }
 
 function ThemeToggle({ ref, className, defaultChecked = true, checked: controlledChecked, onToggle, ...restProps }: DayNightSwitchProps & { ref?: React.RefObject<HTMLDivElement | null> }) {
-  const id = React.useId()
-  const [internalChecked, setInternalChecked]
-      = React.useState<boolean>(defaultChecked)
+    const id = React.useId();
+    const [internalChecked, setInternalChecked]
+      = React.useState<boolean>(defaultChecked);
 
-  // Use controlled value if provided, otherwise use internal state
-  const checked
-      = controlledChecked !== undefined ? controlledChecked : internalChecked
+    // Use controlled value if provided, otherwise use internal state
+    const checked
+      = controlledChecked !== undefined ? controlledChecked : internalChecked;
 
-  const handleToggle = (newValue: boolean) => {
+    const handleToggle = (newValue: boolean) => {
     // Only update internal state if not controlled
-    if (controlledChecked === undefined) {
-      setInternalChecked(newValue)
-    }
-    onToggle?.(newValue)
-  }
+        if (controlledChecked === undefined) {
+            setInternalChecked(newValue);
+        }
+        onToggle?.(newValue);
+    };
 
-  const currentMode: AnimationMode = checked ? 'day' : 'night'
+    const currentMode: AnimationMode = checked ? "day" : "night";
 
-  return (
-    <motion.div
-      ref={ref}
-      className={cn(
-        'relative w-20 h-10 rounded-md overflow-hidden border shadow',
-        className,
-      )}
-      variants={backgroundVariants}
-      animate={currentMode}
-      initial={currentMode}
-      {...restProps}
-    >
-      <div className="relative h-full w-full">
-        <AnimatePresence>
-          {checked && (
-            <motion.div
-              className="absolute w-6 h-6 bg-yellow-400 rounded-full"
-              style={{
-                left: '25%',
-                top: '50%',
-                marginTop: -12,
-                marginLeft: -12,
-              }}
-              variants={sunVariants}
-              initial="visible"
-              animate={checked ? 'visible' : 'sunset'}
-              exit="hidden"
-            >
-              <SunRays />
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        <AnimatePresence>
-          {!checked && (
-            <motion.div
-              className="absolute w-5 h-5"
-              style={{
-                left: '75%',
-                top: '50%',
-                marginTop: -10,
-                marginLeft: -10,
-              }}
-              variants={moonVariants}
-              initial="hidden"
-              animate={!checked ? 'rising' : 'hidden'}
-            >
-              <Moon />
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        <AnimatePresence>
-          {' '}
-          {checked && <Clouds />}
-        </AnimatePresence>
-
-        <AnimatePresence>{!checked && <Stars count={10} />}</AnimatePresence>
-
-        <div className="absolute inset-0 flex items-center justify-center">
-          <Switch
-            id={id}
-            checked={checked}
-            onCheckedChange={handleToggle}
+    return (
+        <motion.div
+            ref={ref}
             className={cn(
-              'peer data-[state=unchecked]:bg-transparent data-[state=checked]:bg-transparent absolute inset-0 h-[inherit] w-auto [&_span]:z-10 [&_span]:size-6 [&_span]:border [&_span]:shadow [&_span]:rounded-sm [&_span]:transition-transform [&_span]:duration-500 [&_span]:[transition-timing-function:cubic-bezier(0.16,1,0.3,1)] [&_span]:data-[state=checked]:translate-x-10 [&_span]:data-[state=unchecked]:translate-x-2 [&_span]:bg-white [&_span]:border-gray-300',
+                "relative w-20 h-10 rounded-md overflow-hidden border shadow",
+                className,
             )}
-          />
-        </div>
-      </div>
+            variants={backgroundVariants}
+            animate={currentMode}
+            initial={currentMode}
+            {...restProps}
+        >
+            <div className="relative h-full w-full">
+                <AnimatePresence>
+                    {checked && (
+                        <motion.div
+                            className="absolute w-6 h-6 bg-yellow-400 rounded-full"
+                            style={{
+                                left: "25%",
+                                top: "50%",
+                                marginTop: -12,
+                                marginLeft: -12,
+                            }}
+                            variants={sunVariants}
+                            initial="visible"
+                            animate={checked ? "visible" : "sunset"}
+                            exit="hidden"
+                        >
+                            <SunRays />
+                        </motion.div>
+                    )}
+                </AnimatePresence>
 
-      <Label htmlFor={id} className="sr-only">
-        Day / Night Theme Switch
-      </Label>
-    </motion.div>
-  )
+                <AnimatePresence>
+                    {!checked && (
+                        <motion.div
+                            className="absolute w-5 h-5"
+                            style={{
+                                left: "75%",
+                                top: "50%",
+                                marginTop: -10,
+                                marginLeft: -10,
+                            }}
+                            variants={moonVariants}
+                            initial="hidden"
+                            animate={!checked ? "rising" : "hidden"}
+                        >
+                            <Moon />
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+
+                <AnimatePresence>
+                    {" "}
+                    {checked && <Clouds />}
+                </AnimatePresence>
+
+                <AnimatePresence>{!checked && <Stars count={10} />}</AnimatePresence>
+
+                <div className="absolute inset-0 flex items-center justify-center">
+                    <Switch
+                        id={id}
+                        checked={checked}
+                        onCheckedChange={handleToggle}
+                        className={cn(
+                            "peer data-[state=unchecked]:bg-transparent data-[state=checked]:bg-transparent absolute inset-0 h-[inherit] w-auto [&_span]:z-10 [&_span]:size-6 [&_span]:border [&_span]:shadow [&_span]:rounded-sm [&_span]:transition-transform [&_span]:duration-500 [&_span]:[transition-timing-function:cubic-bezier(0.16,1,0.3,1)] [&_span]:data-[state=checked]:translate-x-10 [&_span]:data-[state=unchecked]:translate-x-2 [&_span]:bg-white [&_span]:border-gray-300",
+                        )}
+                    />
+                </div>
+            </div>
+
+            <Label htmlFor={id} className="sr-only">
+                Day / Night Theme Switch
+            </Label>
+        </motion.div>
+    );
 }
 
 function SunRays() {
-  return (
-    <>
-      {[...Array.from({ length: 8 })].map((_, i) => (
-        <div
-          key={`ray-${i}`}
-          className="absolute bg-yellow-300 w-1 h-2"
-          style={{
-            left: '50%',
-            top: '50%',
-            transformOrigin: '0 0',
-            transform: `rotate(${
-              i * 45
-            }deg) translate(-50%, -50%) translate(10px, 0)`,
-          }}
-        />
-      ))}
-    </>
-  )
+    return (
+        <>
+            {[...Array.from({ length: 8 })].map((_, i) => (
+                <div
+                    key={`ray-${i}`}
+                    className="absolute bg-yellow-300 w-1 h-2"
+                    style={{
+                        left: "50%",
+                        top: "50%",
+                        transformOrigin: "0 0",
+                        transform: `rotate(${
+                            i * 45
+                        }deg) translate(-50%, -50%) translate(10px, 0)`,
+                    }}
+                />
+            ))}
+        </>
+    );
 }
 
 function Moon() {
-  return (
-    <div className="relative w-full h-full">
-      <div className="absolute inset-0 bg-gray-100 rounded-full" />
-      <div
-        className="absolute bg-[#0F2027] rounded-full"
-        style={{
-          width: '90%',
-          height: '90%',
-          top: '-10%',
-          left: '-25%',
-        }}
-      />
-    </div>
-  )
+    return (
+        <div className="relative w-full h-full">
+            <div className="absolute inset-0 bg-gray-100 rounded-full" />
+            <div
+                className="absolute bg-[#0F2027] rounded-full"
+                style={{
+                    width: "90%",
+                    height: "90%",
+                    top: "-10%",
+                    left: "-25%",
+                }}
+            />
+        </div>
+    );
 }
 
 function Clouds() {
-  return (
-    <>
-      <motion.div
-        className="absolute left-[60%] top-[30%] w-8 h-3 bg-white rounded-full opacity-90"
-        variants={cloudVariants}
-        initial="visible"
-        animate="visible"
-        exit="hidden"
-      />
-      <motion.div
-        className="absolute left-[70%] top-[60%] w-6 h-2.5 bg-white rounded-full opacity-80"
-        variants={cloudVariants}
-        initial="visible"
-        animate="visible"
-        exit="hidden"
-      />
-    </>
-  )
+    return (
+        <>
+            <motion.div
+                className="absolute left-[60%] top-[30%] w-8 h-3 bg-white rounded-full opacity-90"
+                variants={cloudVariants}
+                initial="visible"
+                animate="visible"
+                exit="hidden"
+            />
+            <motion.div
+                className="absolute left-[70%] top-[60%] w-6 h-2.5 bg-white rounded-full opacity-80"
+                variants={cloudVariants}
+                initial="visible"
+                animate="visible"
+                exit="hidden"
+            />
+        </>
+    );
 }
 
 interface StarsProps {
-  count: number
+    count: number;
 }
 
 function Stars({ count }: StarsProps) {
-  return (
-    <>
-      {[...new Array(count)].map((_, i) => (
-        <motion.div
-          key={`star-${i}`}
-          className="absolute w-0.5 h-0.5 bg-white rounded-full"
-          style={{
-            left: `${10 + i * 8}%`,
-            top: `${20 + (i % 5) * 12}%`,
-            boxShadow: '0 0 2px 1px rgba(255, 255, 255, 0.4)',
-          }}
-          variants={createStarVariants(i)}
-          initial="hidden"
-          animate="visible"
-          exit="hidden"
-        />
-      ))}
-    </>
-  )
+    return (
+        <>
+            {[...new Array(count)].map((_, i) => (
+                <motion.div
+                    key={`star-${i}`}
+                    className="absolute w-0.5 h-0.5 bg-white rounded-full"
+                    style={{
+                        left: `${10 + i * 8}%`,
+                        top: `${20 + (i % 5) * 12}%`,
+                        boxShadow: "0 0 2px 1px rgba(255, 255, 255, 0.4)",
+                    }}
+                    variants={createStarVariants(i)}
+                    initial="hidden"
+                    animate="visible"
+                    exit="hidden"
+                />
+            ))}
+        </>
+    );
 }
 
-ThemeToggle.displayName = 'ThemeToggle'
+ThemeToggle.displayName = "ThemeToggle";
 
-export { ThemeToggle }
+export { ThemeToggle };
 
 // "use client";
 

@@ -99,24 +99,24 @@ Dieses Epic fasst alle übergeordneten Anforderungen zusammen, die eine hohe Qua
 
 ```typescript
 interface Product {
-  id: string
-  name: string
-  quantity: number // in grams
-  kcal: number
+    id: string;
+    name: string;
+    quantity: number; // in grams
+    kcal: number;
 }
 
 interface Ingredient {
-  id: string
-  name: string
-  quantity: number
-  unit: 'g' | 'ml' | 'TL' | 'EL' | string
+    id: string;
+    name: string;
+    quantity: number;
+    unit: "g" | "ml" | "TL" | "EL" | string;
 }
 
 interface Recipe {
-  id: string
-  name: string
-  originalPortions: number
-  ingredients: Ingredient[]
+    id: string;
+    name: string;
+    originalPortions: number;
+    ingredients: Ingredient[];
 }
 ```
 

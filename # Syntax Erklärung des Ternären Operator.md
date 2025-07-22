@@ -4,18 +4,18 @@ Der ternäre Operator ist eine kompakte Möglichkeit, eine Bedingung zu prüfen 
 
 ```typescript
 const nextConfig: NextConfig = env.FORCE_BUILD
-  ? {
-      ...baseConfig,
-      typescript: {
-        // This is set to true to ensure that TypeScript errors are ignored during build.
-        ignoreBuildErrors: true,
-      },
-      eslint: {
-        // This is set to true to ensure that ESLint errors are ignored during build.
-        ignoreDuringBuilds: true,
-      },
-    }
-  : baseConfig
+    ? {
+            ...baseConfig,
+            typescript: {
+                // This is set to true to ensure that TypeScript errors are ignored during build.
+                ignoreBuildErrors: true,
+            },
+            eslint: {
+                // This is set to true to ensure that ESLint errors are ignored during build.
+                ignoreDuringBuilds: true,
+            },
+        }
+    : baseConfig;
 ```
 
 **Erklärung Schritt für Schritt:**
@@ -33,24 +33,24 @@ const nextConfig: NextConfig = env.FORCE_BUILD
 **In deinem Beispiel:**
 
 - Wenn `env.FORCE_BUILD` **true** ist, wird ein neues Objekt erstellt:
-  - Es übernimmt alle Eigenschaften von `baseConfig` (`...baseConfig`).
-  - Zusätzlich werden die Einstellungen für TypeScript und ESLint ergänzt, sodass Fehler beim Build ignoriert werden.
+    - Es übernimmt alle Eigenschaften von `baseConfig` (`...baseConfig`).
+    - Zusätzlich werden die Einstellungen für TypeScript und ESLint ergänzt, sodass Fehler beim Build ignoriert werden.
 
 - Wenn `env.FORCE_BUILD` **false** ist, wird einfach `baseConfig` verwendet.
 
 **Vergleich mit if/else:**
 
 ```typescript
-let nextConfig: NextConfig
+let nextConfig: NextConfig;
 if (env.FORCE_BUILD) {
-  nextConfig = {
-    ...baseConfig,
-    typescript: { ignoreBuildErrors: true },
-    eslint: { ignoreDuringBuilds: true },
-  }
+    nextConfig = {
+        ...baseConfig,
+        typescript: { ignoreBuildErrors: true },
+        eslint: { ignoreDuringBuilds: true },
+    };
 }
 else {
-  nextConfig = baseConfig
+    nextConfig = baseConfig;
 }
 ```
 

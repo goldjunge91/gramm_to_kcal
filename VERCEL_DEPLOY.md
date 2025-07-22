@@ -34,8 +34,8 @@ Add these environment variables with your actual values:
 1. Go to [supabase.com](https://supabase.com) → Your Project
 2. Navigate to **Settings** → **API**
 3. Copy:
-   - **Project URL** → `NEXT_PUBLIC_SUPABASE_URL`
-   - **anon public** key → `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+    - **Project URL** → `NEXT_PUBLIC_SUPABASE_URL`
+    - **anon public** key → `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 
 ### 5. Redeploy After Adding Variables
 
@@ -83,9 +83,9 @@ If you continue having issues:
 // pages/api/test-env.ts or app/api/test-env/route.ts
 
 export async function GET() {
-  return Response.json({
-    hasSupabaseUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
-    hasSupabaseKey: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-  })
+    return Response.json({
+        hasSupabaseUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
+        hasSupabaseKey: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    });
 }
 ```

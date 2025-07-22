@@ -28,17 +28,17 @@ description: "Example description"
 - Always specify **explicit return types**.
 - **Destructure props**:
 
-  ```ts
-  function MyComp({ id, name }: Props) {}
-  ```
+    ```ts
+    function MyComp({ id, name }: Props) {}
+    ```
 
 - **Avoid `any`**. Use `unknown` or strict generics.
 - **Import order**:
-  1. `react`
-  2. `next`
-  3. External libs
-  4. Local imports: `@/`…
-  5. Relative imports: `./`…
+    1. `react`
+    2. `next`
+    3. External libs
+    4. Local imports: `@/`…
+    5. Relative imports: `./`…
 
 ---
 
@@ -47,9 +47,9 @@ description: "Example description"
 - Each component/hook gets a **1-line JSDoc** comment describing its purpose.
 - **Top-of-file comments** required for config files (e.g. `tailwind.config.ts`).
 - Keep `project_status.md` updated with:
-  - Getting-started steps
-  - Design tokens (colors, font sizes)
-  - Guide for reusable components
+    - Getting-started steps
+    - Design tokens (colors, font sizes)
+    - Guide for reusable components
 
 ---
 

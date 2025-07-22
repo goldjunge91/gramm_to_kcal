@@ -1,6 +1,6 @@
-'use client'
+"use client";
 
-import { useSession } from '@/lib/auth/auth-client'
+import { useSession } from "@/lib/auth/auth-client";
 
 /**
  * Custom hook to access the current user session on client components.
@@ -11,7 +11,7 @@ import { useSession } from '@/lib/auth/auth-client'
  * @returns The session data including user information
  */
 export function useCurrentSession() {
-  return useSession()
+    return useSession();
 }
 
 /**
@@ -20,8 +20,8 @@ export function useCurrentSession() {
  * @returns The current user or null if not authenticated
  */
 export function useCurrentUser() {
-  const { data: session } = useSession()
-  return session?.user ?? null
+    const { data: session } = useSession();
+    return session?.user ?? null;
 }
 
 /**
@@ -30,13 +30,13 @@ export function useCurrentUser() {
  * @returns Object with isAuthenticated boolean and isLoading status
  */
 export function useAuth() {
-  const { data: session, isPending } = useSession()
+    const { data: session, isPending } = useSession();
 
-  return {
-    isAuthenticated: !!session?.user,
-    isLoading: isPending,
-    user: session?.user ?? null,
-  }
+    return {
+        isAuthenticated: !!session?.user,
+        isLoading: isPending,
+        user: session?.user ?? null,
+    };
 }
 
 /**
@@ -46,14 +46,14 @@ export function useAuth() {
  * @returns Object with hasRole boolean and isLoading status
  */
 export function useRole(role: string) {
-  const { data: session, isPending } = useSession()
+    const { data: session, isPending } = useSession();
 
-  const userRole = (session?.user as any)?.role
-  const hasRole = userRole === role
+    const userRole = (session?.user as any)?.role;
+    const hasRole = userRole === role;
 
-  return {
-    hasRole,
-    isLoading: isPending,
-    userRole,
-  }
+    return {
+        hasRole,
+        isLoading: isPending,
+        userRole,
+    };
 }

@@ -1,46 +1,46 @@
 {
-  "compilerOptions": {
-    "incremental": true,
-    "target": "ES2017",
-    "jsx": "preserve",
-    "lib": ["dom", "dom.iterable", "esnext"],
-    "module": "esnext",
-    "moduleResolution": "bundler",
-    "paths": {
-      "@/*": ["./*"]
+    "compilerOptions": {
+        "incremental": true,
+        "target": "ES2017",
+        "jsx": "preserve",
+        "lib": ["dom", "dom.iterable", "esnext"],
+        "module": "esnext",
+        "moduleResolution": "bundler",
+        "paths": {
+            "@/*": ["./*"]
+        },
+        "resolveJsonModule": true,
+        "allowJs": true,
+        "strict": true,
+        "noEmit": true,
+        "esModuleInterop": true,
+        "isolatedModules": true,
+        "skipLibCheck": true,
+        "plugins": [
+            {
+                "name": "next"
+            }
+        ]
     },
-    "resolveJsonModule": true,
-    "allowJs": true,
-    "strict": true,
-    "noEmit": true,
-    "esModuleInterop": true,
-    "isolatedModules": true,
-    "skipLibCheck": true,
-    "plugins": [
-      {
-        "name": "next"
-      }
+    "include": [
+        "next-env.d.ts",
+        "**/*.ts",
+        "**/*.tsx",
+        "**/*.js",
+        "**/*.jsx",
+        ".next/types/**/*.ts"
+    ],
+    "exclude": [
+        "node_modules",
+        "**/__tests__/*",
+        "/__tests__/",
+        "./__tests__",
+        "./scripts",
+        "scripts",
+        "__mocks__",
+        "cypress",
+        "dist",
+        "build",
+        "coverage"
     ]
-  },
-  "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    "**/*.js",
-    "**/*.jsx",
-    ".next/types/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules",
-    "**/__tests__/*",
-    "/__tests__/",
-    "./__tests__",
-    "./scripts",
-    "scripts",
-    "__mocks__",
-    "cypress",
-    "dist",
-    "build",
-    "coverage"
-  ]
 }
