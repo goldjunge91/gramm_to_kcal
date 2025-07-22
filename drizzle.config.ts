@@ -11,8 +11,8 @@ if (!env.DATABASE_URL) {
 }
 
 export default defineConfig({
-  schema: "./lib/db/schema.ts",
-  out: "./supabase/migrations",
+  schema: "./lib/db/schemas/index.ts",
+  out: "./lib/db/drizzle",
   dialect: "postgresql",
   dbCredentials: {
     url: env.DATABASE_URL,

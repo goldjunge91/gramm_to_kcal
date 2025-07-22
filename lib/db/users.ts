@@ -14,10 +14,10 @@ import type { User as SupabaseUser } from "@supabase/supabase-js";
 import { eq } from "drizzle-orm";
 
 import { db } from "./index";
-import { users, type SelectUser } from "./schema";
+import { user as users } from "./schemas";
 
-// Use our database User type instead of Supabase User type
-type DatabaseUser = SelectUser;
+// Use our database User type instead of Supabase User type  
+type DatabaseUser = typeof users.$inferSelect;
 
 /**
  * Create or update user in database when they sign up/sign in via Supabase Auth

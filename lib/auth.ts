@@ -2,11 +2,11 @@ import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { db } from "@/lib/db";
 import { 
-  betterAuthUser as user, 
+  user, 
   session, 
   account, 
   verification 
-} from "@/lib/db/schema";
+} from "@/lib/db/schemas";
 import { env } from "@/lib/env";
 
 export const auth = betterAuth({

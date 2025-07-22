@@ -4,7 +4,7 @@ import { ChevronDown, Scale } from "lucide-react";
 import { useState, type JSX } from "react";
 import { toast } from "sonner";
 
-import type { Product } from "@/lib/db/schema";
+import type { Product } from "@/lib/db/schemas";
 
 import { BarcodeScanner } from "@/components/barcode-scanner";
 import { RecentScansDropdown } from "@/components/dev/RecentScansDropdown";

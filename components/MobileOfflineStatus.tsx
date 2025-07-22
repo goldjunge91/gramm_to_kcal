@@ -4,15 +4,18 @@ import type { JSX } from "react";
 
 import { RefreshCw, Smartphone, Wifi, WifiOff } from "lucide-react";
 
-import { useMobileOffline } from "@/app/providers";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 export function MobileOfflineStatus(): JSX.Element {
   const isMobile = useIsMobile();
-  const { isOnline, syncInProgress, storageUsed, maxStorage, lastSyncAt } =
-    useMobileOffline();
+  // TODO: Implement offline functionality
+  const isOnline = true;
+  const syncInProgress = false;
+  const storageUsed = 0;
+  const maxStorage = 100;
+  const lastSyncAt = new Date();
 
   if (!isMobile) return <></>;
 

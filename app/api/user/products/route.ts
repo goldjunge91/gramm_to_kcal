@@ -4,7 +4,7 @@ import { NextResponse, type NextRequest } from "next/server";
 
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { products } from "@/lib/db/schema";
+import { products } from "@/lib/db/schemas";
 
 export async function GET() {
   try {

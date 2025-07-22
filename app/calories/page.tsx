@@ -6,7 +6,6 @@ import { useState, type JSX } from "react";
 
 import type { Product } from "@/lib/types/types";
 
-import { useMobileOffline } from "@/app/providers";
 // import { MobileOfflineStatus } from "@/components/MobileOfflineStatus";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,7 +25,6 @@ import { ComparisonTable } from "./components/ComparisonTable";
 import { ProductForm } from "./components/ProductForm";
 
 export default function CaloriesPage(): JSX.Element {
-  const { isOnline, syncInProgress } = useMobileOffline();
   const isMobile = useIsMobile();
   const [showForm, setShowForm] = useState(false);
 
@@ -39,6 +37,10 @@ export default function CaloriesPage(): JSX.Element {
     isAuthenticated,
     storageType,
   } = useProductsUnified();
+
+  // TODO: Implement offline functionality
+  const isOnline = true;
+  const syncInProgress = false;
 
   const { isCreating, isDeleting } = useProductsUnifiedStates();
 

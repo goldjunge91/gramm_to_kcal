@@ -1,146 +1,28 @@
 "use client";
 
+import type { JSX, ReactNode } from "react";
+
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-  type JSX,
-  type ReactNode,
-} from "react";
 
 import { ThemeProvider } from "@/components/layout/ThemeProvider";
-import { useIsMobile } from "@/hooks/use-mobile";
 import { signOut, useSession } from "@/lib/auth-client";
-import { mobileOfflineStorage } from "@/lib/offline/mobile-storage";
-import { mobileSyncManager } from "@/lib/offline/mobile-sync-manager";
 
-// Mobile-optimized Query Client
-const createMobileQueryClient = (): QueryClient =>
-  new QueryClient({
-    defaultOptions: {
-      queries: {
-        staleTime: 10 * 60 * 1000, // 10 minutes (longer for mobile)
-        gcTime: 30 * 60 * 1000, // 30 minutes cache
-        retry: (failureCount) => {
-          if (!navigator.onLine) return false;
-          // Less aggressive retries on mobile
-          return failureCount < 2;
-        },
-        refetchOnWindowFocus: false, // Disable for mobile battery saving
-        refetchOnReconnect: true, // Important for mobile
-        networkMode: "offlineFirst", // Mobile-first approach
-      },
-      mutations: {
-        retry: (failureCount) => {
-          if (!navigator.onLine) return false;
-          return failureCount < 1; // Single retry on mobile
-        },
-        networkMode: "offlineFirst",
-      },
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      gcTime: 10 * 60 * 1000, // 10 minutes cache
     },
-  });
-
-const queryClient = createMobileQueryClient();
-
-// Enhanced Mobile Context
-interface MobileOfflineContextType {
-  isOnline: boolean;
-  syncInProgress: boolean;
-  lastSyncAt: Date | null;
-  storageUsed: number;
-  maxStorage: number;
-}
-
-const MobileOfflineContext = createContext<
-  MobileOfflineContextType | undefined
->(undefined);
+  },
+});
 
 export function Providers({ children }: { children: ReactNode }): JSX.Element {
-  const isMobile = useIsMobile();
-
-  // Mobile-specific state
-  const [mobileStatus, setMobileStatus] = useState({
-    isOnline: true,
-    syncInProgress: false,
-    lastSyncAt: null as Date | null,
-    storageUsed: 0,
-    maxStorage: 50 * 1024 * 1024, // 50MB
-  });
-
-  useEffect(() => {
-    // Initialize mobile storage
-    mobileOfflineStorage.init().catch(console.error);
-
-    // Mobile-specific status monitoring
-    const updateMobileStatus = (): void => {
-      const status = mobileSyncManager.getMobileStatus();
-      setMobileStatus((prev) => ({
-        ...prev,
-        ...status,
-        lastSyncAt: prev.lastSyncAt, // Preserve last sync time
-      }));
-    };
-
-    // Update mobile status every 30 seconds
-    const statusInterval = setInterval(updateMobileStatus, 30000);
-    updateMobileStatus(); // Initial update
-
-    // Mobile-specific event listeners
-    const handleOnline = (): void => {
-      setMobileStatus((prev) => ({ ...prev, isOnline: true }));
-      mobileSyncManager
-        .startMobileSync()
-        .then(() => {
-          setMobileStatus((prev) => ({
-            ...prev,
-            lastSyncAt: new Date(),
-          }));
-        })
-        .catch(console.error);
-    };
-
-    const handleOffline = (): void => {
-      setMobileStatus((prev) => ({ ...prev, isOnline: false }));
-    };
-
-    // Mobile app lifecycle events
-    const handleVisibilityChange = (): void => {
-      if (!document.hidden && navigator.onLine) {
-        // App came to foreground and online - sync
-        mobileSyncManager.startMobileSync().catch(console.error);
-      }
-    };
-
-    if (typeof window !== "undefined") {
-      window.addEventListener("online", handleOnline);
-      window.addEventListener("offline", handleOffline);
-      document.addEventListener("visibilitychange", handleVisibilityChange);
-    }
-
-    return () => {
-      clearInterval(statusInterval);
-      if (typeof window !== "undefined") {
-        window.removeEventListener("online", handleOnline);
-        window.removeEventListener("offline", handleOffline);
-        document.removeEventListener(
-          "visibilitychange",
-          handleVisibilityChange,
-        );
-      }
-    };
-  }, []);
-
   return (
     <ThemeProvider>
       <QueryClientProvider client={queryClient}>
-        <MobileOfflineContext.Provider value={mobileStatus}>
-          {children}
-          {/* Only show dev tools on desktop */}
-          {!isMobile && <ReactQueryDevtools initialIsOpen={false} />}
-        </MobileOfflineContext.Provider>
+        {children}
+        <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
     </ThemeProvider>
   );
@@ -155,17 +37,6 @@ export const useAuth = () => {
     loading: isPending,
     signOut: async () => {
       await signOut();
-      // Optionally redirect here or let the component handle it
     },
   };
-};
-
-export const useMobileOffline = (): MobileOfflineContextType => {
-  const context = useContext(MobileOfflineContext);
-  if (context === undefined) {
-    throw new Error(
-      "useMobileOffline must be used within a MobileOfflineProvider",
-    );
-  }
-  return context;
 };
