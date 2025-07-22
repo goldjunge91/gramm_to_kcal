@@ -13,23 +13,41 @@ export async function GET(request: Request) {
     next = "/";
   }
 
+  console.log('OAuth callback called with code:', !!code, 'next:', next);
+
   if (code) {
-    const supabase = await createClient();
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
-    if (!error) {
-      const forwardedHost = request.headers.get("x-forwarded-host"); // original origin before load balancer
-      const isLocalEnv = process.env.NODE_ENV === "development";
-      if (isLocalEnv) {
-        // we can be sure that there is no load balancer in between, so no need to watch for X-Forwarded-Host
-        return NextResponse.redirect(`${origin}${next}`);
-      } else if (forwardedHost) {
-        return NextResponse.redirect(`https://${forwardedHost}${next}`);
+    try {
+      // Use standard client - OAuth methods are not rate limited
+      const supabase = await createClient();
+      
+      console.log('Attempting code exchange for session...');
+      const { error, data } = await supabase.auth.exchangeCodeForSession(code);
+      
+      if (!error && data.session) {
+        console.log('OAuth login successful for user:', data.user?.email);
+        
+        const forwardedHost = request.headers.get("x-forwarded-host"); // original origin before load balancer
+        const isLocalEnv = process.env.NODE_ENV === "development";
+        
+        if (isLocalEnv) {
+          // we can be sure that there is no load balancer in between, so no need to watch for X-Forwarded-Host
+          return NextResponse.redirect(`${origin}${next}`);
+        } else if (forwardedHost) {
+          return NextResponse.redirect(`https://${forwardedHost}${next}`);
+        } else {
+          return NextResponse.redirect(`${origin}${next}`);
+        }
       } else {
-        return NextResponse.redirect(`${origin}${next}`);
+        console.error('OAuth code exchange failed:', error);
       }
+    } catch (exchangeError) {
+      console.error('OAuth callback error:', exchangeError);
     }
+  } else {
+    console.log('No code parameter in OAuth callback');
   }
 
   // return the user to an error page with instructions
+  console.log('Redirecting to auth error page');
   return NextResponse.redirect(`${origin}/auth/error`);
 }

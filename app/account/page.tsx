@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 
-import { getUserById } from "@/lib/db/users";
+import { getUserById, upsertUser } from "@/lib/db/users";
 import { createClient } from "@/lib/supabase/server";
 
 import AccountForm from "./account-form";
@@ -13,8 +13,14 @@ export default async function Account() {
     redirect("/auth/login");
   }
 
-  // Get user data from our database
-  const dbUser = await getUserById(data.user.id);
+  // Get user data from our database, create if doesn't exist
+  let dbUser = await getUserById(data.user.id);
+  
+  // If user doesn't exist in our database (e.g., first OAuth login), create them
+  if (!dbUser) {
+    console.log(`Creating database user for first-time login: ${data.user.email}`);
+    dbUser = await upsertUser(data.user);
+  }
 
   return (
     <div className="container mx-auto py-8 px-4">
