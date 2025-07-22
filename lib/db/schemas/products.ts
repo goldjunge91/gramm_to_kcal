@@ -7,9 +7,9 @@ import {
   text,
   timestamp,
   uuid,
-} from 'drizzle-orm/pg-core';
+} from 'drizzle-orm/pg-core'
 
-import { user } from './auth-schema';
+import { user } from './auth-schema'
 
 // Sync status enum for offline functionality
 export const syncStatusEnum = pgEnum('sync_status', [

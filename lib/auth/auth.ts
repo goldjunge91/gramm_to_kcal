@@ -1,16 +1,16 @@
-import { betterAuth } from 'better-auth';
-import { drizzleAdapter } from 'better-auth/adapters/drizzle';
-import { nextCookies } from 'better-auth/next-js';
-import { admin, anonymous } from 'better-auth/plugins';
+import { betterAuth } from 'better-auth'
+import { drizzleAdapter } from 'better-auth/adapters/drizzle'
+import { nextCookies } from 'better-auth/next-js'
+import { admin, anonymous } from 'better-auth/plugins'
 
-import { db } from '@/lib/db';
+import { db } from '@/lib/db'
 import {
   account,
   session,
   user,
   verification,
-} from '@/lib/db/schemas';
-import { env } from '@/lib/env';
+} from '@/lib/db/schemas'
+import { env } from '@/lib/env'
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -46,11 +46,11 @@ export const auth = betterAuth({
     window: 60, // 60 seconds
     max: 100, // 100 requests per window
     customRules: {
-      "/sign-in/email": {
+      '/sign-in/email': {
         window: 10,
         max: 3,
       },
-      "/sign-up/email": {
+      '/sign-up/email': {
         window: 10,
         max: 3,
       },

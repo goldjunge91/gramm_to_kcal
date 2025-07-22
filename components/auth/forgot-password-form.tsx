@@ -1,20 +1,20 @@
 'use client'
 
-import Link from 'next/link'
-import { useState } from 'react'
+import Link from 'next/link';
+import { useState } from 'react';
 
-import { Button } from '@/components/ui/button'
+import { resetPasswordAction } from '@/actions/password';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { resetPasswordAction } from '@/lib/actions/auth'
-import { cn } from '@/lib/utils'
+} from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { cn } from '@/lib/utils';
 
 export function ForgotPasswordForm({
   className,

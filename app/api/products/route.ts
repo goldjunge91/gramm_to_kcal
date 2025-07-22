@@ -2,11 +2,7 @@ import type { NextRequest } from 'next/server'
 
 import { NextResponse } from 'next/server'
 
-import {
-  addRateLimitHeaders,
-  checkRateLimit,
-  rateLimiters,
-} from '@/lib/rate-limit'
+// Note: Rate limiting handled by Better Auth middleware
 import {
   getSecurityHeaders,
   RequestSchemas,
@@ -16,25 +12,7 @@ import {
 } from '@/lib/validations/request-validation'
 
 export async function GET(request: NextRequest) {
-  // Check rate limit for external API proxy (OpenFoodFacts)
-  const rateLimitResult = await checkRateLimit(request, rateLimiters.external)
-
-  if (rateLimitResult.rateLimited) {
-    const securityHeaders = getSecurityHeaders()
-    addRateLimitHeaders(securityHeaders, rateLimitResult)
-
-    return NextResponse.json(
-      {
-        error: 'Rate limit exceeded',
-        message: 'Too many requests. Please try again later.',
-        retryAfter: Math.ceil((rateLimitResult.resetTime - Date.now()) / 1000),
-      },
-      {
-        status: 429,
-        headers: securityHeaders,
-      },
-    )
-  }
+  // Note: Rate limiting handled by Better Auth middleware and cached-product-lookup internal limits
 
   // Validate query parameters if searching
   const url = new URL(request.url)
@@ -78,7 +56,6 @@ export async function GET(request: NextRequest) {
   }
 
   const headers = getSecurityHeaders()
-  addRateLimitHeaders(headers, rateLimitResult)
   return NextResponse.json({ message: 'Products API endpoint' }, { headers })
 }
 
@@ -101,25 +78,7 @@ export async function POST(request: NextRequest) {
     )
   }
 
-  // Check rate limit for product creation
-  const rateLimitResult = await checkRateLimit(request, rateLimiters.api)
-
-  if (rateLimitResult.rateLimited) {
-    const securityHeaders = getSecurityHeaders()
-    addRateLimitHeaders(securityHeaders, rateLimitResult)
-
-    return NextResponse.json(
-      {
-        error: 'Rate limit exceeded',
-        message: 'Too many requests. Please try again later.',
-        retryAfter: Math.ceil((rateLimitResult.resetTime - Date.now()) / 1000),
-      },
-      {
-        status: 429,
-        headers: securityHeaders,
-      },
-    )
-  }
+  // Note: Rate limiting handled by Better Auth middleware
 
   // Validate request body with Zod
   const validation = await validateRequest(
@@ -129,7 +88,6 @@ export async function POST(request: NextRequest) {
 
   if (!validation.success) {
     const securityHeaders = getSecurityHeaders()
-    addRateLimitHeaders(securityHeaders, rateLimitResult)
 
     return NextResponse.json(
       { error: 'Invalid request data', details: validation.error },
@@ -141,7 +99,6 @@ export async function POST(request: NextRequest) {
   const { name, quantity, kcal } = validation.data
 
   const headers = getSecurityHeaders()
-  addRateLimitHeaders(headers, rateLimitResult)
   return NextResponse.json(
     {
       message: 'Product created successfully',

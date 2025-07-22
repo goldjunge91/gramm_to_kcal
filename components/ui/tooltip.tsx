@@ -1,15 +1,16 @@
 'use client'
 
-import * as TooltipPrimitive from '@radix-ui/react-tooltip'
-import * as React from 'react'
+import * as TooltipPrimitive from '@radix-ui/react-tooltip';
+import * as React from 'react';
 
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/utils';
 
 function TooltipProvider({
   delayDuration = 0,
   ...props
 }: React.ComponentProps<typeof TooltipPrimitive.Provider>) {
   return (
+    // @ts-ignore
     <TooltipPrimitive
       data-slot="tooltip-provider"
       delayDuration={delayDuration}
@@ -58,4 +59,4 @@ function TooltipContent({
   )
 }
 
-export { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger }
+export { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger };

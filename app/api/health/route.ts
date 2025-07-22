@@ -1,37 +1,18 @@
-import type { NextRequest } from 'next/server'
+import type { NextRequest } from 'next/server';
 
-import { NextResponse } from 'next/server'
+import { NextResponse } from 'next/server';
 
-import { getOpenFoodFactsHealth } from '@/lib/api/cached-product-lookup'
-import { circuitBreakerManager } from '@/lib/circuit-breaker'
-import { db } from '@/lib/db'
-import { env } from '@/lib/env'
-import { getURL } from '@/lib/get-url'
-import {
-  addRateLimitHeaders,
-  checkRateLimit,
-  rateLimiters,
-} from '@/lib/rate-limit'
-import { getRedisHealth } from '@/lib/redis'
-import { getAuthRateLimitHealth } from '@/lib/utils/auth-rate-limit'
+import { getOpenFoodFactsHealth } from '@/lib/api/cached-product-lookup';
+import { circuitBreakerManager } from '@/lib/circuit-breaker';
+import { db } from '@/lib/db';
+import { env } from '@/lib/env';
+import { getURL } from '@/lib/get-url';
+import { getRedisHealth } from '@/lib/redis';
 
 export async function GET(request: NextRequest) {
-  // Apply light rate limiting to health checks
-  const rateLimitResult = await checkRateLimit(request, rateLimiters.api)
-
-  if (rateLimitResult.rateLimited) {
-    return NextResponse.json(
-      {
-        error: 'Rate limit exceeded',
-        message: 'Too many health check requests. Please try again later.',
-        retryAfter: Math.ceil((rateLimitResult.resetTime - Date.now()) / 1000),
-      },
-      {
-        status: 429,
-        headers: addRateLimitHeaders(new Headers(), rateLimitResult),
-      },
-    )
-  }
+  // Log health check request for monitoring
+  const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown'
+  console.info(`[HEALTH] Health check from IP: ${ip}`)
 
   try {
     // Test database connection
@@ -47,10 +28,7 @@ export async function GET(request: NextRequest) {
     // Get Redis health status
     const redisHealth = await getRedisHealth()
 
-    // Get auth rate limiting health
-    const authRateLimitHealth = await getAuthRateLimitHealth()
-
-    // Get OpenFoodFacts health
+    // Get OpenFoodFacts health with request for rate limiting context
     const openFoodFactsHealth = await getOpenFoodFactsHealth()
 
     // Get circuit breaker health
@@ -69,29 +47,21 @@ export async function GET(request: NextRequest) {
       },
       services: {
         redis: redisHealth,
-        authRateLimit: authRateLimitHealth,
         openFoodFacts: openFoodFactsHealth,
         circuitBreakers: circuitBreakerHealth,
       },
-      rateLimit: {
-        remaining: rateLimitResult.remaining,
-        total: rateLimitResult.total,
-        resetTime: new Date(rateLimitResult.resetTime).toISOString(),
-      },
     }
 
-    const headers = addRateLimitHeaders(new Headers(), rateLimitResult)
-    return NextResponse.json(health, { headers })
+    return NextResponse.json(health)
   }
   catch (error) {
-    const headers = addRateLimitHeaders(new Headers(), rateLimitResult)
     return NextResponse.json(
       {
         status: 'error',
         message: error instanceof Error ? error.message : 'Unknown error',
         timestamp: new Date().toISOString(),
       },
-      { status: 500, headers },
+      { status: 500 },
     )
   }
 }

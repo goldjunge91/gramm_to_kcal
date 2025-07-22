@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { signOut } from '@/lib/auth-client'
+import { signOut } from '@/lib/auth/auth-client'
 
 interface AccountFormProps {
   user: {

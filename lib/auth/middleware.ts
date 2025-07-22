@@ -1,12 +1,13 @@
-import { getSessionCookie } from 'better-auth/cookies';
-import type { NextRequest } from 'next/server';
-import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server'
+
+import { getSessionCookie } from 'better-auth/cookies'
+import { NextResponse } from 'next/server'
 
 import {
   isAuthRoute,
   isPublicRoute,
   REDIRECT_PATHS,
-} from '@/lib/auth/routes';
+} from '@/lib/auth/routes'
 
 export async function updateSession(request: NextRequest) {
   const response = NextResponse.next({

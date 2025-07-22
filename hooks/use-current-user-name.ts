@@ -1,4 +1,4 @@
-import { useSession } from '@/lib/auth-client'
+import { useSession } from '@/lib/auth/auth-client'
 
 export function useCurrentUserName() {
   const { data: session } = useSession()

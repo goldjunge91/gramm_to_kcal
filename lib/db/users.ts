@@ -1,6 +1,6 @@
 /**
  * Server-only user database utilities.
- * 
+ *
  * Note: Better Auth handles core user management (creation, updates, deletion).
  * This file contains only application-specific user utilities if needed.
  */

@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { signUp } from '@/lib/auth-client'
+import { signUp } from '@/lib/auth/auth-client'
 import { cn } from '@/lib/utils'
 
 interface ServerSignUpFormProps {
@@ -147,7 +147,7 @@ export function ServerSignUpForm({ className, error: initialError }: ServerSignU
                   type="button"
                   className="w-full flex items-center justify-center gap-2 mt-2 border border-gray-200"
                   onClick={async () => {
-                    const { signIn } = await import('@/lib/auth-client')
+                    const { signIn } = await import('@/lib/auth/auth-client')
                     await signIn.social({
                       provider: 'google',
                       callbackURL: window.location.origin,

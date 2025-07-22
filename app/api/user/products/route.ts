@@ -4,7 +4,7 @@ import { and, desc, eq } from 'drizzle-orm'
 import { headers } from 'next/headers'
 import { NextResponse } from 'next/server'
 
-import { auth } from '@/lib/auth'
+import { auth } from '@/lib/auth/auth'
 import { db } from '@/lib/db'
 import { products } from '@/lib/db/schemas'
 

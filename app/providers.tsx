@@ -6,7 +6,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 
 import { ThemeProvider } from '@/components/layout/ThemeProvider'
-import { signOut, useSession } from '@/lib/auth-client'
+import { signOut, useSession } from '@/lib/auth/auth-client'
 
 const queryClient = new QueryClient({
   defaultOptions: {

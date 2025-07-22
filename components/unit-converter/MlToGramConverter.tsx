@@ -34,13 +34,11 @@ import {
 import { Separator } from '@/components/ui/separator'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import {
-
   getCategoryDisplayName,
   getDensityDataByCategory,
   searchDensityData,
 } from '@/lib/utils/density-database'
 import {
-
   convertUnits,
   formatNumber,
   getQuickConversions,

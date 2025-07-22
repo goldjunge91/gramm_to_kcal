@@ -1,20 +1,15 @@
-import type { NextRequest } from 'next/server'
+import type { NextRequest } from 'next/server';
 
-import { NextResponse } from 'next/server'
-import { z } from 'zod'
+import { NextResponse } from 'next/server';
+import { z } from 'zod';
 
-import { circuitBreakerManager } from '@/lib/circuit-breaker'
-import {
-  addRateLimitHeaders,
-  checkRateLimit,
-  rateLimiters,
-} from '@/lib/rate-limit'
+import { circuitBreakerManager } from '@/lib/circuit-breaker';
 import {
   getSecurityHeaders,
   validateContentType,
   validateRequest,
   validateRequestSize,
-} from '@/lib/validations/request-validation'
+} from '@/lib/validations/request-validation';
 
 // Admin action schema
 const AdminActionSchema = z.object({
@@ -23,22 +18,11 @@ const AdminActionSchema = z.object({
 })
 
 export async function GET(request: NextRequest) {
-  // Apply rate limiting for admin endpoints
-  const rateLimitResult = await checkRateLimit(request, rateLimiters.api)
-
-  if (rateLimitResult.rateLimited) {
-    const securityHeaders = getSecurityHeaders()
-    addRateLimitHeaders(securityHeaders, rateLimitResult)
-
-    return NextResponse.json(
-      {
-        error: 'Rate limit exceeded',
-        message: 'Too many requests. Please try again later.',
-        retryAfter: Math.ceil((rateLimitResult.resetTime - Date.now()) / 1000),
-      },
-      { status: 429, headers: securityHeaders },
-    )
-  }
+  // Note: Rate limiting handled by Better Auth middleware
+  
+  // Log admin circuit breaker access for monitoring
+  const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown'
+  console.info(`[CIRCUIT-BREAKER] Admin GET request from IP: ${ip}`)
 
   try {
     // Get all circuit breaker statuses
@@ -46,7 +30,6 @@ export async function GET(request: NextRequest) {
     const healthSummary = await circuitBreakerManager.getHealthSummary()
 
     const headers = getSecurityHeaders()
-    addRateLimitHeaders(headers, rateLimitResult)
 
     return NextResponse.json(
       {
@@ -59,7 +42,6 @@ export async function GET(request: NextRequest) {
   }
   catch (error) {
     const headers = getSecurityHeaders()
-    addRateLimitHeaders(headers, rateLimitResult)
 
     return NextResponse.json(
       {
@@ -90,29 +72,13 @@ export async function POST(request: NextRequest) {
     )
   }
 
-  // Apply stricter rate limiting for admin actions
-  const rateLimitResult = await checkRateLimit(request, rateLimiters.auth)
-
-  if (rateLimitResult.rateLimited) {
-    const securityHeaders = getSecurityHeaders()
-    addRateLimitHeaders(securityHeaders, rateLimitResult)
-
-    return NextResponse.json(
-      {
-        error: 'Rate limit exceeded',
-        message: 'Too many admin requests. Please try again later.',
-        retryAfter: Math.ceil((rateLimitResult.resetTime - Date.now()) / 1000),
-      },
-      { status: 429, headers: securityHeaders },
-    )
-  }
+  // Note: Rate limiting handled by Better Auth middleware
 
   // Validate request body
   const validation = await validateRequest(request, AdminActionSchema)
 
   if (!validation.success) {
     const securityHeaders = getSecurityHeaders()
-    addRateLimitHeaders(securityHeaders, rateLimitResult)
 
     return NextResponse.json(
       { error: 'Invalid request data', details: validation.error },
@@ -187,7 +153,6 @@ export async function POST(request: NextRequest) {
     const updatedStatus = await circuitBreakerManager.getHealthSummary()
 
     const headers = getSecurityHeaders()
-    addRateLimitHeaders(headers, rateLimitResult)
 
     return NextResponse.json(
       {
@@ -202,7 +167,6 @@ export async function POST(request: NextRequest) {
   }
   catch (error) {
     const headers = getSecurityHeaders()
-    addRateLimitHeaders(headers, rateLimitResult)
 
     return NextResponse.json(
       {
