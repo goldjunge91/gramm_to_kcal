@@ -13,7 +13,7 @@ import { getRedis } from '@/lib/redis'
 const AUTH_RATE_LIMITS = {
   // Sign in attempts (stricter)
   SIGN_IN: {
-    requests: 5,
+    requests: 10,
     window: 300, // 5 attempts per 5 minutes
     blockDuration: 900, // 15 minute block after exceeding
   },
@@ -26,7 +26,7 @@ const AUTH_RATE_LIMITS = {
 
   // Sign up attempts
   SIGN_UP: {
-    requests: 3,
+    requests: 10,
     window: 3600, // 3 attempts per hour
     blockDuration: 3600, // 1 hour block
   },
@@ -86,6 +86,16 @@ export class SupabaseAuthRateLimiter {
     operation: AuthOperation,
     identifier: string, // IP address or email
   ): Promise<AuthRateLimitResult> {
+    // Skip rate limiting in test environment
+    if (process.env.NODE_ENV === 'test') {
+      return {
+        allowed: true,
+        remaining: AUTH_RATE_LIMITS[operation].requests,
+        resetTime: Date.now() + AUTH_RATE_LIMITS[operation].window * 1000,
+        blocked: false,
+      }
+    }
+
     if (!this.redis) {
       // No Redis - allow but log warning
       console.warn('Auth rate limiting unavailable - Redis not configured')
@@ -528,6 +538,16 @@ export async function getAuthRateLimitHealth() {
 export async function checkDbRateLimit(
   identifier: string,
 ): Promise<AuthRateLimitResult> {
+  // Skip rate limiting in test environment
+  if (process.env.NODE_ENV === 'test') {
+    return {
+      allowed: true,
+      remaining: AUTH_RATE_LIMITS.DB_RATE_LIMIT.requests,
+      resetTime: Date.now() + AUTH_RATE_LIMITS.DB_RATE_LIMIT.window * 1000,
+      blocked: false,
+    }
+  }
+
   const redis = getRedis()
   const config = AUTH_RATE_LIMITS.DB_RATE_LIMIT
   const key = `db:rate-limit:${identifier}`

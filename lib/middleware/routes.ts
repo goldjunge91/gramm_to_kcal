@@ -33,13 +33,13 @@ export const ROUTE_GROUPS: Record<RouteGroup, string[]> = {
     '/unit-converter',
     '/calories-scan',
     '/dev-scanner',
+    '/auth/sign-up-success',
   ],
 
   // Authentication routes - redirect authenticated users away
   AUTH: [
     '/auth/login',
     '/auth/sign-up',
-    '/auth/sign-up-success',
     '/auth/forgot-password',
     '/auth/update-password',
     '/auth/error',

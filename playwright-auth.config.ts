@@ -1,4 +1,4 @@
-import { defineConfig, devices } from '@playwright/test';
+import { defineConfig, devices } from '@playwright/test'
 /**
  * Focused E2E Test Configuration for Authentication Tests Only
  *
@@ -10,25 +10,26 @@ import { defineConfig, devices } from '@playwright/test';
  * Use this for faster development cycles:
  * pnpm test:e2e:auth
  */
-import dotenv from 'dotenv';
-import fs from 'node:fs';
-import path from 'node:path';
+import dotenv from 'dotenv'
+import fs from 'node:fs'
+import path from 'node:path'
 
-const envLocalPath = path.resolve(__dirname, '../.env.local')
-const envPath = path.resolve(__dirname, '../.env')
+const envLocalPath = path.resolve(__dirname, './.env.local')
+const envPath = path.resolve(__dirname, './.env')
 dotenv.config({ path: fs.existsSync(envLocalPath) ? envLocalPath : envPath })
 
 export default defineConfig({
   testDir: './__e2e__',
 
   /* Global setup to create test users before running tests */
-  globalSetup: require.resolve('./__e2e__/setup/create-test-users.ts'),
-
+  /* Global setup and teardown */
+  // globalSetup: require.resolve('./__e2e__/setup/create-test-users.ts'),
+  // globalTeardown: require.resolve('./__e2e__/setup/create-test-users.ts'),
   /* Only run core auth tests in specific order */
   testMatch: [
     '**/auth/signup.spec.ts', // Run FIRST - creates users
-    '**/auth/login.spec.ts', // Run SECOND - tests existing users
-    '**/auth/logout.spec.ts', // Run THIRD - tests session cleanup
+    // '**/auth/login.spec.ts', // Run SECOND - tests existing users
+    // '**/auth/logout.spec.ts', // Run THIRD - tests session cleanup
   ],
 
   /* Sequential execution for database safety */

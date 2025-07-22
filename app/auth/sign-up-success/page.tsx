@@ -1,9 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -16,23 +14,15 @@ import {
 import { useSession } from '@/lib/auth-client'
 
 export default function Page() {
-  const router = useRouter()
-  const { data: session, isPending } = useSession()
+  const { isPending } = useSession()
   const [isCheckingAuth, setIsCheckingAuth] = useState(true)
 
   useEffect(() => {
     // Check if user is already signed in
     if (!isPending) {
       setIsCheckingAuth(false)
-
-      if (session) {
-        toast.success('Email confirmed! Signing you in...')
-        setTimeout(() => {
-          router.push('/calories')
-        }, 1500)
-      }
     }
-  }, [session, isPending, router])
+  }, [isPending])
 
   return (
     <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">

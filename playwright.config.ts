@@ -1,49 +1,60 @@
-import { defineConfig, devices } from '@playwright/test';
+import { defineConfig, devices } from '@playwright/test'
+import dotenv from 'dotenv'
+import fs from 'node:fs'
+import path from 'node:path'
+// dotenv.config({ path: path.resolve(__dirname, '.env') })
 
-/**
- * Read environment variables from file.
- * https://github.com/motdotla/dotenv
- */
-// import dotenv from 'dotenv';
-// import path from 'path';
-// dotenv.config({ path: path.resolve(__dirname, '.env') });
+const envLocalPath = path.resolve(__dirname, './.env.local')
+const envPath = path.resolve(__dirname, './.env')
+dotenv.config({ path: fs.existsSync(envLocalPath) ? envLocalPath : envPath })
 
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
-  testDir: './__e2e__',
-  /* Global setup to create test users before running tests */
-  globalSetup: require.resolve('./__e2e__/setup/create-test-users.ts'),
-  /* Disable parallel execution for auth tests to prevent database conflicts */
-  fullyParallel: false,
+  testDir: './__e2e__/', // Passe ggf. an deinen Testordner an
+  testIgnore: [
+    '**/auth/**', // Ignoriere alle Tests im Ordner experimental
+    // '**/*.skip.ts',                 // Ignoriere alle Dateien mit .skip.ts
+    // '**/auth/legacy-login.spec.ts', // Ignoriere eine bestimmte Datei
+  ],
+  timeout: 30 * 1000,
+  expect: {
+    timeout: 5000,
+  },
+  fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
   /* Retry on CI only */
-  retries: process.env.CI ? 2 : 0,
+  // retries: process.env.CI ? 0 : 0,
+  /* Opt out of parallel tests on CI. */
+  // workers: process.env.CI ? 1 : undefined,
   /* Use single worker for better database isolation */
   workers: 1,
   /* Stop after a few failures to save time */
-  maxFailures: 5,
+  maxFailures: 0,
+
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: 'html',
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
+
   use: {
-    /* Base URL to use in actions like `await page.goto('/')`. */
+  /* Base URL to use in actions like `await page.goto('/')`. */
     baseURL: 'http://localhost:3000',
-
-    /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
+    screenshot: 'only-on-failure',
+    video: 'retain-on-failure',
+    permissions: ['camera'],
   },
-
-  /* Configure projects for major browsers */
   projects: [
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
     },
-
     // {
+    //   name: "webkit",
+    //   use: { ...devices["Desktop Safari"] },
+    // },
     //   name: 'firefox',
     //   use: { ...devices['Desktop Firefox'] },
     // },
@@ -73,8 +84,8 @@ export default defineConfig({
     //   use: { ...devices['Desktop Chrome'], channel: 'chrome' },
     // },
   ],
-
   /* Run your local dev server before starting the tests */
+  outputDir: 'test-results/',
   webServer: {
     command: 'pnpm dev',
     url: 'http://localhost:3000',

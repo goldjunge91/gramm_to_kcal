@@ -38,12 +38,12 @@ function createEnv() {
     // 'NEXT_PUBLIC_NODE_ENV',
     // 'STORAGE_KEY',
     // 'RECENT_SCANS_KEY',
-    'AUTH_GOOGLE_ID',
-    'AUTH_GOOGLE_SECRET',
   ] as const
 
   // Optional environment variables - features will be disabled if missing
   const optionalEnvVars = [
+    'AUTH_GOOGLE_ID',
+    'AUTH_GOOGLE_SECRET',
     'UPSTASH_REDIS_REST_URL',
     'UPSTASH_REDIS_REST_TOKEN',
   ] as const

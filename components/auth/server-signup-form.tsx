@@ -55,13 +55,19 @@ export function ServerSignUpForm({ className, error: initialError }: ServerSignU
       })
 
       if (result.error) {
-        setError(result.error.message || 'Signup failed')
+        const errorMessage = result.error.message || 'Signup failed'
+        // Handle existing user case specifically
+        if (errorMessage.includes('already exists') || errorMessage.includes('User with email')) {
+          setError('An account with this email already exists. Please sign in instead.')
+        }
+        else {
+          setError(errorMessage)
+        }
         return
       }
 
       // Redirect on success
-      router.push('/')
-      router.refresh()
+      router.push('/auth/sign-up-success')
     }
     catch (error_) {
       setError(error_ instanceof Error ? error_.message : 'Signup failed')

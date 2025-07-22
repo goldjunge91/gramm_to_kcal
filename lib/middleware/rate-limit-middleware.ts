@@ -59,6 +59,11 @@ for (const [key, config] of Object.entries(RATE_LIMIT_CONFIGS)) {
 
 // Determine which rate limiter to use based on the route
 function getRateLimiterForRoute(pathname: string): RateLimiter | null {
+  // Disable rate limiting in test environment
+  if (process.env.NODE_ENV === 'test') {
+    return null
+  }
+
   // Skip rate limiting for static assets and internal Next.js routes
   if (
     pathname.startsWith('/_next/')
