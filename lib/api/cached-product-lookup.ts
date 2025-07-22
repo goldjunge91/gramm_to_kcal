@@ -4,16 +4,16 @@
  * Implements the recommended 30 req/min for products and 10 req/s for search
  */
 
-import type { Product } from '@/lib/types/types'
+import type { Product } from '@/lib/types/types';
 
-import { getRedis } from '@/lib/redis'
+import { getRedis } from '@/lib/redis';
 
-import { circuitBreakers } from '../circuit-breaker'
+import { circuitBreakers } from '../middleware/circuit-breaker';
 import {
   isValidEAN13,
   lookupProductByBarcode,
   searchProductsByName,
-} from './product-lookup'
+} from './product-lookup';
 
 type RedisPipelineResult = [unknown, unknown][]
 
@@ -455,4 +455,5 @@ export async function getOpenFoodFactsHealth() {
 }
 
 // Export circuit breaker for direct access
-export { circuitBreakers as openFoodFactsCircuitBreaker }
+export { circuitBreakers as openFoodFactsCircuitBreaker };
+

@@ -1,15 +1,11 @@
 'use server'
 
-import { revalidatePath } from 'next/cache'
-import { redirect } from 'next/navigation'
-import { z } from 'zod'
+import { revalidatePath } from 'next/cache';
+import { redirect } from 'next/navigation';
+import { z } from 'zod';
 
-import { auth } from '@/lib/auth'
-import { REDIRECT_PATHS } from '@/lib/middleware/routes'
-import { SupabaseAuthRateLimiter } from '@/lib/utils/auth-rate-limit'
-
-// Production-ready Redis-based rate limiter (reusing existing)
-const authRateLimiter = new SupabaseAuthRateLimiter()
+import { auth } from '@/lib/auth/auth';
+import { REDIRECT_PATHS } from '@/lib/auth/routes';
 
 // Validation schemas
 const signInSchema = z.object({
@@ -89,15 +85,6 @@ export async function loginAction(formData: FormData) {
 
   const { email, password } = validation.data
 
-  // Rate limiting by email
-  const rateLimitResult = await authRateLimiter.checkRateLimit('SIGN_IN', email)
-  if (!rateLimitResult.allowed) {
-    logAuthAttempt('signin', email, false, 'Rate limit exceeded')
-    redirect(
-      '/auth/login?error=Too many login attempts. Please try again later.',
-    )
-  }
-
   try {
     const result = await auth.api.signInEmail({
       body: {
@@ -111,8 +98,6 @@ export async function loginAction(formData: FormData) {
       redirect(`/auth/login?error=${encodeURIComponent('Invalid email or password')}`)
     }
 
-    // Clear rate limit on successful login
-    await authRateLimiter.resetRateLimit('SIGN_IN', email)
     logAuthAttempt('signin', email, true)
 
     // Revalidate layout to update auth state
@@ -149,15 +134,6 @@ export async function signupAction(formData: FormData) {
 
   const { email, password, name } = validation.data
 
-  // Rate limiting by email
-  const rateLimitResult = await authRateLimiter.checkRateLimit('SIGN_UP', email)
-  if (!rateLimitResult.allowed) {
-    logAuthAttempt('signup', email, false, 'Rate limit exceeded')
-    redirect(
-      '/auth/sign-up?error=Too many signup attempts. Please try again later.',
-    )
-  }
-
   try {
     const result = await auth.api.signUpEmail({
       body: {
@@ -172,8 +148,6 @@ export async function signupAction(formData: FormData) {
       redirect(`/auth/sign-up?error=${encodeURIComponent('Account creation failed')}`)
     }
 
-    // Clear rate limit on successful signup
-    await authRateLimiter.resetRateLimit('SIGN_UP', email)
     logAuthAttempt('signup', email, true)
 
     // Revalidate layout to update auth state

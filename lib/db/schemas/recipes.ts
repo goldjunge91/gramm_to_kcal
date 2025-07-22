@@ -6,10 +6,10 @@ import {
   text,
   timestamp,
   uuid,
-} from 'drizzle-orm/pg-core'
+} from 'drizzle-orm/pg-core';
 
-import { user } from './auth-schema'
-import { syncStatusEnum } from './products'
+import { user } from './auth-schema';
+import { syncStatusEnum } from './products';
 
 // Base sync metadata for offline-first architecture
 const syncMetadata = {

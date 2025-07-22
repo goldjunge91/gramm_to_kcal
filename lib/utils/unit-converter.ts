@@ -3,9 +3,9 @@
  * Implementiert die Formel: Gewicht [g] = Volumen [ml] × Dichte [g/ml]
  */
 
-import type { DensityData } from './density-database'
+import type { DensityData } from './density-database';
 
-import { findDensityData } from './density-database'
+import { findDensityData } from './density-database';
 
 export interface ConversionResult {
   success: boolean

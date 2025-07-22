@@ -1,18 +1,18 @@
-import { relations } from 'drizzle-orm'
+import { relations } from 'drizzle-orm';
 
 // Import for relations
-import { account, session, user } from './auth-schema'
-import { products } from './products'
-import { ingredients, recipes } from './recipes'
+import { account, session, user } from './auth-schema';
+import { products } from './products';
+import { ingredients, recipes } from './recipes';
 
 // Export all schema tables
-export * from './auth-schema'
-export * from './products'
+export * from './auth-schema';
+export * from './products';
 // Re-export types for convenience
 export type {
   NewProduct,
-  Product,
-} from './products'
+  Product
+} from './products';
 
 // Relations
 export const userRelations = relations(user, ({ many }) => ({
@@ -62,14 +62,14 @@ export const productsRelations = relations(products, ({ one }) => ({
   }),
 }))
 
-export * from './recipes'
+export * from './recipes';
 
 export type {
   Ingredient,
   NewIngredient,
   NewRecipe,
-  Recipe,
-} from './recipes'
+  Recipe
+} from './recipes';
 
 // Export User type from auth schema
 export type User = typeof user.$inferSelect

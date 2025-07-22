@@ -3,9 +3,9 @@
  * Provides utilities for pattern matching and route validation
  */
 
-import type { RouteGroup } from './routes'
+import type { RouteGroup } from './routes';
 
-import { getRouteGroup, ROUTE_CONFIGS } from './routes'
+import { getRouteGroup, ROUTE_CONFIGS } from './routes';
 
 export interface MatchResult {
   matches: boolean

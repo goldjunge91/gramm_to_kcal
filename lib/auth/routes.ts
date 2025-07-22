@@ -34,17 +34,24 @@ export const ROUTE_GROUPS: Record<RouteGroup, string[]> = {
     '/calories-scan',
     '/dev-scanner',
     '/auth/sign-up-success',
+    '/auth/login',
+    '/auth/sign-up',
+    '/auth/forgot-password',
+    '/auth/error',
+    '/auth/confirm',
+    '/auth/signout',
   ],
 
   // Authentication routes - redirect authenticated users away
   AUTH: [
-    '/auth/login',
-    '/auth/sign-up',
-    '/auth/forgot-password',
+    // '/auth/login',
+    // '/auth/sign-up',
+    // '/auth/forgot-password',
+    // '/auth/update-password',
+    // '/auth/error',
+    // '/auth/confirm',
+    // '/auth/signout',
     '/auth/update-password',
-    '/auth/error',
-    '/auth/confirm',
-    '/auth/signout',
   ],
 
   // Protected routes - require authentication
@@ -162,7 +169,7 @@ export const REDIRECT_PATHS = {
   LOGIN: '/auth/login',
   HOME: '/',
   ACCOUNT: '/account',
-  DEFAULT_AFTER_LOGIN: '/calories', // Main app landing page after successful auth
+  DEFAULT_AFTER_LOGIN: '/', // Main app landing page after successful auth
   DEFAULT_AFTER_LOGOUT: '/',
 } as const
 

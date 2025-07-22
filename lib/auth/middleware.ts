@@ -1,12 +1,12 @@
-import type { NextRequest } from 'next/server'
-
-import { NextResponse } from 'next/server'
+import { getSessionCookie } from 'better-auth/cookies';
+import type { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
 
 import {
   isAuthRoute,
   isPublicRoute,
   REDIRECT_PATHS,
-} from '@/lib/middleware/routes'
+} from '@/lib/auth/routes';
 
 export async function updateSession(request: NextRequest) {
   const response = NextResponse.next({
@@ -16,12 +16,8 @@ export async function updateSession(request: NextRequest) {
   try {
     const pathname = request.nextUrl.pathname
 
-    // Check for Better Auth session cookies
-    const cookies = request.cookies.getAll()
-    const sessionCookie = cookies.find(cookie =>
-      cookie.name === 'better-auth.session_token'
-      || cookie.name.startsWith('better-auth.'),
-    )
+    // Use Better Auth's helper to check for session cookie
+    const sessionCookie = getSessionCookie(request)
 
     // If user has session and is on auth page, redirect to app
     if (sessionCookie && isAuthRoute(pathname)) {
