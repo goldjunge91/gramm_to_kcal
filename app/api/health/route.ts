@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 
 import { getOpenFoodFactsHealth } from "@/lib/api/cached-product-lookup";
 import { circuitBreakerManager } from "@/lib/circuit-breaker";
+import { env } from "@/lib/env";
 import { getURL } from "@/lib/get-url";
 import {
   addRateLimitHeaders,
@@ -51,12 +52,12 @@ export async function GET(request: NextRequest) {
     const health = {
       status: "ok",
       timestamp: new Date().toISOString(),
-      environment: process.env.NODE_ENV,
+      environment: env.NODE_ENV,
       url: getURL(),
       database: error ? "error" : "connected",
       supabase: {
-        hasUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
-        hasKey: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+        hasUrl: !!env.NEXT_PUBLIC_SUPABASE_URL,
+        hasKey: !!env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
       },
       services: {
         redis: redisHealth,

@@ -16,16 +16,19 @@ export const useProducts = (userId: string) => {
         return await mobileOfflineStorage.getProducts(userId);
       }
 
-      const { createRegularClient } = await import("@/lib/supabase/client");
-      const supabase = createRegularClient();
-      const { data, error } = await supabase
-        .from("products")
-        .select("*")
-        .eq("user_id", userId)
-        .eq("is_deleted", false)
-        .order("created_at", { ascending: false });
+      // Use local API endpoint instead of Supabase
+      const response = await fetch('/api/user/products', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
 
-      if (error) throw error;
+      if (!response.ok) {
+        throw new Error(`Failed to fetch products: ${response.statusText}`);
+      }
+
+      const data = await response.json();
 
       // Cache offline
       for (const product of data) {
@@ -68,22 +71,20 @@ export const useCreateProduct = () => {
         return productWithId;
       }
 
-      const { createRegularClient } = await import("@/lib/supabase/client");
-      const supabase = createRegularClient();
-      // Mapping für Supabase: user_id statt userId
-      // Nur user_id an Supabase übergeben, nicht userId
-      const { userId, ...rest } = product;
-      const supabaseProduct = {
-        ...rest,
-        user_id: userId,
-      };
-      const { data, error } = await supabase
-        .from("products")
-        .insert(supabaseProduct)
-        .select()
-        .single();
+      // Use local API endpoint instead of Supabase
+      const response = await fetch('/api/user/products', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(product),
+      });
 
-      if (error) throw error;
+      if (!response.ok) {
+        throw new Error(`Failed to create product: ${response.statusText}`);
+      }
+
+      const data = await response.json();
 
       // Cache offline
       await mobileOfflineStorage.saveProduct(data);
@@ -146,16 +147,20 @@ export const useUpdateProduct = () => {
         return updatedProduct;
       }
 
-      const { createRegularClient } = await import("@/lib/supabase/client");
-      const supabase = createRegularClient();
-      const { data, error } = await supabase
-        .from("products")
-        .update(updates)
-        .eq("id", id)
-        .select()
-        .single();
+      // Use local API endpoint instead of Supabase
+      const response = await fetch(`/api/user/products/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updates),
+      });
 
-      if (error) throw error;
+      if (!response.ok) {
+        throw new Error(`Failed to update product: ${response.statusText}`);
+      }
+
+      const data = await response.json();
 
       await mobileOfflineStorage.saveProduct(data);
       toast.success("Product updated");
@@ -198,14 +203,18 @@ export const useDeleteProduct = () => {
         return;
       }
 
-      const { createRegularClient } = await import("@/lib/supabase/client");
-      const supabase = createRegularClient();
-      const { error } = await supabase
-        .from("products")
-        .update({ is_deleted: true })
-        .eq("id", id);
+      // Use local API endpoint instead of Supabase
+      const response = await fetch(`/api/user/products/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
 
-      if (error) throw error;
+      if (!response.ok) {
+        throw new Error(`Failed to delete product: ${response.statusText}`);
+      }
+
       toast.success("Product deleted");
     },
     onSuccess: (_, id) => {

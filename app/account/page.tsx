@@ -1,26 +1,20 @@
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
-import { getUserById, upsertUser } from "@/lib/db/users";
-import { createClient } from "@/lib/supabase/server";
+import { auth } from "@/lib/auth";
 
 import AccountForm from "./account-form";
 
 export default async function Account() {
-  const supabase = await createClient();
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
 
-  const { data, error } = await supabase.auth.getUser();
-  if (error || !data?.user) {
+  if (!session?.user) {
     redirect("/auth/login");
   }
 
-  // Get user data from our database, create if doesn't exist
-  let dbUser = await getUserById(data.user.id);
-  
-  // If user doesn't exist in our database (e.g., first OAuth login), create them
-  if (!dbUser) {
-    console.log(`Creating database user for first-time login: ${data.user.email}`);
-    dbUser = await upsertUser(data.user);
-  }
+  const user = session.user;
 
   return (
     <div className="container mx-auto py-8 px-4">
@@ -32,7 +26,7 @@ export default async function Account() {
           </p>
         </div>
 
-        <AccountForm user={data.user} dbUser={dbUser} />
+        <AccountForm user={user} />
       </div>
     </div>
   );

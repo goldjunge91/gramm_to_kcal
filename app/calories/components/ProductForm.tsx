@@ -6,6 +6,7 @@ import { toast } from "sonner";
 
 import type { Product } from "@/lib/db/schema";
 
+import { BarcodeScanner } from "@/components/barcode-scanner";
 import { RecentScansDropdown } from "@/components/dev/RecentScansDropdown";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -51,6 +52,8 @@ export const ProductForm = ({
   const [kcal, setKcal] = useState("");
   const [converterOpen, setConverterOpen] = useState(false);
 
+  // barcode scanner state
+  const [showScanner2, setShowScanner2] = useState(false);
   // Recent scans for authenticated users
   const { recentScans, addRecentScan, removeRecentScan, isAuthenticated } =
     useRecentScans();
@@ -62,6 +65,13 @@ export const ProductForm = ({
     setKcal(scan.kcal.toString());
 
     toast.success(`Produkt aus letzten Scans geladen: ${scan.productName}`);
+  };
+
+  // Barcode-Scan Handler
+  const handleBarcodeScan = (barcode: string): void => {
+    setName(barcode);
+    setShowScanner2(false);
+    toast.success(`Barcode erkannt: ${barcode}`);
   };
 
   const handleSubmit = async (event: React.FormEvent): Promise<void> => {
@@ -123,7 +133,7 @@ export const ProductForm = ({
                   required
                   disabled={isLoading}
                   className={
-                    isAuthenticated && recentScans.length > 0 ? "pr-10" : ""
+                    isAuthenticated && recentScans.length > 0 ? "pr-20" : "pr-10"
                   }
                 />
                 {isAuthenticated && recentScans.length > 0 && (
@@ -136,7 +146,7 @@ export const ProductForm = ({
                         type="button"
                         variant="ghost"
                         size="sm"
-                        className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 p-0 hover:bg-muted"
+                        className="absolute right-10 top-1/2 -translate-y-1/2 h-8 w-8 p-0 hover:bg-muted"
                         disabled={isLoading}
                       >
                         <ChevronDown className="h-4 w-4" />
@@ -146,6 +156,18 @@ export const ProductForm = ({
                     placeholder="Suche in letzten Scans..."
                   />
                 )}
+                {/* Kamera-Icon als Button für Barcode-Scanner */}
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 p-0 hover:bg-muted"
+                  disabled={isLoading}
+                  title="Barcode scannen"
+                  onClick={() => setShowScanner2(true)}
+                >
+                  <Scale className="h-4 w-4" />
+                </Button>
               </div>
             </div>
 
@@ -226,6 +248,27 @@ export const ProductForm = ({
           >
             {isLoading ? "Wird hinzugefügt..." : "Hinzufügen"}
           </Button>
+          {/* BarcodeScanner Dialog außerhalb des Input-Feldes */}
+          <Dialog open={showScanner2} onOpenChange={setShowScanner2}>
+            <DialogContent className="max-w-2xl">
+              <DialogHeader>
+                <DialogTitle>Barcode scannen</DialogTitle>
+                <DialogDescription>
+                  Scanne den Barcode deines Produkts.
+                </DialogDescription>
+              </DialogHeader>
+              <BarcodeScanner
+                isOpen={showScanner2}
+                onClose={() => setShowScanner2(false)}
+                onScan={handleBarcodeScan}
+                onError={(error) => {
+                  console.error("Scanner2 error:", error);
+                  toast.error(`Scanner2-Fehler: ${error}`);
+                  // Fenster bleibt offen, nur bei Fehler manuell schließen
+                }}
+              />
+            </DialogContent>
+          </Dialog>
         </form>
       </CardContent>
     </Card>

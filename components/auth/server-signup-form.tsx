@@ -1,4 +1,8 @@
+"use client";
+
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -10,7 +14,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { signupAction } from "@/lib/actions/auth";
+import { signUp } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 
 interface ServerSignUpFormProps {
@@ -19,10 +23,51 @@ interface ServerSignUpFormProps {
 }
 
 /**
- * Server-side signup form using Supabase server actions
- * Provides secure authentication without client-side password exposure
+ * Client-side signup form using Better Auth
  */
-export function ServerSignUpForm({ className, error }: ServerSignUpFormProps) {
+export function ServerSignUpForm({ className, error: initialError }: ServerSignUpFormProps) {
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(initialError);
+
+  const handleEmailSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError("");
+
+    const formData = new FormData(e.currentTarget);
+    const name = formData.get("name") as string;
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+    const confirmPassword = formData.get("confirmPassword") as string;
+
+    if (password !== confirmPassword) {
+      setError("Passwords do not match");
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const result = await signUp.email({
+        name,
+        email,
+        password,
+      });
+
+      if (result.error) {
+        setError(result.error.message || "Signup failed");
+        return;
+      }
+
+      // Redirect on success
+      router.push("/");
+      router.refresh();
+    } catch (error_) {
+      setError(error_ instanceof Error ? error_.message : "Signup failed");
+    } finally {
+      setIsLoading(false);
+    }
+  };
   return (
     <div className={cn("flex flex-col gap-6", className)}>
       <Card>
@@ -31,12 +76,18 @@ export function ServerSignUpForm({ className, error }: ServerSignUpFormProps) {
           <CardDescription>Create a new account</CardDescription>
         </CardHeader>
         <CardContent>
-          <form
-            action={async (formData) => {
-              await signupAction(formData);
-            }}
-          >
+          <form onSubmit={handleEmailSignUp}>
             <div className="flex flex-col gap-6">
+              <div className="grid gap-2">
+                <Label htmlFor="name">Name</Label>
+                <Input
+                  id="name"
+                  name="name"
+                  type="text"
+                  placeholder="Enter your full name"
+                  required
+                />
+              </div>
               <div className="grid gap-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
@@ -51,7 +102,7 @@ export function ServerSignUpForm({ className, error }: ServerSignUpFormProps) {
                 <div className="flex items-center">
                   <Label htmlFor="password">Password</Label>
                   <span className="ml-auto text-xs text-muted-foreground">
-                    Min. 6 characters
+                    Min. 8 characters
                   </span>
                 </div>
                 <Input
@@ -60,7 +111,18 @@ export function ServerSignUpForm({ className, error }: ServerSignUpFormProps) {
                   type="password"
                   required
                   placeholder="Enter your password"
-                  minLength={6}
+                  minLength={8}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="confirmPassword">Confirm Password</Label>
+                <Input
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  type="password"
+                  required
+                  placeholder="Confirm your password"
+                  minLength={8}
                 />
               </div>
               {error && (
@@ -68,29 +130,22 @@ export function ServerSignUpForm({ className, error }: ServerSignUpFormProps) {
                   <p className="text-sm text-red-600">{error}</p>
                 </div>
               )}
-              <Button id="signup-submit" type="submit" className="w-full">
-                Create account
+              <Button id="signup-submit" type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? "Creating account..." : "Create account"}
               </Button>
-              <Button
-                id="signup-google"
-                type="button"
-                className="w-full flex items-center justify-center gap-2 mt-2 border border-gray-200"
-                onClick={async () => {
-                  const { createClient } = await import(
-                    "@supabase/supabase-js"
-                  );
-                  const supabase = createClient(
-                    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-                    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-                  );
-                  await supabase.auth.signInWithOAuth({
-                    provider: "google",
-                    options: {
-                      redirectTo: window.location.origin,
-                    },
-                  });
-                }}
-              >
+              {process.env.NEXT_PUBLIC_GOOGLE_OAUTH_ENABLED && (
+                <Button
+                  id="signup-google"
+                  type="button"
+                  className="w-full flex items-center justify-center gap-2 mt-2 border border-gray-200"
+                  onClick={async () => {
+                    const { signIn } = await import("@/lib/auth-client");
+                    await signIn.social({
+                      provider: "google",
+                      callbackURL: window.location.origin,
+                    });
+                  }}
+                >
                 <svg
                   width="20"
                   height="20"
@@ -129,6 +184,7 @@ export function ServerSignUpForm({ className, error }: ServerSignUpFormProps) {
                 </svg>
                 Mit Google anmelden
               </Button>
+              )}
             </div>
             <div className="mt-4 text-center text-sm">
               Already have an account?{" "}

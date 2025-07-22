@@ -44,7 +44,6 @@ export const ROUTE_GROUPS: Record<RouteGroup, string[]> = {
     "/auth/update-password",
     "/auth/error",
     "/auth/confirm",
-    "/auth/oauth",
     "/auth/signout",
   ],
 

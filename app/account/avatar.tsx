@@ -1,12 +1,10 @@
-/* eslint-disable no-alert */
 "use client";
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
-import { createClient } from "@/lib/supabase/client";
+import { Button } from "@/components/ui/button";
 
 export default function Avatar({
-  uid,
   url,
   size,
   onUpload,
@@ -16,31 +14,10 @@ export default function Avatar({
   size: number;
   onUpload: (url: string) => void;
 }) {
-  const supabase = createClient();
   const [avatarUrl, setAvatarUrl] = useState<string | null>(url);
   const [uploading, setUploading] = useState(false);
 
-  useEffect(() => {
-    async function downloadImage(path: string) {
-      try {
-        const { data, error } = await supabase.storage
-          .from("avatars")
-          .download(path);
-        if (error) {
-          throw error;
-        }
-
-        const url = URL.createObjectURL(data);
-        setAvatarUrl(url);
-      } catch (error) {
-        console.log("Error downloading image:", error);
-      }
-    }
-
-    if (url) downloadImage(url);
-  }, [url, supabase]);
-
-  const uploadAvatar: React.ChangeEventHandler<HTMLInputElement> = async (
+  const uploadAvatar: React.ChangeEventHandler<HTMLInputElement> = (
     event,
   ) => {
     try {
@@ -51,56 +28,51 @@ export default function Avatar({
       }
 
       const file = event.target.files[0];
-      const fileExt = file.name.split(".").pop();
-      const filePath = `${uid}-${Math.random()}.${fileExt}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from("avatars")
-        .upload(filePath, file);
-
-      if (uploadError) {
-        throw uploadError;
-      }
-
-      onUpload(filePath);
-    } catch {
-      alert("Error uploading avatar!");
+      
+      // For Better Auth, we'll just create a local URL for now
+      // In a real implementation, you'd upload to your preferred storage service
+      const imageUrl = URL.createObjectURL(file);
+      setAvatarUrl(imageUrl);
+      onUpload(imageUrl);
+    } catch (error) {
+      console.error("Error uploading avatar:", error);
     } finally {
       setUploading(false);
     }
   };
 
   return (
-    <div>
+    <div className="flex flex-col items-center space-y-4">
       {avatarUrl ? (
         <Image
           width={size}
           height={size}
           src={avatarUrl}
           alt="Avatar"
-          className="avatar image"
+          className="rounded-full border"
           style={{ height: size, width: size }}
         />
       ) : (
         <div
-          className="avatar no-image"
+          className="bg-muted rounded-full border flex items-center justify-center text-muted-foreground"
           style={{ height: size, width: size }}
-        />
+        >
+          No Image
+        </div>
       )}
-      <div style={{ width: size }}>
-        <label className="button primary block" htmlFor="single">
-          {uploading ? "Uploading ..." : "Upload"}
-        </label>
+      <div>
+        <Button asChild disabled={uploading}>
+          <label htmlFor="avatar-upload" className="cursor-pointer">
+            {uploading ? "Uploading..." : "Upload Avatar"}
+          </label>
+        </Button>
         <input
-          style={{
-            visibility: "hidden",
-            position: "absolute",
-          }}
+          id="avatar-upload"
           type="file"
-          id="single"
           accept="image/*"
           onChange={uploadAvatar}
           disabled={uploading}
+          className="hidden"
         />
       </div>
     </div>

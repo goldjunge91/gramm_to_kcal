@@ -1,5 +1,7 @@
 "use client";
 
+import type { User } from "@supabase/supabase-js";
+
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import {
@@ -13,9 +15,10 @@ import {
 
 import { ThemeProvider } from "@/components/layout/ThemeProvider";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { signOut, useSession } from "@/lib/auth-client";
+import { syncUserWithDatabase } from "@/lib/actions/auth";
 import { mobileOfflineStorage } from "@/lib/offline/mobile-storage";
 import { mobileSyncManager } from "@/lib/offline/mobile-sync-manager";
+import { createClient } from "@/lib/supabase/client";
 
 // Mobile-optimized Query Client
 const createMobileQueryClient = (): QueryClient =>
@@ -45,6 +48,15 @@ const createMobileQueryClient = (): QueryClient =>
 
 const queryClient = createMobileQueryClient();
 
+// Auth Context
+interface AuthContextType {
+  user: User | null;
+  loading: boolean;
+  signOut: () => Promise<void>;
+}
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
 // Enhanced Mobile Context
 interface MobileOfflineContextType {
   isOnline: boolean;
@@ -59,6 +71,8 @@ const MobileOfflineContext = createContext<
 >(undefined);
 
 export function Providers({ children }: { children: ReactNode }): JSX.Element {
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
   const isMobile = useIsMobile();
 
   // Mobile-specific state
@@ -71,8 +85,43 @@ export function Providers({ children }: { children: ReactNode }): JSX.Element {
   });
 
   useEffect(() => {
+    const supabase = createClient();
+
     // Initialize mobile storage
     mobileOfflineStorage.init().catch(console.error);
+
+    // Get initial session
+    supabase.auth
+      .getSession()
+      .then(async ({ data: { session } }) => {
+        if (session?.user) {
+          // Sync user with database
+          try {
+            await syncUserWithDatabase(session.user.id);
+          } catch (error) {
+            console.error("Error syncing user with database:", error);
+          }
+        }
+        setUser(session?.user ?? null);
+        setLoading(false);
+      })
+      .catch(console.error);
+
+    // Listen for auth changes
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      if (session?.user) {
+        // Sync user with database on auth state change
+        try {
+          await syncUserWithDatabase(session.user.id);
+        } catch (error) {
+          console.error("Error syncing user with database:", error);
+        }
+      }
+      setUser(session?.user ?? null);
+      setLoading(false);
+    });
 
     // Mobile-specific status monitoring
     const updateMobileStatus = (): void => {
@@ -121,6 +170,7 @@ export function Providers({ children }: { children: ReactNode }): JSX.Element {
     }
 
     return () => {
+      subscription.unsubscribe();
       clearInterval(statusInterval);
       if (typeof window !== "undefined") {
         window.removeEventListener("online", handleOnline);
@@ -133,31 +183,32 @@ export function Providers({ children }: { children: ReactNode }): JSX.Element {
     };
   }, []);
 
+  const signOut = async (): Promise<void> => {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+  };
+
   return (
     <ThemeProvider>
       <QueryClientProvider client={queryClient}>
-        <MobileOfflineContext.Provider value={mobileStatus}>
-          {children}
-          {/* Only show dev tools on desktop */}
-          {!isMobile && <ReactQueryDevtools initialIsOpen={false} />}
-        </MobileOfflineContext.Provider>
+        <AuthContext.Provider value={{ user, loading, signOut }}>
+          <MobileOfflineContext.Provider value={mobileStatus}>
+            {children}
+            {/* Only show dev tools on desktop */}
+            {!isMobile && <ReactQueryDevtools initialIsOpen={false} />}
+          </MobileOfflineContext.Provider>
+        </AuthContext.Provider>
       </QueryClientProvider>
     </ThemeProvider>
   );
 }
 
-// Better Auth version - uses Better Auth useSession directly
-export const useAuth = () => {
-  const { data: session, isPending } = useSession();
-  
-  return {
-    user: session?.user || null,
-    loading: isPending,
-    signOut: async () => {
-      await signOut();
-      // Optionally redirect here or let the component handle it
-    },
-  };
+export const useAuth = (): AuthContextType => {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
+  return context;
 };
 
 export const useMobileOffline = (): MobileOfflineContextType => {

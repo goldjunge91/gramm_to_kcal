@@ -8,11 +8,12 @@ import type { NextRequest } from "next/server";
 // eslint-disable-next-line no-duplicate-imports
 import { NextResponse } from "next/server";
 
+import { env } from "@/lib/env";
 import { debugRouteMatching } from "@/lib/middleware/route-matcher";
 
 export function GET(request: NextRequest) {
   // Only allow in development
-  if (process.env.NODE_ENV !== "development") {
+  if (env.NODE_ENV !== "development") {
     return NextResponse.json(
       { error: "Debug endpoint only available in development" },
       { status: 403 },
@@ -55,7 +56,7 @@ export function GET(request: NextRequest) {
     testResults,
     middleware: {
       version: "2.0.0",
-      environment: process.env.NODE_ENV,
+      environment: env.NODE_ENV,
       timestamp: new Date().toISOString(),
     },
   });
@@ -63,7 +64,7 @@ export function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   // Only allow in development
-  if (process.env.NODE_ENV !== "development") {
+  if (env.NODE_ENV !== "development") {
     return NextResponse.json(
       { error: "Debug endpoint only available in development" },
       { status: 403 },
@@ -90,7 +91,7 @@ export async function POST(request: NextRequest) {
       testResults: results,
       middleware: {
         version: "2.0.0",
-        environment: process.env.NODE_ENV,
+        environment: env.NODE_ENV,
         timestamp: new Date().toISOString(),
       },
     });

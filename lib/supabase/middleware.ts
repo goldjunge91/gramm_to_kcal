@@ -37,13 +37,13 @@ export async function updateSession(request: NextRequest) {
   );
 
   // Do not run code between createServerClient and
-  // supabase.auth.getClaims(). A simple mistake could make it very hard to debug
+  // supabase.auth.getUser(). A simple mistake could make it very hard to debug
   // issues with users being randomly logged out.
 
-  // IMPORTANT: DO NOT REMOVE auth.getClaims()
-  const { data } = await supabase.auth.getClaims();
-
-  const user = data?.claims;
+  // Get the authenticated user
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   // Redirect authenticated users away from auth pages
   if (user && isAuthRoute(request.nextUrl.pathname)) {

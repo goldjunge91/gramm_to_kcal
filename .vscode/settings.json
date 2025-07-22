@@ -1,11 +1,18 @@
 {
   // Prettier als Standard-Formatter
   "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "prettier.enable": false,
+  // "editor.formatOnSave": false,
+  // Auto fix
   "editor.formatOnSave": true,
   "prettier.tabWidth": 4,
   "prettier.useTabs": false,
   // Nur Prettier soll formatieren, ESLint nicht automatisch
   "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+    // "source.fixAll.eslint": "explicit",
+    "source.fixAll": "explicit",
+    "source.fixAll.ts": "explicit",
     "source.organizeImports": "always"
   },
   // Silent the stylistic rules in you IDE, but still auto fix them
@@ -85,5 +92,8 @@
     "scss",
     "pcss",
     "postcss"
-  ]
+  ],
+  "[typescript]": {
+    "editor.defaultFormatter": "rvest.vs-code-prettier-eslint"
+  }
 }

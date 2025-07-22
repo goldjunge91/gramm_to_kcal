@@ -181,7 +181,7 @@ export const Navbar = (): JSX.Element => {
                   >
                     <Avatar className="h-8 w-8">
                       <AvatarImage
-                        src={user.user_metadata?.avatar_url}
+                        src={user.image || undefined}
                         alt={user.email || ""}
                       />
                       <AvatarFallback>
@@ -194,8 +194,7 @@ export const Navbar = (): JSX.Element => {
                   <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
                       <p className="text-sm font-medium leading-none">
-                        {user.user_metadata?.full_name ||
-                          user.email?.split("@")[0]}
+                        {user.name || user.email?.split("@")[0]}
                       </p>
                       <p className="text-xs leading-none text-muted-foreground">
                         {user.email}
@@ -249,7 +248,7 @@ export const Navbar = (): JSX.Element => {
                   >
                     <Avatar className="h-8 w-8">
                       <AvatarImage
-                        src={user.user_metadata?.avatar_url}
+                        src={user.image || undefined}
                         alt={user.email || ""}
                       />
                       <AvatarFallback>
@@ -262,8 +261,7 @@ export const Navbar = (): JSX.Element => {
                   <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
                       <p className="text-sm font-medium leading-none">
-                        {user.user_metadata?.full_name ||
-                          user.email?.split("@")[0]}
+                        {user.name || user.email?.split("@")[0]}
                       </p>
                       <p className="text-xs leading-none text-muted-foreground">
                         {user.email}

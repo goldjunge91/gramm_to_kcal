@@ -5,7 +5,7 @@ import withBundleAnalyzer from "@next/bundle-analyzer";
 import { env } from "./lib/env";
 
 const withBundleAnalyzerConfig = withBundleAnalyzer({
-  enabled: process.env.ANALYZE === "true",
+  enabled: env.ANALYZE === "true",
 });
 
 const baseConfig: NextConfig = {

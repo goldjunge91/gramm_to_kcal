@@ -1,4 +1,8 @@
+"use client";
+
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -10,7 +14,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { loginAction } from "@/lib/actions/auth";
+import { signIn } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 
 interface ServerLoginFormProps {
@@ -19,10 +23,46 @@ interface ServerLoginFormProps {
 }
 
 /**
- * Server-side login form using Supabase server actions
- * Provides secure authentication without client-side password exposure
+ * Client-side login form using Better Auth
  */
-export function ServerLoginForm({ className, error }: ServerLoginFormProps) {
+export function ServerLoginForm({ className, error: initialError }: ServerLoginFormProps) {
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(initialError);
+
+  const handleEmailLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError("");
+
+    const formData = new FormData(e.currentTarget);
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+
+    try {
+      const result = await signIn.email({
+        email,
+        password,
+      });
+
+      if (result.error) {
+        setError(result.error.message || "Login failed");
+        return;
+      }
+
+      if (result.data) {
+        // Redirect on success
+        router.push("/");
+        router.refresh();
+      } else {
+        setError("Login failed - no session created");
+      }
+    } catch (error_) {
+      setError(error_ instanceof Error ? error_.message : "Login failed");
+    } finally {
+      setIsLoading(false);
+    }
+  };
   return (
     <div className={cn("flex flex-col gap-6", className)}>
       <Card>
@@ -33,11 +73,7 @@ export function ServerLoginForm({ className, error }: ServerLoginFormProps) {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form
-            action={async (formData) => {
-              await loginAction(formData);
-            }}
-          >
+          <form onSubmit={handleEmailLogin}>
             <div className="flex flex-col gap-6">
               <div className="grid gap-2">
                 <Label htmlFor="email">Email</Label>
@@ -66,29 +102,22 @@ export function ServerLoginForm({ className, error }: ServerLoginFormProps) {
                   <p className="text-sm text-red-600">{error}</p>
                 </div>
               )}
-              <Button id="login-submit" type="submit" className="w-full">
-                Login
+              <Button id="login-submit" type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? "Signing in..." : "Login"}
               </Button>
-              <Button
-                id="login-google"
-                type="button"
-                className="w-full flex items-center justify-center gap-2 mt-2 border border-gray-200"
-                onClick={async () => {
-                  const { createClient } = await import(
-                    "@supabase/supabase-js"
-                  );
-                  const supabase = createClient(
-                    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-                    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-                  );
-                  await supabase.auth.signInWithOAuth({
-                    provider: "google",
-                    options: {
-                      redirectTo: window.location.origin,
-                    },
-                  });
-                }}
-              >
+              {process.env.NEXT_PUBLIC_GOOGLE_OAUTH_ENABLED && (
+                <Button
+                  id="login-google"
+                  type="button"
+                  className="w-full flex items-center justify-center gap-2 mt-2 border border-gray-200"
+                  onClick={async () => {
+                    const { signIn } = await import("@/lib/auth-client");
+                    await signIn.social({
+                      provider: "google",
+                      callbackURL: `${window.location.origin  }/calories`,
+                    });
+                  }}
+                >
                 <svg
                   width="20"
                   height="20"
@@ -127,6 +156,7 @@ export function ServerLoginForm({ className, error }: ServerLoginFormProps) {
                 </svg>
                 Mit Google anmelden
               </Button>
+              )}
             </div>
             <div className="mt-4 text-center text-sm">
               Don&apos;t have an account?{" "}

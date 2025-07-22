@@ -15,7 +15,11 @@ function createEnv() {
     RECENT_SCANS_KEY: process.env.NEXT_PUBLIC_RECENT_SCANS_KEY,
     UPSTASH_REDIS_REST_URL: process.env.UPSTASH_REDIS_REST_URL,
     UPSTASH_REDIS_REST_TOKEN: process.env.UPSTASH_REDIS_REST_TOKEN,
-    FORCE_BUILD: process.env.FORCE_BUILD === "true",
+    FORCE_BUILD: process.env.FORCE_BUILD,
+    AUTH_GOOGLE_SECRET: process.env.AUTH_GOOGLE_SECRET,
+    AUTH_GOOGLE_ID: process.env.AUTH_GOOGLE_ID,
+    ANALYZE: process.env.ANALYZE,
+
   } as const;
 
   // Log environment status for debugging (only in development)
@@ -36,10 +40,12 @@ function createEnv() {
     "RECENT_SCANS_KEY",
   ] as const;
 
-  // Redis is optional - rate limiting will fall back to in-memory storage
+  // Optional environment variables - features will be disabled if missing
   const optionalEnvVars = [
     "UPSTASH_REDIS_REST_URL",
     "UPSTASH_REDIS_REST_TOKEN",
+    "AUTH_GOOGLE_ID",
+    "AUTH_GOOGLE_SECRET",
   ] as const;
 
   const missingVars = requiredEnvVars.filter(
@@ -63,10 +69,23 @@ function createEnv() {
     missingOptionalVars.length > 0 &&
     process.env.NODE_ENV === "development"
   ) {
-    console.warn(
-      `⚠️ Optional environment variables missing: ${missingOptionalVars.join(", ")}\n` +
-        "Rate limiting will use in-memory storage. For production, configure Redis.\n",
-    );
+    // Only warn about Redis if actually missing
+    const missingRedis = missingOptionalVars.filter(v => v.includes('REDIS'));
+    const missingAuth = missingOptionalVars.filter(v => v.includes('AUTH_GOOGLE'));
+    
+    if (missingRedis.length > 0) {
+      console.warn(
+        `⚠️ Optional Redis variables missing: ${missingRedis.join(", ")}\n` +
+          "Rate limiting will use in-memory storage. For production, configure Redis.",
+      );
+    }
+    
+    if (missingAuth.length > 0) {
+      console.warn(
+        `⚠️ Google OAuth not configured: ${missingAuth.join(", ")}\n` +
+          "Google OAuth login will be disabled.",
+      );
+    }
   }
 
   return env;

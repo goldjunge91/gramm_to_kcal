@@ -3,7 +3,7 @@ import type { NextRequest } from "next/server";
 
 import { rateLimitMiddleware } from "@/lib/middleware/rate-limit-middleware";
 import { isPublicRoute } from "@/lib/middleware/routes";
-import { updateSession } from "@/lib/supabase/middleware"; // dont change das
+import { updateSession } from "@/lib/better-auth/middleware";
 
 /**
  * Main middleware function with multi-layer protection

@@ -1,11 +1,7 @@
 "use client";
 
-import type { User } from "@supabase/supabase-js";
-
+import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { toast } from "sonner";
-
-import type { SelectUser } from "@/lib/db/schema";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -17,51 +13,32 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
-import { updateUserProfileAction } from "@/lib/actions/auth";
-import { createClient } from "@/lib/supabase/client";
+import { signOut } from "@/lib/auth-client";
 
 interface AccountFormProps {
-  user: User | null;
-  dbUser: SelectUser | null;
+  user: {
+    id: string;
+    name: string;
+    email: string;
+    image?: string | null;
+    emailVerified: boolean;
+  };
 }
 
-export default function AccountForm({ user, dbUser }: AccountFormProps) {
-  const supabase = createClient();
-  const [loading, setLoading] = useState(false);
-  const [fullName, setFullName] = useState(dbUser?.fullName || "");
-
-  const handleUpdateProfile = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!user) return;
-
-    try {
-      setLoading(true);
-
-      const result = await updateUserProfileAction({
-        fullName: fullName || null,
-      });
-
-      if (result.success) {
-        toast.success("Profile updated successfully!");
-      } else {
-        throw new Error(result.error);
-      }
-    } catch (error) {
-      console.error("Error updating profile:", error);
-      toast.error("Failed to update profile");
-    } finally {
-      setLoading(false);
-    }
-  };
+export default function AccountForm({ user }: AccountFormProps) {
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSignOut = async () => {
+    setIsLoading(true);
     try {
-      await supabase.auth.signOut();
-      toast.success("Signed out successfully");
+      await signOut();
+      router.push("/auth/login");
+      router.refresh();
     } catch (error) {
-      console.error("Error signing out:", error);
-      toast.error("Failed to sign out");
+      console.error("Sign out error:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -71,40 +48,68 @@ export default function AccountForm({ user, dbUser }: AccountFormProps) {
         <CardHeader>
           <CardTitle>Profile Information</CardTitle>
           <CardDescription>
-            Update your account details and personal information.
+            Your account details from Better Auth
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <form onSubmit={handleUpdateProfile} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                value={user?.email || ""}
-                disabled
-                className="bg-muted"
-              />
-              <p className="text-sm text-muted-foreground">
-                Your email address cannot be changed.
-              </p>
-            </div>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="name">Name</Label>
+            <Input 
+              id="name" 
+              value={user.name} 
+              disabled 
+              className="bg-muted"
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="email">Email</Label>
+            <Input 
+              id="email" 
+              value={user.email} 
+              disabled 
+              className="bg-muted"
+            />
+          </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="fullName">Full Name</Label>
-              <Input
-                id="fullName"
-                type="text"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                placeholder="Enter your full name"
-              />
-            </div>
+          <div className="space-y-2">
+            <Label htmlFor="id">User ID</Label>
+            <Input 
+              id="id" 
+              value={user.id} 
+              disabled 
+              className="bg-muted text-xs"
+            />
+          </div>
 
-            <Button type="submit" disabled={loading}>
-              {loading ? "Updating..." : "Update Profile"}
-            </Button>
-          </form>
+          <div className="space-y-2">
+            <Label>Email Verified</Label>
+            <div className="flex items-center space-x-2">
+              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                user.emailVerified 
+                  ? "bg-green-100 text-green-800" 
+                  : "bg-yellow-100 text-yellow-800"
+              }`}>
+                {user.emailVerified ? "Verified" : "Not Verified"}
+              </span>
+            </div>
+          </div>
+
+          {user.image && (
+            <div className="space-y-2">
+              <Label>Profile Image</Label>
+              <div className="flex items-center space-x-3">
+                <img 
+                  src={user.image} 
+                  alt="Profile" 
+                  className="w-10 h-10 rounded-full"
+                />
+                <span className="text-sm text-muted-foreground">
+                  Profile image from OAuth provider
+                </span>
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
 
@@ -112,24 +117,17 @@ export default function AccountForm({ user, dbUser }: AccountFormProps) {
         <CardHeader>
           <CardTitle>Account Actions</CardTitle>
           <CardDescription>
-            Manage your account settings and security.
+            Manage your account settings
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            <Separator />
-            <div className="flex items-center justify-between">
-              <div>
-                <h4 className="font-medium">Sign Out</h4>
-                <p className="text-sm text-muted-foreground">
-                  Sign out of your account on this device.
-                </p>
-              </div>
-              <Button variant="outline" onClick={handleSignOut}>
-                Sign Out
-              </Button>
-            </div>
-          </div>
+          <Button 
+            onClick={handleSignOut}
+            disabled={isLoading}
+            variant="destructive"
+          >
+            {isLoading ? "Signing out..." : "Sign Out"}
+          </Button>
         </CardContent>
       </Card>
     </div>
