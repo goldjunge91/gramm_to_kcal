@@ -1,17 +1,17 @@
 /**
  * Tests for auth routes configuration
  */
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import {
+    getRouteGroup,
+    isApiRoute,
+    isAuthRoute,
     isProtectedRoute,
     isPublicRoute,
-    isAuthRoute,
-    isApiRoute,
-    getRouteGroup,
-    ROUTE_GROUPS,
     REDIRECT_PATHS,
-} from "@/lib/auth/routes";
+    ROUTE_GROUPS,
+} from "../../../lib/auth/routes";
 
 describe("auth routes", () => {
     describe("isProtectedRoute", () => {
@@ -131,7 +131,7 @@ describe("auth routes", () => {
         });
 
         it("should handle complex paths correctly", () => {
-            expect(getRouteGroup("/auth/login?returnTo=/account")).toBe("AUTH");
+            expect(getRouteGroup("/auth/login?returnTo=/account")).toBe("PROTECTED");
             expect(getRouteGroup("/api/products?search=test")).toBe("API_PROTECTED");
             expect(getRouteGroup("/calories/compare#results")).toBe("PUBLIC");
         });

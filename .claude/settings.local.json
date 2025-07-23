@@ -8,14 +8,8 @@
         ],
         "deny": [
             "Bash(pnpm install)",
-            "Bash(pnpm typecheck:*)",
             "Bash(pnpm build)",
-            "Bash(pnpm test)",
-            "Bash(pnpm lint)",
-            "Bash(pnpm dlx shadcn@latest add:*)",
-            "Bash(pnpm test:*)",
-            "Bash(pnpm clean)",
-            "Bash(pnpm*)"
+            "Bash(pnpm dlx shadcn@latest add:*)"
         ]
     },
     "enabledMcpjsonServers": [

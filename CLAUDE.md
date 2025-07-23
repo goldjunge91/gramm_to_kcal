@@ -1,10 +1,61 @@
 # CLAUDE.md
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
-echo "Following TDD principles:" >&2
-echo "1. Write a failing test first (Red phase)" >&2
-echo "2. Write minimal code to pass the test (Green phase)" >&2
-echo "3. Refactor while keeping tests green (Refactor phase)" >&2
+
+## 🛠️ Development Commands
+
+### Common Tasks
+
+- `pnpm dev` - Start development server with Turbo
+- `pnpm build` - Build for production
+- `pnpm test` - Run unit tests with Vitest
+- `pnpm test:e2e:auth` - Run authentication E2E tests with Playwright
+- `pnpm lint` - Run ESLint
+- `pnpm lint:fix` - Fix ESLint issues
+- `pnpm typecheck` - TypeScript type checking
+
+### Database Commands
+
+- `pnpm db:generate` - Generate Drizzle migrations
+- `pnpm db:migrate` - Run Drizzle migrations
+- `pnpm db:studio` - Open Drizzle Studio
+
+### Testing Strategy
+
+This project uses **TDD (Test-Driven Development)** with strict enforcement:
+
+- Every `.ts/.tsx/.js/.jsx` file must have a corresponding test file
+- TDD guard script (`ts-tdd-guard.sh`) enforces this rule
+- Unit tests: Vitest (in `__tests__/` or alongside source files)
+- E2E tests: Playwright (in `__e2e__/`)
+- Test files must follow patterns: `.test.ts`, `.spec.ts`, etc.
+
+## 🏗️ Architecture Overview
+
+### Core Tech Stack
+
+- **Framework**: Next.js 15 (App Router)
+- **Database**: PostgreSQL with Drizzle ORM
+- **Authentication**: Better-auth with JWT strategy
+- **UI**: Radix UI + Tailwind CSS + shadcn/ui components
+- **State Management**: TanStack React Query + URL-based state
+- **Testing**: Vitest (unit) + Playwright (E2E)
+- **Package Manager**: pnpm (required)
+
+### Key Features
+
+- **Barcode Scanning**: html5-qrcode for product scanning
+- **Calorie Tracking**: Gram-to-kcal conversion
+- **Recipe Generator**: With image editing capabilities
+- **Unit Converter**: ML to gram conversions with density database
+- **Offline Support**: Service worker + IndexedDB caching
+
+### Database Schema
+
+- Uses Drizzle ORM with PostgreSQL
+- Authentication tables: `user`, `session`, `account`, `verification`
+- Product data: Product lookup and nutritional information
+- Recipe data: Ingredient management and portion controls
 
 ## 🚫 Core Rules
 
@@ -12,15 +63,25 @@ echo "3. Refactor while keeping tests green (Refactor phase)" >&2
    NEVER write new files unless explicitly required.
 2. **NEVER use names like `Enhanced*`, `*2`, `*backup`** when creating new files based on old ones — the user will DIE if you do.
 
-### Important Notes
+### Authentication Configuration
 
-- Uses DrizzleAdapter for database integration
-- JWT strategy for edge compatibility
-- Custom email templates for verification
-- Password hashing client side and edge compatibility
-- Edge-compatible JWT signing/verification
-- Better-auth integration for authentication
-- Supabase for database management
+- Better-auth with DrizzleAdapter for database integration
+- JWT strategy for edge compatibility and Supabase integration
+- Rate limiting enabled (100 req/min global, stricter for auth endpoints)
+- Social auth: Google OAuth (when configured)
+- Password hashing client-side for edge compatibility
+- Anonymous user support via better-auth plugin
+- Cookie caching enabled (5-minute cache)
+- IP address tracking with fallback headers
+
+### File Structure
+
+- `/app/` - Next.js app router pages and API routes
+- `/components/` - Reusable UI components (DO NOT EDIT `/components/ui/`)
+- `/lib/` - Utility functions, database, auth, and API logic
+- `/hooks/` - Custom React hooks
+- `/__tests__/` - Unit tests (Vitest)
+- `/__e2e__/` - End-to-end tests (Playwright)
 
 ## State Management
 

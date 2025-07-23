@@ -1,0 +1,52 @@
+{
+    "session_id": "bc8d2f91-62a6-4891-9bbd-49633fce082a",
+    "transcript_path": "/Users/marco/.claude/projects/-Users-marco-Github-tmp-gramm-to-kcal/bc8d2f91-62a6-4891-9bbd-49633fce082a.jsonl",
+    "hook_event_name": "PreToolUse",
+    "tool_name": "TodoWrite",
+    "tool_input": {
+        "todos": [
+            {
+                "content": "Fix ESBuild syntax error in products.test.ts",
+                "status": "completed",
+                "priority": "high",
+                "id": "fix_esbuild_syntax"
+            },
+            {
+                "content": "Add server-only package mock for auth-utils test",
+                "status": "completed",
+                "priority": "high",
+                "id": "add_server_only_mock"
+            },
+            {
+                "content": "Fix action function import/export naming mismatches",
+                "status": "completed",
+                "priority": "high",
+                "id": "fix_action_imports"
+            },
+            {
+                "content": "Enhance vitest configuration for Next.js modules",
+                "status": "completed",
+                "priority": "medium",
+                "id": "enhance_vitest_config"
+            },
+            {
+                "content": "Fix relative import paths in modified test files",
+                "status": "completed",
+                "priority": "high",
+                "id": "fix_import_paths"
+            },
+            {
+                "content": "Update login test expectations to match actual error messages",
+                "status": "in_progress",
+                "priority": "high",
+                "id": "fix_login_test_expectations"
+            },
+            {
+                "content": "Review all remaining test failures from test.json",
+                "status": "pending",
+                "priority": "high",
+                "id": "review_remaining_failures"
+            }
+        ]
+    }
+}
