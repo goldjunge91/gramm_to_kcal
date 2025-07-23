@@ -1,3 +1,7 @@
+/**
+ * Evaluates the auth logic for a given route and session.
+ * @returns { status: number, location?: string }
+ */
 import type { NextRequest } from "next/server";
 
 import { getSessionCookie } from "better-auth/cookies";
@@ -8,6 +12,35 @@ import {
     isPublicRoute,
     REDIRECT_PATHS,
 } from "@/lib/auth/routes";
+
+export function evaluateAuthRoute({
+    pathname,
+    sessionCookie,
+    isAuth,
+    isPublic,
+}: {
+    pathname: string;
+    sessionCookie: string | null;
+    isAuth: boolean;
+    isPublic: boolean;
+}): { status: number; location?: string } {
+    if (sessionCookie && isAuth) {
+        return { status: 307, location: REDIRECT_PATHS.DEFAULT_AFTER_LOGIN };
+    }
+    if (pathname.startsWith("/api/")) {
+        return { status: 200 };
+    }
+    if (isAuth) {
+        return { status: 200 };
+    }
+    if (isPublic) {
+        return { status: 200 };
+    }
+    if (!sessionCookie) {
+        return { status: 307, location: "/auth/login" };
+    }
+    return { status: 200 };
+}
 
 export async function updateSession(request: NextRequest) {
     const response = NextResponse.next({
