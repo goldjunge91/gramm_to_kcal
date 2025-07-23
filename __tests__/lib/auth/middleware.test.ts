@@ -58,7 +58,7 @@ describe("auth middleware", () => {
             vi.mocked(getSessionCookie).mockReturnValue(null);
             vi.mocked(isAuthRoute).mockReturnValue(true);
 
-            const request = new NextRequest("http://localhost:3000/auth/login");
+            const request = new NextRequest("http://localhost:3000/auth/login", { headers: new Headers() });
             const response = await updateSession(request);
 
             expect(response.status).toBe(200);
@@ -72,7 +72,7 @@ describe("auth middleware", () => {
             vi.mocked(isAuthRoute).mockReturnValue(false);
             vi.mocked(isPublicRoute).mockReturnValue(true);
 
-            const request = new NextRequest("http://localhost:3000/calories");
+            const request = new NextRequest("http://localhost:3000/calories", { headers: new Headers() });
             const response = await updateSession(request);
 
             expect(response.status).toBe(200);
@@ -86,7 +86,7 @@ describe("auth middleware", () => {
             vi.mocked(isAuthRoute).mockReturnValue(false);
             vi.mocked(isPublicRoute).mockReturnValue(false);
 
-            const request = new NextRequest("http://localhost:3000/account");
+            const request = new NextRequest("http://localhost:3000/account", { headers: new Headers() });
             const response = await updateSession(request);
 
             expect(response.status).toBe(307); // Redirect status
@@ -101,7 +101,7 @@ describe("auth middleware", () => {
             vi.mocked(isAuthRoute).mockReturnValue(false);
             vi.mocked(isPublicRoute).mockReturnValue(false);
 
-            const request = new NextRequest("http://localhost:3000/account");
+            const request = new NextRequest("http://localhost:3000/account", { headers: new Headers() });
             const response = await updateSession(request);
 
             expect(response.status).toBe(200);
@@ -115,7 +115,7 @@ describe("auth middleware", () => {
                 throw new Error("Cookie parsing error");
             });
 
-            const request = new NextRequest("http://localhost:3000/account");
+            const request = new NextRequest("http://localhost:3000/account", { headers: new Headers() });
             const response = await updateSession(request);
 
             expect(response.status).toBe(200); // Should continue with original response
@@ -131,7 +131,7 @@ describe("auth middleware", () => {
             vi.mocked(getSessionCookie).mockReturnValue("valid-session-cookie");
             vi.mocked(isAuthRoute).mockReturnValue(true);
 
-            const request = new NextRequest("http://localhost:3000/auth/login?returnTo=/account");
+            const request = new NextRequest("http://localhost:3000/auth/login?returnTo=/account", { headers: new Headers() });
             const response = await updateSession(request);
 
             expect(response.status).toBe(307); // Should redirect
@@ -146,9 +146,8 @@ describe("auth middleware", () => {
             vi.mocked(isAuthRoute).mockReturnValue(false);
             vi.mocked(isPublicRoute).mockReturnValue(true);
 
-            const request = new NextRequest("http://localhost:3000/calories", {
-                headers: { "custom-header": "test-value" },
-            });
+            const headers = new Headers({ "custom-header": "test-value" });
+            const request = new NextRequest("http://localhost:3000/calories", { headers });
             
             const response = await updateSession(request);
 

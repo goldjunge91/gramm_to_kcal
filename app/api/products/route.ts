@@ -37,7 +37,14 @@ export async function GET(request: NextRequest) {
     // TODO: Implement barcode lookup with cached API
     }
 
-    if (searchQuery) {
+    if (searchQuery !== null) {
+        if (!searchQuery || searchQuery.trim() === "") {
+            const securityHeaders = getSecurityHeaders();
+            return NextResponse.json(
+                { error: "Invalid search query" },
+                { status: 400, headers: securityHeaders },
+            );
+        }
         const validation = await validateRequest(
             request,
             RequestSchemas.searchQuery,

@@ -4,15 +4,12 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 // Mock better-auth before any imports
-let mockToNextJsHandler: ReturnType<typeof vi.fn>;
-
 vi.mock("better-auth/next-js", () => {
-    mockToNextJsHandler = vi.fn((auth) => ({
-        GET: vi.fn(),
-        POST: vi.fn(),
-    }));
     return {
-        toNextJsHandler: mockToNextJsHandler,
+        toNextJsHandler: vi.fn((auth) => ({
+            GET: vi.fn(),
+            POST: vi.fn(),
+        })),
     };
 });
 
@@ -30,6 +27,7 @@ vi.mock("@/lib/auth/auth", () => ({
 
 // Import after mocks are set up
 import { GET, POST } from "@/app/api/auth/[...all]/route";
+import { toNextJsHandler } from "better-auth/next-js";
 
 describe("/api/auth/[...all]", () => {
     beforeEach(() => {
@@ -45,7 +43,7 @@ describe("/api/auth/[...all]", () => {
 
     it("should use toNextJsHandler from better-auth", () => {
         // The call happens during module initialization
-        expect(mockToNextJsHandler).toHaveBeenCalledWith(mockAuth);
+        expect(toNextJsHandler).toHaveBeenCalledWith(mockAuth);
     });
     
 

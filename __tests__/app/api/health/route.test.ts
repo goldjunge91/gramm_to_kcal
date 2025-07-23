@@ -60,7 +60,7 @@ describe("/api/health", () => {
             open: 0,
         });
 
-        const request = new NextRequest("http://localhost:3000/api/health");
+        const request = new NextRequest("http://localhost:3000/api/health", { headers: new Headers() });
         const response = await GET(request);
         const data = await response.json();
 
@@ -87,7 +87,7 @@ describe("/api/health", () => {
             open: 0,
         });
 
-        const request = new NextRequest("http://localhost:3000/api/health");
+        const request = new NextRequest("http://localhost:3000/api/health", { headers: new Headers() });
         const response = await GET(request);
         const data = await response.json();
 
@@ -101,7 +101,7 @@ describe("/api/health", () => {
 
         vi.mocked(getRedisHealth).mockRejectedValue(new Error("Redis connection failed"));
 
-        const request = new NextRequest("http://localhost:3000/api/health");
+        const request = new NextRequest("http://localhost:3000/api/health", { headers: new Headers() });
         const response = await GET(request);
         const data = await response.json();
 

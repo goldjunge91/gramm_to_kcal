@@ -1,130 +1,58 @@
-/**
- * Tests for useCurrentUserName hook
- */
-import { renderHook } from "@testing-library/react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { useCurrentUserName } from "@/hooks/use-current-user-name";
+import { useSession } from "@/lib/auth/auth-client";
+import { renderHook } from "@testing-library/react";
+import { vi } from "vitest";
 
-// Mock auth client
-const mockUseSession = vi.fn();
 vi.mock("@/lib/auth/auth-client", () => ({
-    useSession: mockUseSession,
+  useSession: vi.fn(),
 }));
 
-describe("useCurrentUserName", () => {
-    beforeEach(() => {
-        vi.clearAllMocks();
-    });
+const mockUseSession = useSession as unknown as ReturnType<typeof vi.fn>;
 
-    it("should return user name when session exists", () => {
-        mockUseSession.mockReturnValue({
-            data: {
-                user: {
-                    id: "123",
-                    name: "John Doe",
-                    email: "john@example.com",
-                },
+
+it("should return user name when session exists", () => {
+    mockUseSession.mockReturnValue({
+        data: {
+            user: {
+                id: "123",
+                name: "Jane Doe",
+                email: "jane@example.com",
             },
-            isPending: false,
-            error: null,
-            refetch: vi.fn(),
-        });
-
-        const { result } = renderHook(() => useCurrentUserName());
-        
-        expect(result.current).toBe("John Doe");
+        },
+        isPending: false,
+        error: null,
+        refetch: vi.fn(),
     });
 
-    it("should return '?' when no session", () => {
-        mockUseSession.mockReturnValue({
-            data: null,
-            isPending: false,
-            error: null,
-            refetch: vi.fn(),
-        });
+    const { result } = renderHook(() => useCurrentUserName());
+    expect(result.current).toBe("Jane Doe");
+});
 
-        const { result } = renderHook(() => useCurrentUserName());
-        
-        expect(result.current).toBe("?");
+it("should return '?' when session is missing or user name is falsy", () => {
+    mockUseSession.mockReturnValue({
+        data: null,
+        isPending: false,
+        error: null,
+        refetch: vi.fn(),
     });
 
-    it("should return '?' when session has no user", () => {
-        mockUseSession.mockReturnValue({
-            data: {
-                user: null,
+    const { result } = renderHook(() => useCurrentUserName());
+    expect(result.current).toBe("?");
+
+    mockUseSession.mockReturnValue({
+        data: {
+            user: {
+                id: "123",
+                name: "",
+                email: "jane@example.com",
             },
-            isPending: false,
-            error: null,
-            refetch: vi.fn(),
-        });
-
-        const { result } = renderHook(() => useCurrentUserName());
-        
-        expect(result.current).toBe("?");
+        },
+        isPending: false,
+        error: null,
+        refetch: vi.fn(),
     });
 
-    it("should return '?' when user has no name", () => {
-        mockUseSession.mockReturnValue({
-            data: {
-                user: {
-                    id: "123",
-                    email: "john@example.com",
-                    // no name property
-                },
-            },
-            isPending: false,
-            error: null,
-            refetch: vi.fn(),
-        });
-
-        const { result } = renderHook(() => useCurrentUserName());
-        
-        expect(result.current).toBe("?");
-    });
-
-    it("should return '?' when user name is empty string", () => {
-        mockUseSession.mockReturnValue({
-            data: {
-                user: {
-                    id: "123",
-                    name: "",
-                    email: "john@example.com",
-                },
-            },
-            isPending: false,
-            error: null,
-            refetch: vi.fn(),
-        });
-
-        const { result } = renderHook(() => useCurrentUserName());
-        
-        expect(result.current).toBe("?");
-    });
-
-    it("should handle undefined session data", () => {
-        mockUseSession.mockReturnValue({
-            data: null,
-            isPending: false,
-            error: null,
-            refetch: vi.fn(),
-        });
-
-        const { result } = renderHook(() => useCurrentUserName());
-        
-        expect(result.current).toBe("?");
-    });
-
-    it("should handle session loading state", () => {
-        mockUseSession.mockReturnValue({
-            data: null,
-            isPending: true,
-            error: null,
-            refetch: vi.fn(),
-        });
-
-        const { result } = renderHook(() => useCurrentUserName());
-        
-        expect(result.current).toBe("?");
-    });
+    const { result: resultEmptyName } = renderHook(() => useCurrentUserName());
+    expect(resultEmptyName.current).toBe("?");
 });

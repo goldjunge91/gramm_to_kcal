@@ -1,12 +1,12 @@
 /**
  * Tests for products API functions
  */
-import { renderHook, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { renderHook, waitFor } from "@testing-library/react";
 import * as React from "react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { useProducts, useCreateProduct } from "@/lib/api/products";
+import { useCreateProduct, useProducts } from "@/lib/api/products";
 
 // Mock fetch
 global.fetch = vi.fn();
@@ -111,7 +111,7 @@ describe("products API", () => {
 
     describe("useCreateProduct", () => {
         it("should create product successfully", async () => {
-            const mockProduct = { id: "1", name: "New Product", kcal: 150 };
+            const mockProduct = { id: "1", name: "New Product", kcal: 150, userId: "user123", quantity: 100 };
             const { toast } = await import("sonner");
 
             vi.mocked(fetch).mockResolvedValue({
@@ -124,7 +124,7 @@ describe("products API", () => {
                 { wrapper: createWrapper() }
             );
 
-            const productData = { name: "New Product", kcal: 150, quantity: "100g" };
+            const productData = { userId: "user123", name: "New Product", kcal: 150, quantity: 100 };
             
             result.current.mutate(productData);
 
@@ -140,7 +140,7 @@ describe("products API", () => {
                 body: JSON.stringify(productData),
             });
 
-            expect(toast.success).toHaveBeenCalledWith("Product created successfully!");
+            expect(toast.success).toHaveBeenCalledWith("Product created");
         });
 
         it("should handle creation errors", async () => {
@@ -156,7 +156,7 @@ describe("products API", () => {
                 { wrapper: createWrapper() }
             );
 
-            const productData = { name: "New Product", kcal: 150, quantity: "100g" };
+            const productData = { userId: "user123", name: "New Product", kcal: 150, quantity: 100 };
             
             result.current.mutate(productData);
 
@@ -164,11 +164,11 @@ describe("products API", () => {
                 expect(result.current.isError).toBe(true);
             });
 
-            expect(toast.error).toHaveBeenCalledWith("Failed to create product. Please try again.");
+            expect(toast.error).toHaveBeenCalledWith("Failed to create product: Bad Request");
         });
 
         it("should invalidate products query on success", async () => {
-            const mockProduct = { id: "1", name: "New Product", kcal: 150 };
+            const mockProduct = { id: "1", name: "New Product", kcal: 150, userId: "user123", quantity: 100 };
 
             vi.mocked(fetch).mockResolvedValue({
                 ok: true,
@@ -180,7 +180,7 @@ describe("products API", () => {
                 { wrapper: createWrapper() }
             );
 
-            const productData = { name: "New Product", kcal: 150, quantity: "100g" };
+            const productData = { userId: "user123", name: "New Product", kcal: 150, quantity: 100 };
             
             result.current.mutate(productData);
 
