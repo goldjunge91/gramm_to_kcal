@@ -21,6 +21,7 @@ dotenv.config({ path: fs.existsSync(envLocalPath) ? envLocalPath : envPath });
 export default defineConfig({
     testDir: "./__e2e__",
     testMatch: [
+        "**/auth/auth-protection.spec.ts", // Test auth route protection first
         "**/auth/signup.spec.ts", // Run FIRST - creates users
         // '**/auth/login.spec.ts', // Run SECOND - tests existing users
         // '**/auth/logout.spec.ts', // Run THIRD - tests session cleanup

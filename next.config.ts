@@ -58,9 +58,6 @@ const baseConfig: NextConfig = {
 const nextConfig: NextConfig = env.FORCE_BUILD
     ? (() => {
             console.warn("⚠️  WARNING: FORCE_BUILD is enabled - TypeScript and ESLint errors will be ignored!");
-            console.warn("⚠️  This should only be used for emergency deployments.");
-            console.warn("⚠️  Please fix all errors and remove FORCE_BUILD=true as soon as possible.");
-
             return {
                 ...baseConfig,
                 typescript: {

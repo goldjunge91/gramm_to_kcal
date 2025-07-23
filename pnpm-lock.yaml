@@ -297,9 +297,6 @@ importers:
       node-fetch:
         specifier: ^3.3.2
         version: 3.3.2
-      prettier:
-        specifier: 3.6.2
-        version: 3.6.2
       tailwindcss:
         specifier: ^4
         version: 4.1.11
