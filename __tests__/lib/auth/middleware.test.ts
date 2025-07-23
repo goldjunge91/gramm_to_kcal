@@ -4,7 +4,7 @@
 import { NextRequest } from "next/server";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { updateSession } from "@/lib/auth/middleware";
+import { updateSession } from "../../../lib/auth/middleware";
 
 // Mock better-auth/cookies
 vi.mock("better-auth/cookies", () => ({
@@ -12,7 +12,7 @@ vi.mock("better-auth/cookies", () => ({
 }));
 
 // Mock auth routes
-vi.mock("@/lib/auth/routes", () => ({
+vi.mock("../../../lib/auth/routes", () => ({
     isAuthRoute: vi.fn(),
     isPublicRoute: vi.fn(),
     REDIRECT_PATHS: {
@@ -28,12 +28,12 @@ describe("auth middleware", () => {
     describe("updateSession", () => {
         it("should redirect authenticated user from auth page to app", async () => {
             const { getSessionCookie } = await import("better-auth/cookies");
-            const { isAuthRoute } = await import("@/lib/auth/routes");
+            const { isAuthRoute } = await import("../../../lib/auth/routes");
             
             vi.mocked(getSessionCookie).mockReturnValue("valid-session-cookie");
             vi.mocked(isAuthRoute).mockReturnValue(true);
 
-            const request = new NextRequest("http://localhost:3000/auth/login");
+            const request = new NextRequest("http://localhost:3000/auth/login", { headers: new Headers() });
             const response = await updateSession(request);
 
             expect(response.status).toBe(307); // Redirect status
@@ -45,7 +45,7 @@ describe("auth middleware", () => {
             
             vi.mocked(getSessionCookie).mockReturnValue(null);
 
-            const request = new NextRequest("http://localhost:3000/api/health");
+            const request = new NextRequest("http://localhost:3000/api/health", { headers: new Headers() });
             const response = await updateSession(request);
 
             expect(response.status).toBe(200);
@@ -53,7 +53,7 @@ describe("auth middleware", () => {
 
         it("should allow access to auth routes when not authenticated", async () => {
             const { getSessionCookie } = await import("better-auth/cookies");
-            const { isAuthRoute } = await import("@/lib/auth/routes");
+            const { isAuthRoute } = await import("../../../lib/auth/routes");
             
             vi.mocked(getSessionCookie).mockReturnValue(null);
             vi.mocked(isAuthRoute).mockReturnValue(true);
@@ -66,7 +66,7 @@ describe("auth middleware", () => {
 
         it("should allow access to public routes", async () => {
             const { getSessionCookie } = await import("better-auth/cookies");
-            const { isAuthRoute, isPublicRoute } = await import("@/lib/auth/routes");
+            const { isAuthRoute, isPublicRoute } = await import("../../../lib/auth/routes");
             
             vi.mocked(getSessionCookie).mockReturnValue(null);
             vi.mocked(isAuthRoute).mockReturnValue(false);
@@ -80,7 +80,7 @@ describe("auth middleware", () => {
 
         it("should redirect to login for protected routes without session", async () => {
             const { getSessionCookie } = await import("better-auth/cookies");
-            const { isAuthRoute, isPublicRoute } = await import("@/lib/auth/routes");
+            const { isAuthRoute, isPublicRoute } = await import("../../../lib/auth/routes");
             
             vi.mocked(getSessionCookie).mockReturnValue(null);
             vi.mocked(isAuthRoute).mockReturnValue(false);
@@ -95,7 +95,7 @@ describe("auth middleware", () => {
 
         it("should allow access to protected routes with valid session", async () => {
             const { getSessionCookie } = await import("better-auth/cookies");
-            const { isAuthRoute, isPublicRoute } = await import("@/lib/auth/routes");
+            const { isAuthRoute, isPublicRoute } = await import("../../../lib/auth/routes");
             
             vi.mocked(getSessionCookie).mockReturnValue("valid-session-cookie");
             vi.mocked(isAuthRoute).mockReturnValue(false);
@@ -126,7 +126,7 @@ describe("auth middleware", () => {
 
         it("should handle complex pathnames correctly", async () => {
             const { getSessionCookie } = await import("better-auth/cookies");
-            const { isAuthRoute, isPublicRoute } = await import("@/lib/auth/routes");
+            const { isAuthRoute, isPublicRoute } = await import("../../../lib/auth/routes");
             
             vi.mocked(getSessionCookie).mockReturnValue("valid-session-cookie");
             vi.mocked(isAuthRoute).mockReturnValue(true);
@@ -140,7 +140,7 @@ describe("auth middleware", () => {
 
         it("should preserve request context in response", async () => {
             const { getSessionCookie } = await import("better-auth/cookies");
-            const { isAuthRoute, isPublicRoute } = await import("@/lib/auth/routes");
+            const { isAuthRoute, isPublicRoute } = await import("../../../lib/auth/routes");
             
             vi.mocked(getSessionCookie).mockReturnValue("valid-session-cookie");
             vi.mocked(isAuthRoute).mockReturnValue(false);

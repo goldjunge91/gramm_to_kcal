@@ -2,7 +2,7 @@
  * Tests for useCurrentUserName hook
  */
 import { renderHook } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { useCurrentUserName } from "@/hooks/use-current-user-name";
 
@@ -26,6 +26,9 @@ describe("useCurrentUserName", () => {
                     email: "john@example.com",
                 },
             },
+            isPending: false,
+            error: null,
+            refetch: vi.fn(),
         });
 
         const { result } = renderHook(() => useCurrentUserName());
@@ -36,6 +39,9 @@ describe("useCurrentUserName", () => {
     it("should return '?' when no session", () => {
         mockUseSession.mockReturnValue({
             data: null,
+            isPending: false,
+            error: null,
+            refetch: vi.fn(),
         });
 
         const { result } = renderHook(() => useCurrentUserName());
@@ -48,6 +54,9 @@ describe("useCurrentUserName", () => {
             data: {
                 user: null,
             },
+            isPending: false,
+            error: null,
+            refetch: vi.fn(),
         });
 
         const { result } = renderHook(() => useCurrentUserName());
@@ -64,6 +73,9 @@ describe("useCurrentUserName", () => {
                     // no name property
                 },
             },
+            isPending: false,
+            error: null,
+            refetch: vi.fn(),
         });
 
         const { result } = renderHook(() => useCurrentUserName());
@@ -80,6 +92,9 @@ describe("useCurrentUserName", () => {
                     email: "john@example.com",
                 },
             },
+            isPending: false,
+            error: null,
+            refetch: vi.fn(),
         });
 
         const { result } = renderHook(() => useCurrentUserName());
@@ -89,7 +104,10 @@ describe("useCurrentUserName", () => {
 
     it("should handle undefined session data", () => {
         mockUseSession.mockReturnValue({
-            data: undefined,
+            data: null,
+            isPending: false,
+            error: null,
+            refetch: vi.fn(),
         });
 
         const { result } = renderHook(() => useCurrentUserName());
@@ -101,6 +119,8 @@ describe("useCurrentUserName", () => {
         mockUseSession.mockReturnValue({
             data: null,
             isPending: true,
+            error: null,
+            refetch: vi.fn(),
         });
 
         const { result } = renderHook(() => useCurrentUserName());

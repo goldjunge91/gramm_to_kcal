@@ -10,6 +10,7 @@
             "@/*": ["./*"]
         },
         "resolveJsonModule": true,
+        "types": ["vitest/globals"],
         "allowJs": true,
         "strict": true,
         "noEmit": true,
@@ -22,6 +23,7 @@
             }
         ]
     },
+
     "include": [
         "next-env.d.ts",
         "**/*.ts",
@@ -32,9 +34,6 @@
     ],
     "exclude": [
         "node_modules",
-        "**/__tests__/*",
-        "/__tests__/",
-        "./__tests__",
         "./scripts",
         "scripts",
         "__mocks__",

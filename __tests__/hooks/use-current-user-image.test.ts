@@ -8,9 +8,13 @@ import { useCurrentUserImage } from "@/hooks/use-current-user-image";
 
 // Mock auth client
 const mockUseSession = vi.fn();
-vi.mock("@/lib/auth/auth-client", () => ({
-    useSession: mockUseSession,
-}));
+vi.mock("@/lib/auth/auth-client", async (importActual) => {
+    const actual = await importActual<typeof import("@/lib/auth/auth-client")>();
+    return {
+        ...actual,
+        useSession: mockUseSession,
+    };
+});
 
 describe("useCurrentUserImage", () => {
     beforeEach(() => {

@@ -4,14 +4,17 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 // Mock better-auth before any imports
-const mockToNextJsHandler = vi.fn((auth) => ({
-    GET: vi.fn(),
-    POST: vi.fn(),
-}));
+let mockToNextJsHandler: ReturnType<typeof vi.fn>;
 
-vi.mock("better-auth/next-js", () => ({
-    toNextJsHandler: mockToNextJsHandler,
-}));
+vi.mock("better-auth/next-js", () => {
+    mockToNextJsHandler = vi.fn((auth) => ({
+        GET: vi.fn(),
+        POST: vi.fn(),
+    }));
+    return {
+        toNextJsHandler: mockToNextJsHandler,
+    };
+});
 
 const mockAuth = {
     handler: vi.fn(),
