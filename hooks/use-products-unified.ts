@@ -10,7 +10,7 @@ import { useAuth } from "@/app/providers";
 import {
     useCreateProduct,
     useDeleteProduct,
-    useProducts,
+    useProductsList,
 } from "@/lib/api/products";
 
 import { useLocalProductsQuery } from "./use-local-products";
@@ -38,8 +38,8 @@ export function useProductsUnified(): UnifiedProductsReturn {
     const { user } = useAuth();
     const isAuthenticated = !!user;
 
-    // Database hooks (for authenticated users)
-    const databaseQuery = useProducts(user?.id || "");
+    // Database hooks (for authenticated users) - using backward compatible hook
+    const databaseQuery = useProductsList(user?.id || "");
     const createDatabaseProduct = useCreateProduct();
     const deleteDatabaseProduct = useDeleteProduct();
 
@@ -107,7 +107,7 @@ export function useProductsUnifiedStates() {
     const isAuthenticated = !!user;
 
     // Get loading states from the appropriate system
-    const databaseQuery = useProducts(user?.id || "");
+    const databaseQuery = useProductsList(user?.id || "");
     const createDatabaseProduct = useCreateProduct();
     const deleteDatabaseProduct = useDeleteProduct();
 

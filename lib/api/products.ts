@@ -3,11 +3,28 @@ import { toast } from "sonner";
 
 import type { NewProduct, Product } from "../db/schemas";
 
-export function useProducts(userId: string) {
+// Pagination response type
+interface ProductsResponse {
+    products: Product[];
+    pagination: {
+        limit: number;
+        cursor: string | null;
+        nextCursor: string | null;
+        hasMore: boolean;
+        count: number;
+    };
+}
+
+export function useProducts(userId: string, cursor?: string, limit = 20) {
     return useQuery({
-        queryKey: ["products", userId],
-        queryFn: async (): Promise<Product[]> => {
-            const response = await fetch("/api/user/products", {
+        queryKey: ["products", userId, cursor, limit],
+        queryFn: async (): Promise<ProductsResponse> => {
+            const params = new URLSearchParams();
+            if (cursor)
+                params.set("cursor", cursor);
+            params.set("limit", limit.toString());
+
+            const response = await fetch(`/api/user/products?${params}`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
@@ -24,6 +41,15 @@ export function useProducts(userId: string) {
         },
         enabled: !!userId,
     });
+}
+
+// Backward compatible hook that returns just the products array
+export function useProductsList(userId: string) {
+    const query = useProducts(userId);
+    return {
+        ...query,
+        data: query.data?.products || [],
+    };
 }
 
 export function useCreateProduct() {
@@ -50,10 +76,10 @@ export function useCreateProduct() {
             return data;
         },
         onSuccess: (data) => {
-            queryClient.setQueryData(
-                ["products", data.userId],
-                (old: Product[] = []) => [data, ...old],
-            );
+            // Invalidate all products queries for this user to refresh pagination
+            queryClient.invalidateQueries({
+                queryKey: ["products", data.userId],
+            });
         },
         onError: (error: any) => {
             const errorMsg
@@ -97,13 +123,10 @@ export function useUpdateProduct() {
             return data;
         },
         onSuccess: (data) => {
-            queryClient.setQueryData(
-                ["products", data.userId],
-                (old: Product[] = []) =>
-                    old.map(product =>
-                        product.id === data.id ? data : product,
-                    ),
-            );
+            // Invalidate all products queries for this user to refresh pagination
+            queryClient.invalidateQueries({
+                queryKey: ["products", data.userId],
+            });
         },
     });
 }
@@ -128,9 +151,11 @@ export function useDeleteProduct() {
 
             toast.success("Product deleted");
         },
-        onSuccess: (_, id) => {
-            queryClient.setQueryData(["products"], (old: Product[] = []) =>
-                old.filter(product => product.id !== id));
+        onSuccess: () => {
+            // Invalidate all products queries to refresh pagination
+            queryClient.invalidateQueries({
+                queryKey: ["products"],
+            });
         },
     });
 }

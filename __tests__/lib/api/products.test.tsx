@@ -6,7 +6,7 @@ import { renderHook, waitFor } from "@testing-library/react";
 import * as React from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { useCreateProduct, useProducts } from "@/lib/api/products";
+import { useCreateProduct, useProducts, useProductsList } from "@/lib/api/products";
 
 // Mock fetch
 global.fetch = vi.fn();
@@ -47,9 +47,20 @@ describe("products API", () => {
                 { id: "2", name: "Product 2", kcal: 200 },
             ];
 
+            const mockResponse = {
+                products: mockProducts,
+                pagination: {
+                    limit: 20,
+                    cursor: null,
+                    nextCursor: null,
+                    hasMore: false,
+                    count: 2,
+                },
+            };
+
             vi.mocked(fetch).mockResolvedValue({
                 ok: true,
-                json: () => Promise.resolve(mockProducts),
+                json: () => Promise.resolve(mockResponse),
             } as Response);
 
             const { result } = renderHook(() => useProducts("user123"), {
@@ -60,8 +71,8 @@ describe("products API", () => {
                 expect(result.current.isSuccess).toBe(true);
             });
 
-            expect(result.current.data).toEqual(mockProducts);
-            expect(fetch).toHaveBeenCalledWith("/api/user/products", {
+            expect(result.current.data).toEqual(mockResponse);
+            expect(fetch).toHaveBeenCalledWith("/api/user/products?limit=20", {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
@@ -102,6 +113,79 @@ describe("products API", () => {
 
             expect(result.current.isFetching).toBe(false);
             expect(fetch).not.toHaveBeenCalled();
+        });
+
+        it("should support cursor-based pagination", async () => {
+            const mockProducts = [
+                { id: "3", name: "Product 3", kcal: 300 },
+            ];
+
+            const mockResponse = {
+                products: mockProducts,
+                pagination: {
+                    limit: 10,
+                    cursor: "2024-01-01T00:00:00.000Z",
+                    nextCursor: "2023-12-31T00:00:00.000Z",
+                    hasMore: true,
+                    count: 1,
+                },
+            };
+
+            vi.mocked(fetch).mockResolvedValue({
+                ok: true,
+                json: () => Promise.resolve(mockResponse),
+            } as Response);
+
+            const { result } = renderHook(() => useProducts("user123", "2024-01-01T00:00:00.000Z", 10), {
+                wrapper: createWrapper(),
+            });
+
+            await waitFor(() => {
+                expect(result.current.isSuccess).toBe(true);
+            });
+
+            expect(result.current.data).toEqual(mockResponse);
+            expect(fetch).toHaveBeenCalledWith("/api/user/products?cursor=2024-01-01T00%3A00%3A00.000Z&limit=10", {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+        });
+    });
+
+    describe("useProductsList", () => {
+        it("should extract products array from paginated response", async () => {
+            const mockProducts = [
+                { id: "1", name: "Product 1", kcal: 100 },
+                { id: "2", name: "Product 2", kcal: 200 },
+            ];
+
+            const mockResponse = {
+                products: mockProducts,
+                pagination: {
+                    limit: 20,
+                    cursor: null,
+                    nextCursor: null,
+                    hasMore: false,
+                    count: 2,
+                },
+            };
+
+            vi.mocked(fetch).mockResolvedValue({
+                ok: true,
+                json: () => Promise.resolve(mockResponse),
+            } as Response);
+
+            const { result } = renderHook(() => useProductsList("user123"), {
+                wrapper: createWrapper(),
+            });
+
+            await waitFor(() => {
+                expect(result.current.isSuccess).toBe(true);
+            });
+
+            expect(result.current.data).toEqual(mockProducts);
         });
     });
 

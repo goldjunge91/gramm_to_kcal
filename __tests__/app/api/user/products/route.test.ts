@@ -47,6 +47,7 @@ vi.mock("drizzle-orm", () => ({
     and: vi.fn(),
     eq: vi.fn(),
     desc: vi.fn(),
+    lt: vi.fn(),
 }));
 
 vi.mock("next/headers", () => ({
@@ -72,8 +73,8 @@ describe("/api/user/products", () => {
 
             const mockUser = { id: "user123", email: "test@example.com" };
             const mockProducts = [
-                { id: "1", name: "Test Product", userId: "user123" },
-                { id: "2", name: "Another Product", userId: "user123" },
+                { id: "1", name: "Test Product", userId: "user123", createdAt: "2024-01-01T00:00:00.000Z" },
+                { id: "2", name: "Another Product", userId: "user123", createdAt: "2024-01-02T00:00:00.000Z" },
             ];
 
             vi.mocked(auth.api.getSession).mockResolvedValue({
@@ -84,17 +85,57 @@ describe("/api/user/products", () => {
             const mockQuery = {
                 from: vi.fn(() => ({
                     where: vi.fn(() => ({
-                        orderBy: vi.fn(() => Promise.resolve(mockProducts)),
+                        orderBy: vi.fn(() => ({
+                            limit: vi.fn(() => Promise.resolve(mockProducts)),
+                        })),
                     })),
                 })),
             };
             vi.mocked(db.select).mockReturnValue(mockQuery);
 
-            const response = await GET();
+            const request = new Request('http://localhost:3000/api/user/products');
+            const response = await GET(request);
             const data = await response.json();
 
             expect(response.status).toBe(200);
-            expect(data).toEqual(mockProducts);
+            expect(data.products).toEqual(mockProducts);
+            expect(data.pagination).toBeDefined();
+            expect(data.pagination.limit).toBe(20); // Default limit
+        });
+
+        it("should support pagination with cursor", async () => {
+            const { auth } = await import("@/lib/auth/auth");
+            const { db } = await import("@/lib/db");
+
+            const mockUser = { id: "user123", email: "test@example.com" };
+            const mockProducts = [
+                { id: "3", name: "Older Product", userId: "user123", createdAt: "2023-12-31T00:00:00.000Z" },
+            ];
+
+            vi.mocked(auth.api.getSession).mockResolvedValue({
+                user: mockUser,
+                session: { id: "session123" },
+            });
+
+            const mockQuery = {
+                from: vi.fn(() => ({
+                    where: vi.fn(() => ({
+                        orderBy: vi.fn(() => ({
+                            limit: vi.fn(() => Promise.resolve(mockProducts)),
+                        })),
+                    })),
+                })),
+            };
+            vi.mocked(db.select).mockReturnValue(mockQuery);
+
+            const request = new Request('http://localhost:3000/api/user/products?cursor=2024-01-01T00:00:00.000Z&limit=10');
+            const response = await GET(request);
+            const data = await response.json();
+
+            expect(response.status).toBe(200);
+            expect(data.products).toEqual(mockProducts);
+            expect(data.pagination.limit).toBe(10);
+            expect(data.pagination.cursor).toBe('2024-01-01T00:00:00.000Z');
         });
 
         it("should return 401 when not authenticated", async () => {
@@ -102,7 +143,8 @@ describe("/api/user/products", () => {
 
             vi.mocked(auth.api.getSession).mockResolvedValue(null);
 
-            const response = await GET();
+            const request = new Request('http://localhost:3000/api/user/products');
+            const response = await GET(request);
             const data = await response.json();
 
             expect(response.status).toBe(401);
@@ -122,11 +164,13 @@ describe("/api/user/products", () => {
             const mockQuery = {
                 from: vi.fn(() => ({
                     where: vi.fn(() => ({
-                        orderBy: vi.fn(() =>
-                            Promise.reject(
-                                new Error("Database connection failed"),
+                        orderBy: vi.fn(() => ({
+                            limit: vi.fn(() =>
+                                Promise.reject(
+                                    new Error("Database connection failed"),
+                                ),
                             ),
-                        ),
+                        })),
                     })),
                 })),
             };
@@ -136,7 +180,8 @@ describe("/api/user/products", () => {
                 .spyOn(console, "error")
                 .mockImplementation(() => {});
 
-            const response = await GET();
+            const request = new Request('http://localhost:3000/api/user/products');
+            const response = await GET(request);
             const data = await response.json();
 
             expect(response.status).toBe(500);

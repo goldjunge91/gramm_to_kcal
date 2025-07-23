@@ -177,20 +177,23 @@ class ProductCacheManager {
         }
     }
 
-    async getSearchResults(query: string): Promise<any[] | null> {
+    async getSearchResults(query: string, limit: number, offset: number): Promise<{ products: any[]; totalCount: number } | null> {
         if (!this.redis)
             return null;
 
         try {
-            const key = this.getCacheKey("search", query.toLowerCase().trim());
+            const key = this.getCacheKey("search", `${query.toLowerCase().trim()}:${limit}:${offset}`);
             const cached = await this.redis.get(key);
 
             if (typeof cached === "string") {
                 const parsed = JSON.parse(cached);
-                return parsed.map((item: any) => ({
-                    ...item,
-                    source: "cache",
-                }));
+                return {
+                    products: parsed.products.map((item: any) => ({
+                        ...item,
+                        source: "cache",
+                    })),
+                    totalCount: parsed.totalCount,
+                };
             }
         }
         catch (error) {
@@ -200,12 +203,12 @@ class ProductCacheManager {
         return null;
     }
 
-    async setSearchResults(query: string, data: any[]): Promise<void> {
+    async setSearchResults(query: string, limit: number, offset: number, data: { products: any[]; totalCount: number }): Promise<void> {
         if (!this.redis)
             return;
 
         try {
-            const key = this.getCacheKey("search", query.toLowerCase().trim());
+            const key = this.getCacheKey("search", `${query.toLowerCase().trim()}:${limit}:${offset}`);
             await this.redis.setex(
                 key,
                 CACHE_CONFIG.SEARCH_TTL,
@@ -344,9 +347,11 @@ export async function cachedSearchProductsByName(
     query: string,
     limit = 5,
     request?: Request,
+    offset = 0,
 ): Promise<{
     success: boolean;
     products: any[];
+    totalCount?: number;
     source?: "cache" | "api";
     rateLimit?: RateLimitInfo;
     cached?: boolean;
@@ -376,11 +381,12 @@ export async function cachedSearchProductsByName(
     }
 
     // Check cache first
-    const cached = await cacheManager.getSearchResults(query);
+    const cached = await cacheManager.getSearchResults(query, limit, offset);
     if (cached) {
         return {
             success: true,
-            products: cached,
+            products: cached.products,
+            totalCount: cached.totalCount,
             source: "cache",
             cached: true,
             rateLimit: rateLimitInfo,
@@ -390,7 +396,7 @@ export async function cachedSearchProductsByName(
     // Fetch from API with circuit breaker protection
     const circuitResult = await circuitBreakers.openFoodFacts.execute(
         async () => {
-            return await searchProductsByName(query, limit);
+            return await searchProductsByName(query, limit, offset);
         },
     );
 
@@ -399,6 +405,7 @@ export async function cachedSearchProductsByName(
         return {
             success: false,
             products: [],
+            totalCount: 0,
             rateLimit: rateLimitInfo,
             circuitBreaker: {
                 state: circuitResult.state,
@@ -410,11 +417,12 @@ export async function cachedSearchProductsByName(
     const results = circuitResult.data!;
 
     // Cache the results
-    await cacheManager.setSearchResults(query, results);
+    await cacheManager.setSearchResults(query, limit, offset, results);
 
     return {
         success: true,
-        products: results,
+        products: results.products,
+        totalCount: results.totalCount,
         source: "api",
         cached: false,
         rateLimit: rateLimitInfo,

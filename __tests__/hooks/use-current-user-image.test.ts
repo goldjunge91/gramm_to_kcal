@@ -7,13 +7,12 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useCurrentUserImage } from "@/hooks/use-current-user-image";
 
 // Mock auth client
-const mockUseSession = vi.fn();
 vi.mock("@/lib/auth/auth-client", async (importActual) => {
     const actual =
         await importActual<typeof import("@/lib/auth/auth-client")>();
     return {
         ...actual,
-        useSession: mockUseSession,
+        useSession: vi.fn(),
     };
 });
 
@@ -22,8 +21,10 @@ describe("useCurrentUserImage", () => {
         vi.clearAllMocks();
     });
 
-    it("should return user image when session exists", () => {
-        mockUseSession.mockReturnValue({
+    it("should return user image when session exists", async () => {
+        const { useSession } = await import("@/lib/auth/auth-client");
+        
+        vi.mocked(useSession).mockReturnValue({
             data: {
                 user: {
                     id: "123",
@@ -39,10 +40,10 @@ describe("useCurrentUserImage", () => {
         expect(result.current).toBe("https://example.com/avatar.jpg");
     });
 
-    it("should return null when no session", () => {
-        mockUseSession;
+    it("should return null when no session", async () => {
+        const { useSession } = await import("@/lib/auth/auth-client");
 
-        mockUseSession.mockReturnValue({
+        vi.mocked(useSession).mockReturnValue({
             data: null,
         });
 
@@ -51,10 +52,10 @@ describe("useCurrentUserImage", () => {
         expect(result.current).toBeNull();
     });
 
-    it("should return null when session has no user", () => {
-        mockUseSession;
+    it("should return null when session has no user", async () => {
+        const { useSession } = await import("@/lib/auth/auth-client");
 
-        mockUseSession.mockReturnValue({
+        vi.mocked(useSession).mockReturnValue({
             data: {
                 user: null,
             },
@@ -65,10 +66,10 @@ describe("useCurrentUserImage", () => {
         expect(result.current).toBeNull();
     });
 
-    it("should return null when user has no image", () => {
-        mockUseSession;
+    it("should return null when user has no image", async () => {
+        const { useSession } = await import("@/lib/auth/auth-client");
 
-        mockUseSession.mockReturnValue({
+        vi.mocked(useSession).mockReturnValue({
             data: {
                 user: {
                     id: "123",
@@ -84,10 +85,10 @@ describe("useCurrentUserImage", () => {
         expect(result.current).toBeNull();
     });
 
-    it("should return null when user image is empty string", () => {
-        mockUseSession;
+    it("should return null when user image is empty string", async () => {
+        const { useSession } = await import("@/lib/auth/auth-client");
 
-        mockUseSession.mockReturnValue({
+        vi.mocked(useSession).mockReturnValue({
             data: {
                 user: {
                     id: "123",
@@ -103,10 +104,10 @@ describe("useCurrentUserImage", () => {
         expect(result.current).toBeNull();
     });
 
-    it("should handle undefined session data", () => {
-        mockUseSession;
+    it("should handle undefined session data", async () => {
+        const { useSession } = await import("@/lib/auth/auth-client");
 
-        mockUseSession.mockReturnValue({
+        vi.mocked(useSession).mockReturnValue({
             data: undefined,
         });
 

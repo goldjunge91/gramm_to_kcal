@@ -1,7 +1,7 @@
 /**
  * Tests for login action
  */
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 // Mock dependencies
 vi.mock("@/lib/auth/auth", () => ({
@@ -67,7 +67,17 @@ describe("login action", () => {
         const { loginAction } = await import("@/actions/login");
 
         vi.mocked(auth.api.signInEmail).mockResolvedValue({
-            user: { id: "123", email: "test@example.com" },
+            user: {
+                id: "123", email: "test@example.com",
+                name: "",
+                image: undefined,
+                emailVerified: false,
+                createdAt: new Date(),
+                updatedAt: new Date()
+            },
+            redirect: false,
+            token: "",
+            url: undefined
         });
 
         const formData = new FormData();
@@ -110,7 +120,17 @@ describe("login action", () => {
         const consoleSpy = vi.spyOn(console, "log");
 
         vi.mocked(auth.api.signInEmail).mockResolvedValue({
-            user: { id: "123", email: "test@example.com" },
+            user: {
+                id: "123", email: "test@example.com",
+                name: "",
+                image: undefined,
+                emailVerified: false,
+                createdAt: new Date(),
+                updatedAt: new Date()
+            },
+            redirect: false,
+            token: "",
+            url: undefined
         });
 
         const formData = new FormData();

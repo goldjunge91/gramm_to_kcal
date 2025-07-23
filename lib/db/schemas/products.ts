@@ -1,5 +1,7 @@
+import { eq } from "drizzle-orm";
 import {
     boolean,
+    index,
     integer,
     pgEnum,
     pgTable,
@@ -37,7 +39,13 @@ export const products = pgTable("products", {
     name: text("name").notNull(),
     quantity: real("quantity").notNull(), // in grams
     kcal: real("kcal").notNull(),
-});
+}, table => ({
+    // Critical performance indexes based on common query patterns
+    userCreatedIdx: index("products_user_created_idx").on(table.userId, table.createdAt.desc()),
+    userActiveIdx: index("products_user_active_idx").on(table.userId).where(eq(table.isDeleted, false)),
+    userSyncIdx: index("products_user_sync_idx").on(table.userId, table.syncStatus),
+    nameSearchIdx: index("products_name_search_idx").on(table.name),
+}));
 
 // Types
 export type Product = typeof products.$inferSelect;

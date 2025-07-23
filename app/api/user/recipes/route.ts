@@ -7,7 +7,7 @@ import { createHash } from "node:crypto";
 
 import { auth } from "@/lib/auth/auth";
 import { db } from "@/lib/db";
-import { products } from "@/lib/db/schemas";
+import { recipes } from "@/lib/db/schemas";
 
 export async function GET(request: NextRequest) {
     try {
@@ -34,34 +34,34 @@ export async function GET(request: NextRequest) {
         // Build query with cursor-based pagination
         const query = db
             .select()
-            .from(products)
+            .from(recipes)
             .where(
                 and(
-                    eq(products.userId, session.user.id),
-                    eq(products.isDeleted, false),
+                    eq(recipes.userId, session.user.id),
+                    eq(recipes.isDeleted, false),
                     // Add cursor condition if provided (fetch items older than cursor)
-                    cursor ? lt(products.createdAt, new Date(cursor)) : undefined,
+                    cursor ? lt(recipes.createdAt, new Date(cursor)) : undefined,
                 ),
             )
-            .orderBy(desc(products.createdAt))
+            .orderBy(desc(recipes.createdAt))
             .limit(limit);
 
-        const userProducts = await query;
+        const userRecipes = await query;
 
         // Generate next cursor from last item
-        const nextCursor = userProducts.length === limit && userProducts.length > 0
-            ? userProducts[userProducts.length - 1].createdAt.toISOString()
+        const nextCursor = userRecipes.length === limit && userRecipes.length > 0
+            ? userRecipes[userRecipes.length - 1].createdAt.toISOString()
             : null;
 
         // Generate ETag for cache validation based on data content
         const responseData = {
-            products: userProducts,
+            recipes: userRecipes,
             pagination: {
                 limit,
                 cursor: cursor || null,
                 nextCursor,
                 hasMore: nextCursor !== null,
-                count: userProducts.length,
+                count: userRecipes.length,
             },
         };
 
@@ -91,7 +91,7 @@ export async function GET(request: NextRequest) {
         });
     }
     catch (error) {
-        console.error("Error fetching products:", error);
+        console.error("Error fetching recipes:", error);
         return NextResponse.json(
             { error: "Internal server error" },
             { status: 500 },
@@ -113,15 +113,13 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        const productData = await request.json();
-        console.log("Creating product with user ID:", session.user.id);
-        console.log("Product data:", productData);
+        const recipeData = await request.json();
 
-        // Insert new product
+        // Insert new recipe
         const inserted = await db
-            .insert(products)
+            .insert(recipes)
             .values({
-                ...productData,
+                ...recipeData,
                 userId: session.user.id,
                 id: crypto.randomUUID(),
                 version: 1,
@@ -132,23 +130,18 @@ export async function POST(request: NextRequest) {
             .returning();
 
         if (inserted.length === 0) {
-            console.error("Failed to insert product, no data returned.");
             return NextResponse.json(
-                { error: "Failed to create product" },
+                { error: "Failed to create recipe" },
                 { status: 500 },
             );
         }
 
-        const newProduct = inserted[0];
+        const newRecipe = inserted[0];
 
-        return NextResponse.json(newProduct, { status: 201 });
+        return NextResponse.json(newRecipe, { status: 201 });
     }
     catch (error) {
-        console.error("Error creating product - full error:", error);
-        console.error(
-            "Error stack:",
-            error instanceof Error ? error.stack : "No stack",
-        );
+        console.error("Error creating recipe:", error);
         return NextResponse.json(
             {
                 error: "Internal server error",

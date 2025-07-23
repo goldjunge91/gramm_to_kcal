@@ -1,5 +1,7 @@
+import { eq } from "drizzle-orm";
 import {
     boolean,
+    index,
     integer,
     pgTable,
     real,
@@ -30,7 +32,12 @@ export const recipes = pgTable("recipes", {
     name: text("name").notNull(),
     originalPortions: integer("original_portions").notNull(),
     description: text("description"),
-});
+}, table => ({
+    // Performance indexes for recipes
+    userCreatedIdx: index("recipes_user_created_idx").on(table.userId, table.createdAt.desc()),
+    userActiveIdx: index("recipes_user_active_idx").on(table.userId).where(eq(table.isDeleted, false)),
+    nameSearchIdx: index("recipes_name_search_idx").on(table.name),
+}));
 
 export const ingredients = pgTable("ingredients", {
     ...syncMetadata,
@@ -41,7 +48,11 @@ export const ingredients = pgTable("ingredients", {
     quantity: real("quantity").notNull(),
     unit: text("unit").notNull(),
     order: integer("order").default(0).notNull(),
-});
+}, table => ({
+    // Performance indexes for ingredients
+    recipeOrderIdx: index("ingredients_recipe_order_idx").on(table.recipeId, table.order),
+    userRecipeIdx: index("ingredients_user_recipe_idx").on(table.userId, table.recipeId),
+}));
 
 // Types
 export type Recipe = typeof recipes.$inferSelect;

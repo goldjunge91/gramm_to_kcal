@@ -19,7 +19,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with th
 
 ### Task Stats Script Usage:
 
-**Primary Command**: `bash "/path/to/project/.claude/functions/task/task_stats.sh"`
+**Primary Command**: `bash "/Users/marco/Github.tmp/gramm_to_kcal/.claude/functions/task/task_stats.sh"`
 
 **Script Options:**
 

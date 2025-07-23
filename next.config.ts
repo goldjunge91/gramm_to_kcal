@@ -9,7 +9,7 @@ const withBundleAnalyzerConfig = withBundleAnalyzer({
 });
 
 const baseConfig: NextConfig = {
-    reactStrictMode: false,
+    reactStrictMode: true,
     allowedDevOrigins: [
         "http://127.51.68.120:3000",
         "http://localhost:3000",
@@ -54,18 +54,25 @@ const baseConfig: NextConfig = {
     },
 };
 
+// Emergency build configuration - only use when absolutely necessary
 const nextConfig: NextConfig = env.FORCE_BUILD
-    ? {
-            ...baseConfig,
-            typescript: {
-                // This is set to true to ensure that TypeScript errors are ignored during build.
-                ignoreBuildErrors: true,
-            },
-            eslint: {
-                // This is set to true to ensure that ESLint errors are ignored during build.
-                ignoreDuringBuilds: true,
-            },
-        }
+    ? (() => {
+            console.warn("⚠️  WARNING: FORCE_BUILD is enabled - TypeScript and ESLint errors will be ignored!");
+            console.warn("⚠️  This should only be used for emergency deployments.");
+            console.warn("⚠️  Please fix all errors and remove FORCE_BUILD=true as soon as possible.");
+
+            return {
+                ...baseConfig,
+                typescript: {
+                    // WARNING: Only for emergency builds - fix TypeScript errors ASAP
+                    ignoreBuildErrors: true,
+                },
+                eslint: {
+                    // WARNING: Only for emergency builds - fix ESLint errors ASAP
+                    ignoreDuringBuilds: true,
+                },
+            };
+        })()
     : baseConfig;
 
 export default withBundleAnalyzerConfig(nextConfig);

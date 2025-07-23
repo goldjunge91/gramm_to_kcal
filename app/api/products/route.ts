@@ -4,6 +4,10 @@ import { NextResponse } from "next/server";
 
 // Note: Rate limiting handled by Better Auth middleware
 import {
+    cachedLookupProductByBarcode,
+    cachedSearchProductsByName,
+} from "@/lib/api/cached-product-lookup";
+import {
     getSecurityHeaders,
     RequestSchemas,
     validateContentType,
@@ -34,7 +38,46 @@ export async function GET(request: NextRequest) {
             );
         }
 
-        // TODO: Implement barcode lookup with cached API
+        // Implement barcode lookup with cached API
+        try {
+            const result = await cachedLookupProductByBarcode(
+                validation.data.barcode,
+                request,
+            );
+
+            const securityHeaders = getSecurityHeaders();
+
+            if (!result.success) {
+                return NextResponse.json(
+                    {
+                        error: result.error || "Product not found",
+                        source: result.source,
+                        cached: result.cached,
+                        rateLimit: result.rateLimit,
+                    },
+                    { status: 404, headers: securityHeaders },
+                );
+            }
+
+            return NextResponse.json(
+                {
+                    success: true,
+                    product: result.product,
+                    source: result.source,
+                    cached: result.cached,
+                    rateLimit: result.rateLimit,
+                },
+                { headers: securityHeaders },
+            );
+        }
+        catch (error) {
+            console.error("Barcode lookup error:", error);
+            const securityHeaders = getSecurityHeaders();
+            return NextResponse.json(
+                { error: "Internal server error during barcode lookup" },
+                { status: 500, headers: securityHeaders },
+            );
+        }
     }
 
     if (searchQuery !== null) {
@@ -59,7 +102,59 @@ export async function GET(request: NextRequest) {
             );
         }
 
-        // TODO: Implement product search
+        // Implement product search with pagination
+        try {
+            const limit = Number.parseInt(url.searchParams.get("limit") || "10", 10);
+            const clampedLimit = Math.min(Math.max(limit, 1), 50); // Clamp between 1-50
+            const offset = Math.max(
+                Number.parseInt(url.searchParams.get("offset") || "0", 10),
+                0,
+            );
+
+            const result = await cachedSearchProductsByName(
+                validation.data.q,
+                clampedLimit,
+                request,
+                offset,
+            );
+
+            const securityHeaders = getSecurityHeaders();
+
+            // Calculate pagination metadata
+            const totalResults = result.totalCount || 0;
+            const hasMore = offset + clampedLimit < totalResults;
+            const nextOffset = hasMore ? offset + clampedLimit : null;
+            const prevOffset = offset > 0 ? Math.max(offset - clampedLimit, 0) : null;
+
+            return NextResponse.json(
+                {
+                    success: result.success,
+                    products: result.products,
+                    pagination: {
+                        limit: clampedLimit,
+                        offset,
+                        total: totalResults,
+                        hasMore,
+                        nextOffset,
+                        prevOffset,
+                        count: result.products?.length || 0,
+                    },
+                    source: result.source,
+                    cached: result.cached,
+                    rateLimit: result.rateLimit,
+                    query: validation.data.q,
+                },
+                { headers: securityHeaders },
+            );
+        }
+        catch (error) {
+            console.error("Product search error:", error);
+            const securityHeaders = getSecurityHeaders();
+            return NextResponse.json(
+                { error: "Internal server error during product search" },
+                { status: 500, headers: securityHeaders },
+            );
+        }
     }
 
     const headers = getSecurityHeaders();

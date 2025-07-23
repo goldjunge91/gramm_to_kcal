@@ -215,9 +215,11 @@ export function isValidEAN13(barcode: string): boolean {
 export async function searchProductsByName(
     query: string,
     limit = 5,
-): Promise<ProductLookupResult[]> {
+    offset = 0,
+): Promise<{ products: ProductLookupResult[]; totalCount: number }> {
     try {
-        const url = `${OPENFOODFACTS_API_BASE}/search?search_terms=${encodeURIComponent(query)}&page_size=${limit}&fields=code,product_name,product_name_de,brands,nutriments`;
+        const page = Math.floor(offset / limit) + 1;
+        const url = `${OPENFOODFACTS_API_BASE}/search?search_terms=${encodeURIComponent(query)}&page_size=${limit}&page=${page}&fields=code,product_name,product_name_de,brands,nutriments`;
 
         const response = await fetch(url, {
             headers: {
@@ -233,10 +235,10 @@ export async function searchProductsByName(
         const data = await response.json();
 
         if (!data.products || !Array.isArray(data.products)) {
-            return [];
+            return { products: [], totalCount: 0 };
         }
 
-        return data.products
+        const products = data.products
             .map((product: any) => {
                 const name
                     = product.product_name_de
@@ -259,9 +261,14 @@ export async function searchProductsByName(
                 };
             })
             .filter(Boolean);
+
+        return {
+            products,
+            totalCount: data.count || data.products.length,
+        };
     }
     catch (error) {
         console.error("Product search error:", error);
-        return [];
+        return { products: [], totalCount: 0 };
     }
 }

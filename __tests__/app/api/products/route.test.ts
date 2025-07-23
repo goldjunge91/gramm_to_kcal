@@ -19,6 +19,12 @@ vi.mock("../../../../lib/validations/request-validation", () => ({
     },
 }));
 
+// Mock cached product lookup
+vi.mock("../../../../lib/api/cached-product-lookup", () => ({
+    cachedLookupProductByBarcode: vi.fn(),
+    cachedSearchProductsByName: vi.fn(),
+}));
+
 describe("/api/products", () => {
     beforeEach(() => {
         vi.clearAllMocks();
@@ -29,10 +35,29 @@ describe("/api/products", () => {
             const { validateRequest } = await import(
                 "../../../../lib/validations/request-validation"
             );
+            const { cachedLookupProductByBarcode } = await import(
+                "../../../../lib/api/cached-product-lookup"
+            );
 
             vi.mocked(validateRequest).mockResolvedValue({
                 success: true,
                 data: { barcode: "1234567890123" },
+            });
+
+            vi.mocked(cachedLookupProductByBarcode).mockResolvedValue({
+                success: true,
+                product: {
+                    name: "Test Product",
+                    quantity: 100,
+                    kcal: 150,
+                },
+                source: "api",
+                cached: false,
+                rateLimit: {
+                    remaining: 10,
+                    resetTime: Date.now() + 60000,
+                    blocked: false,
+                },
             });
 
             const request = new NextRequest(
@@ -73,10 +98,36 @@ describe("/api/products", () => {
             const { validateRequest } = await import(
                 "../../../../lib/validations/request-validation"
             );
+            const { cachedSearchProductsByName } = await import(
+                "../../../../lib/api/cached-product-lookup"
+            );
 
             vi.mocked(validateRequest).mockResolvedValue({
                 success: true,
                 data: { q: "coca cola" },
+            });
+
+            vi.mocked(cachedSearchProductsByName).mockResolvedValue({
+                success: true,
+                products: [
+                    {
+                        success: true,
+                        product: {
+                            name: "Coca Cola",
+                            quantity: 100,
+                            kcal: 42,
+                        },
+                        source: "api",
+                    },
+                ],
+                totalCount: 1,
+                source: "api",
+                cached: false,
+                rateLimit: {
+                    remaining: 10,
+                    resetTime: Date.now() + 60000,
+                    blocked: false,
+                },
             });
 
             const request = new NextRequest(

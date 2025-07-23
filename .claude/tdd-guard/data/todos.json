@@ -6,64 +6,28 @@
     "tool_input": {
         "todos": [
             {
-                "content": "Analyze overall project structure and architecture",
-                "status": "completed",
-                "priority": "high",
-                "id": "analyze-project-structure"
-            },
-            {
-                "content": "Review Next.js configuration and build setup",
-                "status": "completed",
-                "priority": "high",
-                "id": "analyze-nextjs-config"
-            },
-            {
-                "content": "Examine database schema, queries, and Drizzle ORM usage",
+                "content": "Add database indexes for products and recipes tables (Performance: 50-90% query speed improvement)",
                 "status": "in_progress",
                 "priority": "high",
-                "id": "analyze-database-performance"
+                "id": "db-indexes"
             },
             {
-                "content": "Review Better-auth configuration and performance",
-                "status": "pending",
-                "priority": "medium",
-                "id": "analyze-auth-performance"
-            },
-            {
-                "content": "Examine API routes for performance bottlenecks",
+                "content": "Implement barcode lookup API functionality in /api/products/route.ts",
                 "status": "pending",
                 "priority": "high",
-                "id": "analyze-api-routes"
+                "id": "barcode-api"
             },
             {
-                "content": "Review React components for rendering optimizations",
-                "status": "pending",
-                "priority": "medium",
-                "id": "analyze-frontend-components"
-            },
-            {
-                "content": "Review caching implementation and opportunities",
+                "content": "Implement product search API functionality in /api/products/route.ts",
                 "status": "pending",
                 "priority": "high",
-                "id": "analyze-caching-strategies"
+                "id": "search-api"
             },
             {
-                "content": "Check bundle size and code splitting opportunities",
-                "status": "pending",
-                "priority": "medium",
-                "id": "analyze-bundle-optimization"
-            },
-            {
-                "content": "Review testing setup for performance improvements",
-                "status": "pending",
-                "priority": "low",
-                "id": "analyze-testing-efficiency"
-            },
-            {
-                "content": "Compile comprehensive optimization recommendations",
+                "content": "Fix production build configuration - remove ignoreBuildErrors and ignoreDuringBuilds",
                 "status": "pending",
                 "priority": "high",
-                "id": "compile-recommendations"
+                "id": "build-config"
             }
         ]
     }

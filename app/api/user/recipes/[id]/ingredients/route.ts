@@ -7,9 +7,12 @@ import { createHash } from "node:crypto";
 
 import { auth } from "@/lib/auth/auth";
 import { db } from "@/lib/db";
-import { products } from "@/lib/db/schemas";
+import { ingredients, recipes } from "@/lib/db/schemas";
 
-export async function GET(request: NextRequest) {
+export async function GET(
+    request: NextRequest,
+    { params }: { params: { id: string } },
+) {
     try {
         // Get user session
         const session = await auth.api.getSession({
@@ -23,45 +26,68 @@ export async function GET(request: NextRequest) {
             );
         }
 
+        const { id: recipeId } = params;
+
+        // Verify recipe exists and belongs to user
+        const recipe = await db
+            .select()
+            .from(recipes)
+            .where(
+                and(
+                    eq(recipes.id, recipeId),
+                    eq(recipes.userId, session.user.id),
+                    eq(recipes.isDeleted, false),
+                ),
+            )
+            .limit(1);
+
+        if (recipe.length === 0) {
+            return NextResponse.json(
+                { error: "Recipe not found" },
+                { status: 404 },
+            );
+        }
+
         // Parse pagination parameters
         const url = new URL(request.url);
         const cursor = url.searchParams.get("cursor"); // ISO timestamp for cursor-based pagination
         const limit = Math.min(
             Math.max(Number.parseInt(url.searchParams.get("limit") || "20", 10), 1),
-            50, // Max 50 items per page
+            100, // Max 100 ingredients per page
         );
 
         // Build query with cursor-based pagination
         const query = db
             .select()
-            .from(products)
+            .from(ingredients)
             .where(
                 and(
-                    eq(products.userId, session.user.id),
-                    eq(products.isDeleted, false),
+                    eq(ingredients.recipeId, recipeId),
+                    eq(ingredients.userId, session.user.id),
+                    eq(ingredients.isDeleted, false),
                     // Add cursor condition if provided (fetch items older than cursor)
-                    cursor ? lt(products.createdAt, new Date(cursor)) : undefined,
+                    cursor ? lt(ingredients.createdAt, new Date(cursor)) : undefined,
                 ),
             )
-            .orderBy(desc(products.createdAt))
+            .orderBy(desc(ingredients.createdAt))
             .limit(limit);
 
-        const userProducts = await query;
+        const recipeIngredients = await query;
 
         // Generate next cursor from last item
-        const nextCursor = userProducts.length === limit && userProducts.length > 0
-            ? userProducts[userProducts.length - 1].createdAt.toISOString()
+        const nextCursor = recipeIngredients.length === limit && recipeIngredients.length > 0
+            ? recipeIngredients[recipeIngredients.length - 1].createdAt.toISOString()
             : null;
 
         // Generate ETag for cache validation based on data content
         const responseData = {
-            products: userProducts,
+            ingredients: recipeIngredients,
             pagination: {
                 limit,
                 cursor: cursor || null,
                 nextCursor,
                 hasMore: nextCursor !== null,
-                count: userProducts.length,
+                count: recipeIngredients.length,
             },
         };
 
@@ -91,7 +117,7 @@ export async function GET(request: NextRequest) {
         });
     }
     catch (error) {
-        console.error("Error fetching products:", error);
+        console.error("Error fetching ingredients:", error);
         return NextResponse.json(
             { error: "Internal server error" },
             { status: 500 },
@@ -99,7 +125,10 @@ export async function GET(request: NextRequest) {
     }
 }
 
-export async function POST(request: NextRequest) {
+export async function POST(
+    request: NextRequest,
+    { params }: { params: { id: string } },
+) {
     try {
         // Get user session
         const session = await auth.api.getSession({
@@ -113,15 +142,36 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        const productData = await request.json();
-        console.log("Creating product with user ID:", session.user.id);
-        console.log("Product data:", productData);
+        const { id: recipeId } = params;
 
-        // Insert new product
+        // Verify recipe exists and belongs to user
+        const recipe = await db
+            .select()
+            .from(recipes)
+            .where(
+                and(
+                    eq(recipes.id, recipeId),
+                    eq(recipes.userId, session.user.id),
+                    eq(recipes.isDeleted, false),
+                ),
+            )
+            .limit(1);
+
+        if (recipe.length === 0) {
+            return NextResponse.json(
+                { error: "Recipe not found" },
+                { status: 404 },
+            );
+        }
+
+        const ingredientData = await request.json();
+
+        // Insert new ingredient
         const inserted = await db
-            .insert(products)
+            .insert(ingredients)
             .values({
-                ...productData,
+                ...ingredientData,
+                recipeId,
                 userId: session.user.id,
                 id: crypto.randomUUID(),
                 version: 1,
@@ -132,23 +182,18 @@ export async function POST(request: NextRequest) {
             .returning();
 
         if (inserted.length === 0) {
-            console.error("Failed to insert product, no data returned.");
             return NextResponse.json(
-                { error: "Failed to create product" },
+                { error: "Failed to create ingredient" },
                 { status: 500 },
             );
         }
 
-        const newProduct = inserted[0];
+        const newIngredient = inserted[0];
 
-        return NextResponse.json(newProduct, { status: 201 });
+        return NextResponse.json(newIngredient, { status: 201 });
     }
     catch (error) {
-        console.error("Error creating product - full error:", error);
-        console.error(
-            "Error stack:",
-            error instanceof Error ? error.stack : "No stack",
-        );
+        console.error("Error creating ingredient:", error);
         return NextResponse.json(
             {
                 error: "Internal server error",
