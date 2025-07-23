@@ -2,14 +2,14 @@
  * Tests for auth hooks (client-side auth helpers)
  */
 import { renderHook } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { 
-    useCurrentSession, 
-    useCurrentUser, 
-    useAuth, 
-    useRole 
-} from "@/lib/auth/hooks";
+import {
+    useAuth,
+    useCurrentSession,
+    useCurrentUser,
+    useRole
+} from "../../../lib/auth/hooks";
 
 // Mock auth client
 vi.mock("@/lib/auth/auth-client", () => ({
