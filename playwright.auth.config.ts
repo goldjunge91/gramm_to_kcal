@@ -20,12 +20,6 @@ dotenv.config({ path: fs.existsSync(envLocalPath) ? envLocalPath : envPath });
 
 export default defineConfig({
     testDir: "./__e2e__",
-
-    /* Global setup to create test users before running tests */
-    /* Global setup and teardown */
-    // globalSetup: require.resolve('./__e2e__/setup/create-test-users.ts'),
-    // globalTeardown: require.resolve('./__e2e__/setup/create-test-users.ts'),
-    /* Only run core auth tests in specific order */
     testMatch: [
         "**/auth/signup.spec.ts", // Run FIRST - creates users
     // '**/auth/login.spec.ts', // Run SECOND - tests existing users

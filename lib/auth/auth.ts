@@ -41,6 +41,12 @@ export const auth = betterAuth({
             maxAge: 5 * 60, // 5 minutes cache
         },
     },
+    advanced: {
+        ipAddress: {
+            ipAddressHeaders: ["x-forwarded-for", "x-real-ip", "cf-connecting-ip"],
+            fallbackToRemoteAddress: true,
+        },
+    },
     rateLimit: {
         enabled: true,
         window: 60, // 60 seconds

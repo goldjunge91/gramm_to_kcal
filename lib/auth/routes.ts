@@ -34,9 +34,6 @@ export const ROUTE_GROUPS: Record<RouteGroup, string[]> = {
         "/calories-scan",
         "/dev-scanner",
         "/auth/sign-up-success",
-        "/auth/login",
-        "/auth/sign-up",
-        "/auth/forgot-password",
         "/auth/error",
         "/auth/confirm",
         "/auth/signout",
@@ -44,13 +41,9 @@ export const ROUTE_GROUPS: Record<RouteGroup, string[]> = {
 
     // Authentication routes - redirect authenticated users away
     AUTH: [
-    // '/auth/login',
-    // '/auth/sign-up',
-    // '/auth/forgot-password',
-    // '/auth/update-password',
-    // '/auth/error',
-    // '/auth/confirm',
-    // '/auth/signout',
+        "/auth/login",
+        "/auth/sign-up",
+        "/auth/forgot-password",
         "/auth/update-password",
     ],
 

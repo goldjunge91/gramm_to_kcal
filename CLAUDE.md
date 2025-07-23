@@ -1,6 +1,10 @@
 # CLAUDE.md
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+echo "Following TDD principles:" >&2
+echo "1. Write a failing test first (Red phase)" >&2
+echo "2. Write minimal code to pass the test (Green phase)" >&2
+echo "3. Refactor while keeping tests green (Refactor phase)" >&2
 
 ## 🚫 Core Rules
 

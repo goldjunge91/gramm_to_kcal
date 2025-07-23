@@ -1,3 +1,23 @@
+: '
+TDD Guard - Strict file type matching
+
+This script enforces Test-Driven Development (TDD) principles by ensuring that every JavaScript/TypeScript source file (.js, .ts, .jsx, .tsx) being edited, written, or multi-edited has a corresponding test file in the same directory. It is intended to be used as a pre-commit or file operation hook.
+
+Functionality:
+- Reads hook data from stdin, expecting JSON with "tool_name" and "tool_input.file_path".
+- Only processes file operations for JS/TS files, excluding test/spec files themselves.
+- Determines expected test file names based on the source file extension:
+    - .js → .test.js, .spec.js
+    - .ts → .test.ts, .spec.ts
+    - .jsx → .test.jsx, .spec.jsx, .test.js, .spec.js
+    - .tsx → .test.tsx, .spec.tsx, .test.ts, .spec.ts
+- Checks if any of the expected test files exist.
+- If no test file is found, prints a TDD violation message with expected test file names and a reminder of TDD phases, then exits with code 2.
+- If a test file exists, allows the operation to proceed.
+
+Usage:
+- Integrate as a hook in your development workflow to enforce TDD discipline for JS/TS projects.
+'
 #!/bin/bash
 
 # TDD Guard - Strict file type matching

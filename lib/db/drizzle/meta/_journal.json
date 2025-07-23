@@ -8,6 +8,13 @@
             "when": 1753169521911,
             "tag": "0000_awesome_maginty",
             "breakpoints": true
+        },
+        {
+            "idx": 1,
+            "version": "7",
+            "when": 1753220345761,
+            "tag": "0001_yellow_thaddeus_ross",
+            "breakpoints": true
         }
     ]
 }
