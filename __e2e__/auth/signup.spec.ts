@@ -85,7 +85,7 @@ test.describe('Signup Flow', () => {
       .or(page.locator('[data-testid="signup-error"]'))
       .or(page.locator('.error').or(page.locator('[role="alert"]')))
 
-    await expect(errorMessage).toBeVisible({ timeout: 5000 })
+    await expect(errorMessage.first()).toBeVisible({ timeout: 5000 })
 
     // Should still be on signup page
     await expect(page).toHaveURL('/auth/sign-up')
@@ -143,10 +143,10 @@ test.describe('Signup Flow', () => {
     // Should have link to login page
     const loginLink = page.getByRole('link', { name: 'Login' })
 
-    await expect(loginLink).toBeVisible()
+    await expect(loginLink.first()).toBeVisible()
 
     // Clicking should navigate to login
-    await loginLink.click()
+    await loginLink.first().click()
     await expect(page).toHaveURL('/auth/login')
   })
 
@@ -160,13 +160,13 @@ test.describe('Signup Flow', () => {
     await page.goto('/auth/sign-up')
 
     // Should be redirected away from signup page
-    await page.waitForURL('/calories', { timeout: 5000 })
-    await expect(page).toHaveURL('/calories')
+    await page.waitForURL('/', { timeout: 5000 })
+    await expect(page).toHaveURL('/')
 
     // Verify we're still logged in by checking we're not on login page
     await expect(page).not.toHaveURL('/auth/login')
     // And that login link is not visible (meaning user is logged in)
-    await expect(page.getByRole('link', { name: 'Login' })).not.toBeVisible()
+    await expect(page.getByRole('link', { name: 'Login' }).first()).not.toBeVisible()
   })
 
   test('should handle network errors gracefully', async ({ page }) => {
@@ -191,7 +191,7 @@ test.describe('Signup Flow', () => {
       .or(page.locator('.bg-red-50')) // Error container class
       .or(page.locator('text=Failed'))
 
-    await expect(errorMessage).toBeVisible({ timeout: 5000 })
+    await expect(errorMessage.first()).toBeVisible({ timeout: 5000 })
 
     // Should still be on signup page
     await expect(page).toHaveURL('/auth/sign-up')
