@@ -1,9 +1,9 @@
 onlyBuiltDependencies:
-  - '@pkgr/core'
-  - '@tailwindcss/oxide'
-  - esbuild
-  - eslint-config-prettier
-  - node
-  - sharp
-  - synckit
-  - unrs-resolver
+    - "@pkgr/core"
+    - "@tailwindcss/oxide"
+    - esbuild
+    - eslint-config-prettier
+    - node
+    - sharp
+    - synckit
+    - unrs-resolver

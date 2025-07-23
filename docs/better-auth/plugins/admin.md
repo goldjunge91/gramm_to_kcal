@@ -1,14 +1,16 @@
 # plugins: Admin
+
 URL: /docs/plugins/admin
 Source: https://raw.githubusercontent.com/better-auth/better-auth/refs/heads/main/docs/content/docs/plugins/admin.mdx
 
 Admin plugin for Better Auth
-        
-***
+
+---
 
 title: Admin
 description: Admin plugin for Better Auth
------------------------------------------
+
+---
 
 The Admin plugin provides a set of administrative functions for user management in your application. It allows administrators to perform various operations such as creating users, managing user roles, banning/unbanning users, impersonating users, and more.
 
@@ -31,6 +33,7 @@ The Admin plugin provides a set of administrative functions for user management 
         ]
     })
     ```
+
   </Step>
 
   <Step>
@@ -53,6 +56,7 @@ The Admin plugin provides a set of administrative functions for user management 
     </Tabs>
 
     See the [Schema](#schema) section to add the fields manually.
+
   </Step>
 
   <Step>
@@ -70,6 +74,7 @@ The Admin plugin provides a set of administrative functions for user management 
         ]
     })
     ```
+
   </Step>
 </Steps>
 
@@ -113,50 +118,52 @@ Allows an admin to create a new user.
 Allows an admin to list all users in the database.
 
 <APIMethod path="/admin/list-users" method="GET" requireSession note={"All properties are optional to configure. By default, 100 rows are returned, you can configure this by the `limit` property."} resultVariable={"users"}>
-  ```ts
-  type listUsers = {
-      /**
-       * The value to search for. 
-       */
-      searchValue?: string = "some name"
-      /**
-       * The field to search in, defaults to email. Can be `email` or `name`. 
-       */
-      searchField?: "email" | "name" = "name"
-      /**
-       * The operator to use for the search. Can be `contains`, `starts_with` or `ends_with`. 
-       */
-      searchOperator?: "contains" | "starts_with" | "ends_with" = "contains"
-      /**
-       * The number of users to return. Defaults to 100.
-       */
-      limit?: string | number = 100
-      /**
-       * The offset to start from. 
-       */
-      offset?: string | number = 100
-      /**
-       * The field to sort by. 
-       */
-      sortBy?: string = "name"
-      /**
-       * The direction to sort by. 
-       */
-      sortDirection?: "asc" | "desc" = "desc"
-      /**
-       * The field to filter by. 
-       */
-      filterField?: string = "email"
-      /**
-       * The value to filter by. 
-       */
-      filterValue?: string | number | boolean = "hello@example.com"
-      /**
-       * The operator to use for the filter. 
-       */
-      filterOperator?: "eq" | "ne" | "lt" | "lte" | "gt" | "gte" = "eq"
-  }
-  ```
+
+```ts
+type listUsers = {
+    /**
+     * The value to search for.
+     */
+    searchValue?: string = "some name"
+    /**
+     * The field to search in, defaults to email. Can be `email` or `name`.
+     */
+    searchField?: "email" | "name" = "name"
+    /**
+     * The operator to use for the search. Can be `contains`, `starts_with` or `ends_with`.
+     */
+    searchOperator?: "contains" | "starts_with" | "ends_with" = "contains"
+    /**
+     * The number of users to return. Defaults to 100.
+     */
+    limit?: string | number = 100
+    /**
+     * The offset to start from.
+     */
+    offset?: string | number = 100
+    /**
+     * The field to sort by.
+     */
+    sortBy?: string = "name"
+    /**
+     * The direction to sort by.
+     */
+    sortDirection?: "asc" | "desc" = "desc"
+    /**
+     * The field to filter by.
+     */
+    filterField?: string = "email"
+    /**
+     * The value to filter by.
+     */
+    filterValue?: string | number | boolean = "hello@example.com"
+    /**
+     * The operator to use for the filter.
+     */
+    filterOperator?: "eq" | "ne" | "lt" | "lte" | "gt" | "gte" = "eq"
+}
+```
+
 </APIMethod>
 
 #### Query Filtering
@@ -180,10 +187,10 @@ The `listUsers` function supports pagination by returning metadata alongside the
 
 To paginate results, use the `total`, `limit`, and `offset` values to calculate:
 
-* **Total pages:** `Math.ceil(total / limit)`
-* **Current page:** `(offset / limit) + 1`
-* **Next page offset:** `Math.min(offset + limit, (total - 1))` – The value to use as `offset` for the next page, ensuring it does not exceed the total number of pages.
-* **Previous page offset:** `Math.max(0, offset - limit)` – The value to use as `offset` for the previous page (ensuring it doesn’t go below zero).
+- **Total pages:** `Math.ceil(total / limit)`
+- **Current page:** `(offset / limit) + 1`
+- **Next page offset:** `Math.min(offset + limit, (total - 1))` – The value to use as `offset` for the next page, ensuring it does not exceed the total number of pages.
+- **Previous page offset:** `Math.max(0, offset - limit)` – The value to use as `offset` for the previous page (ensuring it doesn’t go below zero).
 
 ##### Example Usage
 
@@ -196,12 +203,12 @@ const currentPage = 2;
 const users = await authClient.admin.listUsers({
     query: {
         limit: pageSize,
-        offset: (currentPage - 1) * pageSize
-    }
+        offset: (currentPage - 1) * pageSize,
+    },
 });
 
 const totalUsers = users.total;
-const totalPages = Math.ceil(totalUsers / limit)
+const totalPages = Math.ceil(totalUsers / limit);
 ```
 
 ### Set User Role
@@ -416,6 +423,7 @@ The plugin provides an easy way to define your own set of permissions for each r
 
     const ac = createAccessControl(statement); // [!code highlight]
     ```
+
   </Step>
 
   <Step>
@@ -464,6 +472,7 @@ The plugin provides an easy way to define your own set of permissions for each r
         ...adminAc.statements, // [!code highlight]
     });
     ```
+
   </Step>
 
   <Step>
@@ -510,6 +519,7 @@ The plugin provides an easy way to define your own set of permissions for each r
         ]
     })
     ```
+
   </Step>
 </Steps>
 
@@ -547,17 +557,17 @@ Example usage:
 
 ```ts title="auth-client.ts"
 const canCreateProject = await authClient.admin.hasPermission({
-  permissions: {
-    project: ["create"],
-  },
+    permissions: {
+        project: ["create"],
+    },
 });
 
 // You can also check multiple resource permissions at the same time
 const canCreateProjectAndCreateSale = await authClient.admin.hasPermission({
-  permissions: {
-    project: ["create"],
-    sale: ["create"]
-  },
+    permissions: {
+        project: ["create"],
+        sale: ["create"],
+    },
 });
 ```
 
@@ -567,33 +577,33 @@ If you want to check a user's permissions server-side, you can use the `userHasP
 import { auth } from "@/auth";
 
 await auth.api.userHasPermission({
-  body: {
-    userId: 'id', //the user id
-    permissions: {
-      project: ["create"], // This must match the structure in your access control
+    body: {
+        userId: "id", //the user id
+        permissions: {
+            project: ["create"], // This must match the structure in your access control
+        },
     },
-  },
 });
 
 // You can also just pass the role directly
 await auth.api.userHasPermission({
-  body: {
-   role: "admin",
-    permissions: {
-      project: ["create"], // This must match the structure in your access control
+    body: {
+        role: "admin",
+        permissions: {
+            project: ["create"], // This must match the structure in your access control
+        },
     },
-  },
 });
 
 // You can also check multiple resource permissions at the same time
 await auth.api.userHasPermission({
-  body: {
-   role: "admin",
-    permissions: {
-      project: ["create"], // This must match the structure in your access control
-      sale: ["create"]
+    body: {
+        role: "admin",
+        permissions: {
+            project: ["create"], // This must match the structure in your access control
+            sale: ["create"],
+        },
     },
-  },
 });
 ```
 
@@ -605,19 +615,19 @@ Note that this function does **not** check the permissions of the currently logg
 
 ```ts title="auth-client.ts"
 const canCreateProject = authClient.admin.checkRolePermission({
-  permissions: {
-    user: ["delete"],
-  },
-  role: "admin",
+    permissions: {
+        user: ["delete"],
+    },
+    role: "admin",
 });
 
 // You can also check multiple resource permissions at the same time
 const canDeleteUserAndRevokeSession = authClient.admin.checkRolePermission({
-  permissions: {
-    user: ["delete"],
-    session: ["revoke"]
-  },
-  role: "admin",
+    permissions: {
+        user: ["delete"],
+        session: ["revoke"],
+    },
+    role: "admin",
 });
 ```
 
@@ -626,45 +636,45 @@ const canDeleteUserAndRevokeSession = authClient.admin.checkRolePermission({
 This plugin adds the following fields to the `user` table:
 
 <DatabaseTable
-  fields={[
-  {
-    name: "role",
-    type: "string",
-    description:
-      "The user's role. Defaults to `user`. Admins will have the `admin` role.",
-    isOptional: true,
-  },
-  {
-    name: "banned",
-    type: "boolean",
-    description: "Indicates whether the user is banned.",
-    isOptional: true,
-  },
-  {
-    name: "banReason",
-    type: "string",
-    description: "The reason for the user's ban.",
-    isOptional: true,
-  },
-  {
-    name: "banExpires",
-    type: "date",
-    description: "The date when the user's ban will expire.",
-    isOptional: true,
-  },
+fields={[
+{
+name: "role",
+type: "string",
+description:
+"The user's role. Defaults to `user`. Admins will have the `admin` role.",
+isOptional: true,
+},
+{
+name: "banned",
+type: "boolean",
+description: "Indicates whether the user is banned.",
+isOptional: true,
+},
+{
+name: "banReason",
+type: "string",
+description: "The reason for the user's ban.",
+isOptional: true,
+},
+{
+name: "banExpires",
+type: "date",
+description: "The date when the user's ban will expire.",
+isOptional: true,
+},
 ]}
 />
 
 And adds one field in the `session` table:
 
 <DatabaseTable
-  fields={[
-  {
-    name: "impersonatedBy",
-    type: "string",
-    description: "The ID of the admin that is impersonating this session.",
-    isOptional: true,
-  },
+fields={[
+{
+name: "impersonatedBy",
+type: "string",
+description: "The ID of the admin that is impersonating this session.",
+isOptional: true,
+},
 ]}
 />
 
@@ -676,7 +686,7 @@ The default role for a user. Defaults to `user`.
 
 ```ts title="auth.ts"
 admin({
-  defaultRole: "regular",
+    defaultRole: "regular",
 });
 ```
 
@@ -686,7 +696,7 @@ The roles that are considered admin roles. Defaults to `["admin"]`.
 
 ```ts title="auth.ts"
 admin({
-  adminRoles: ["admin", "superadmin"],
+    adminRoles: ["admin", "superadmin"],
 });
 ```
 
@@ -701,8 +711,8 @@ You can pass an array of userIds that should be considered as admin. Default to 
 
 ```ts title="auth.ts"
 admin({
-    adminUserIds: ["user_id_1", "user_id_2"]
-})
+    adminUserIds: ["user_id_1", "user_id_2"],
+});
 ```
 
 If a user is in the `adminUserIds` list, they will be able to perform any admin operation.
@@ -713,7 +723,7 @@ The duration of the impersonation session in seconds. Defaults to 1 hour.
 
 ```ts title="auth.ts"
 admin({
-  impersonationSessionDuration: 60 * 60 * 24, // 1 day
+    impersonationSessionDuration: 60 * 60 * 24, // 1 day
 });
 ```
 
@@ -723,7 +733,7 @@ The default ban reason for a user created by the admin. Defaults to `No reason`.
 
 ```ts title="auth.ts"
 admin({
-  defaultBanReason: "Spamming",
+    defaultBanReason: "Spamming",
 });
 ```
 
@@ -733,7 +743,7 @@ The default ban expires in for a user created by the admin in seconds. Defaults 
 
 ```ts title="auth.ts"
 admin({
-  defaultBanExpiresIn: 60 * 60 * 24, // 1 day
+    defaultBanExpiresIn: 60 * 60 * 24, // 1 day
 });
 ```
 
@@ -743,7 +753,6 @@ The message to show when a banned user tries to sign in. Defaults to "You have b
 
 ```ts title="auth.ts"
 admin({
-  bannedUserMessage: "Custom banned user message",
+    bannedUserMessage: "Custom banned user message",
 });
 ```
-

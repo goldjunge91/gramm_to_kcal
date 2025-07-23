@@ -25,7 +25,10 @@ interface ServerLoginFormProps {
 /**
  * Client-side login form using Better Auth
  */
-export function ServerLoginForm({ className, error: initialError }: ServerLoginFormProps) {
+export function ServerLoginForm({
+    className,
+    error: initialError,
+}: ServerLoginFormProps) {
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(initialError);
@@ -98,14 +101,26 @@ export function ServerLoginForm({ className, error: initialError }: ServerLoginF
                                         Forgot your password?
                                     </Link>
                                 </div>
-                                <Input id="password" name="password" type="password" required />
+                                <Input
+                                    id="password"
+                                    name="password"
+                                    type="password"
+                                    required
+                                />
                             </div>
                             {error && (
                                 <div className="rounded-md bg-red-50 p-3 border border-red-200">
-                                    <p className="text-sm text-red-600">{error}</p>
+                                    <p className="text-sm text-red-600">
+                                        {error}
+                                    </p>
                                 </div>
                             )}
-                            <Button id="login-submit" type="submit" className="w-full" disabled={isLoading}>
+                            <Button
+                                id="login-submit"
+                                type="submit"
+                                className="w-full"
+                                disabled={isLoading}
+                            >
                                 {isLoading ? "Signing in..." : "Login"}
                             </Button>
                             {process.env.NEXT_PUBLIC_GOOGLE_OAUTH_ENABLED && (
@@ -114,7 +129,9 @@ export function ServerLoginForm({ className, error: initialError }: ServerLoginF
                                     type="button"
                                     className="w-full flex items-center justify-center gap-2 mt-2 border border-gray-200"
                                     onClick={async () => {
-                                        const { signIn } = await import("@/lib/auth/auth-client");
+                                        const { signIn } = await import(
+                                            "@/lib/auth/auth-client"
+                                        );
                                         await signIn.social({
                                             provider: "google",
                                             callbackURL: `${window.location.origin}/calories`,

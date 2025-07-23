@@ -1,15 +1,13 @@
-
 import { useCurrentUserName } from "@/hooks/use-current-user-name";
 import { useSession } from "@/lib/auth/auth-client";
 import { renderHook } from "@testing-library/react";
 import { vi } from "vitest";
 
 vi.mock("@/lib/auth/auth-client", () => ({
-  useSession: vi.fn(),
+    useSession: vi.fn(),
 }));
 
 const mockUseSession = useSession as unknown as ReturnType<typeof vi.fn>;
-
 
 it("should return user name when session exists", () => {
     mockUseSession.mockReturnValue({

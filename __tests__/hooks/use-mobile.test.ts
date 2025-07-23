@@ -53,7 +53,7 @@ describe("useIsMobile", () => {
         mockWindow.matchMedia.mockReturnValue(mockMQL);
 
         const { result } = renderHook(() => useIsMobile());
-        
+
         expect(result.current).toBe(false);
     });
 
@@ -63,18 +63,19 @@ describe("useIsMobile", () => {
         mockWindow.matchMedia.mockReturnValue(mockMQL);
 
         const { result } = renderHook(() => useIsMobile());
-        
+
         expect(result.current).toBe(true);
     });
 
     it("should detect iPhone user agent", () => {
         window.innerWidth = 1024; // Desktop size
-        navigator.userAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 14_7_1 like Mac OS X)";
+        navigator.userAgent =
+            "Mozilla/5.0 (iPhone; CPU iPhone OS 14_7_1 like Mac OS X)";
         const mockMQL = createMockMediaQueryList(false);
         mockWindow.matchMedia.mockReturnValue(mockMQL);
 
         const { result } = renderHook(() => useIsMobile());
-        
+
         expect(result.current).toBe(true);
     });
 
@@ -85,7 +86,7 @@ describe("useIsMobile", () => {
         mockWindow.matchMedia.mockReturnValue(mockMQL);
 
         const { result } = renderHook(() => useIsMobile());
-        
+
         expect(result.current).toBe(true);
     });
 
@@ -96,18 +97,19 @@ describe("useIsMobile", () => {
         mockWindow.matchMedia.mockReturnValue(mockMQL);
 
         const { result } = renderHook(() => useIsMobile());
-        
+
         expect(result.current).toBe(true);
     });
 
     it("should not detect desktop user agent as mobile", () => {
         window.innerWidth = 1024;
-        navigator.userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36";
+        navigator.userAgent =
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36";
         const mockMQL = createMockMediaQueryList(false);
         mockWindow.matchMedia.mockReturnValue(mockMQL);
 
         const { result } = renderHook(() => useIsMobile());
-        
+
         expect(result.current).toBe(false);
     });
 
@@ -116,9 +118,14 @@ describe("useIsMobile", () => {
         mockWindow.matchMedia.mockReturnValue(mockMQL);
 
         renderHook(() => useIsMobile());
-        
-        expect(mockWindow.matchMedia).toHaveBeenCalledWith("(max-width: 767px)");
-        expect(mockMQL.addEventListener).toHaveBeenCalledWith("change", expect.any(Function));
+
+        expect(mockWindow.matchMedia).toHaveBeenCalledWith(
+            "(max-width: 767px)",
+        );
+        expect(mockMQL.addEventListener).toHaveBeenCalledWith(
+            "change",
+            expect.any(Function),
+        );
     });
 
     it("should respond to media query changes", () => {
@@ -132,7 +139,7 @@ describe("useIsMobile", () => {
         mockWindow.matchMedia.mockReturnValue(mockMQL);
 
         const { result } = renderHook(() => useIsMobile());
-        
+
         expect(result.current).toBe(false);
 
         // Simulate screen size change to mobile
@@ -149,10 +156,13 @@ describe("useIsMobile", () => {
         mockWindow.matchMedia.mockReturnValue(mockMQL);
 
         const { unmount } = renderHook(() => useIsMobile());
-        
+
         unmount();
-        
-        expect(mockMQL.removeEventListener).toHaveBeenCalledWith("change", expect.any(Function));
+
+        expect(mockMQL.removeEventListener).toHaveBeenCalledWith(
+            "change",
+            expect.any(Function),
+        );
     });
 
     it("should handle edge case at exact breakpoint", () => {
@@ -161,7 +171,7 @@ describe("useIsMobile", () => {
         mockWindow.matchMedia.mockReturnValue(mockMQL);
 
         const { result } = renderHook(() => useIsMobile());
-        
+
         expect(result.current).toBe(false); // 768 should be considered desktop
     });
 
@@ -171,19 +181,20 @@ describe("useIsMobile", () => {
         mockWindow.matchMedia.mockReturnValue(mockMQL);
 
         const { result } = renderHook(() => useIsMobile());
-        
+
         expect(result.current).toBe(true);
     });
 
     it("should return true when either condition is met", () => {
         // Desktop size but mobile user agent
         window.innerWidth = 1024;
-        navigator.userAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 14_7_1 like Mac OS X)";
+        navigator.userAgent =
+            "Mozilla/5.0 (iPhone; CPU iPhone OS 14_7_1 like Mac OS X)";
         const mockMQL = createMockMediaQueryList(false);
         mockWindow.matchMedia.mockReturnValue(mockMQL);
 
         const { result } = renderHook(() => useIsMobile());
-        
+
         expect(result.current).toBe(true);
     });
 });

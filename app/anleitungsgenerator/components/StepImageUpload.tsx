@@ -68,49 +68,47 @@ export function StepImageUpload({
                 className="hidden"
             />
 
-            {currentImage
-                ? (
-                        <div className="space-y-2">
-                            <div className="relative">
-                                <img
-                                    src={currentImage}
-                                    alt={`Schritt ${stepId}`}
-                                    className="w-full h-32 object-cover rounded-md border"
-                                />
-                            </div>
-                            <div className="flex gap-2">
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={handleButtonClick}
-                                    className="flex-1"
-                                >
-                                    📷 Bild ändern
-                                </Button>
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={handleRemoveImage}
-                                    className="text-destructive hover:text-destructive"
-                                >
-                                    🗑️ Entfernen
-                                </Button>
-                            </div>
-                        </div>
-                    )
-                : (
+            {currentImage ? (
+                <div className="space-y-2">
+                    <div className="relative">
+                        <img
+                            src={currentImage}
+                            alt={`Schritt ${stepId}`}
+                            className="w-full h-32 object-cover rounded-md border"
+                        />
+                    </div>
+                    <div className="flex gap-2">
                         <Button
                             type="button"
                             variant="outline"
                             size="sm"
                             onClick={handleButtonClick}
-                            className="w-full"
+                            className="flex-1"
                         >
-                            📷 Bild hinzufügen
+                            📷 Bild ändern
                         </Button>
-                    )}
+                        <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={handleRemoveImage}
+                            className="text-destructive hover:text-destructive"
+                        >
+                            🗑️ Entfernen
+                        </Button>
+                    </div>
+                </div>
+            ) : (
+                <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={handleButtonClick}
+                    className="w-full"
+                >
+                    📷 Bild hinzufügen
+                </Button>
+            )}
         </div>
     );
 }

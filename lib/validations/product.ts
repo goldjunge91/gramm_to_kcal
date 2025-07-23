@@ -1,7 +1,10 @@
 import { z } from "zod";
 
 export const createProductSchema = z.object({
-    name: z.string().min(1, "Product name is required").max(100, "Name too long"),
+    name: z
+        .string()
+        .min(1, "Product name is required")
+        .max(100, "Name too long"),
     quantity: z
         .number()
         .positive("Quantity must be positive")

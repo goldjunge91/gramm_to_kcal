@@ -21,17 +21,17 @@ Make sure you have Drizzle installed and configured.
 Then, you can use the Drizzle adapter to connect to your database.
 
 ```ts title="auth.ts"
-import { betterAuth } from 'better-auth'
-import { drizzleAdapter } from 'better-auth/adapters/drizzle'
-import { db } from './database.ts'
+import { betterAuth } from "better-auth";
+import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { db } from "./database.ts";
 
 export const auth = betterAuth({
-  database: drizzleAdapter(db, {
-    // [!code highlight]
-    provider: 'sqlite', // or "pg" or "mysql" // [!code highlight]
-  }), // [!code highlight]
-  // ... the rest of your config
-})
+    database: drizzleAdapter(db, {
+        // [!code highlight]
+        provider: "sqlite", // or "pg" or "mysql" // [!code highlight]
+    }), // [!code highlight]
+    // ... the rest of your config
+});
 ```
 
 ## Schema generation & migration
@@ -57,20 +57,20 @@ npx drizzle-kit migrate # apply the migration
 The Drizzle adapter expects the schema you define to match the table names. For example, if your Drizzle schema maps the `user` table to `users`, you need to manually pass the schema and map it to the user table.
 
 ```ts
-import { betterAuth } from 'better-auth'
-import { drizzleAdapter } from 'better-auth/adapters/drizzle'
-import { db } from './drizzle'
-import { schema } from './schema'
+import { betterAuth } from "better-auth";
+import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { db } from "./drizzle";
+import { schema } from "./schema";
 
 export const auth = betterAuth({
-  database: drizzleAdapter(db, {
-    provider: 'sqlite', // or "pg" or "mysql"
-    schema: {
-      ...schema,
-      user: schema.users,
-    },
-  }),
-})
+    database: drizzleAdapter(db, {
+        provider: "sqlite", // or "pg" or "mysql"
+        schema: {
+            ...schema,
+            user: schema.users,
+        },
+    }),
+});
 ```
 
 If all your tables are using plural form, you can just pass the `usePlural` option:

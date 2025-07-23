@@ -93,12 +93,8 @@
                     "name": "account_user_id_user_id_fk",
                     "tableFrom": "account",
                     "tableTo": "user",
-                    "columnsFrom": [
-                        "user_id"
-                    ],
-                    "columnsTo": [
-                        "id"
-                    ],
+                    "columnsFrom": ["user_id"],
+                    "columnsTo": ["id"],
                     "onDelete": "cascade",
                     "onUpdate": "no action"
                 }
@@ -174,12 +170,8 @@
                     "name": "session_user_id_user_id_fk",
                     "tableFrom": "session",
                     "tableTo": "user",
-                    "columnsFrom": [
-                        "user_id"
-                    ],
-                    "columnsTo": [
-                        "id"
-                    ],
+                    "columnsFrom": ["user_id"],
+                    "columnsTo": ["id"],
                     "onDelete": "cascade",
                     "onUpdate": "no action"
                 }
@@ -189,9 +181,7 @@
                 "session_token_unique": {
                     "name": "session_token_unique",
                     "nullsNotDistinct": false,
-                    "columns": [
-                        "token"
-                    ]
+                    "columns": ["token"]
                 }
             },
             "policies": {},
@@ -282,9 +272,7 @@
                 "user_email_unique": {
                     "name": "user_email_unique",
                     "nullsNotDistinct": false,
-                    "columns": [
-                        "email"
-                    ]
+                    "columns": ["email"]
                 }
             },
             "policies": {},
@@ -424,12 +412,8 @@
                     "name": "products_user_id_user_id_fk",
                     "tableFrom": "products",
                     "tableTo": "user",
-                    "columnsFrom": [
-                        "user_id"
-                    ],
-                    "columnsTo": [
-                        "id"
-                    ],
+                    "columnsFrom": ["user_id"],
+                    "columnsTo": ["id"],
                     "onDelete": "cascade",
                     "onUpdate": "no action"
                 }
@@ -537,12 +521,8 @@
                     "name": "ingredients_user_id_user_id_fk",
                     "tableFrom": "ingredients",
                     "tableTo": "user",
-                    "columnsFrom": [
-                        "user_id"
-                    ],
-                    "columnsTo": [
-                        "id"
-                    ],
+                    "columnsFrom": ["user_id"],
+                    "columnsTo": ["id"],
                     "onDelete": "cascade",
                     "onUpdate": "no action"
                 },
@@ -550,12 +530,8 @@
                     "name": "ingredients_recipe_id_recipes_id_fk",
                     "tableFrom": "ingredients",
                     "tableTo": "recipes",
-                    "columnsFrom": [
-                        "recipe_id"
-                    ],
-                    "columnsTo": [
-                        "id"
-                    ],
+                    "columnsFrom": ["recipe_id"],
+                    "columnsTo": ["id"],
                     "onDelete": "cascade",
                     "onUpdate": "no action"
                 }
@@ -650,12 +626,8 @@
                     "name": "recipes_user_id_user_id_fk",
                     "tableFrom": "recipes",
                     "tableTo": "user",
-                    "columnsFrom": [
-                        "user_id"
-                    ],
-                    "columnsTo": [
-                        "id"
-                    ],
+                    "columnsFrom": ["user_id"],
+                    "columnsTo": ["id"],
                     "onDelete": "cascade",
                     "onUpdate": "no action"
                 }
@@ -671,11 +643,7 @@
         "public.sync_status": {
             "name": "sync_status",
             "schema": "public",
-            "values": [
-                "synced",
-                "pending",
-                "conflict"
-            ]
+            "values": ["synced", "pending", "conflict"]
         }
     },
     "schemas": {},

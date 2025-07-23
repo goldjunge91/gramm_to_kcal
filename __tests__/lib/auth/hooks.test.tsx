@@ -8,7 +8,7 @@ import {
     useAuth,
     useCurrentSession,
     useCurrentUser,
-    useRole
+    useRole,
 } from "../../../lib/auth/hooks";
 
 // Mock auth client
@@ -35,7 +35,7 @@ describe("auth hooks", () => {
     describe("useCurrentSession", () => {
         it("should return session data from useSession", async () => {
             const { useSession } = await import("@/lib/auth/auth-client");
-            const mockSessionData = { 
+            const mockSessionData = {
                 data: {
                     user: {
                         id: "123",
@@ -44,13 +44,13 @@ describe("auth hooks", () => {
                         name: "Test User",
                         createdAt: new Date(),
                         updatedAt: new Date(),
-                        image: null
+                        image: null,
                     },
-                    session: mockSession
+                    session: mockSession,
                 },
                 isPending: false,
                 error: null,
-                refetch: vi.fn()
+                refetch: vi.fn(),
             };
             vi.mocked(useSession).mockReturnValue(mockSessionData);
 
@@ -64,20 +64,20 @@ describe("auth hooks", () => {
     describe("useCurrentUser", () => {
         it("should return user when session exists", async () => {
             const { useSession } = await import("@/lib/auth/auth-client");
-            const mockUser = { 
+            const mockUser = {
                 id: "123",
                 email: "test@example.com",
                 emailVerified: false,
                 name: "Test User",
                 createdAt: new Date(),
                 updatedAt: new Date(),
-                image: null
+                image: null,
             };
             vi.mocked(useSession).mockReturnValue({
                 data: { user: mockUser, session: mockSession },
                 isPending: false,
                 error: null,
-                refetch: vi.fn()
+                refetch: vi.fn(),
             });
 
             const { result } = renderHook(() => useCurrentUser());
@@ -91,7 +91,7 @@ describe("auth hooks", () => {
                 data: null,
                 isPending: false,
                 error: null,
-                refetch: vi.fn()
+                refetch: vi.fn(),
             });
 
             const { result } = renderHook(() => useCurrentUser());
@@ -105,7 +105,7 @@ describe("auth hooks", () => {
                 data: null,
                 isPending: false,
                 error: null,
-                refetch: vi.fn()
+                refetch: vi.fn(),
             });
 
             const { result } = renderHook(() => useCurrentUser());
@@ -117,12 +117,20 @@ describe("auth hooks", () => {
     describe("useAuth", () => {
         it("should return authenticated status when user exists", async () => {
             const { useSession } = await import("@/lib/auth/auth-client");
-            const mockUser = { id: "123", email: "test@example.com", emailVerified: false, name: "Test User", createdAt: new Date(), updatedAt: new Date(), image: null };
+            const mockUser = {
+                id: "123",
+                email: "test@example.com",
+                emailVerified: false,
+                name: "Test User",
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                image: null,
+            };
             vi.mocked(useSession).mockReturnValue({
                 data: { user: mockUser, session: mockSession },
                 isPending: false,
                 error: null,
-                refetch: vi.fn()
+                refetch: vi.fn(),
             });
 
             const { result } = renderHook(() => useAuth());
@@ -140,7 +148,7 @@ describe("auth hooks", () => {
                 data: null,
                 isPending: false,
                 error: null,
-                refetch: vi.fn()
+                refetch: vi.fn(),
             });
 
             const { result } = renderHook(() => useAuth());
@@ -158,7 +166,7 @@ describe("auth hooks", () => {
                 data: null,
                 isPending: true,
                 error: null,
-                refetch: vi.fn()
+                refetch: vi.fn(),
             });
 
             const { result } = renderHook(() => useAuth());
@@ -174,12 +182,21 @@ describe("auth hooks", () => {
     describe("useRole", () => {
         it("should return true when user has the role", async () => {
             const { useSession } = await import("@/lib/auth/auth-client");
-            const mockUser = { id: "123", email: "test@example.com", role: "admin", emailVerified: false, name: "Test User", createdAt: new Date(), updatedAt: new Date(), image: null };
+            const mockUser = {
+                id: "123",
+                email: "test@example.com",
+                role: "admin",
+                emailVerified: false,
+                name: "Test User",
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                image: null,
+            };
             vi.mocked(useSession).mockReturnValue({
                 data: { user: mockUser, session: mockSession },
                 isPending: false,
                 error: null,
-                refetch: vi.fn()
+                refetch: vi.fn(),
             });
 
             const { result } = renderHook(() => useRole("admin"));
@@ -193,12 +210,21 @@ describe("auth hooks", () => {
 
         it("should return false when user has different role", async () => {
             const { useSession } = await import("@/lib/auth/auth-client");
-            const mockUser = { id: "123", email: "test@example.com", role: "user", emailVerified: false, name: "Test User", createdAt: new Date(), updatedAt: new Date(), image: null };
+            const mockUser = {
+                id: "123",
+                email: "test@example.com",
+                role: "user",
+                emailVerified: false,
+                name: "Test User",
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                image: null,
+            };
             vi.mocked(useSession).mockReturnValue({
                 data: { user: mockUser, session: mockSession },
                 isPending: false,
                 error: null,
-                refetch: vi.fn()
+                refetch: vi.fn(),
             });
 
             const { result } = renderHook(() => useRole("admin"));
@@ -216,7 +242,7 @@ describe("auth hooks", () => {
                 data: null,
                 isPending: false,
                 error: null,
-                refetch: vi.fn()
+                refetch: vi.fn(),
             });
 
             const { result } = renderHook(() => useRole("admin"));
@@ -234,7 +260,7 @@ describe("auth hooks", () => {
                 data: null,
                 isPending: true,
                 error: null,
-                refetch: vi.fn()
+                refetch: vi.fn(),
             });
 
             const { result } = renderHook(() => useRole("admin"));
@@ -253,12 +279,20 @@ describe("auth hooks", () => {
         it("should handle user without role property async", async () => {
             const { useSession } = await import("@/lib/auth/auth-client");
             // ...existing code...
-            const mockUser = { id: "123", email: "test@example.com", emailVerified: false, name: "Test User", createdAt: new Date(), updatedAt: new Date(), image: null };
+            const mockUser = {
+                id: "123",
+                email: "test@example.com",
+                emailVerified: false,
+                name: "Test User",
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                image: null,
+            };
             vi.mocked(useSession).mockReturnValue({
                 data: { user: mockUser, session: mockSession },
                 isPending: false,
                 error: null,
-                refetch: vi.fn()
+                refetch: vi.fn(),
             });
 
             const { result } = renderHook(() => useRole("admin"));

@@ -40,8 +40,14 @@ export async function loginAction(formData: FormData) {
     // Input validation with Zod
     const validation = signInSchema.safeParse(rawData);
     if (!validation.success) {
-        const errorMessage = validation.error.issues[0]?.message || "Invalid input";
-        logAuthAttempt("signin", rawData.email || "unknown", false, errorMessage);
+        const errorMessage
+            = validation.error.issues[0]?.message || "Invalid input";
+        logAuthAttempt(
+            "signin",
+            rawData.email || "unknown",
+            false,
+            errorMessage,
+        );
         redirect(`/auth/login?error=${encodeURIComponent(errorMessage)}`);
     }
 
@@ -57,7 +63,9 @@ export async function loginAction(formData: FormData) {
 
         if (!result.user) {
             logAuthAttempt("signin", email, false, "Invalid credentials");
-            redirect(`/auth/login?error=${encodeURIComponent("Invalid email or password")}`);
+            redirect(
+                `/auth/login?error=${encodeURIComponent("Invalid email or password")}`,
+            );
         }
 
         logAuthAttempt("signin", email, true);
@@ -69,8 +77,11 @@ export async function loginAction(formData: FormData) {
         redirect(REDIRECT_PATHS.DEFAULT_AFTER_LOGIN);
     }
     catch (error) {
-        const errorMsg = error instanceof Error ? error.message : "Unexpected error";
+        const errorMsg
+            = error instanceof Error ? error.message : "Unexpected error";
         logAuthAttempt("signin", email, false, errorMsg);
-        redirect(`/auth/login?error=${encodeURIComponent("Login failed. Please try again.")}`);
+        redirect(
+            `/auth/login?error=${encodeURIComponent("Login failed. Please try again.")}`,
+        );
     }
 }

@@ -36,7 +36,8 @@ export function ComparisonTable({
                 header: ({ column }: { column: Column<Product, unknown> }) => (
                     <Button
                         variant="ghost"
-                        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                        onClick={() =>
+                            column.toggleSorting(column.getIsSorted() === "asc")}
                         className="h-8 px-2 lg:px-3"
                     >
                         Produktname
@@ -44,7 +45,9 @@ export function ComparisonTable({
                     </Button>
                 ),
                 cell: (info: CellContext<Product, unknown>) => (
-                    <div className="font-medium">{info.getValue() as string}</div>
+                    <div className="font-medium">
+                        {info.getValue() as string}
+                    </div>
                 ),
                 priority: 1, // Always show on mobile
             },
@@ -56,7 +59,9 @@ export function ComparisonTable({
                         <Button
                             variant="ghost"
                             onClick={() =>
-                                column.toggleSorting(column.getIsSorted() === "asc")}
+                                column.toggleSorting(
+                                    column.getIsSorted() === "asc",
+                                )}
                             className="h-8 px-2 lg:px-3"
                         >
                             <Weight className="mr-1 h-4 w-4" />
@@ -80,7 +85,9 @@ export function ComparisonTable({
                         <Button
                             variant="ghost"
                             onClick={() =>
-                                column.toggleSorting(column.getIsSorted() === "asc")}
+                                column.toggleSorting(
+                                    column.getIsSorted() === "asc",
+                                )}
                             className="h-8 px-2 lg:px-3"
                         >
                             Kalorien (kcal)
@@ -102,7 +109,9 @@ export function ComparisonTable({
                         <Button
                             variant="ghost"
                             onClick={() =>
-                                column.toggleSorting(column.getIsSorted() === "asc")}
+                                column.toggleSorting(
+                                    column.getIsSorted() === "asc",
+                                )}
                             className="h-8 px-2 lg:px-3"
                         >
                             <TrendingUp className="mr-1 h-4 w-4" />
@@ -128,13 +137,16 @@ export function ComparisonTable({
                 ? (() => {
                         const actionsColumn: TableColumn<Product> = {
                             id: "actions",
-                            header: () => <div className="text-right">Aktionen</div>,
+                            header: () => (
+                                <div className="text-right">Aktionen</div>
+                            ),
                             cell: (info: CellContext<Product, unknown>) => (
                                 <div className="text-right">
                                     <LoadingButton
                                         variant="outline"
                                         size="sm"
-                                        onClick={() => onDelete(info.row.original.id)}
+                                        onClick={() =>
+                                            onDelete(info.row.original.id)}
                                         loading={isDeleting}
                                         aria-label={`${info.row.original.name} löschen`}
                                     >
@@ -157,7 +169,9 @@ export function ComparisonTable({
         <div className="space-y-3">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="space-y-2">
-                    <h4 className="font-semibold text-sm">Nährwerte per 100g</h4>
+                    <h4 className="font-semibold text-sm">
+                        Nährwerte per 100g
+                    </h4>
                     <div className="text-sm text-muted-foreground">
                         <div>
                             Kalorien:
@@ -169,7 +183,10 @@ export function ComparisonTable({
                         <div>
                             Effizienz:
                             {" "}
-                            {((row.original.kcal / row.original.quantity) * 100).toFixed(2)}
+                            {(
+                                (row.original.kcal / row.original.quantity)
+                                * 100
+                            ).toFixed(2)}
                             {" "}
                             kcal/g
                         </div>
@@ -197,7 +214,9 @@ export function ComparisonTable({
                         <div>
                             Rang:
                             {" "}
-                            {products.findIndex(p => p.id === row.original.id) + 1}
+                            {products.findIndex(
+                                p => p.id === row.original.id,
+                            ) + 1}
                             {" "}
                             von
                             {" "}

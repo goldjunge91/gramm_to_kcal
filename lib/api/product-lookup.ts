@@ -45,7 +45,7 @@ export async function lookupProductByBarcode(
     barcode: string,
 ): Promise<ProductLookupResult> {
     try {
-    // Validate barcode format (basic check)
+        // Validate barcode format (basic check)
         if (!barcode || barcode.length < 8 || barcode.length > 14) {
             return {
                 success: false,
@@ -56,7 +56,8 @@ export async function lookupProductByBarcode(
         const url = `${OPENFOODFACTS_API_BASE}/product/${barcode}.json`;
         const response = await fetch(url, {
             headers: {
-                "User-Agent": "CalorieTracker/1.0 (https://gramm-to-kcal.vercel.app)",
+                "User-Agent":
+                    "CalorieTracker/1.0 (https://gramm-to-kcal.vercel.app)",
             },
         });
 
@@ -82,10 +83,10 @@ export async function lookupProductByBarcode(
 
         // Extract product name (prefer German, fallback to English or generic)
         const name
-      = product.product_name_de
-          || product.product_name_en
-          || product.product_name
-          || "Unknown Product";
+            = product.product_name_de
+                || product.product_name_en
+                || product.product_name
+                || "Unknown Product";
 
         // Extract calories per 100g
         const kcal = extractCaloriesPer100g(product.nutriments);
@@ -116,7 +117,10 @@ export async function lookupProductByBarcode(
         console.error("Product lookup error:", error);
         return {
             success: false,
-            error: error instanceof Error ? error.message : "Unknown error occurred",
+            error:
+                error instanceof Error
+                    ? error.message
+                    : "Unknown error occurred",
         };
     }
 }
@@ -168,7 +172,9 @@ function formatProductName(name: string, brands?: string): string {
         if (brandList.length > 0) {
             const mainBrand = brandList[0];
             // Only add brand if it's not already in the product name
-            if (!formattedName.toLowerCase().includes(mainBrand.toLowerCase())) {
+            if (
+                !formattedName.toLowerCase().includes(mainBrand.toLowerCase())
+            ) {
                 formattedName = `${mainBrand} ${formattedName}`;
             }
         }
@@ -176,7 +182,7 @@ function formatProductName(name: string, brands?: string): string {
 
     // Capitalize first letter
     formattedName
-    = formattedName.charAt(0).toUpperCase() + formattedName.slice(1);
+        = formattedName.charAt(0).toUpperCase() + formattedName.slice(1);
 
     return formattedName;
 }
@@ -215,7 +221,8 @@ export async function searchProductsByName(
 
         const response = await fetch(url, {
             headers: {
-                "User-Agent": "CalorieTracker/1.0 (https://gramm-to-kcal.vercel.app)",
+                "User-Agent":
+                    "CalorieTracker/1.0 (https://gramm-to-kcal.vercel.app)",
             },
         });
 
@@ -232,7 +239,9 @@ export async function searchProductsByName(
         return data.products
             .map((product: any) => {
                 const name
-          = product.product_name_de || product.product_name || "Unknown Product";
+                    = product.product_name_de
+                        || product.product_name
+                        || "Unknown Product";
                 const kcal = extractCaloriesPer100g(product.nutriments);
 
                 if (!kcal || kcal <= 0)

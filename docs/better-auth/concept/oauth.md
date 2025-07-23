@@ -1,14 +1,16 @@
 # concepts: OAuth
+
 URL: /docs/concepts/oauth
 Source: https://raw.githubusercontent.com/better-auth/better-auth/refs/heads/main/docs/content/docs/concepts/oauth.mdx
 
 How Better Auth handles OAuth
-        
-***
+
+---
 
 title: OAuth
 description: How Better Auth handles OAuth
-------------------------------------------
+
+---
 
 Better Auth comes with built-in support for OAuth 2.0 and OpenID Connect. This allows you to authenticate users via popular OAuth providers like Google, Facebook, GitHub, and more.
 
@@ -24,13 +26,13 @@ Here's an example of how to configure Google as a provider:
 import { betterAuth } from "better-auth";
 
 export const auth = betterAuth({
-  // Other configurations...
-  socialProviders: {
-    google: {
-      clientId: "YOUR_GOOGLE_CLIENT_ID",
-      clientSecret: "YOUR_GOOGLE_CLIENT_SECRET",
+    // Other configurations...
+    socialProviders: {
+        google: {
+            clientId: "YOUR_GOOGLE_CLIENT_ID",
+            clientSecret: "YOUR_GOOGLE_CLIENT_SECRET",
+        },
     },
-  },
 });
 ```
 
@@ -42,17 +44,17 @@ To sign in with a social provider, you can use the `signIn.social` function with
 
 ```ts
 await authClient.signIn.social({
-  provider: "google", // or any other provider id
-})
+    provider: "google", // or any other provider id
+});
 ```
 
 server-side usage:
 
 ```ts
 await auth.api.signInSocial({
-  body: {
-    provider: "google", // or any other provider id
-  },
+    body: {
+        provider: "google", // or any other provider id
+    },
 });
 ```
 
@@ -62,8 +64,8 @@ To link an account to a social provider, you can use the `linkAccount` function 
 
 ```ts
 await authClient.linkSocial({
-  provider: "google", // or any other provider id
-})
+    provider: "google", // or any other provider id
+});
 ```
 
 server-side usage:
@@ -83,9 +85,9 @@ To get the access token for a social provider, you can use the `getAccessToken` 
 
 ```ts
 const { accessToken } = await authClient.getAccessToken({
-  providerId: "google", // or any other provider id
-  accountId: "accountId", // optional, if you want to get the access token for a specific account
-})
+    providerId: "google", // or any other provider id
+    accountId: "accountId", // optional, if you want to get the access token for a specific account
+});
 ```
 
 server-side usage:
@@ -107,8 +109,8 @@ To get provider specific account info you can use the `accountInfo` function wit
 
 ```ts
 const info = await authClient.accountInfo({
-  accountId: "accountId", // here you pass in the provider given account id, the provider is automatically detected from the account id
-})
+    accountId: "accountId", // here you pass in the provider given account id, the provider is automatically detected from the account id
+});
 ```
 
 server-side usage:
@@ -167,19 +169,19 @@ Useful, if you have additional fields in your user object you want to populate f
 import { betterAuth } from "better-auth";
 
 export const auth = betterAuth({
-  // Other configurations...
-  socialProviders: {
-    google: {
-      clientId: "YOUR_GOOGLE_CLIENT_ID",
-      clientSecret: "YOUR_GOOGLE_CLIENT_SECRET",
-      mapProfileToUser: (profile) => {
-        return {
-          firstName: profile.given_name,
-          lastName: profile.family_name,
-        };
-      },
+    // Other configurations...
+    socialProviders: {
+        google: {
+            clientId: "YOUR_GOOGLE_CLIENT_ID",
+            clientSecret: "YOUR_GOOGLE_CLIENT_SECRET",
+            mapProfileToUser: (profile) => {
+                return {
+                    firstName: profile.given_name,
+                    lastName: profile.family_name,
+                };
+            },
+        },
     },
-  },
 });
 ```
 
@@ -192,8 +194,8 @@ Here's what happens when a user selects a provider to authenticate with:
 3. **PKCE Support:** If applicable, create a PKCE code challenge and verifier for secure exchanges.
 4. **Authorization URL Construction:** Build the provider's authorization URL with parameters like client ID, redirect URI, state, etc. The callback URL usually follows the pattern `/api/auth/callback/${providerName}`.
 5. **User Redirection:**
-   * If redirection is enabled, users are redirected to the provider's login page.
-   * If redirection is disabled, the authorization URL is returned for the client to handle the redirection.
+    - If redirection is enabled, users are redirected to the provider's login page.
+    - If redirection is disabled, the authorization URL is returned for the client to handle the redirection.
 
 ### Post-Login Flow
 
@@ -201,11 +203,10 @@ After the user completes the login process, the provider redirects them back to 
 
 1. **Token Exchange:** The code is exchanged for an access token and user information.
 2. **User Handling:**
-   * If the user doesn't exist, a new account is created.
-   * If the user exists, they are logged in.
-   * If the user has multiple accounts across providers, Better Auth links them based on your configuration. Learn more about [account linking](/docs/concepts/users-accounts#account-linking).
+    - If the user doesn't exist, a new account is created.
+    - If the user exists, they are logged in.
+    - If the user has multiple accounts across providers, Better Auth links them based on your configuration. Learn more about [account linking](/docs/concepts/users-accounts#account-linking).
 3. **Session Creation:** A new session is created for the user.
 4. **Redirect:** Users are redirected to the specified URL provided during the initial request or `/`.
 
 If any error occurs during the process, Better Auth handles it and redirects the user to the error URL (if provided) or the callbackURL. And it includes the error message in the query string `?error=...`.
-

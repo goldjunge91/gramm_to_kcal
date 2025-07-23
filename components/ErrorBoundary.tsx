@@ -73,10 +73,15 @@ export class ErrorBoundary extends Component<Props, State> {
                                 </div>
                             )}
                             <div className="flex gap-2">
-                                <Button onClick={this.handleReset} variant="outline">
+                                <Button
+                                    onClick={this.handleReset}
+                                    variant="outline"
+                                >
                                     Try Again
                                 </Button>
-                                <Button onClick={this.handleReload}>Reload Page</Button>
+                                <Button onClick={this.handleReload}>
+                                    Reload Page
+                                </Button>
                             </div>
                         </CardContent>
                     </Card>

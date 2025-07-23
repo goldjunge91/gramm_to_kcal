@@ -90,9 +90,11 @@ export function DevToolsPanel({
 
     // Filter test barcodes by category
     const filteredTestBarcodes
-    = selectedCategory === "all"
-        ? TEST_BARCODES
-        : TEST_BARCODES.filter(test => test.category === selectedCategory);
+        = selectedCategory === "all"
+            ? TEST_BARCODES
+            : TEST_BARCODES.filter(
+                    test => test.category === selectedCategory,
+                );
 
     // Get unique categories
     const categories = [
@@ -107,9 +109,9 @@ export function DevToolsPanel({
 
     // Calculate success rate
     const successRate
-    = stats.totalScans > 0
-        ? Math.round((stats.successfulScans / stats.totalScans) * 100)
-        : 0;
+        = stats.totalScans > 0
+            ? Math.round((stats.successfulScans / stats.totalScans) * 100)
+            : 0;
 
     return (
         <Card className={className}>
@@ -139,8 +141,10 @@ export function DevToolsPanel({
                                 <Input
                                     placeholder="Barcode eingeben (z.B. 4000417025005)"
                                     value={manualBarcode}
-                                    onChange={e => setManualBarcode(e.target.value)}
-                                    onKeyDown={e => e.key === "Enter" && handleManualTest()}
+                                    onChange={e =>
+                                        setManualBarcode(e.target.value)}
+                                    onKeyDown={e =>
+                                        e.key === "Enter" && handleManualTest()}
                                     className="font-mono"
                                 />
                                 <Button
@@ -157,12 +161,15 @@ export function DevToolsPanel({
                             {manualBarcode && (
                                 <div className="text-xs">
                                     {(() => {
-                                        const validation = validateBarcode(manualBarcode);
+                                        const validation
+                                            = validateBarcode(manualBarcode);
                                         return (
                                             <div className="flex items-center gap-2">
                                                 <Badge
                                                     variant={
-                                                        validation.isValid ? "default" : "destructive"
+                                                        validation.isValid
+                                                            ? "default"
+                                                            : "destructive"
                                                     }
                                                     className="text-xs"
                                                 >
@@ -175,7 +182,9 @@ export function DevToolsPanel({
                                                             : "text-red-600"
                                                     }
                                                 >
-                                                    {validation.isValid ? "Gültig" : validation.errors[0]}
+                                                    {validation.isValid
+                                                        ? "Gültig"
+                                                        : validation.errors[0]}
                                                 </span>
                                             </div>
                                         );
@@ -201,8 +210,13 @@ export function DevToolsPanel({
                                     </SelectTrigger>
                                     <SelectContent>
                                         {categories.map(category => (
-                                            <SelectItem key={category} value={category}>
-                                                {category === "all" ? "Alle" : category}
+                                            <SelectItem
+                                                key={category}
+                                                value={category}
+                                            >
+                                                {category === "all"
+                                                    ? "Alle"
+                                                    : category}
                                             </SelectItem>
                                         ))}
                                     </SelectContent>
@@ -212,7 +226,10 @@ export function DevToolsPanel({
                             <ScrollArea className="h-64">
                                 <div className="space-y-2">
                                     {filteredTestBarcodes.map(test => (
-                                        <Card key={test.barcode} className="p-3">
+                                        <Card
+                                            key={test.barcode}
+                                            className="p-3"
+                                        >
                                             <div className="flex items-start justify-between">
                                                 <div className="flex-1 min-w-0">
                                                     <div className="flex items-center gap-2 mb-1">
@@ -221,15 +238,19 @@ export function DevToolsPanel({
                                                         </span>
                                                         <Badge
                                                             variant={
-                                                                test.expectedResult === "success"
+                                                                test.expectedResult
+                                                                === "success"
                                                                     ? "default"
-                                                                    : test.expectedResult === "failure"
+                                                                    : test.expectedResult
+                                                                        === "failure"
                                                                         ? "destructive"
                                                                         : "secondary"
                                                             }
                                                             className="text-xs"
                                                         >
-                                                            {test.expectedResult}
+                                                            {
+                                                                test.expectedResult
+                                                            }
                                                         </Badge>
                                                     </div>
                                                     <div className="text-xs text-muted-foreground font-mono mb-1">
@@ -247,7 +268,10 @@ export function DevToolsPanel({
                                                 <Button
                                                     variant="outline"
                                                     size="sm"
-                                                    onClick={() => handlePresetTest(test.barcode)}
+                                                    onClick={() =>
+                                                        handlePresetTest(
+                                                            test.barcode,
+                                                        )}
                                                     className="ml-2"
                                                 >
                                                     <TestTube className="h-3 w-3 mr-1" />
@@ -264,7 +288,9 @@ export function DevToolsPanel({
                     {/* History Tab */}
                     <TabsContent value="history" className="space-y-4">
                         <div className="flex items-center justify-between">
-                            <Label className="text-sm font-medium">Scan-Verlauf</Label>
+                            <Label className="text-sm font-medium">
+                                Scan-Verlauf
+                            </Label>
                             <div className="flex gap-2">
                                 <Button
                                     variant="outline"
@@ -289,87 +315,105 @@ export function DevToolsPanel({
 
                         <ScrollArea className="h-80">
                             <div className="space-y-2">
-                                {diagnostics.length === 0
-                                    ? (
-                                            <div className="text-center py-8 text-muted-foreground">
-                                                <Activity className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                                                <p>Noch keine Scans</p>
-                                            </div>
-                                        )
-                                    : (
-                                            diagnostics
-                                                .slice()
-                                                .reverse()
-                                                .map(scan => (
-                                                    <Card key={scan.scanId} className="p-3">
-                                                        <div className="flex items-start justify-between">
-                                                            <div className="flex-1 min-w-0">
-                                                                <div className="flex items-center gap-2 mb-1">
-                                                                    <Badge
-                                                                        variant={
-                                                                            scan.success ? "default" : "destructive"
-                                                                        }
-                                                                        className="text-xs"
-                                                                    >
-                                                                        {scan.success
-                                                                            ? "Erfolgreich"
-                                                                            : "Fehlgeschlagen"}
-                                                                    </Badge>
-                                                                    <Badge variant="outline" className="text-xs">
-                                                                        {scan.scanMode}
-                                                                    </Badge>
-                                                                    <span className="text-xs text-muted-foreground">
-                                                                        {new Date(scan.timestamp).toLocaleTimeString()}
-                                                                    </span>
-                                                                </div>
-
-                                                                <div className="text-sm font-mono mb-1">
-                                                                    {scan.barcode || "No barcode"}
-                                                                </div>
-
-                                                                <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                                                                    <span>
-                                                                        Scan:
-                                                                        {" "}
-                                                                        {formatDuration(scan.scanDuration)}
-                                                                    </span>
-                                                                    <span>
-                                                                        Suche:
-                                                                        {" "}
-                                                                        {formatDuration(scan.lookupDuration)}
-                                                                    </span>
-                                                                    {scan.deviceInfo && (
-                                                                        <span>
-                                                                            {scan.deviceInfo.isMobile
-                                                                                ? "Mobil"
-                                                                                : "Desktop"}
-                                                                        </span>
-                                                                    )}
-                                                                </div>
-
-                                                                {scan.error && (
-                                                                    <div className="text-xs text-red-600 mt-1">
-                                                                        Fehler:
-                                                                        {" "}
-                                                                        {scan.error}
-                                                                    </div>
-                                                                )}
-                                                            </div>
-
-                                                            <Button
-                                                                variant="ghost"
-                                                                size="sm"
-                                                                onClick={() =>
-                                                                    scan.barcode && onBarcodeTest(scan.barcode)}
-                                                                disabled={!scan.barcode}
-                                                                className="ml-2"
+                                {diagnostics.length === 0 ? (
+                                    <div className="text-center py-8 text-muted-foreground">
+                                        <Activity className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                                        <p>Noch keine Scans</p>
+                                    </div>
+                                ) : (
+                                    diagnostics
+                                        .slice()
+                                        .reverse()
+                                        .map(scan => (
+                                            <Card
+                                                key={scan.scanId}
+                                                className="p-3"
+                                            >
+                                                <div className="flex items-start justify-between">
+                                                    <div className="flex-1 min-w-0">
+                                                        <div className="flex items-center gap-2 mb-1">
+                                                            <Badge
+                                                                variant={
+                                                                    scan.success
+                                                                        ? "default"
+                                                                        : "destructive"
+                                                                }
+                                                                className="text-xs"
                                                             >
-                                                                <RotateCcw className="h-3 w-3" />
-                                                            </Button>
+                                                                {scan.success
+                                                                    ? "Erfolgreich"
+                                                                    : "Fehlgeschlagen"}
+                                                            </Badge>
+                                                            <Badge
+                                                                variant="outline"
+                                                                className="text-xs"
+                                                            >
+                                                                {scan.scanMode}
+                                                            </Badge>
+                                                            <span className="text-xs text-muted-foreground">
+                                                                {new Date(
+                                                                    scan.timestamp,
+                                                                ).toLocaleTimeString()}
+                                                            </span>
                                                         </div>
-                                                    </Card>
-                                                ))
-                                        )}
+
+                                                        <div className="text-sm font-mono mb-1">
+                                                            {scan.barcode
+                                                                || "No barcode"}
+                                                        </div>
+
+                                                        <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                                                            <span>
+                                                                Scan:
+                                                                {" "}
+                                                                {formatDuration(
+                                                                    scan.scanDuration,
+                                                                )}
+                                                            </span>
+                                                            <span>
+                                                                Suche:
+                                                                {" "}
+                                                                {formatDuration(
+                                                                    scan.lookupDuration,
+                                                                )}
+                                                            </span>
+                                                            {scan.deviceInfo && (
+                                                                <span>
+                                                                    {scan
+                                                                        .deviceInfo
+                                                                        .isMobile
+                                                                        ? "Mobil"
+                                                                        : "Desktop"}
+                                                                </span>
+                                                            )}
+                                                        </div>
+
+                                                        {scan.error && (
+                                                            <div className="text-xs text-red-600 mt-1">
+                                                                Fehler:
+                                                                {" "}
+                                                                {scan.error}
+                                                            </div>
+                                                        )}
+                                                    </div>
+
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        onClick={() =>
+                                                            scan.barcode
+                                                            && onBarcodeTest(
+                                                                scan.barcode,
+                                                            )}
+                                                        disabled={!scan.barcode}
+                                                        className="ml-2"
+                                                    >
+                                                        <RotateCcw className="h-3 w-3" />
+                                                    </Button>
+                                                </div>
+                                            </Card>
+                                        ))
+                                )}
                             </div>
                         </ScrollArea>
                     </TabsContent>
@@ -380,7 +424,9 @@ export function DevToolsPanel({
                         <div className="grid grid-cols-2 gap-4">
                             <Card>
                                 <CardContent className="p-4 text-center">
-                                    <div className="text-2xl font-bold">{stats.totalScans}</div>
+                                    <div className="text-2xl font-bold">
+                                        {stats.totalScans}
+                                    </div>
                                     <div className="text-xs text-muted-foreground">
                                         Scans gesamt
                                     </div>
@@ -403,7 +449,9 @@ export function DevToolsPanel({
                                 <CardContent className="p-4 text-center">
                                     <div className="text-2xl font-bold">
                                         {stats.averageResponseTime
-                                            ? formatDuration(stats.averageResponseTime)
+                                            ? formatDuration(
+                                                    stats.averageResponseTime,
+                                                )
                                             : "N/A"}
                                     </div>
                                     <div className="text-xs text-muted-foreground">
@@ -416,7 +464,9 @@ export function DevToolsPanel({
                                 <CardContent className="p-4 text-center">
                                     <div className="text-2xl font-bold">
                                         {stats.averageScanTime
-                                            ? formatDuration(stats.averageScanTime)
+                                            ? formatDuration(
+                                                    stats.averageScanTime,
+                                                )
                                             : "N/A"}
                                     </div>
                                     <div className="text-xs text-muted-foreground">
@@ -433,17 +483,24 @@ export function DevToolsPanel({
                                     Top Marken
                                 </Label>
                                 <div className="space-y-1">
-                                    {stats.topBrands.slice(0, 5).map(brand => (
-                                        <div
-                                            key={brand.brand}
-                                            className="flex justify-between text-sm"
-                                        >
-                                            <span className="truncate">{brand.brand}</span>
-                                            <Badge variant="outline" className="text-xs">
-                                                {brand.count}
-                                            </Badge>
-                                        </div>
-                                    ))}
+                                    {stats.topBrands
+                                        .slice(0, 5)
+                                        .map(brand => (
+                                            <div
+                                                key={brand.brand}
+                                                className="flex justify-between text-sm"
+                                            >
+                                                <span className="truncate">
+                                                    {brand.brand}
+                                                </span>
+                                                <Badge
+                                                    variant="outline"
+                                                    className="text-xs"
+                                                >
+                                                    {brand.count}
+                                                </Badge>
+                                            </div>
+                                        ))}
                                 </div>
                             </div>
                         )}
@@ -455,17 +512,24 @@ export function DevToolsPanel({
                                     Top Kategorien
                                 </Label>
                                 <div className="space-y-1">
-                                    {stats.topCategories.slice(0, 5).map(category => (
-                                        <div
-                                            key={category.category}
-                                            className="flex justify-between text-sm"
-                                        >
-                                            <span className="truncate">{category.category}</span>
-                                            <Badge variant="outline" className="text-xs">
-                                                {category.count}
-                                            </Badge>
-                                        </div>
-                                    ))}
+                                    {stats.topCategories
+                                        .slice(0, 5)
+                                        .map(category => (
+                                            <div
+                                                key={category.category}
+                                                className="flex justify-between text-sm"
+                                            >
+                                                <span className="truncate">
+                                                    {category.category}
+                                                </span>
+                                                <Badge
+                                                    variant="outline"
+                                                    className="text-xs"
+                                                >
+                                                    {category.count}
+                                                </Badge>
+                                            </div>
+                                        ))}
                                 </div>
                             </div>
                         )}
@@ -485,13 +549,17 @@ export function DevToolsPanel({
                                 </div>
                                 <div className="flex justify-between text-sm">
                                     <span>Fehlgeschlagene Scans:</span>
-                                    <span className="text-red-600">{stats.failedScans}</span>
+                                    <span className="text-red-600">
+                                        {stats.failedScans}
+                                    </span>
                                 </div>
                                 <div className="flex justify-between text-sm">
                                     <span>Ø Antwortzeit:</span>
                                     <span className="font-mono">
                                         {stats.averageResponseTime
-                                            ? formatDuration(stats.averageResponseTime)
+                                            ? formatDuration(
+                                                    stats.averageResponseTime,
+                                                )
                                             : "N/A"}
                                     </span>
                                 </div>
@@ -499,7 +567,9 @@ export function DevToolsPanel({
                                     <span>Ø Scan-Zeit:</span>
                                     <span className="font-mono">
                                         {stats.averageScanTime
-                                            ? formatDuration(stats.averageScanTime)
+                                            ? formatDuration(
+                                                    stats.averageScanTime,
+                                                )
                                             : "N/A"}
                                     </span>
                                 </div>

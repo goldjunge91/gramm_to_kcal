@@ -4,11 +4,11 @@
  */
 
 export type RouteGroup
-  = | "PUBLIC"
-      | "AUTH"
-      | "PROTECTED"
-      | "API_PUBLIC"
-      | "API_PROTECTED";
+    = | "PUBLIC"
+        | "AUTH"
+        | "PROTECTED"
+        | "API_PUBLIC"
+        | "API_PROTECTED";
 
 export interface RouteConfig {
     pattern: string;

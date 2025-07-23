@@ -1,14 +1,16 @@
 # concepts: TypeScript
+
 URL: /docs/concepts/typescript
 Source: https://raw.githubusercontent.com/better-auth/better-auth/refs/heads/main/docs/content/docs/concepts/typescript.mdx
 
 Better Auth TypeScript integration.
-        
-***
+
+---
 
 title: TypeScript
 description: Better Auth TypeScript integration.
-------------------------------------------------
+
+---
 
 Better Auth is designed to be type-safe. Both the client and server are built with TypeScript, allowing you to easily infer types.
 
@@ -20,9 +22,9 @@ Better Auth is designed to work with TypeScript's strict mode. We recommend enab
 
 ```json title="tsconfig.json"
 {
-  "compilerOptions": {
-    "strict": true
-  }
+    "compilerOptions": {
+        "strict": true
+    }
 }
 ```
 
@@ -30,9 +32,9 @@ if you can't set `strict` to `true`, you can enable `strictNullChecks`:
 
 ```json title="tsconfig.json"
 {
-  "compilerOptions": {
-    "strictNullChecks": true,
-  }
+    "compilerOptions": {
+        "strictNullChecks": true
+    }
 }
 ```
 
@@ -45,27 +47,27 @@ if you can't set `strict` to `true`, you can enable `strictNullChecks`:
 
 Both the client SDK and the server offer types that can be inferred using the `$Infer` property. Plugins can extend base types like `User` and `Session`, and you can use `$Infer` to infer these types. Additionally, plugins can provide extra types that can also be inferred through `$Infer`.
 
-```ts title="auth-client.ts" 
-import { createAuthClient } from "better-auth/client"
+```ts title="auth-client.ts"
+import { createAuthClient } from "better-auth/client";
 
-const authClient = createAuthClient()
+const authClient = createAuthClient();
 
-export type Session = typeof authClient.$Infer.Session
+export type Session = typeof authClient.$Infer.Session;
 ```
 
 The `Session` type includes both `session` and `user` properties. The user property represents the user object type, and the `session` property represents the `session` object type.
 
 You can also infer types on the server side.
 
-```ts title="auth.ts" 
-import { betterAuth } from "better-auth"
-import Database from "better-sqlite3"
+```ts title="auth.ts"
+import { betterAuth } from "better-auth";
+import Database from "better-sqlite3";
 
 export const auth = betterAuth({
-    database: new Database("database.db")
-})
+    database: new Database("database.db"),
+});
 
-type Session = typeof auth.$Infer.Session
+type Session = typeof auth.$Infer.Session;
 ```
 
 ## Additional Fields
@@ -73,23 +75,22 @@ type Session = typeof auth.$Infer.Session
 Better Auth allows you to add additional fields to the user and session objects. All additional fields are properly inferred and available on the server and client side.
 
 ```ts
-import { betterAuth } from "better-auth"
-import Database from "better-sqlite3"
+import { betterAuth } from "better-auth";
+import Database from "better-sqlite3";
 
 export const auth = betterAuth({
     database: new Database("database.db"),
     user: {
-       additionalFields: {
-          role: {
-              type: "string",
-              input: false
-            } 
-        }
-    }
-   
-})
+        additionalFields: {
+            role: {
+                type: "string",
+                input: false,
+            },
+        },
+    },
+});
 
-type Session = typeof auth.$Infer.Session
+type Session = typeof auth.$Infer.Session;
 ```
 
 In the example above, we added a `role` field to the user object. This field is now available on the `Session` type.
@@ -127,7 +128,7 @@ import { createAuthClient } from "better-auth/react";
 import type { auth } from "./auth";
 
 export const authClient = createAuthClient({
-  plugins: [inferAdditionalFields<typeof auth>()],
+    plugins: [inferAdditionalFields<typeof auth>()],
 });
 ```
 
@@ -140,13 +141,14 @@ import type { auth } from "./auth";
 import { inferAdditionalFields } from "better-auth/client/plugins";
 
 export const authClient = createAuthClient({
-  plugins: [inferAdditionalFields({
-      user: {
-        role: {
-          type: "string"
-        }
-      }
-  })],
+    plugins: [
+        inferAdditionalFields({
+            user: {
+                role: {
+                    type: "string",
+                },
+            },
+        }),
+    ],
 });
 ```
-

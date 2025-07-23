@@ -1,14 +1,16 @@
 # concepts: Client
+
 URL: /docs/concepts/client
 Source: https://raw.githubusercontent.com/better-auth/better-auth/refs/heads/main/docs/content/docs/concepts/client.mdx
 
 Better Auth client library for authentication.
-        
-***
+
+---
 
 title: Client
 description: Better Auth client library for authentication.
------------------------------------------------------------
+
+---
 
 Better Auth offers a client library compatible with popular frontend frameworks like React, Vue, Svelte, and more. This client library includes a set of functions for interacting with the Better Auth server. Each framework's client library is built on top of a core client library that is framework-agnostic, so that all methods and hooks are consistently available across all client libraries.
 
@@ -51,17 +53,19 @@ Import `createAuthClient` from the package for your framework (e.g., "better-aut
 </Callout>
 
 <Tabs
-  items={["react", "vue", "svelte", "solid", 
+items={["react", "vue", "svelte", "solid",
 "vanilla"]}
-  defaultValue="react"
->
-  <Tab value="vanilla">
-    ```ts title="lib/auth-client.ts" 
+defaultValue="react"
+
+>   <Tab value="vanilla">
+
+    ```ts title="lib/auth-client.ts"
     import { createAuthClient } from "better-auth/client"
     export const authClient = createAuthClient({
         baseURL: "http://localhost:3000" // The base URL of your auth server // [!code highlight]
     })
     ```
+
   </Tab>
 
   <Tab value="react" title="lib/auth-client.ts">
@@ -108,13 +112,13 @@ Once you've created your client instance, you can use the client to interact wit
 **Example: Sign In**
 
 ```ts title="auth-client.ts"
-import { createAuthClient } from "better-auth/client"
-const authClient = createAuthClient()
+import { createAuthClient } from "better-auth/client";
+const authClient = createAuthClient();
 
 await authClient.signIn.email({
     email: "test@user.com",
-    password: "password1234"
-})
+    password: "password1234",
+});
 ```
 
 ### Hooks
@@ -124,17 +128,17 @@ On top of normal methods, the client provides hooks to easily access different r
 **Example: useSession**
 
 <Tabs items={["React", "Vue","Svelte", "Solid"]} defaultValue="React">
-  <Tab value="React">
-    ```tsx title="user.tsx"
-    //make sure you're using the react client
-    import { createAuthClient } from "better-auth/react"
-    const { useSession } = createAuthClient() // [!code highlight]
+<Tab value="React">
+```tsx title="user.tsx"
+//make sure you're using the react client
+import { createAuthClient } from "better-auth/react"
+const { useSession } = createAuthClient() // [!code highlight]
 
     export function User() {
         const {
             data: session,
             isPending, //loading state
-            error, //error object 
+            error, //error object
             refetch //refetch the session
         } = useSession()
         return (
@@ -142,6 +146,7 @@ On top of normal methods, the client provides hooks to easily access different r
         )
     }
     ```
+
   </Tab>
 
   <Tab value="Vue">
@@ -209,6 +214,7 @@ On top of normal methods, the client provides hooks to easily access different r
         </div>
     </div>
     ```
+
   </Tab>
 
   <Tab value="Solid">
@@ -225,9 +231,10 @@ On top of normal methods, the client provides hooks to easily access different r
             >
                 <button onClick={toggle}>Log out</button>
             </Show>
-        ); 
+        );
     }
     ```
+
   </Tab>
 </Tabs>
 
@@ -240,26 +247,29 @@ Better fetch is a wrapper around the native fetch API that provides a more conve
 You can pass any default fetch options to the client by passing `fetchOptions` object to the `createAuthClient`.
 
 ```ts title="auth-client.ts"
-import { createAuthClient } from "better-auth/client"
+import { createAuthClient } from "better-auth/client";
 
 const authClient = createAuthClient({
     fetchOptions: {
         //any better-fetch options
     },
-})
+});
 ```
 
 You can also pass fetch options to most of the client functions. Either as the second argument or as a property in the object.
 
 ```ts title="auth-client.ts"
-await authClient.signIn.email({
-    email: "email@email.com",
-    password: "password1234",
-}, {
-    onSuccess(ctx) {
-            //      
-    }
-})
+await authClient.signIn.email(
+    {
+        email: "email@email.com",
+        password: "password1234",
+    },
+    {
+        onSuccess(ctx) {
+            //
+        },
+    },
+);
 
 //or
 
@@ -268,30 +278,30 @@ await authClient.signIn.email({
     password: "password1234",
     fetchOptions: {
         onSuccess(ctx) {
-            //      
-        }
+            //
+        },
     },
-})
+});
 ```
 
 ### Handling Errors
 
 Most of the client functions return a response object with the following properties:
 
-* `data`: The response data.
-* `error`: The error object if there was an error.
+- `data`: The response data.
+- `error`: The error object if there was an error.
 
 the error object contains the following properties:
 
-* `message`: The error message. (e.g., "Invalid email or password")
-* `status`: The HTTP status code.
-* `statusText`: The HTTP status text.
+- `message`: The error message. (e.g., "Invalid email or password")
+- `status`: The HTTP status code.
+- `statusText`: The HTTP status text.
 
 ```ts title="auth-client.ts"
 const { data, error } = await authClient.signIn.email({
     email: "email@email.com",
-    password: "password1234"
-})
+    password: "password1234",
+});
 if (error) {
     //handle error
 }
@@ -300,15 +310,17 @@ if (error) {
 If the actions accepts a `fetchOptions` option, you can pass `onError` callback to handle errors.
 
 ```ts title="auth-client.ts"
-
-await authClient.signIn.email({
-    email: "email@email.com",
-    password: "password1234",
-}, {
-    onError(ctx) {
-        //handle error
-    }
-})
+await authClient.signIn.email(
+    {
+        email: "email@email.com",
+        password: "password1234",
+    },
+    {
+        onError(ctx) {
+            //handle error
+        },
+    },
+);
 
 //or
 await authClient.signIn.email({
@@ -317,15 +329,15 @@ await authClient.signIn.email({
     fetchOptions: {
         onError(ctx) {
             //handle error
-        }
-    }
-})
+        },
+    },
+});
 ```
 
 Hooks like `useSession` also return an error object if there was an error fetching the session. On top of that, they also return a `isPending` property to indicate if the request is still pending.
 
 ```ts title="auth-client.ts"
-const { data, error, isPending } = useSession()
+const { data, error, isPending } = useSession();
 if (error) {
     //handle error
 }
@@ -333,42 +345,41 @@ if (error) {
 
 #### Error Codes
 
-The client instance contains $ERROR\_CODES object that contains all the error codes returned by the server. You can use this to handle error translations or custom error messages.
+The client instance contains $ERROR_CODES object that contains all the error codes returned by the server. You can use this to handle error translations or custom error messages.
 
 ```ts title="auth-client.ts"
 const authClient = createAuthClient();
 
 type ErrorTypes = Partial<
-	Record<
-		keyof typeof authClient.$ERROR_CODES,
-		{
-			en: string;
-			es: string;
-		}
-	>
+    Record<
+        keyof typeof authClient.$ERROR_CODES,
+        {
+            en: string;
+            es: string;
+        }
+    >
 >;
 
 const errorCodes = {
-	USER_ALREADY_EXISTS: {
-		en: "user already registered",
-		es: "usuario ya registrada",
-	},
+    USER_ALREADY_EXISTS: {
+        en: "user already registered",
+        es: "usuario ya registrada",
+    },
 } satisfies ErrorTypes;
 
 const getErrorMessage = (code: string, lang: "en" | "es") => {
-	if (code in errorCodes) {
-		return errorCodes[code as keyof typeof errorCodes][lang];
-	}
-	return "";
+    if (code in errorCodes) {
+        return errorCodes[code as keyof typeof errorCodes][lang];
+    }
+    return "";
 };
 
-
 const { error } = await authClient.signUp.email({
-	email: "user@email.com",
-	password: "password",
-	name: "User",
+    email: "user@email.com",
+    password: "password",
+    name: "User",
 });
-if(error?.code){
+if (error?.code) {
     alert(getErrorMessage(error.code, "en"));
 }
 ```
@@ -380,21 +391,18 @@ You can extend the client with plugins to add more functionality. Plugins can ad
 **Example: Magic Link Plugin**
 
 ```ts title="auth-client.ts"
-import { createAuthClient } from "better-auth/client"
-import { magicLinkClient } from "better-auth/client/plugins"
+import { createAuthClient } from "better-auth/client";
+import { magicLinkClient } from "better-auth/client/plugins";
 
 const authClient = createAuthClient({
-    plugins: [
-        magicLinkClient()
-    ]
-})
+    plugins: [magicLinkClient()],
+});
 ```
 
 once you've added the plugin, you can use the new functions provided by the plugin.
 
 ```ts title="auth-client.ts"
 await authClient.signIn.magicLink({
-    email: "test@email.com"
-})
+    email: "test@email.com",
+});
 ```
-

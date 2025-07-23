@@ -54,7 +54,9 @@ export function useDeferredInput<T>({
         else {
             // Default parsing for numbers
             const numValue = Number.parseFloat(displayValue);
-            parsedValue = (Number.isNaN(numValue) ? committedValue : numValue) as T;
+            parsedValue = (
+                Number.isNaN(numValue) ? committedValue : numValue
+            ) as T;
         }
 
         if (validator(parsedValue)) {

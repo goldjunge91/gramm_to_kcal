@@ -48,7 +48,7 @@ export function useProductsUnified(): UnifiedProductsReturn {
 
     // Choose the appropriate storage based on authentication
     if (isAuthenticated) {
-    // Database storage for authenticated users
+        // Database storage for authenticated users
         return {
             data: databaseQuery.data || [],
             isLoading: databaseQuery.isLoading,
@@ -78,7 +78,7 @@ export function useProductsUnified(): UnifiedProductsReturn {
         };
     }
     else {
-    // Local storage for unauthenticated users
+        // Local storage for unauthenticated users
         return {
             data: localQuery.query.data || [],
             isLoading: localQuery.query.isLoading,

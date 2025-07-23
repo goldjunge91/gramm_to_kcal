@@ -56,13 +56,17 @@ export function useRecentScans() {
                 // Sort by most recent first
                 const sortedScans = parsedScans.sort(
                     (a, b) =>
-                        new Date(b.scannedAt).getTime() - new Date(a.scannedAt).getTime(),
+                        new Date(b.scannedAt).getTime()
+                            - new Date(a.scannedAt).getTime(),
                 );
                 setRecentScans(sortedScans);
             }
         }
         catch (error) {
-            console.warn("Failed to load recent scans from localStorage:", error);
+            console.warn(
+                "Failed to load recent scans from localStorage:",
+                error,
+            );
             setRecentScans([]);
         }
         finally {
@@ -81,7 +85,8 @@ export function useRecentScans() {
                 const limitedScans = scans
                     .sort(
                         (a, b) =>
-                            new Date(b.scannedAt).getTime() - new Date(a.scannedAt).getTime(),
+                            new Date(b.scannedAt).getTime()
+                                - new Date(a.scannedAt).getTime(),
                     )
                     .slice(0, MAX_RECENT_SCANS);
 
@@ -89,7 +94,10 @@ export function useRecentScans() {
                 setRecentScans(limitedScans);
             }
             catch (error) {
-                console.error("Failed to save recent scans to localStorage:", error);
+                console.error(
+                    "Failed to save recent scans to localStorage:",
+                    error,
+                );
             }
         },
         [storageKey],
@@ -113,7 +121,8 @@ export function useRecentScans() {
             // Remove any existing scan with the same product name to avoid duplicates
             const filteredScans = recentScans.filter(
                 scan =>
-                    scan.productName.toLowerCase() !== productData.name.toLowerCase(),
+                    scan.productName.toLowerCase()
+                    !== productData.name.toLowerCase(),
             );
 
             const updatedScans = [newScan, ...filteredScans];
@@ -125,7 +134,9 @@ export function useRecentScans() {
     // Remove a recent scan
     const removeRecentScan = useCallback(
         (scanId: string) => {
-            const updatedScans = recentScans.filter(scan => scan.id !== scanId);
+            const updatedScans = recentScans.filter(
+                scan => scan.id !== scanId,
+            );
             saveToStorage(updatedScans);
         },
         [recentScans, saveToStorage],
@@ -141,7 +152,10 @@ export function useRecentScans() {
             setRecentScans([]);
         }
         catch (error) {
-            console.error("Failed to clear recent scans from localStorage:", error);
+            console.error(
+                "Failed to clear recent scans from localStorage:",
+                error,
+            );
         }
     }, [storageKey]);
 
@@ -173,7 +187,7 @@ export function useRecentScans() {
     );
 
     return {
-    // Data
+        // Data
         recentScans,
         isLoading,
         isAuthenticated,

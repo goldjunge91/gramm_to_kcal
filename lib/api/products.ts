@@ -15,7 +15,9 @@ export function useProducts(userId: string) {
             });
 
             if (!response.ok) {
-                throw new Error(`Failed to fetch products: ${response.statusText}`);
+                throw new Error(
+                    `Failed to fetch products: ${response.statusText}`,
+                );
             }
 
             return await response.json();
@@ -38,7 +40,9 @@ export function useCreateProduct() {
             });
 
             if (!response.ok) {
-                throw new Error(`Failed to create product: ${response.statusText}`);
+                throw new Error(
+                    `Failed to create product: ${response.statusText}`,
+                );
             }
 
             const data = await response.json();
@@ -53,10 +57,10 @@ export function useCreateProduct() {
         },
         onError: (error: any) => {
             const errorMsg
-        = error?.message
-            || error?.error_description
-            || error?.toString()
-            || "Failed to create product";
+                = error?.message
+                    || error?.error_description
+                    || error?.toString()
+                    || "Failed to create product";
             toast.error(errorMsg);
             console.error("Create product error:", error);
         },
@@ -83,7 +87,9 @@ export function useUpdateProduct() {
             });
 
             if (!response.ok) {
-                throw new Error(`Failed to update product: ${response.statusText}`);
+                throw new Error(
+                    `Failed to update product: ${response.statusText}`,
+                );
             }
 
             const data = await response.json();
@@ -94,7 +100,9 @@ export function useUpdateProduct() {
             queryClient.setQueryData(
                 ["products", data.userId],
                 (old: Product[] = []) =>
-                    old.map(product => (product.id === data.id ? data : product)),
+                    old.map(product =>
+                        product.id === data.id ? data : product,
+                    ),
             );
         },
     });
@@ -113,7 +121,9 @@ export function useDeleteProduct() {
             });
 
             if (!response.ok) {
-                throw new Error(`Failed to delete product: ${response.statusText}`);
+                throw new Error(
+                    `Failed to delete product: ${response.statusText}`,
+                );
             }
 
             toast.success("Product deleted");

@@ -11,11 +11,14 @@ import { getRedisHealth } from "@/lib/redis";
 
 export async function GET(request: NextRequest) {
     // Log health check request for monitoring
-    const ip = request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip") || "unknown";
+    const ip
+        = request.headers.get("x-forwarded-for")
+            || request.headers.get("x-real-ip")
+            || "unknown";
     console.info(`[HEALTH] Health check from IP: ${ip}`);
 
     try {
-    // Test database connection
+        // Test database connection
         let dbError = null;
         try {
             // Simple query to test database connection
@@ -32,7 +35,8 @@ export async function GET(request: NextRequest) {
         const openFoodFactsHealth = await getOpenFoodFactsHealth();
 
         // Get circuit breaker health
-        const circuitBreakerHealth = await circuitBreakerManager.getHealthSummary();
+        const circuitBreakerHealth
+            = await circuitBreakerManager.getHealthSummary();
 
         const health = {
             status: "ok",
@@ -58,7 +62,8 @@ export async function GET(request: NextRequest) {
         return NextResponse.json(
             {
                 status: "error",
-                message: error instanceof Error ? error.message : "Unknown error",
+                message:
+                    error instanceof Error ? error.message : "Unknown error",
                 timestamp: new Date().toISOString(),
             },
             { status: 500 },

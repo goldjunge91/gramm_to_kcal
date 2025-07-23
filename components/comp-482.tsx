@@ -3,7 +3,6 @@
 import type { ColumnDef } from "@tanstack/react-table";
 
 import {
-
     flexRender,
     getCoreRowModel,
     getExpandedRowModel,
@@ -41,38 +40,34 @@ const columns: ColumnDef<Item>[] = [
         id: "expander",
         header: () => null,
         cell: ({ row }) => {
-            return row.getCanExpand()
-                ? (
-                        <Button
-                            {...{
-                                "className": "size-7 shadow-none text-muted-foreground",
-                                "onClick": row.getToggleExpandedHandler(),
-                                "aria-expanded": row.getIsExpanded(),
-                                "aria-label": row.getIsExpanded()
-                                    ? `Collapse details for ${row.original.name}`
-                                    : `Expand details for ${row.original.name}`,
-                                "size": "icon",
-                                "variant": "ghost",
-                            }}
-                        >
-                            {row.getIsExpanded()
-                                ? (
-                                        <ChevronUpIcon
-                                            className="opacity-60"
-                                            size={16}
-                                            aria-hidden="true"
-                                        />
-                                    )
-                                : (
-                                        <ChevronDownIcon
-                                            className="opacity-60"
-                                            size={16}
-                                            aria-hidden="true"
-                                        />
-                                    )}
-                        </Button>
-                    )
-                : undefined;
+            return row.getCanExpand() ? (
+                <Button
+                    {...{
+                        "className": "size-7 shadow-none text-muted-foreground",
+                        "onClick": row.getToggleExpandedHandler(),
+                        "aria-expanded": row.getIsExpanded(),
+                        "aria-label": row.getIsExpanded()
+                            ? `Collapse details for ${row.original.name}`
+                            : `Expand details for ${row.original.name}`,
+                        "size": "icon",
+                        "variant": "ghost",
+                    }}
+                >
+                    {row.getIsExpanded() ? (
+                        <ChevronUpIcon
+                            className="opacity-60"
+                            size={16}
+                            aria-hidden="true"
+                        />
+                    ) : (
+                        <ChevronDownIcon
+                            className="opacity-60"
+                            size={16}
+                            aria-hidden="true"
+                        />
+                    )}
+                </Button>
+            ) : undefined;
         },
     },
     {
@@ -83,7 +78,8 @@ const columns: ColumnDef<Item>[] = [
                     table.getIsAllPageRowsSelected()
                     || (table.getIsSomePageRowsSelected() && "indeterminate")
                 }
-                onCheckedChange={value => table.toggleAllPageRowsSelected(!!value)}
+                onCheckedChange={value =>
+                    table.toggleAllPageRowsSelected(!!value)}
                 aria-label="Select all"
             />
         ),
@@ -111,7 +107,9 @@ const columns: ColumnDef<Item>[] = [
         accessorKey: "location",
         cell: ({ row }) => (
             <div>
-                <span className="text-lg leading-none">{row.original.flag}</span>
+                <span className="text-lg leading-none">
+                    {row.original.flag}
+                </span>
                 {" "}
                 {row.getValue("location")}
             </div>
@@ -172,14 +170,18 @@ export default function Component() {
             <Table>
                 <TableHeader>
                     {table.getHeaderGroups().map(headerGroup => (
-                        <TableRow key={headerGroup.id} className="hover:bg-transparent">
+                        <TableRow
+                            key={headerGroup.id}
+                            className="hover:bg-transparent"
+                        >
                             {headerGroup.headers.map((header) => {
                                 return (
                                     <TableHead key={header.id}>
                                         {header.isPlaceholder
                                             ? null
                                             : flexRender(
-                                                    header.column.columnDef.header,
+                                                    header.column.columnDef
+                                                        .header,
                                                     header.getContext(),
                                                 )}
                                     </TableHead>
@@ -189,51 +191,63 @@ export default function Component() {
                     ))}
                 </TableHeader>
                 <TableBody>
-                    {table.getRowModel().rows?.length
-                        ? (
-                                table.getRowModel().rows.map(row => (
-                                    <Fragment key={row.id}>
-                                        <TableRow
-                                            key={row.id}
-                                            data-state={row.getIsSelected() && "selected"}
+                    {table.getRowModel().rows?.length ? (
+                        table.getRowModel().rows.map(row => (
+                            <Fragment key={row.id}>
+                                <TableRow
+                                    key={row.id}
+                                    data-state={
+                                        row.getIsSelected() && "selected"
+                                    }
+                                >
+                                    {row.getVisibleCells().map(cell => (
+                                        <TableCell
+                                            key={cell.id}
+                                            className="whitespace-nowrap [&:has([aria-expanded])]:w-px [&:has([aria-expanded])]:py-0 [&:has([aria-expanded])]:pr-0"
                                         >
-                                            {row.getVisibleCells().map(cell => (
-                                                <TableCell
-                                                    key={cell.id}
-                                                    className="whitespace-nowrap [&:has([aria-expanded])]:w-px [&:has([aria-expanded])]:py-0 [&:has([aria-expanded])]:pr-0"
-                                                >
-                                                    {flexRender(
-                                                        cell.column.columnDef.cell,
-                                                        cell.getContext(),
-                                                    )}
-                                                </TableCell>
-                                            ))}
-                                        </TableRow>
-                                        {row.getIsExpanded() && (
-                                            <TableRow>
-                                                <TableCell colSpan={row.getVisibleCells().length}>
-                                                    <div className="text-primary/80 flex items-start py-2">
-                                                        <span
-                                                            className="me-3 mt-0.5 flex w-7 shrink-0 justify-center"
-                                                            aria-hidden="true"
-                                                        >
-                                                            <InfoIcon className="opacity-60" size={16} />
-                                                        </span>
-                                                        <p className="text-sm">{row.original.note}</p>
-                                                    </div>
-                                                </TableCell>
-                                            </TableRow>
-                                        )}
-                                    </Fragment>
-                                ))
-                            )
-                        : (
-                                <TableRow>
-                                    <TableCell colSpan={columns.length} className="h-24 text-center">
-                                        No results.
-                                    </TableCell>
+                                            {flexRender(
+                                                cell.column.columnDef.cell,
+                                                cell.getContext(),
+                                            )}
+                                        </TableCell>
+                                    ))}
                                 </TableRow>
-                            )}
+                                {row.getIsExpanded() && (
+                                    <TableRow>
+                                        <TableCell
+                                            colSpan={
+                                                row.getVisibleCells().length
+                                            }
+                                        >
+                                            <div className="text-primary/80 flex items-start py-2">
+                                                <span
+                                                    className="me-3 mt-0.5 flex w-7 shrink-0 justify-center"
+                                                    aria-hidden="true"
+                                                >
+                                                    <InfoIcon
+                                                        className="opacity-60"
+                                                        size={16}
+                                                    />
+                                                </span>
+                                                <p className="text-sm">
+                                                    {row.original.note}
+                                                </p>
+                                            </div>
+                                        </TableCell>
+                                    </TableRow>
+                                )}
+                            </Fragment>
+                        ))
+                    ) : (
+                        <TableRow>
+                            <TableCell
+                                colSpan={columns.length}
+                                className="h-24 text-center"
+                            >
+                                No results.
+                            </TableCell>
+                        </TableRow>
+                    )}
                 </TableBody>
             </Table>
             <p className="text-muted-foreground mt-4 text-center text-sm">

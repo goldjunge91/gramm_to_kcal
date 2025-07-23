@@ -5,97 +5,97 @@
  * our BarcodeScanner component functionality.
  */
 
-import fs from 'node:fs'
-import path from 'node:path'
+import fs from "node:fs";
+import path from "node:path";
 
 // Test barcode configurations
 const TEST_BARCODES = [
-  {
-    code: '4007624017106',
-    filename: 'ean13-sample.png',
-    description: 'Basic EAN-13 test barcode',
-  },
-  {
-    code: '40084963',
-    filename: 'product-nutella.png',
-    description: 'Nutella product barcode',
-  },
-  {
-    code: '4000354007542',
-    filename: 'coca-cola.png',
-    description: 'Coca Cola product barcode',
-  },
-  {
-    code: '99999999999', // Invalid barcode for error testing
-    filename: 'invalid-barcode.png',
-    description: 'Invalid barcode for error handling tests',
-  },
-]
+    {
+        code: "4007624017106",
+        filename: "ean13-sample.png",
+        description: "Basic EAN-13 test barcode",
+    },
+    {
+        code: "40084963",
+        filename: "product-nutella.png",
+        description: "Nutella product barcode",
+    },
+    {
+        code: "4000354007542",
+        filename: "coca-cola.png",
+        description: "Coca Cola product barcode",
+    },
+    {
+        code: "99999999999", // Invalid barcode for error testing
+        filename: "invalid-barcode.png",
+        description: "Invalid barcode for error handling tests",
+    },
+];
 
 /**
  * Generate a simple ASCII representation of an EAN-13 barcode
  * This is a simplified version for testing purposes
  */
 function generateAsciiBarcode(code: string): string {
-  // Simple pattern representation (not a real EAN-13 encoding)
-  const patterns = {
-    0: '||  | |',
-    1: '| |  ||',
-    2: '| || |',
-    3: '|||| |',
-    4: '|  |||',
-    5: '|||  |',
-    6: '| ||||',
-    7: '||||  ',
-    8: '  ||||',
-    9: ' ||| |',
-  }
+    // Simple pattern representation (not a real EAN-13 encoding)
+    const patterns = {
+        0: "||  | |",
+        1: "| |  ||",
+        2: "| || |",
+        3: "|||| |",
+        4: "|  |||",
+        5: "|||  |",
+        6: "| ||||",
+        7: "||||  ",
+        8: "  ||||",
+        9: " ||| |",
+    };
 
-  let barcode = '|||' // Start pattern
+    let barcode = "|||"; // Start pattern
 
-  for (const digit of code) {
-    barcode += patterns[digit as keyof typeof patterns] || '| | ||'
-  }
+    for (const digit of code) {
+        barcode += patterns[digit as keyof typeof patterns] || "| | ||";
+    }
 
-  barcode += '|||' // End pattern
+    barcode += "|||"; // End pattern
 
-  return barcode
+    return barcode;
 }
 
 /**
  * Create a simple SVG barcode for testing
  */
 function generateSvgBarcode(
-  code: string,
-  width: number = 300,
-  height: number = 100,
+    code: string,
+    width: number = 300,
+    height: number = 100,
 ): string {
-  const ascii = generateAsciiBarcode(code)
-  const barWidth = width / ascii.length
+    const ascii = generateAsciiBarcode(code);
+    const barWidth = width / ascii.length;
 
-  let svg = `<svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">`
-  svg += `<rect width="${width}" height="${height}" fill="white"/>`
+    let svg = `<svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">`;
+    svg += `<rect width="${width}" height="${height}" fill="white"/>`;
 
-  let x = 0
-  for (const char of ascii) {
-    if (char === '|') {
-      svg += `<rect x="${x}" y="10" width="${barWidth}" height="${height - 20}" fill="black"/>`
+    let x = 0;
+    for (const char of ascii) {
+        if (char === "|") {
+            svg += `<rect x="${x}" y="10" width="${barWidth}" height="${height - 20}" fill="black"/>`;
+        }
+        x += barWidth;
     }
-    x += barWidth
-  }
 
-  // Add the code text below
-  svg += `<text x="${width / 2}" y="${height - 5}" text-anchor="middle" font-family="monospace" font-size="12">${code}</text>`
-  svg += '</svg>'
+    // Add the code text below
+    svg += `<text x="${width / 2}" y="${height - 5}" text-anchor="middle" font-family="monospace" font-size="12">${code}</text>`;
+    svg += "</svg>";
 
-  return svg
+    return svg;
 }
 
 /**
  * Instructions for manual barcode creation
  */
 function generateInstructions(): string {
-  return `
+    return `
 # Test Barcode Creation Instructions
 
 Since programmatic barcode generation is complex, here are instructions to create test barcodes manually:
@@ -118,11 +118,11 @@ Since programmatic barcode generation is complex, here are instructions to creat
 The script below generates simple SVG representations that can be converted to PNG:
 
 ${TEST_BARCODES.map(
-  barcode => `
+    (barcode) => `
 <!-- ${barcode.description} -->
 ${generateSvgBarcode(barcode.code)}
 `,
-).join('\n')}
+).join("\n")}
 
 ## Requirements:
 - Images should be at least 300x100 pixels
@@ -138,41 +138,43 @@ tests/
         ├── product-nutella.png
         ├── coca-cola.png
         └── invalid-barcode.png (blurry/corrupted for error testing)
-`
+`;
 }
 
 async function main() {
-  const fixturesDir = path.join(__dirname, '../tests/fixtures/barcodes')
+    const fixturesDir = path.join(__dirname, "../tests/fixtures/barcodes");
 
-  // Ensure directory exists
-  if (!fs.existsSync(fixturesDir)) {
-    fs.mkdirSync(fixturesDir, { recursive: true })
-  }
+    // Ensure directory exists
+    if (!fs.existsSync(fixturesDir)) {
+        fs.mkdirSync(fixturesDir, { recursive: true });
+    }
 
-  // Generate instructions file
-  const instructions = generateInstructions()
-  fs.writeFileSync(path.join(fixturesDir, 'README.md'), instructions)
+    // Generate instructions file
+    const instructions = generateInstructions();
+    fs.writeFileSync(path.join(fixturesDir, "README.md"), instructions);
 
-  // Generate simple SVG files for reference
-  for (const barcode of TEST_BARCODES) {
-    const svg = generateSvgBarcode(barcode.code)
-    const svgPath = path.join(
-      fixturesDir,
-      barcode.filename.replace('.png', '.svg'),
-    )
-    fs.writeFileSync(svgPath, svg)
-  }
+    // Generate simple SVG files for reference
+    for (const barcode of TEST_BARCODES) {
+        const svg = generateSvgBarcode(barcode.code);
+        const svgPath = path.join(
+            fixturesDir,
+            barcode.filename.replace(".png", ".svg"),
+        );
+        fs.writeFileSync(svgPath, svg);
+    }
 
-  console.log('✅ Test barcode setup complete!')
-  console.log('📁 Files created in:', fixturesDir)
-  console.log(
-    '📖 See README.md for instructions on creating proper barcode images',
-  )
-  console.log('🔧 SVG reference files generated - convert to PNG for testing')
+    console.log("✅ Test barcode setup complete!");
+    console.log("📁 Files created in:", fixturesDir);
+    console.log(
+        "📖 See README.md for instructions on creating proper barcode images",
+    );
+    console.log(
+        "🔧 SVG reference files generated - convert to PNG for testing",
+    );
 }
 
 if (require.main === module) {
-  main().catch(console.error)
+    main().catch(console.error);
 }
 
-export { generateSvgBarcode, TEST_BARCODES }
+export { generateSvgBarcode, TEST_BARCODES };

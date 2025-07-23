@@ -55,8 +55,8 @@ export function BarcodeScanner({
 
     // Handle scanning errors (non-critical, happens frequently)
     const handleScanFailure = useCallback(() => {
-    // Don't log frequent scanning failures - this is normal
-    // These failures happen constantly during scanning and are expected
+        // Don't log frequent scanning failures - this is normal
+        // These failures happen constantly during scanning and are expected
     }, []);
 
     // Handle file upload and scanning
@@ -324,13 +324,11 @@ export function BarcodeScanner({
                     <div className="flex-shrink-0 p-4 border-b">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
-                                {scanMode === "camera"
-                                    ? (
-                                            <Camera className="h-5 w-5" />
-                                        )
-                                    : (
-                                            <Upload className="h-5 w-5" />
-                                        )}
+                                {scanMode === "camera" ? (
+                                    <Camera className="h-5 w-5" />
+                                ) : (
+                                    <Upload className="h-5 w-5" />
+                                )}
                                 <h2 className="text-lg font-semibold">
                                     Barcode Scanner
                                 </h2>
@@ -410,43 +408,41 @@ export function BarcodeScanner({
                                     onDragOver={handleDragOver}
                                 >
                                     <div className="text-center p-8">
-                                        {isProcessingFile
-                                            ? (
-                                                    <div className="text-center">
-                                                        <Loader2 className="h-12 w-12 animate-spin mx-auto mb-4 text-muted-foreground" />
-                                                        <p className="text-lg font-medium text-muted-foreground">
-                                                            Barcode wird gescannt...
-                                                        </p>
-                                                        <p className="text-sm text-muted-foreground mt-1">
-                                                            Bitte warten
-                                                        </p>
-                                                    </div>
-                                                )
-                                            : (
-                                                    <div className="text-center">
-                                                        <Upload className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
-                                                        <h3 className="text-lg font-medium text-foreground mb-2">
-                                                            Barcode-Bild hochladen
-                                                        </h3>
-                                                        <p className="text-sm text-muted-foreground mb-6">
-                                                            Ziehe ein Bild hierher oder
-                                                            klicke zum Auswählen
-                                                        </p>
-                                                        <Button
-                                                            onClick={() =>
-                                                                fileInputRef.current?.click()}
-                                                            className="mb-4"
-                                                            disabled={isProcessingFile}
-                                                        >
-                                                            <Upload className="h-4 w-4 mr-2" />
-                                                            Bild auswählen
-                                                        </Button>
-                                                        <p className="text-xs text-muted-foreground">
-                                                            Unterstützt: PNG, JPG, GIF •
-                                                            Max: 10MB
-                                                        </p>
-                                                    </div>
-                                                )}
+                                        {isProcessingFile ? (
+                                            <div className="text-center">
+                                                <Loader2 className="h-12 w-12 animate-spin mx-auto mb-4 text-muted-foreground" />
+                                                <p className="text-lg font-medium text-muted-foreground">
+                                                    Barcode wird gescannt...
+                                                </p>
+                                                <p className="text-sm text-muted-foreground mt-1">
+                                                    Bitte warten
+                                                </p>
+                                            </div>
+                                        ) : (
+                                            <div className="text-center">
+                                                <Upload className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
+                                                <h3 className="text-lg font-medium text-foreground mb-2">
+                                                    Barcode-Bild hochladen
+                                                </h3>
+                                                <p className="text-sm text-muted-foreground mb-6">
+                                                    Ziehe ein Bild hierher oder
+                                                    klicke zum Auswählen
+                                                </p>
+                                                <Button
+                                                    onClick={() =>
+                                                        fileInputRef.current?.click()}
+                                                    className="mb-4"
+                                                    disabled={isProcessingFile}
+                                                >
+                                                    <Upload className="h-4 w-4 mr-2" />
+                                                    Bild auswählen
+                                                </Button>
+                                                <p className="text-xs text-muted-foreground">
+                                                    Unterstützt: PNG, JPG, GIF •
+                                                    Max: 10MB
+                                                </p>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
 
@@ -540,13 +536,11 @@ export function BarcodeScanner({
                 <DialogContent className="hidden sm:block w-[90vw] max-w-lg max-h-[90vh] p-6">
                     <DialogHeader className="mb-4">
                         <DialogTitle className="flex items-center gap-2">
-                            {scanMode === "camera"
-                                ? (
-                                        <Camera className="h-5 w-5" />
-                                    )
-                                : (
-                                        <Upload className="h-5 w-5" />
-                                    )}
+                            {scanMode === "camera" ? (
+                                <Camera className="h-5 w-5" />
+                            ) : (
+                                <Upload className="h-5 w-5" />
+                            )}
                             Barcode Scanner
                         </DialogTitle>
                         <DialogDescription className="text-sm">
@@ -627,46 +621,44 @@ export function BarcodeScanner({
                                         onDragOver={handleDragOver}
                                     >
                                         <div className="text-center p-6">
-                                            {isProcessingFile
-                                                ? (
-                                                        <div className="text-center">
-                                                            <Loader2 className="h-10 w-10 animate-spin mx-auto mb-3 text-muted-foreground" />
-                                                            <p className="text-base font-medium text-muted-foreground">
-                                                                Barcode wird gescannt...
-                                                            </p>
-                                                            <p className="text-sm text-muted-foreground mt-1">
-                                                                Bitte warten
-                                                            </p>
-                                                        </div>
-                                                    )
-                                                : (
-                                                        <div className="text-center">
-                                                            <Upload className="h-12 w-12 mx-auto mb-3 text-muted-foreground" />
-                                                            <h3 className="text-base font-medium text-foreground mb-2">
-                                                                Barcode-Bild hochladen
-                                                            </h3>
-                                                            <p className="text-sm text-muted-foreground mb-4">
-                                                                Ziehe ein Bild hierher
-                                                                oder klicke zum
-                                                                Auswählen
-                                                            </p>
-                                                            <Button
-                                                                onClick={() =>
-                                                                    fileInputRef.current?.click()}
-                                                                size="sm"
-                                                                disabled={
-                                                                    isProcessingFile
-                                                                }
-                                                            >
-                                                                <Upload className="h-4 w-4 mr-2" />
-                                                                Bild auswählen
-                                                            </Button>
-                                                            <p className="text-xs text-muted-foreground mt-3">
-                                                                Unterstützt: PNG, JPG,
-                                                                GIF • Max: 10MB
-                                                            </p>
-                                                        </div>
-                                                    )}
+                                            {isProcessingFile ? (
+                                                <div className="text-center">
+                                                    <Loader2 className="h-10 w-10 animate-spin mx-auto mb-3 text-muted-foreground" />
+                                                    <p className="text-base font-medium text-muted-foreground">
+                                                        Barcode wird gescannt...
+                                                    </p>
+                                                    <p className="text-sm text-muted-foreground mt-1">
+                                                        Bitte warten
+                                                    </p>
+                                                </div>
+                                            ) : (
+                                                <div className="text-center">
+                                                    <Upload className="h-12 w-12 mx-auto mb-3 text-muted-foreground" />
+                                                    <h3 className="text-base font-medium text-foreground mb-2">
+                                                        Barcode-Bild hochladen
+                                                    </h3>
+                                                    <p className="text-sm text-muted-foreground mb-4">
+                                                        Ziehe ein Bild hierher
+                                                        oder klicke zum
+                                                        Auswählen
+                                                    </p>
+                                                    <Button
+                                                        onClick={() =>
+                                                            fileInputRef.current?.click()}
+                                                        size="sm"
+                                                        disabled={
+                                                            isProcessingFile
+                                                        }
+                                                    >
+                                                        <Upload className="h-4 w-4 mr-2" />
+                                                        Bild auswählen
+                                                    </Button>
+                                                    <p className="text-xs text-muted-foreground mt-3">
+                                                        Unterstützt: PNG, JPG,
+                                                        GIF • Max: 10MB
+                                                    </p>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
 
@@ -694,30 +686,28 @@ export function BarcodeScanner({
                         {/* Instructions */}
                         {!error && !uploadError && (
                             <div className="text-sm text-muted-foreground text-center space-y-1">
-                                {scanMode === "camera"
-                                    ? (
-                                            <>
-                                                <p>
-                                                    • Halte den Barcode im Scanbereich
-                                                </p>
-                                                <p>
-                                                    • Funktioniert am besten mit EAN-13
-                                                    Barcodes
-                                                </p>
-                                            </>
-                                        )
-                                    : (
-                                            <>
-                                                <p>
-                                                    • EAN-13 Barcodes funktionieren am
-                                                    besten
-                                                </p>
-                                                <p>
-                                                    • Gute Beleuchtung und scharfe
-                                                    Bilder helfen
-                                                </p>
-                                            </>
-                                        )}
+                                {scanMode === "camera" ? (
+                                    <>
+                                        <p>
+                                            • Halte den Barcode im Scanbereich
+                                        </p>
+                                        <p>
+                                            • Funktioniert am besten mit EAN-13
+                                            Barcodes
+                                        </p>
+                                    </>
+                                ) : (
+                                    <>
+                                        <p>
+                                            • EAN-13 Barcodes funktionieren am
+                                            besten
+                                        </p>
+                                        <p>
+                                            • Gute Beleuchtung und scharfe
+                                            Bilder helfen
+                                        </p>
+                                    </>
+                                )}
                             </div>
                         )}
 

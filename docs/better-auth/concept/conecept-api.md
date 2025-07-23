@@ -1,14 +1,16 @@
 # concepts: API
+
 URL: /docs/concepts/api
 Source: https://raw.githubusercontent.com/better-auth/better-auth/refs/heads/main/docs/content/docs/concepts/api.mdx
 
 Better Auth API.
-        
-***
+
+---
 
 title: API
 description: Better Auth API.
------------------------------
+
+---
 
 When you create a new Better Auth instance, it provides you with an `api` object. This object exposes every endpoint that exist in your Better Auth instance. And you can use this to interact with Better Auth server side.
 
@@ -24,12 +26,12 @@ import { headers } from "next/headers";
 
 export const auth = betterAuth({
     //...
-})
+});
 
 // calling get session on the server
 await auth.api.getSession({
-    headers: await headers() // some endpoint might require headers
-})
+    headers: await headers(), // some endpoint might require headers
+});
 ```
 
 ### Body, Headers, Query
@@ -38,22 +40,22 @@ Unlike the client, the server needs the values to be passed as an object with th
 
 ```ts title="server.ts"
 await auth.api.getSession({
-    headers: await headers()
-})
+    headers: await headers(),
+});
 
 await auth.api.signInEmail({
     body: {
         email: "john@doe.com",
-        password: "password"
+        password: "password",
     },
-    headers: await headers() // optional but would be useful to get the user IP, user agent, etc.
-})
+    headers: await headers(), // optional but would be useful to get the user IP, user agent, etc.
+});
 
 await auth.api.verifyEmail({
     query: {
-        token: "my_token"
-    }
-})
+        token: "my_token",
+    },
+});
 ```
 
 <Callout>
@@ -72,12 +74,12 @@ To get the `headers`, you can pass the `returnHeaders` option to the endpoint.
 
 ```ts
 const { headers, response } = await auth.api.signUpEmail({
-	returnHeaders: true,
-	body: {
-		email: "john@doe.com",
-		password: "password",
-		name: "John Doe",
-	},
+    returnHeaders: true,
+    body: {
+        email: "john@doe.com",
+        password: "password",
+        name: "John Doe",
+    },
 });
 ```
 
@@ -96,10 +98,10 @@ To get the `Response` object, you can pass the `asResponse` option to the endpoi
 const response = await auth.api.signInEmail({
     body: {
         email: "",
-        password: ""
+        password: "",
     },
-    asResponse: true
-})
+    asResponse: true,
+});
 ```
 
 ### Error Handling
@@ -113,13 +115,12 @@ try {
     await auth.api.signInEmail({
         body: {
             email: "",
-            password: ""
-        }
-    })
+            password: "",
+        },
+    });
 } catch (error) {
     if (error instanceof APIError) {
-        console.log(error.message, error.status)
+        console.log(error.message, error.status);
     }
 }
 ```
-

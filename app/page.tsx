@@ -14,9 +14,12 @@ export default function Home() {
     return (
         <div className="container mx-auto p-6">
             <div className="text-center space-y-4 mb-8">
-                <h1 className="text-4xl font-bold">Willkommen bei CalorieTracker</h1>
+                <h1 className="text-4xl font-bold">
+                    Willkommen bei CalorieTracker
+                </h1>
                 <p className="text-lg text-muted-foreground">
-                    Vergleiche Lebensmittel und verwalte deine Rezepte intelligent
+                    Vergleiche Lebensmittel und verwalte deine Rezepte
+                    intelligent
                 </p>
             </div>
 
@@ -26,7 +29,8 @@ export default function Home() {
                         <Calculator className="w-12 h-12 mx-auto mb-2 text-primary" />
                         <CardTitle>Kalorienvergleich</CardTitle>
                         <CardDescription>
-                            Vergleiche Produkte basierend auf ihren Kalorien pro Gramm
+                            Vergleiche Produkte basierend auf ihren Kalorien pro
+                            Gramm
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -41,7 +45,8 @@ export default function Home() {
                         <ChefHat className="w-12 h-12 mx-auto mb-2 text-primary" />
                         <CardTitle>Rezept-Manager</CardTitle>
                         <CardDescription>
-                            Skaliere Rezepte und passe Zutatenmengen dynamisch an
+                            Skaliere Rezepte und passe Zutatenmengen dynamisch
+                            an
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -56,12 +61,15 @@ export default function Home() {
                         <Combine className="w-12 h-12 mx-auto mb-2 text-primary" />
                         <CardTitle>Einheiten-Umrechner</CardTitle>
                         <CardDescription>
-                            Konvertiere Milliliter in Gramm für über 50 Substanzen
+                            Konvertiere Milliliter in Gramm für über 50
+                            Substanzen
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
                         <Button asChild className="w-full">
-                            <Link href="/unit-converter">Einheiten umrechnen</Link>
+                            <Link href="/unit-converter">
+                                Einheiten umrechnen
+                            </Link>
                         </Button>
                     </CardContent>
                 </Card>

@@ -25,7 +25,10 @@ interface ServerSignUpFormProps {
 /**
  * Client-side signup form using Better Auth
  */
-export function ServerSignUpForm({ className, error: initialError }: ServerSignUpFormProps) {
+export function ServerSignUpForm({
+    className,
+    error: initialError,
+}: ServerSignUpFormProps) {
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(initialError);
@@ -57,8 +60,13 @@ export function ServerSignUpForm({ className, error: initialError }: ServerSignU
             if (result.error) {
                 const errorMessage = result.error.message || "Signup failed";
                 // Handle existing user case specifically
-                if (errorMessage.includes("already exists") || errorMessage.includes("User with email")) {
-                    setError("An account with this email already exists. Please sign in instead.");
+                if (
+                    errorMessage.includes("already exists")
+                    || errorMessage.includes("User with email")
+                ) {
+                    setError(
+                        "An account with this email already exists. Please sign in instead.",
+                    );
                 }
                 else {
                     setError(errorMessage);
@@ -70,7 +78,9 @@ export function ServerSignUpForm({ className, error: initialError }: ServerSignU
             router.push("/auth/sign-up-success");
         }
         catch (error_) {
-            setError(error_ instanceof Error ? error_.message : "Signup failed");
+            setError(
+                error_ instanceof Error ? error_.message : "Signup failed",
+            );
         }
         finally {
             setIsLoading(false);
@@ -123,7 +133,9 @@ export function ServerSignUpForm({ className, error: initialError }: ServerSignU
                                 />
                             </div>
                             <div className="grid gap-2">
-                                <Label htmlFor="confirmPassword">Confirm Password</Label>
+                                <Label htmlFor="confirmPassword">
+                                    Confirm Password
+                                </Label>
                                 <Input
                                     id="confirmPassword"
                                     name="confirmPassword"
@@ -135,11 +147,20 @@ export function ServerSignUpForm({ className, error: initialError }: ServerSignU
                             </div>
                             {error && (
                                 <div className="rounded-md bg-red-50 p-3 border border-red-200">
-                                    <p className="text-sm text-red-600">{error}</p>
+                                    <p className="text-sm text-red-600">
+                                        {error}
+                                    </p>
                                 </div>
                             )}
-                            <Button id="signup-submit" type="submit" className="w-full" disabled={isLoading}>
-                                {isLoading ? "Creating account..." : "Create account"}
+                            <Button
+                                id="signup-submit"
+                                type="submit"
+                                className="w-full"
+                                disabled={isLoading}
+                            >
+                                {isLoading
+                                    ? "Creating account..."
+                                    : "Create account"}
                             </Button>
                             {process.env.NEXT_PUBLIC_GOOGLE_OAUTH_ENABLED && (
                                 <Button
@@ -147,7 +168,9 @@ export function ServerSignUpForm({ className, error: initialError }: ServerSignU
                                     type="button"
                                     className="w-full flex items-center justify-center gap-2 mt-2 border border-gray-200"
                                     onClick={async () => {
-                                        const { signIn } = await import("@/lib/auth/auth-client");
+                                        const { signIn } = await import(
+                                            "@/lib/auth/auth-client"
+                                        );
                                         await signIn.social({
                                             provider: "google",
                                             callbackURL: window.location.origin,
@@ -197,7 +220,10 @@ export function ServerSignUpForm({ className, error: initialError }: ServerSignU
                         <div className="mt-4 text-center text-sm">
                             Already have an account?
                             {" "}
-                            <Link href="/auth/login" className="underline underline-offset-4">
+                            <Link
+                                href="/auth/login"
+                                className="underline underline-offset-4"
+                            >
                                 Login
                             </Link>
                         </div>

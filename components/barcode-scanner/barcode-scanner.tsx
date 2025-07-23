@@ -88,13 +88,15 @@ export function BarcodeScanner({
     );
 
     const handleScanFailure = useCallback(() => {
-    // Diese Funktion wird ständig aufgerufen, daher keine Logs hier
+        // Diese Funktion wird ständig aufgerufen, daher keine Logs hier
     }, []);
 
     const startScanning = useCallback(
         async (elementId: string) => {
             if (!document.querySelector<HTMLElement>(`#${elementId}`)) {
-                console.warn(`Scanner container #${elementId} not found in DOM.`);
+                console.warn(
+                    `Scanner container #${elementId} not found in DOM.`,
+                );
                 return;
             }
 
@@ -117,7 +119,8 @@ export function BarcodeScanner({
                 }
 
                 const rearCamera
-          = cameras.find(c => /back|environment/i.test(c.label)) || cameras[0];
+                    = cameras.find(c => /back|environment/i.test(c.label))
+                        || cameras[0];
 
                 const config = {
                     fps: 10,
@@ -134,7 +137,9 @@ export function BarcodeScanner({
             }
             catch (error_) {
                 const message
-          = error_ instanceof Error ? error_.message : "Failed to start camera.";
+                    = error_ instanceof Error
+                        ? error_.message
+                        : "Failed to start camera.";
                 setError(message);
                 if (onError)
                     onError(message);
@@ -151,7 +156,9 @@ export function BarcodeScanner({
         if (isOpen && scanMode === "camera") {
             const timer = setTimeout(() => {
                 const elementId
-          = window.innerWidth < 640 ? mobileElementId : desktopElementId;
+                    = window.innerWidth < 640
+                        ? mobileElementId
+                        : desktopElementId;
                 startScanning(elementId);
             }, 150);
             return () => clearTimeout(timer);
@@ -312,8 +319,12 @@ export function BarcodeScanner({
                     className={`absolute bottom-4 left-4 right-4 text-white text-center p-2 rounded-lg z-10 backdrop-blur-sm transition-colors duration-300 ${isSuccess ? "bg-green-600/90" : "bg-black/60"}`}
                 >
                     <div className="flex items-center justify-center gap-2">
-                        <p className="text-xs font-semibold uppercase">Letzter Scan:</p>
-                        <p className="font-mono break-all text-base">{lastScannedCode}</p>
+                        <p className="text-xs font-semibold uppercase">
+                            Letzter Scan:
+                        </p>
+                        <p className="font-mono break-all text-base">
+                            {lastScannedCode}
+                        </p>
                     </div>
                 </div>
             )}
@@ -327,35 +338,38 @@ export function BarcodeScanner({
             onDragOver={handleDragOver}
         >
             <div className="text-center p-8">
-                {isProcessingFile
-                    ? (
-                            <>
-                                <Loader2 className="h-12 w-12 animate-spin mx-auto mb-4 text-muted-foreground" />
-                                <p className="font-medium">Barcode wird gescannt...</p>
-                            </>
-                        )
-                    : (
-                            <>
-                                <Upload className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
-                                <h3 className="font-medium mb-2">Bild hochladen</h3>
-                                <p className="text-sm text-muted-foreground mb-6">
-                                    Bild hierher ziehen oder klicken
-                                </p>
-                                <Button
-                                    onClick={() => fileInputRef.current?.click()}
-                                    disabled={isProcessingFile}
-                                >
-                                    <Upload className="h-4 w-4 mr-2" />
-                                    {" "}
-                                    Bild auswählen
-                                </Button>
-                                {uploadError && (
-                                    <Alert variant="destructive" className="mt-4 text-left">
-                                        <AlertDescription>{uploadError}</AlertDescription>
-                                    </Alert>
-                                )}
-                            </>
+                {isProcessingFile ? (
+                    <>
+                        <Loader2 className="h-12 w-12 animate-spin mx-auto mb-4 text-muted-foreground" />
+                        <p className="font-medium">Barcode wird gescannt...</p>
+                    </>
+                ) : (
+                    <>
+                        <Upload className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
+                        <h3 className="font-medium mb-2">Bild hochladen</h3>
+                        <p className="text-sm text-muted-foreground mb-6">
+                            Bild hierher ziehen oder klicken
+                        </p>
+                        <Button
+                            onClick={() => fileInputRef.current?.click()}
+                            disabled={isProcessingFile}
+                        >
+                            <Upload className="h-4 w-4 mr-2" />
+                            {" "}
+                            Bild auswählen
+                        </Button>
+                        {uploadError && (
+                            <Alert
+                                variant="destructive"
+                                className="mt-4 text-left"
+                            >
+                                <AlertDescription>
+                                    {uploadError}
+                                </AlertDescription>
+                            </Alert>
                         )}
+                    </>
+                )}
             </div>
             <input
                 ref={fileInputRef}
@@ -374,15 +388,23 @@ export function BarcodeScanner({
                 <div className="flex flex-col h-screen">
                     <div className="flex-shrink-0 p-4 border-b">
                         <div className="flex items-center justify-between">
-                            <h2 className="text-lg font-semibold">Barcode Scanner</h2>
-                            <Button size="icon" variant="ghost" onClick={onClose}>
+                            <h2 className="text-lg font-semibold">
+                                Barcode Scanner
+                            </h2>
+                            <Button
+                                size="icon"
+                                variant="ghost"
+                                onClick={onClose}
+                            >
                                 <X className="h-4 w-4" />
                             </Button>
                         </div>
                         {modeToggle}
                     </div>
                     <div className="flex-1 relative bg-black">
-                        {scanMode === "camera" ? cameraView(mobileElementId) : uploadView}
+                        {scanMode === "camera"
+                            ? cameraView(mobileElementId)
+                            : uploadView}
                     </div>
                 </div>
             </div>
@@ -406,7 +428,11 @@ export function BarcodeScanner({
                                 ? cameraView(desktopElementId)
                                 : uploadView}
                         </div>
-                        <Button variant="outline" onClick={onClose} className="mt-4 w-full">
+                        <Button
+                            variant="outline"
+                            onClick={onClose}
+                            className="mt-4 w-full"
+                        >
                             Abbrechen
                         </Button>
                     </div>

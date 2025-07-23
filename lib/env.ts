@@ -5,8 +5,8 @@
 
 function createEnv() {
     const env = {
-    // NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
-    // NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+        // NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
+        // NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
         DATABASE_URL: process.env.DATABASE_URL,
         NEXT_PUBLIC_URL: process.env.NEXT_PUBLIC_URL,
         NODE_ENV: process.env.NODE_ENV,
@@ -19,7 +19,6 @@ function createEnv() {
         AUTH_GOOGLE_SECRET: process.env.AUTH_GOOGLE_SECRET,
         AUTH_GOOGLE_ID: process.env.AUTH_GOOGLE_ID,
         ANALYZE: process.env.ANALYZE,
-
     } as const;
 
     // Log environment status for debugging (only in development)
@@ -32,12 +31,12 @@ function createEnv() {
 
     // Validate required environment variables
     const requiredEnvVars = [
-    // 'NEXT_PUBLIC_SUPABASE_URL',
-    // 'NEXT_PUBLIC_SUPABASE_ANON_KEY',
-    // 'NODE_ENV',
-    // 'NEXT_PUBLIC_NODE_ENV',
-    // 'STORAGE_KEY',
-    // 'RECENT_SCANS_KEY',
+        // 'NEXT_PUBLIC_SUPABASE_URL',
+        // 'NEXT_PUBLIC_SUPABASE_ANON_KEY',
+        // 'NODE_ENV',
+        // 'NEXT_PUBLIC_NODE_ENV',
+        // 'STORAGE_KEY',
+        // 'RECENT_SCANS_KEY',
     ] as const;
 
     // Optional environment variables - features will be disabled if missing
@@ -69,9 +68,13 @@ function createEnv() {
         missingOptionalVars.length > 0
         && process.env.NODE_ENV === "development"
     ) {
-    // Only warn about Redis if actually missing
-        const missingRedis = missingOptionalVars.filter(v => v.includes("REDIS"));
-        const missingAuth = missingOptionalVars.filter(v => v.includes("AUTH_GOOGLE"));
+        // Only warn about Redis if actually missing
+        const missingRedis = missingOptionalVars.filter(v =>
+            v.includes("REDIS"),
+        );
+        const missingAuth = missingOptionalVars.filter(v =>
+            v.includes("AUTH_GOOGLE"),
+        );
 
         if (missingRedis.length > 0) {
             console.warn(

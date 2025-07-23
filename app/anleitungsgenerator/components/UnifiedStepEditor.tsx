@@ -175,8 +175,11 @@ export function UnifiedStepEditor({
                             <div className="space-y-4">
                                 <h4 className="font-medium">Anleitungstext</h4>
                                 <RichTextEditor
-                                    value={step.formattedText || step.instruction}
-                                    onChange={content => handleTextChange(step.id, content)}
+                                    value={
+                                        step.formattedText || step.instruction
+                                    }
+                                    onChange={content =>
+                                        handleTextChange(step.id, content)}
                                     placeholder="Schritt-Anleitung formatieren..."
                                 />
                             </div>
@@ -185,19 +188,25 @@ export function UnifiedStepEditor({
                                 <StepImageUpload
                                     stepId={step.id}
                                     currentImage={step.image}
-                                    onImageChange={(id, img) => handleImageChange(id, img)}
+                                    onImageChange={(id, img) =>
+                                        handleImageChange(id, img)}
                                 />
                                 {step.image && step.imageSettings && (
                                     <ImageEditor
                                         image={step.image}
                                         settings={step.imageSettings}
                                         onSettingsChange={settings =>
-                                            handleImageSettingsChange(step.id, settings)}
+                                            handleImageSettingsChange(
+                                                step.id,
+                                                settings,
+                                            )}
                                     />
                                 )}
                             </div>
                         </div>
-                        {index < steps.length - 1 && <Separator className="mt-6" />}
+                        {index < steps.length - 1 && (
+                            <Separator className="mt-6" />
+                        )}
                     </div>
                 ))}
             </CardContent>

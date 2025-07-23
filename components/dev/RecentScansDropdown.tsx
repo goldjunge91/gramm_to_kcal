@@ -143,20 +143,26 @@ export function RecentScansDropdown({
                                                 variant="ghost"
                                                 size="sm"
                                                 className="h-6 w-6 p-0 opacity-60 hover:opacity-100"
-                                                onClick={() => handleSelect(scan)}
+                                                onClick={() =>
+                                                    handleSelect(scan)}
                                             >
                                                 <Check className="h-3 w-3" />
-                                                <span className="sr-only">Auswählen</span>
+                                                <span className="sr-only">
+                                                    Auswählen
+                                                </span>
                                             </Button>
                                             {onRemove && (
                                                 <Button
                                                     variant="ghost"
                                                     size="sm"
                                                     className="h-6 w-6 p-0 opacity-60 hover:opacity-100 text-destructive"
-                                                    onClick={e => handleRemove(scan.id, e)}
+                                                    onClick={e =>
+                                                        handleRemove(scan.id, e)}
                                                 >
                                                     <X className="h-3 w-3" />
-                                                    <span className="sr-only">Entfernen</span>
+                                                    <span className="sr-only">
+                                                        Entfernen
+                                                    </span>
                                                 </Button>
                                             )}
                                         </div>
@@ -172,7 +178,8 @@ export function RecentScansDropdown({
                         <div className="text-xs text-muted-foreground text-center">
                             {recentScans.length}
                             {" "}
-                            von maximal 20 Scans gespeichert
+                            von maximal 20 Scans
+                            gespeichert
                         </div>
                     </div>
                 )}

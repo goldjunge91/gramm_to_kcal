@@ -22,12 +22,12 @@ function DeferredOriginalPortionsInput({
     onChange: (value: number) => void;
 }) {
     const { displayValue, isDirty, handleChange, handleBlur, handleKeyDown }
-    = useDeferredInput({
-        initialValue: value,
-        onCommit: onChange,
-        validator: val => !Number.isNaN(val) && val >= 1,
-        formatter: val => Number.parseFloat(val) || 1,
-    });
+        = useDeferredInput({
+            initialValue: value,
+            onCommit: onChange,
+            validator: val => !Number.isNaN(val) && val >= 1,
+            formatter: val => Number.parseFloat(val) || 1,
+        });
 
     return (
         <Input
@@ -55,12 +55,12 @@ function DeferredDesiredPortionsInput({
     onChange: (value: number) => void;
 }) {
     const { displayValue, isDirty, handleChange, handleBlur, handleKeyDown }
-    = useDeferredInput({
-        initialValue: value,
-        onCommit: onChange,
-        validator: val => !Number.isNaN(val) && val >= 1,
-        formatter: val => Number.parseFloat(val) || 1,
-    });
+        = useDeferredInput({
+            initialValue: value,
+            onCommit: onChange,
+            validator: val => !Number.isNaN(val) && val >= 1,
+            formatter: val => Number.parseFloat(val) || 1,
+        });
 
     return (
         <Input
@@ -88,12 +88,12 @@ function DeferredScaleFactorInput({
     onChange: (value: number) => void;
 }) {
     const { displayValue, isDirty, handleChange, handleBlur, handleKeyDown }
-    = useDeferredInput({
-        initialValue: value,
-        onCommit: onChange,
-        validator: val => !Number.isNaN(val) && val >= 0.1,
-        formatter: val => Number.parseFloat(val) || 1,
-    });
+        = useDeferredInput({
+            initialValue: value,
+            onCommit: onChange,
+            validator: val => !Number.isNaN(val) && val >= 0.1,
+            formatter: val => Number.parseFloat(val) || 1,
+        });
 
     return (
         <Input
@@ -121,7 +121,7 @@ export function PortionControls({
     onScaleFactorChange,
 }: PortionControlsProps): JSX.Element {
     const scaleFactor
-    = originalPortions > 0 ? desiredPortions / originalPortions : 1;
+        = originalPortions > 0 ? desiredPortions / originalPortions : 1;
 
     return (
         <Card>
@@ -131,7 +131,9 @@ export function PortionControls({
             <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="space-y-2">
-                        <Label htmlFor="original-portions">Ursprüngliche Portionen</Label>
+                        <Label htmlFor="original-portions">
+                            Ursprüngliche Portionen
+                        </Label>
                         <DeferredOriginalPortionsInput
                             value={originalPortions}
                             onChange={onOriginalPortionsChange}
@@ -139,7 +141,9 @@ export function PortionControls({
                     </div>
 
                     <div className="space-y-2">
-                        <Label htmlFor="desired-portions">Gewünschte Portionen</Label>
+                        <Label htmlFor="desired-portions">
+                            Gewünschte Portionen
+                        </Label>
                         <DeferredDesiredPortionsInput
                             value={desiredPortions}
                             onChange={onDesiredPortionsChange}

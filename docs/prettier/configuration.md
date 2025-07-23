@@ -45,10 +45,10 @@ JSON:
 
 ```json
 {
-  "trailingComma": "es5",
-  "tabWidth": 4,
-  "semi": false,
-  "singleQuote": true
+    "trailingComma": "es5",
+    "tabWidth": 4,
+    "semi": false,
+    "singleQuote": true
 }
 ```
 
@@ -62,13 +62,13 @@ JS (ES Modules):
  * @type {import("prettier").Config}
  */
 const config = {
-  trailingComma: 'es5',
-  tabWidth: 4,
-  semi: false,
-  singleQuote: true,
-}
+    trailingComma: "es5",
+    tabWidth: 4,
+    semi: false,
+    singleQuote: true,
+};
 
-export default config
+export default config;
 ```
 
 JS (CommonJS):
@@ -81,13 +81,13 @@ JS (CommonJS):
  * @type {import("prettier").Config}
  */
 const config = {
-  trailingComma: 'es5',
-  tabWidth: 4,
-  semi: false,
-  singleQuote: true,
-}
+    trailingComma: "es5",
+    tabWidth: 4,
+    semi: false,
+    singleQuote: true,
+};
 
-module.exports = config
+module.exports = config;
 ```
 
 TypeScript (ES Modules):
@@ -95,13 +95,13 @@ TypeScript (ES Modules):
 ```ts
 // prettier.config.ts, .prettierrc.ts, prettier.config.mts, or .prettierrc.mts
 
-import type { Config } from 'prettier'
+import type { Config } from "prettier";
 
 const config: Config = {
-  trailingComma: 'none',
-}
+    trailingComma: "none",
+};
 
-export default config
+export default config;
 ```
 
 TypeScript (CommonJS):
@@ -109,13 +109,13 @@ TypeScript (CommonJS):
 ```ts
 // prettier.config.ts, .prettierrc.ts, prettier.config.cts, or .prettierrc.cts
 
-import type { Config } from 'prettier'
+import type { Config } from "prettier";
 
 const config: Config = {
-  trailingComma: 'none',
-}
+    trailingComma: "none",
+};
 
-module.exports = config
+module.exports = config;
 ```
 
 YAML:
@@ -148,21 +148,21 @@ JSON:
 
 ```json
 {
-  "semi": false,
-  "overrides": [
-    {
-      "files": "*.test.js",
-      "options": {
-        "semi": true
-      }
-    },
-    {
-      "files": ["*.html", "legacy/**/*.js"],
-      "options": {
-        "tabWidth": 4
-      }
-    }
-  ]
+    "semi": false,
+    "overrides": [
+        {
+            "files": "*.test.js",
+            "options": {
+                "semi": true
+            }
+        },
+        {
+            "files": ["*.html", "legacy/**/*.js"],
+            "options": {
+                "tabWidth": 4
+            }
+        }
+    ]
 }
 ```
 
@@ -171,14 +171,14 @@ YAML:
 ```yaml
 semi: false
 overrides:
-  - files: '*.test.js'
-    options:
-      semi: true
-  - files:
-      - '*.html'
-      - 'legacy/**/*.js'
-    options:
-      tabWidth: 4
+    - files: "*.test.js"
+      options:
+          semi: true
+    - files:
+          - "*.html"
+          - "legacy/**/*.js"
+      options:
+          tabWidth: 4
 ```
 
 `files` is required for each override, and may be a string or array of strings. `excludeFiles` may be optionally provided to exclude files for a given rule, and may also be a string or array of strings.
@@ -191,12 +191,12 @@ For example, to get Prettier to format its own `.prettierrc` file, you can do:
 
 ```json
 {
-  "overrides": [
-    {
-      "files": ".prettierrc",
-      "options": { "parser": "json" }
-    }
-  ]
+    "overrides": [
+        {
+            "files": ".prettierrc",
+            "options": { "parser": "json" }
+        }
+    ]
 }
 ```
 
@@ -204,14 +204,14 @@ You can also switch to the `flow` parser instead of the default `babel` for .js 
 
 ```json
 {
-  "overrides": [
-    {
-      "files": "*.js",
-      "options": {
-        "parser": "flow"
-      }
-    }
-  ]
+    "overrides": [
+        {
+            "files": "*.js",
+            "options": {
+                "parser": "flow"
+            }
+        }
+    ]
 }
 ```
 

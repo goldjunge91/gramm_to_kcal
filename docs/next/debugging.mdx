@@ -16,49 +16,49 @@ Create a file named `.vscode/launch.json` at the root of your project with the f
 
 ```json filename="launch.json"
 {
-  "version": "0.2.0",
-  "configurations": [
-    {
-      "name": "Next.js: debug server-side",
-      "type": "node-terminal",
-      "request": "launch",
-      "command": "npm run dev"
-    },
-    {
-      "name": "Next.js: debug client-side",
-      "type": "chrome",
-      "request": "launch",
-      "url": "http://localhost:3000"
-    },
-    {
-      "name": "Next.js: debug client-side (Firefox)",
-      "type": "firefox",
-      "request": "launch",
-      "url": "http://localhost:3000",
-      "reAttach": true,
-      "pathMappings": [
+    "version": "0.2.0",
+    "configurations": [
         {
-          "url": "webpack://_N_E",
-          "path": "${workspaceFolder}"
+            "name": "Next.js: debug server-side",
+            "type": "node-terminal",
+            "request": "launch",
+            "command": "npm run dev"
+        },
+        {
+            "name": "Next.js: debug client-side",
+            "type": "chrome",
+            "request": "launch",
+            "url": "http://localhost:3000"
+        },
+        {
+            "name": "Next.js: debug client-side (Firefox)",
+            "type": "firefox",
+            "request": "launch",
+            "url": "http://localhost:3000",
+            "reAttach": true,
+            "pathMappings": [
+                {
+                    "url": "webpack://_N_E",
+                    "path": "${workspaceFolder}"
+                }
+            ]
+        },
+        {
+            "name": "Next.js: debug full stack",
+            "type": "node",
+            "request": "launch",
+            "program": "${workspaceFolder}/node_modules/next/dist/bin/next",
+            "runtimeArgs": ["--inspect"],
+            "skipFiles": ["<node_internals>/**"],
+            "serverReadyAction": {
+                "action": "debugWithEdge",
+                "killOnServerStop": true,
+                "pattern": "- Local:.+(https?://.+)",
+                "uriFormat": "%s",
+                "webRoot": "${workspaceFolder}"
+            }
         }
-      ]
-    },
-    {
-      "name": "Next.js: debug full stack",
-      "type": "node",
-      "request": "launch",
-      "program": "${workspaceFolder}/node_modules/next/dist/bin/next",
-      "runtimeArgs": ["--inspect"],
-      "skipFiles": ["<node_internals>/**"],
-      "serverReadyAction": {
-        "action": "debugWithEdge",
-        "killOnServerStop": true,
-        "pattern": "- Local:.+(https?://.+)",
-        "uriFormat": "%s",
-        "webRoot": "${workspaceFolder}"
-      }
-    }
-  ]
+    ]
 }
 ```
 
@@ -115,9 +115,9 @@ If you're using `npm run dev` or `yarn dev` then you should update the `dev` scr
 
 ```json filename="package.json"
 {
-  "scripts": {
-    "dev": "NODE_OPTIONS='--inspect' next dev"
-  }
+    "scripts": {
+        "dev": "NODE_OPTIONS='--inspect' next dev"
+    }
 }
 ```
 
@@ -160,9 +160,9 @@ Windows users may run into an issue when using `NODE_OPTIONS='--inspect'` as tha
 
 ```json filename="package.json"
 {
-  "scripts": {
-    "dev": "cross-env NODE_OPTIONS='--inspect' next dev"
-  }
+    "scripts": {
+        "dev": "cross-env NODE_OPTIONS='--inspect' next dev"
+    }
 }
 ```
 

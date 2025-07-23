@@ -118,7 +118,10 @@ class OpenFoodFactsRateLimiter {
 class ProductCacheManager {
     private redis = getRedis();
 
-    private getCacheKey(type: "product" | "search", identifier: string): string {
+    private getCacheKey(
+        type: "product" | "search",
+        identifier: string,
+    ): string {
         return `openfoodfacts:${type}:${identifier}`;
     }
 
@@ -148,7 +151,7 @@ class ProductCacheManager {
     async setProduct(
         barcode: string,
         data: any,
-    isFailure = false,
+        isFailure = false,
     ): Promise<void> {
         if (!this.redis)
             return;
@@ -299,7 +302,7 @@ export async function cachedLookupProductByBarcode(
     );
 
     if (!circuitResult.success) {
-    // Circuit breaker failed - cache the failure and return error
+        // Circuit breaker failed - cache the failure and return error
         const errorResult = {
             success: false,
             error: circuitResult.error || "Service temporarily unavailable",

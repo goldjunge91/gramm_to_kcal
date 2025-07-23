@@ -76,14 +76,19 @@ export default function CaloriesPage(): JSX.Element {
                             <CardDescription className="text-sm">
                                 Vergleiche Produkte nach ihrer Kaloriendichte
                                 {!isAuthenticated && " (Temporäre Sitzung)"}
-                                {isAuthenticated && !isOnline && " (Offline-Modus)"}
+                                {isAuthenticated
+                                    && !isOnline
+                                    && " (Offline-Modus)"}
                             </CardDescription>
                         </div>
 
                         {/* Beta Link to Barcode Scanner */}
                         {!isMobile && (
                             <Button variant="outline" size="sm" asChild>
-                                <Link href="/calories-scan" className="flex items-center gap-2">
+                                <Link
+                                    href="/calories-scan"
+                                    className="flex items-center gap-2"
+                                >
                                     <Scan className="h-4 w-4" />
                                     Barcode Scanner (Beta)
                                 </Link>
@@ -106,7 +111,9 @@ export default function CaloriesPage(): JSX.Element {
                 <CardContent className="space-y-4">
                     {/* Desktop: Always show form, Mobile: Toggle */}
                     {(!isMobile || showForm) && (
-                        <div className={isMobile ? "border rounded-lg p-4" : ""}>
+                        <div
+                            className={isMobile ? "border rounded-lg p-4" : ""}
+                        >
                             <ProductForm
                                 onSubmit={handleAddProduct}
                                 isLoading={isCreating}
@@ -163,14 +170,21 @@ export default function CaloriesPage(): JSX.Element {
                                 : isOnline
                                     ? " Synced"
                                     : " Cached offline"}
-                            {isAuthenticated && syncInProgress && " • Syncing..."}
+                            {isAuthenticated
+                                && syncInProgress
+                                && " • Syncing..."}
                         </div>
                     )}
 
                     {/* Mobile: Beta Link to Barcode Scanner */}
                     {isMobile && (
                         <div className="text-center pt-4">
-                            <Button variant="outline" size="sm" asChild className="w-full">
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                asChild
+                                className="w-full"
+                            >
                                 <Link
                                     href="/calories-scan"
                                     className="flex items-center justify-center gap-2"

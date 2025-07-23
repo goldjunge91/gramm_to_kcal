@@ -54,7 +54,7 @@ export function convertMlToGrams(
     let substanceData: DensityData | null = null;
 
     if (customDensity !== undefined) {
-    // Benutzerdefinierte Dichte verwenden
+        // Benutzerdefinierte Dichte verwenden
         if (!Number.isFinite(customDensity) || customDensity <= 0) {
             return {
                 success: false,
@@ -69,7 +69,7 @@ export function convertMlToGrams(
         density = customDensity;
     }
     else if (substance) {
-    // Substanz in Datenbank suchen
+        // Substanz in Datenbank suchen
         substanceData = findDensityData(substance) ?? null;
         if (!substanceData) {
             return {
@@ -85,7 +85,7 @@ export function convertMlToGrams(
         density = substanceData.density;
     }
     else {
-    // Standard: Wasser (Dichte = 1.0)
+        // Standard: Wasser (Dichte = 1.0)
         substanceData = findDensityData("water") || null;
         density = 1;
     }
@@ -137,7 +137,7 @@ export function convertGramsToMl(
     let substanceData: DensityData | null = null;
 
     if (customDensity !== undefined) {
-    // Benutzerdefinierte Dichte verwenden
+        // Benutzerdefinierte Dichte verwenden
         if (!Number.isFinite(customDensity) || customDensity <= 0) {
             return {
                 success: false,
@@ -152,7 +152,7 @@ export function convertGramsToMl(
         density = customDensity;
     }
     else if (substance) {
-    // Substanz in Datenbank suchen
+        // Substanz in Datenbank suchen
         substanceData = findDensityData(substance) ?? null;
         if (!substanceData) {
             return {
@@ -168,7 +168,7 @@ export function convertGramsToMl(
         density = substanceData.density;
     }
     else {
-    // Standard: Wasser (Dichte = 1.0)
+        // Standard: Wasser (Dichte = 1.0)
         substanceData = findDensityData("water") || null;
         density = 1;
     }
@@ -203,14 +203,16 @@ export function convertUnits(
     options: ConversionOptions = {},
 ): ConversionResult {
     if (fromUnit === toUnit) {
-    // Keine Umrechnung nötig
+        // Keine Umrechnung nötig
         return {
             success: true,
             value,
             unit: toUnit,
             originalValue: value,
             originalUnit: fromUnit,
-            substance: options.substance ? (findDensityData(options.substance) ?? null) : null,
+            substance: options.substance
+                ? (findDensityData(options.substance) ?? null)
+                : null,
             formula: `${value} ${fromUnit} = ${value} ${toUnit}`,
         };
     }

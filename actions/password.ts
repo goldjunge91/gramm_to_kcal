@@ -14,13 +14,14 @@ export async function resetPasswordAction(formData: FormData) {
     }
 
     try {
-    // Note: This is a placeholder - in production you'd implement proper email reset
-    // For now, we'll return success but explain that it's not implemented
+        // Note: This is a placeholder - in production you'd implement proper email reset
+        // For now, we'll return success but explain that it's not implemented
         console.log("Password reset requested for:", email);
 
         return {
             success: true,
-            message: "Password reset is not yet implemented with Better Auth. Please contact support.",
+            message:
+                "Password reset is not yet implemented with Better Auth. Please contact support.",
         };
     }
     catch (error) {
@@ -44,7 +45,10 @@ export async function updatePasswordAction(formData: FormData) {
     }
 
     if (newPassword.length < 8) {
-        return { success: false, error: "Password must be at least 8 characters long" };
+        return {
+            success: false,
+            error: "Password must be at least 8 characters long",
+        };
     }
 
     try {

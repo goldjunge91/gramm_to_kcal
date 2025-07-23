@@ -17,7 +17,7 @@ describe("useDeferredInput", () => {
             useDeferredInput({
                 initialValue: 42,
                 onCommit,
-            })
+            }),
         );
 
         expect(result.current.displayValue).toBe("42");
@@ -30,12 +30,12 @@ describe("useDeferredInput", () => {
             useDeferredInput({
                 initialValue: 42,
                 onCommit,
-            })
+            }),
         );
 
         act(() => {
             result.current.handleChange({
-                target: { value: "100" }
+                target: { value: "100" },
             } as React.ChangeEvent<HTMLInputElement>);
         });
 
@@ -50,12 +50,12 @@ describe("useDeferredInput", () => {
             useDeferredInput({
                 initialValue: 42,
                 onCommit,
-            })
+            }),
         );
 
         act(() => {
             result.current.handleChange({
-                target: { value: "100" }
+                target: { value: "100" },
             } as React.ChangeEvent<HTMLInputElement>);
         });
 
@@ -74,12 +74,12 @@ describe("useDeferredInput", () => {
             useDeferredInput({
                 initialValue: 42,
                 onCommit,
-            })
+            }),
         );
 
         act(() => {
             result.current.handleChange({
-                target: { value: "100" }
+                target: { value: "100" },
             } as React.ChangeEvent<HTMLInputElement>);
         });
 
@@ -87,7 +87,7 @@ describe("useDeferredInput", () => {
             result.current.handleKeyDown({
                 key: "Enter",
                 preventDefault: vi.fn(),
-                target: { blur: mockBlur }
+                target: { blur: mockBlur },
             } as any);
         });
 
@@ -102,12 +102,12 @@ describe("useDeferredInput", () => {
             useDeferredInput({
                 initialValue: 42,
                 onCommit,
-            })
+            }),
         );
 
         act(() => {
             result.current.handleChange({
-                target: { value: "100" }
+                target: { value: "100" },
             } as React.ChangeEvent<HTMLInputElement>);
         });
 
@@ -115,7 +115,7 @@ describe("useDeferredInput", () => {
             result.current.handleKeyDown({
                 key: "Escape",
                 preventDefault: vi.fn(),
-                target: { blur: mockBlur }
+                target: { blur: mockBlur },
             } as any);
         });
 
@@ -133,12 +133,12 @@ describe("useDeferredInput", () => {
                 initialValue: 42,
                 onCommit,
                 validator,
-            })
+            }),
         );
 
         act(() => {
             result.current.handleChange({
-                target: { value: "100" }
+                target: { value: "100" },
             } as React.ChangeEvent<HTMLInputElement>);
         });
 
@@ -160,12 +160,12 @@ describe("useDeferredInput", () => {
                 initialValue: "initial",
                 onCommit,
                 formatter,
-            })
+            }),
         );
 
         act(() => {
             result.current.handleChange({
-                target: { value: "raw-input" }
+                target: { value: "raw-input" },
             } as React.ChangeEvent<HTMLInputElement>);
         });
 
@@ -183,12 +183,12 @@ describe("useDeferredInput", () => {
             useDeferredInput({
                 initialValue: 42,
                 onCommit,
-            })
+            }),
         );
 
         act(() => {
             result.current.handleChange({
-                target: { value: "not-a-number" }
+                target: { value: "not-a-number" },
             } as React.ChangeEvent<HTMLInputElement>);
         });
 
@@ -207,7 +207,7 @@ describe("useDeferredInput", () => {
                     initialValue,
                     onCommit,
                 }),
-            { initialProps: { initialValue: 42 } }
+            { initialProps: { initialValue: 42 } },
         );
 
         expect(result.current.displayValue).toBe("42");
@@ -224,12 +224,12 @@ describe("useDeferredInput", () => {
             useDeferredInput({
                 initialValue: 42,
                 onCommit,
-            })
+            }),
         );
 
         act(() => {
             result.current.handleChange({
-                target: { value: "100" }
+                target: { value: "100" },
             } as React.ChangeEvent<HTMLInputElement>);
         });
 
@@ -250,7 +250,7 @@ describe("useDeferredInput", () => {
             useDeferredInput({
                 initialValue: 42,
                 onCommit,
-            })
+            }),
         );
 
         act(() => {
@@ -267,12 +267,12 @@ describe("useDeferredInput", () => {
                 initialValue: "hello",
                 onCommit,
                 formatter: (value: string) => value.toUpperCase(),
-            })
+            }),
         );
 
         act(() => {
             result.current.handleChange({
-                target: { value: "world" }
+                target: { value: "world" },
             } as React.ChangeEvent<HTMLInputElement>);
         });
 
@@ -291,13 +291,13 @@ describe("useDeferredInput", () => {
                 initialValue: 50,
                 onCommit,
                 validator,
-            })
+            }),
         );
 
         // Valid value
         act(() => {
             result.current.handleChange({
-                target: { value: "75" }
+                target: { value: "75" },
             } as React.ChangeEvent<HTMLInputElement>);
         });
 
@@ -311,7 +311,7 @@ describe("useDeferredInput", () => {
         // Invalid value
         act(() => {
             result.current.handleChange({
-                target: { value: "150" }
+                target: { value: "150" },
             } as React.ChangeEvent<HTMLInputElement>);
         });
 

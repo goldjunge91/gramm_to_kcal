@@ -1,14 +1,16 @@
 # concepts: Hooks
+
 URL: /docs/concepts/hooks
 Source: https://raw.githubusercontent.com/better-auth/better-auth/refs/heads/main/docs/content/docs/concepts/hooks.mdx
 
 Better Auth Hooks let you customize BetterAuth's behavior
-        
-***
+
+---
 
 title: Hooks
 description: Better Auth Hooks let you customize BetterAuth's behavior
-----------------------------------------------------------------------
+
+---
 
 Hooks in Better Auth let you "hook into" the lifecycle and execute custom logic. They provide a way to customize Better Auth's behavior without writing a full plugin.
 
@@ -18,7 +20,7 @@ Hooks in Better Auth let you "hook into" the lifecycle and execute custom logic.
 
 ## Before Hooks
 
-**Before hooks** run *before* an endpoint is executed. Use them to modify requests, pre validate data, or return early.
+**Before hooks** run _before_ an endpoint is executed. Use them to modify requests, pre validate data, or return early.
 
 ### Example: Enforce Email Domain Restriction
 
@@ -63,7 +65,7 @@ export const auth = betterAuth({
                             ...ctx.body,
                             name: "John Doe",
                         },
-                    }
+                    },
                 };
             }
         }),
@@ -73,25 +75,25 @@ export const auth = betterAuth({
 
 ## After Hooks
 
-**After hooks** run *after* an endpoint is executed. Use them to modify responses.
+**After hooks** run _after_ an endpoint is executed. Use them to modify responses.
 
 ### Example: Send a notification to your channel when a new user is registered
 
 ```ts title="auth.ts"
 import { betterAuth } from "better-auth";
 import { createAuthMiddleware } from "better-auth/api";
-import { sendMessage } from "@/lib/notification"
+import { sendMessage } from "@/lib/notification";
 
 export const auth = betterAuth({
     hooks: {
         after: createAuthMiddleware(async (ctx) => {
-            if(ctx.path.startsWith("/sign-up")){
+            if (ctx.path.startsWith("/sign-up")) {
                 const newSession = ctx.context.newSession;
-                if(newSession){
+                if (newSession) {
                     sendMessage({
                         type: "user-register",
                         name: newSession.user.name,
-                    })
+                    });
                 }
             }
         }),
@@ -103,12 +105,12 @@ export const auth = betterAuth({
 
 When you call `createAuthMiddleware` a `ctx` object is passed that provides a lot of useful properties. Including:
 
-* **Path:** `ctx.path` to get the current endpoint path.
-* **Body:** `ctx.body` for parsed request body (available for POST requests).
-* **Headers:** `ctx.headers` to access request headers.
-* **Request:** `ctx.request` to access the request object (may not exist in server-only endpoints).
-* **Query Parameters:** `ctx.query` to access query parameters.
-* **Context**: `ctx.context` auth related context, useful for accessing new session, auth cookies configuration, password hashing, config...
+- **Path:** `ctx.path` to get the current endpoint path.
+- **Body:** `ctx.body` for parsed request body (available for POST requests).
+- **Headers:** `ctx.headers` to access request headers.
+- **Request:** `ctx.request` to access the request object (may not exist in server-only endpoints).
+- **Query Parameters:** `ctx.query` to access query parameters.
+- **Context**: `ctx.context` auth related context, useful for accessing new session, auth cookies configuration, password hashing, config...
 
 and more.
 
@@ -142,8 +144,8 @@ const hook = createAuthMiddleware(async (ctx) => {
 
 #### Cookies
 
-* Set cookies: `ctx.setCookies` or `ctx.setSignedCookie`.
-* Get cookies: `ctx.getCookies` or `ctx.getSignedCookies`.
+- Set cookies: `ctx.setCookies` or `ctx.setSignedCookie`.
+- Get cookies: `ctx.getCookies` or `ctx.getSignedCookies`.
 
 Example:
 
@@ -185,7 +187,7 @@ The newly created session after an endpoint is run. This only exist in after hoo
 
 ```ts title="auth.ts"
 createAuthMiddleware(async (ctx) => {
-    const newSession = ctx.context.newSession
+    const newSession = ctx.context.newSession;
 });
 ```
 
@@ -227,8 +229,8 @@ You can access the `secret` for your auth instance on `ctx.context.secret`
 
 The password object provider `hash` and `verify`
 
-* `ctx.context.password.hash`: let's you hash a given password.
-* `ctx.context.password.verify`: let's you verify given `password` and a `hash`.
+- `ctx.context.password.hash`: let's you hash a given password.
+- `ctx.context.password.verify`: let's you verify given `password` and a `hash`.
 
 #### Adapter
 
@@ -247,4 +249,3 @@ You can use `ctx.context.generateId` to generate Id for various reasons.
 ## Reusable Hooks
 
 If you need to reuse a hook across multiple endpoints, consider creating a plugin. Learn more in the [Plugins Documentation](/docs/concepts/plugins).
-

@@ -63,7 +63,8 @@ export function MlToGramConverter({
     // State für die Eingabefelder
     const [mlInput, setMlInput] = useState("");
     const [gramsInput, setGramsInput] = useState("");
-    const [selectedSubstance, setSelectedSubstance] = useState(defaultSubstance);
+    const [selectedSubstance, setSelectedSubstance]
+        = useState(defaultSubstance);
     const [customDensity, setCustomDensity] = useState("");
     const [useCustomDensity, setUseCustomDensity] = useState(false);
 
@@ -77,12 +78,12 @@ export function MlToGramConverter({
 
     // Aktuelle Umrechnungsergebnisse
     const [conversionResult, setConversionResult]
-    = useState<ConversionResult | null>(null);
+        = useState<ConversionResult | null>(null);
 
     // Substanzen für die Auswahl basierend auf Kategorie und Suche
-    const [availableSubstances, setAvailableSubstances] = useState<DensityData[]>(
-        [],
-    );
+    const [availableSubstances, setAvailableSubstances] = useState<
+        DensityData[]
+    >([]);
 
     // Aktualisiere verfügbare Substanzen basierend auf Kategorie und Suche
     useEffect(() => {
@@ -91,7 +92,9 @@ export function MlToGramConverter({
         }
         else {
             setAvailableSubstances(
-                getDensityDataByCategory(selectedCategory as DensityData["category"]),
+                getDensityDataByCategory(
+                    selectedCategory as DensityData["category"],
+                ),
             );
         }
     }, [selectedCategory, substanceSearch]);
@@ -122,7 +125,12 @@ export function MlToGramConverter({
 
             return result;
         },
-        [selectedSubstance, useCustomDensity, customDensity, onConversionChange],
+        [
+            selectedSubstance,
+            useCustomDensity,
+            customDensity,
+            onConversionChange,
+        ],
     );
 
     // Handler für ML Eingabe
@@ -184,7 +192,13 @@ export function MlToGramConverter({
                 }
             }
         },
-        [mlInput, gramsInput, lastChangedField, handleMlChange, handleGramsChange],
+        [
+            mlInput,
+            gramsInput,
+            lastChangedField,
+            handleMlChange,
+            handleGramsChange,
+        ],
     );
 
     // Felder zurücksetzen
@@ -226,7 +240,8 @@ export function MlToGramConverter({
                                     {selectedSubstance === "custom"
                                         ? "Benutzerdefiniert"
                                         : availableSubstances.find(
-                                            s => s.name === selectedSubstance,
+                                            s =>
+                                                s.name === selectedSubstance,
                                         )?.nameDE || "Wasser"}
                                     <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                                 </Button>
@@ -237,8 +252,12 @@ export function MlToGramConverter({
                                     onValueChange={setSelectedCategory}
                                 >
                                     <TabsList className="grid w-full grid-cols-2">
-                                        <TabsTrigger value="cooking">Küche</TabsTrigger>
-                                        <TabsTrigger value="chemistry">Labor</TabsTrigger>
+                                        <TabsTrigger value="cooking">
+                                            Küche
+                                        </TabsTrigger>
+                                        <TabsTrigger value="chemistry">
+                                            Labor
+                                        </TabsTrigger>
                                     </TabsList>
 
                                     <Command>
@@ -248,48 +267,65 @@ export function MlToGramConverter({
                                             onValueChange={setSubstanceSearch}
                                         />
                                         <CommandList>
-                                            <CommandEmpty>Keine Substanz gefunden.</CommandEmpty>
+                                            <CommandEmpty>
+                                                Keine Substanz gefunden.
+                                            </CommandEmpty>
 
                                             <CommandGroup
                                                 heading={getCategoryDisplayName(
                                                     selectedCategory as DensityData["category"],
                                                 )}
                                             >
-                                                {availableSubstances.map(substance => (
-                                                    <CommandItem
-                                                        key={substance.name}
-                                                        value={substance.name}
-                                                        onSelect={() =>
-                                                            handleSubstanceChange(substance.name)}
-                                                    >
-                                                        <div className="flex flex-col">
-                                                            <div className="font-medium">
-                                                                {substance.nameDE}
+                                                {availableSubstances.map(
+                                                    substance => (
+                                                        <CommandItem
+                                                            key={substance.name}
+                                                            value={
+                                                                substance.name
+                                                            }
+                                                            onSelect={() =>
+                                                                handleSubstanceChange(
+                                                                    substance.name,
+                                                                )}
+                                                        >
+                                                            <div className="flex flex-col">
+                                                                <div className="font-medium">
+                                                                    {
+                                                                        substance.nameDE
+                                                                    }
+                                                                </div>
+                                                                <div className="text-xs text-muted-foreground">
+                                                                    {
+                                                                        substance.density
+                                                                    }
+                                                                    {" "}
+                                                                    g/ml
+                                                                    {substance.temperature
+                                                                        && ` @ ${substance.temperature}°C`}
+                                                                </div>
                                                             </div>
-                                                            <div className="text-xs text-muted-foreground">
-                                                                {substance.density}
-                                                                {" "}
-                                                                g/ml
-                                                                {substance.temperature
-                                                                    && ` @ ${substance.temperature}°C`}
-                                                            </div>
-                                                        </div>
-                                                    </CommandItem>
-                                                ))}
+                                                        </CommandItem>
+                                                    ),
+                                                )}
                                             </CommandGroup>
 
                                             <Separator />
                                             <CommandGroup heading="Erweitert">
                                                 <CommandItem
                                                     value="custom"
-                                                    onSelect={() => handleSubstanceChange("custom")}
+                                                    onSelect={() =>
+                                                        handleSubstanceChange(
+                                                            "custom",
+                                                        )}
                                                 >
                                                     <div className="flex flex-col">
                                                         <div className="font-medium">
-                                                            Benutzerdefinierte Dichte
+                                                            Benutzerdefinierte
+                                                            Dichte
                                                         </div>
                                                         <div className="text-xs text-muted-foreground">
-                                                            Eigene Dichte eingeben
+                                                            Eigene Dichte
+                                                            eingeben
                                                         </div>
                                                     </div>
                                                 </CommandItem>
@@ -300,7 +336,11 @@ export function MlToGramConverter({
                             </PopoverContent>
                         </Popover>
 
-                        <Button variant="outline" size="icon" onClick={resetFields}>
+                        <Button
+                            variant="outline"
+                            size="icon"
+                            onClick={resetFields}
+                        >
                             <RotateCcw className="h-4 w-4" />
                         </Button>
                     </div>
@@ -372,7 +412,8 @@ export function MlToGramConverter({
                                         {conversionResult.substance.density}
                                         {" "}
                                         g/ml)
-                                        {conversionResult.substance.temperature
+                                        {conversionResult.substance
+                                            .temperature
                                             && ` bei ${conversionResult.substance.temperature}°C`}
                                     </div>
                                 )}
@@ -393,7 +434,9 @@ export function MlToGramConverter({
                                     size="sm"
                                     onClick={() => {
                                         setMlInput(conversion.ml.toString());
-                                        handleMlChange(conversion.ml.toString());
+                                        handleMlChange(
+                                            conversion.ml.toString(),
+                                        );
                                     }}
                                     className="text-xs"
                                 >

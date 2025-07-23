@@ -183,7 +183,10 @@ export class CircuitBreaker {
         try {
             await this.redis.set(this.getKeys().state, state);
             if (state === CircuitState.OPEN) {
-                await this.redis.set(this.getKeys().openedAt, Date.now().toString());
+                await this.redis.set(
+                    this.getKeys().openedAt,
+                    Date.now().toString(),
+                );
             }
         }
         catch (error) {
@@ -314,28 +317,31 @@ export class CircuitBreaker {
         }
 
         try {
-            const [failures, successes, lastFailure, lastSuccess] = await Promise.all(
-                [
+            const [failures, successes, lastFailure, lastSuccess]
+                = await Promise.all([
                     this.redis.get(keys.failures),
                     this.redis.get(keys.successes),
                     this.redis.get(keys.lastFailure),
                     this.redis.get(keys.lastSuccess),
-                ],
-            );
+                ]);
 
             return {
                 failures:
-          typeof failures === "string" ? Number.parseInt(failures, 10) : 0,
+                    typeof failures === "string"
+                        ? Number.parseInt(failures, 10)
+                        : 0,
                 successes:
-          typeof successes === "string" ? Number.parseInt(successes, 10) : 0,
+                    typeof successes === "string"
+                        ? Number.parseInt(successes, 10)
+                        : 0,
                 lastFailure:
-          typeof lastFailure === "string"
-              ? Number.parseInt(lastFailure, 10)
-              : undefined,
+                    typeof lastFailure === "string"
+                        ? Number.parseInt(lastFailure, 10)
+                        : undefined,
                 lastSuccess:
-          typeof lastSuccess === "string"
-              ? Number.parseInt(lastSuccess, 10)
-              : undefined,
+                    typeof lastSuccess === "string"
+                        ? Number.parseInt(lastSuccess, 10)
+                        : undefined,
             };
         }
         catch {
@@ -356,7 +362,8 @@ export class CircuitBreaker {
             config: this.config,
             metrics,
             isHealthy: state === CircuitState.CLOSED,
-            canRetry: state === CircuitState.OPEN ? await this.canRetry() : true,
+            canRetry:
+                state === CircuitState.OPEN ? await this.canRetry() : true,
         };
     }
 
@@ -415,10 +422,12 @@ export class CircuitBreakerManager {
 
     async getAllStatus() {
         const statuses = await Promise.all(
-            Array.from(this.breakers.entries()).map(async ([name, breaker]) => ({
-                name,
-                status: await breaker.getStatus(),
-            })),
+            Array.from(this.breakers.entries()).map(
+                async ([name, breaker]) => ({
+                    name,
+                    status: await breaker.getStatus(),
+                }),
+            ),
         );
 
         return statuses;
@@ -430,7 +439,8 @@ export class CircuitBreakerManager {
         return {
             total: statuses.length,
             healthy: statuses.filter(s => s.status.isHealthy).length,
-            open: statuses.filter(s => s.status.state === CircuitState.OPEN).length,
+            open: statuses.filter(s => s.status.state === CircuitState.OPEN)
+                .length,
             halfOpen: statuses.filter(
                 s => s.status.state === CircuitState.HALF_OPEN,
             ).length,
@@ -452,14 +462,18 @@ export class CircuitBreakerManager {
     // Emergency controls
     async emergencyOpenAll(): Promise<void> {
         await Promise.all(
-            Array.from(this.breakers.values()).map(breaker => breaker.forceOpen()),
+            Array.from(this.breakers.values()).map(breaker =>
+                breaker.forceOpen(),
+            ),
         );
         console.error("EMERGENCY: All circuit breakers force opened!");
     }
 
     async emergencyResetAll(): Promise<void> {
         await Promise.all(
-            Array.from(this.breakers.values()).map(breaker => breaker.reset()),
+            Array.from(this.breakers.values()).map(breaker =>
+                breaker.reset(),
+            ),
         );
         console.info("EMERGENCY: All circuit breakers reset!");
     }

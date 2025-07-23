@@ -95,7 +95,9 @@ export default function RecipePage(): JSX.Element {
     };
 
     const handleDeleteIngredient = (id: string): void => {
-        setIngredients(prev => prev.filter(ingredient => ingredient.id !== id));
+        setIngredients(prev =>
+            prev.filter(ingredient => ingredient.id !== id),
+        );
     };
 
     const handleScaleFactorChange = (scaleFactor: number): void => {
@@ -105,7 +107,7 @@ export default function RecipePage(): JSX.Element {
     };
 
     const handleQuantityChange = (id: string, newQuantity: number): void => {
-    // Update the individual ingredient quantity without affecting the portion calculator
+        // Update the individual ingredient quantity without affecting the portion calculator
         setIngredients(prevIngredients =>
             prevIngredients.map(ingredient =>
                 ingredient.id === id
@@ -120,7 +122,7 @@ export default function RecipePage(): JSX.Element {
         id: string,
         newScaleFactor: number,
     ): void => {
-    // Update the ingredient quantity based on the new scale factor applied to the original quantity
+        // Update the ingredient quantity based on the new scale factor applied to the original quantity
         setIngredients(prevIngredients =>
             prevIngredients.map((ingredient) => {
                 if (ingredient.id === id) {
@@ -129,7 +131,8 @@ export default function RecipePage(): JSX.Element {
                         orig => orig.id === id,
                     );
                     if (originalIngredient) {
-                        const newQuantity = originalIngredient.quantity * newScaleFactor;
+                        const newQuantity
+                            = originalIngredient.quantity * newScaleFactor;
                         return { ...ingredient, quantity: newQuantity };
                     }
                 }
@@ -140,7 +143,7 @@ export default function RecipePage(): JSX.Element {
     };
 
     const handleReorder = (newOrder: Ingredient[]): void => {
-    // Update the ingredients order
+        // Update the ingredients order
         setIngredients(newOrder);
         toast.success("Reihenfolge der Zutaten geändert");
     };
@@ -175,13 +178,16 @@ export default function RecipePage(): JSX.Element {
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="ingredient-quantity">Menge</Label>
+                                <Label htmlFor="ingredient-quantity">
+                                    Menge
+                                </Label>
                                 <Input
                                     id="ingredient-quantity"
                                     type="number"
                                     inputMode="decimal"
                                     value={quantity}
-                                    onChange={e => setQuantity(e.target.value)}
+                                    onChange={e =>
+                                        setQuantity(e.target.value)}
                                     placeholder="z.B. 500"
                                     min="0.1"
                                     step="0.1"
@@ -192,32 +198,39 @@ export default function RecipePage(): JSX.Element {
 
                             <div className="space-y-2">
                                 <Label htmlFor="ingredient-unit">Einheit</Label>
-                                {isCustomUnit
-                                    ? (
-                                            <Input
-                                                id="ingredient-unit"
-                                                type="text"
-                                                value={customUnit}
-                                                onChange={e => setCustomUnit(e.target.value)}
-                                                placeholder="Eigene Einheit eingeben"
-                                                required
-                                            />
-                                        )
-                                    : (
-                                            <Select value={unit} onValueChange={handleUnitChange}>
-                                                <SelectTrigger id="ingredient-unit">
-                                                    <SelectValue placeholder="Einheit auswählen" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    {commonUnits.map(unitOption => (
-                                                        <SelectItem key={unitOption} value={unitOption}>
-                                                            {unitOption}
-                                                        </SelectItem>
-                                                    ))}
-                                                    <SelectItem value="custom">Eigene Einheit...</SelectItem>
-                                                </SelectContent>
-                                            </Select>
-                                        )}
+                                {isCustomUnit ? (
+                                    <Input
+                                        id="ingredient-unit"
+                                        type="text"
+                                        value={customUnit}
+                                        onChange={e =>
+                                            setCustomUnit(e.target.value)}
+                                        placeholder="Eigene Einheit eingeben"
+                                        required
+                                    />
+                                ) : (
+                                    <Select
+                                        value={unit}
+                                        onValueChange={handleUnitChange}
+                                    >
+                                        <SelectTrigger id="ingredient-unit">
+                                            <SelectValue placeholder="Einheit auswählen" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {commonUnits.map(unitOption => (
+                                                <SelectItem
+                                                    key={unitOption}
+                                                    value={unitOption}
+                                                >
+                                                    {unitOption}
+                                                </SelectItem>
+                                            ))}
+                                            <SelectItem value="custom">
+                                                Eigene Einheit...
+                                            </SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                )}
                                 {isCustomUnit && (
                                     <Button
                                         type="button"

@@ -105,7 +105,10 @@ export function useLocalProducts() {
             setProducts([]);
         }
         catch (error) {
-            console.error("Failed to clear products from sessionStorage:", error);
+            console.error(
+                "Failed to clear products from sessionStorage:",
+                error,
+            );
         }
     }, []);
 
@@ -118,7 +121,7 @@ export function useLocalProducts() {
     }, [products]);
 
     return {
-    // Data
+        // Data
         products: getProducts(),
         isLoading,
 

@@ -4,12 +4,7 @@ import { nextCookies } from "better-auth/next-js";
 import { admin, anonymous } from "better-auth/plugins";
 
 import { db } from "@/lib/db";
-import {
-    account,
-    session,
-    user,
-    verification,
-} from "@/lib/db/schemas";
+import { account, session, user, verification } from "@/lib/db/schemas";
 import { env } from "@/lib/env";
 
 export const auth = betterAuth({
@@ -25,16 +20,16 @@ export const auth = betterAuth({
     emailAndPassword: {
         enabled: true,
         // autoSignIn: false, // defaults to true
-
     },
-    socialProviders: env.AUTH_GOOGLE_ID && env.AUTH_GOOGLE_SECRET
-        ? {
-                google: {
-                    clientId: env.AUTH_GOOGLE_ID,
-                    clientSecret: env.AUTH_GOOGLE_SECRET,
-                },
-            }
-        : {},
+    socialProviders:
+        env.AUTH_GOOGLE_ID && env.AUTH_GOOGLE_SECRET
+            ? {
+                    google: {
+                        clientId: env.AUTH_GOOGLE_ID,
+                        clientSecret: env.AUTH_GOOGLE_SECRET,
+                    },
+                }
+            : {},
     session: {
         cookieCache: {
             enabled: true,
@@ -43,7 +38,11 @@ export const auth = betterAuth({
     },
     advanced: {
         ipAddress: {
-            ipAddressHeaders: ["x-forwarded-for", "x-real-ip", "cf-connecting-ip"],
+            ipAddressHeaders: [
+                "x-forwarded-for",
+                "x-real-ip",
+                "cf-connecting-ip",
+            ],
             fallbackToRemoteAddress: true,
         },
     },

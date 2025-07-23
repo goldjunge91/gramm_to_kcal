@@ -1,14 +1,16 @@
 # integrations: Next.js integration
+
 URL: /docs/integrations/next
 Source: https://raw.githubusercontent.com/better-auth/better-auth/refs/heads/main/docs/content/docs/integrations/next.mdx
 
 Integrate Better Auth with Next.js.
-        
-***
+
+---
 
 title: Next.js integration
 description: Integrate Better Auth with Next.js.
-------------------------------------------------
+
+---
 
 Better Auth can be easily integrated with Next.js. Before you start, make sure you have a Better Auth instance configured. If you haven't done that yet, check out the [installation](/docs/installation).
 
@@ -30,13 +32,13 @@ export const { GET, POST } = toNextJsHandler(auth.handler);
 For `pages` route, you need to use `toNodeHandler` instead of `toNextJsHandler` and set `bodyParser` to `false` in the `config` object. Here is an example:
 
 ```ts title="pages/api/auth/[...all].ts"
-import { toNodeHandler } from "better-auth/node"
-import { auth } from "@/lib/auth"
+import { toNodeHandler } from "better-auth/node";
+import { auth } from "@/lib/auth";
 
 // Disallow body parsing, we will parse it manually
-export const config = { api: { bodyParser: false } }
+export const config = { api: { bodyParser: false } };
 
-export default toNodeHandler(auth.handler)
+export default toNodeHandler(auth.handler);
 ```
 
 ## Create a client
@@ -44,11 +46,11 @@ export default toNodeHandler(auth.handler)
 Create a client instance. You can name the file anything you want. Here we are creating `client.ts` file inside the `lib/` directory.
 
 ```ts title="auth-client.ts"
-import { createAuthClient } from "better-auth/react" // make sure to import from better-auth/react
+import { createAuthClient } from "better-auth/react"; // make sure to import from better-auth/react
 
-export const authClient =  createAuthClient({
+export const authClient = createAuthClient({
     //you can pass client configuration here
-})
+});
 ```
 
 Once you have created the client, you can use it to sign up, sign in, and perform other actions.
@@ -63,35 +65,35 @@ The `api` object exported from the auth instance contains all the actions that y
 **Example: Getting Session on a server action**
 
 ```tsx title="server.ts"
-import { auth } from "@/lib/auth"
-import { headers } from "next/headers"
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 
 const someAuthenticatedAction = async () => {
     "use server";
     const session = await auth.api.getSession({
-        headers: await headers()
-    })
+        headers: await headers(),
+    });
 };
 ```
 
 **Example: Getting Session on a RSC**
 
 ```tsx
-import { auth } from "@/lib/auth"
-import { headers } from "next/headers"
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 
 export async function ServerComponent() {
     const session = await auth.api.getSession({
-        headers: await headers()
-    })
-    if(!session) {
-        return <div>Not authenticated</div>
+        headers: await headers(),
+    });
+    if (!session) {
+        return <div>Not authenticated</div>;
     }
     return (
         <div>
             <h1>Welcome {session.user.name}</h1>
         </div>
-    )
+    );
 }
 ```
 
@@ -109,24 +111,24 @@ import { nextCookies } from "better-auth/next-js";
 
 export const auth = betterAuth({
     //...your config
-    plugins: [nextCookies()] // make sure this is the last plugin in the array // [!code highlight]
-})
+    plugins: [nextCookies()], // make sure this is the last plugin in the array // [!code highlight]
+});
 ```
 
 Now, when you call functions that set cookies, they will be automatically set.
 
 ```ts
 "use server";
-import { auth } from "@/lib/auth"
+import { auth } from "@/lib/auth";
 
 const signIn = async () => {
     await auth.api.signInEmail({
         body: {
             email: "user@email.com",
             password: "password",
-        }
-    })
-}
+        },
+    });
+};
 ```
 
 ## Middleware
@@ -144,20 +146,20 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSessionCookie } from "better-auth/cookies";
 
 export async function middleware(request: NextRequest) {
-	const sessionCookie = getSessionCookie(request);
+    const sessionCookie = getSessionCookie(request);
 
     // THIS IS NOT SECURE!
     // This is the recommended approach to optimistically redirect users
     // We recommend handling auth checks in each page/route
-	if (!sessionCookie) {
-		return NextResponse.redirect(new URL("/", request.url));
-	}
+    if (!sessionCookie) {
+        return NextResponse.redirect(new URL("/", request.url));
+    }
 
-	return NextResponse.next();
+    return NextResponse.next();
 }
 
 export const config = {
-	matcher: ["/dashboard"], // Specify the routes the middleware applies to
+    matcher: ["/dashboard"], // Specify the routes the middleware applies to
 };
 ```
 
@@ -172,12 +174,13 @@ export const config = {
 <Callout type="info">
   If you have a custom cookie name or prefix, you can pass it to the `getSessionCookie` function.
 
-  ```ts
-  const sessionCookie = getSessionCookie(request, {
-      cookieName: "my_session_cookie",
-      cookiePrefix: "my_prefix"
-  });
-  ```
+```ts
+const sessionCookie = getSessionCookie(request, {
+    cookieName: "my_session_cookie",
+    cookiePrefix: "my_prefix",
+});
+```
+
 </Callout>
 
 Alternatively, you can use the `getCookieCache` helper to get the session object from the cookie cache.
@@ -186,11 +189,11 @@ Alternatively, you can use the `getCookieCache` helper to get the session object
 import { getCookieCache } from "better-auth/cookies";
 
 export async function middleware(request: NextRequest) {
-	const session = await getCookieCache(request);
-	if (!session) {
-		return NextResponse.redirect(new URL("/sign-in", request.url));
-	}
-	return NextResponse.next();
+    const session = await getCookieCache(request);
+    if (!session) {
+        return NextResponse.redirect(new URL("/sign-in", request.url));
+    }
+    return NextResponse.next();
 }
 ```
 
@@ -206,18 +209,18 @@ import { redirect } from "next/navigation";
 
 export default async function DashboardPage() {
     const session = await auth.api.getSession({
-        headers: await headers()
-    })
+        headers: await headers(),
+    });
 
-    if(!session) {
-        redirect("/sign-in")
+    if (!session) {
+        redirect("/sign-in");
     }
 
     return (
         <div>
             <h1>Welcome {session.user.name}</h1>
         </div>
-    )
+    );
 }
 ```
 
@@ -237,10 +240,10 @@ import { auth } from "@/lib/auth";
 
 export async function middleware(request: NextRequest) {
     const session = await auth.api.getSession({
-        headers: await headers()
-    })
+        headers: await headers(),
+    });
 
-    if(!session) {
+    if (!session) {
         return NextResponse.redirect(new URL("/sign-in", request.url));
     }
 
@@ -248,8 +251,7 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  runtime: "nodejs",
-  matcher: ["/dashboard"], // Apply middleware to specific routes
+    runtime: "nodejs",
+    matcher: ["/dashboard"], // Apply middleware to specific routes
 };
 ```
-

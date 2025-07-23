@@ -27,10 +27,10 @@ describe("auth-client", () => {
 
     it("should create auth client with correct baseURL", async () => {
         const { createAuthClient } = await import("better-auth/react");
-        
+
         // Import to trigger the creation
         await import("@/lib/auth/auth-client");
-        
+
         expect(createAuthClient).toHaveBeenCalledWith({
             baseURL: "http://localhost:3000/api/auth",
         });
@@ -38,7 +38,7 @@ describe("auth-client", () => {
 
     it("should export auth methods", async () => {
         const authClient = await import("@/lib/auth/auth-client");
-        
+
         expect(authClient.signIn).toBeDefined();
         expect(authClient.signUp).toBeDefined();
         expect(authClient.signOut).toBeDefined();
@@ -50,7 +50,7 @@ describe("auth-client", () => {
     it("should handle different environment URLs", async () => {
         // Reset modules to test with different env
         vi.resetModules();
-        
+
         vi.doMock("../../../lib/env", () => ({
             env: {
                 NEXT_PUBLIC_URL: "https://example.com",
@@ -58,9 +58,9 @@ describe("auth-client", () => {
         }));
 
         const { createAuthClient } = await import("better-auth/react");
-        
+
         await import("@/lib/auth/auth-client");
-        
+
         expect(createAuthClient).toHaveBeenCalledWith({
             baseURL: "https://example.com/api/auth",
         });

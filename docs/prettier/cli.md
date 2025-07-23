@@ -191,7 +191,7 @@ _abc.css_
 
 ```css
 .name {
-  display: none;
+    display: none;
 }
 ```
 

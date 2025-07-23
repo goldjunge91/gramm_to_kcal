@@ -38,8 +38,8 @@ import { getDensityDataByCategory } from "@/lib/utils/density-database";
 export default function UnitConverterPage() {
     // State Management
     const [conversionHistory, setConversionHistory] = useState<
-    ConversionResult[]
-  >([]);
+        ConversionResult[]
+    >([]);
     const [favorites, setFavorites] = useState<string[]>([]);
     const [faqOpen, setFaqOpen] = useState<Record<string, boolean>>({});
 
@@ -47,7 +47,9 @@ export default function UnitConverterPage() {
     useEffect(() => {
         if (typeof window !== "undefined") {
             const savedHistory = localStorage.getItem("unit-converter-history");
-            const savedFavorites = localStorage.getItem("unit-converter-favorites");
+            const savedFavorites = localStorage.getItem(
+                "unit-converter-favorites",
+            );
 
             if (savedHistory) {
                 try {
@@ -125,7 +127,9 @@ export default function UnitConverterPage() {
             ["Datum", "Von", "Nach", "Substanz", "Formel"].join(","),
             ...conversionHistory.map(result =>
                 [
-                    new Date(result.timestamp || Date.now()).toLocaleDateString("de-DE"),
+                    new Date(result.timestamp || Date.now()).toLocaleDateString(
+                        "de-DE",
+                    ),
                     `${result.originalValue} ${result.originalUnit}`,
                     `${result.value} ${result.unit}`,
                     result.substance?.nameDE || "Wasser",
@@ -171,32 +175,27 @@ export default function UnitConverterPage() {
         {
             id: "basic-conversion",
             question: "Wie funktioniert die Umrechnung von ML zu Gramm?",
-            answer:
-        "Die Umrechnung basiert auf der Formel: Gewicht [g] = Volumen [ml] × Dichte [g/ml]. Die Dichte ist substanzspezifisch - Wasser hat beispielsweise eine Dichte von 1,0 g/ml, während Honig 1,4 g/ml hat.",
+            answer: "Die Umrechnung basiert auf der Formel: Gewicht [g] = Volumen [ml] × Dichte [g/ml]. Die Dichte ist substanzspezifisch - Wasser hat beispielsweise eine Dichte von 1,0 g/ml, während Honig 1,4 g/ml hat.",
         },
         {
             id: "accuracy",
             question: "Wie genau sind die Umrechnungen?",
-            answer:
-        "Unsere Dichte-Datenbank basiert auf wissenschaftlichen Werten und ist sehr präzise. Beachten Sie jedoch, dass natürliche Schwankungen bei Lebensmitteln (z.B. Fettgehalt bei Milch) kleine Abweichungen verursachen können.",
+            answer: "Unsere Dichte-Datenbank basiert auf wissenschaftlichen Werten und ist sehr präzise. Beachten Sie jedoch, dass natürliche Schwankungen bei Lebensmitteln (z.B. Fettgehalt bei Milch) kleine Abweichungen verursachen können.",
         },
         {
             id: "water-special",
             question: "Warum ist Wasser ein Spezialfall?",
-            answer:
-        "Wasser hat bei Raumtemperatur (20°C) eine Dichte von genau 1,0 g/ml. Das bedeutet: 1 ml Wasser = 1 g Wasser. Dies macht Wasser zum einfachsten Umrechnungsfall.",
+            answer: "Wasser hat bei Raumtemperatur (20°C) eine Dichte von genau 1,0 g/ml. Das bedeutet: 1 ml Wasser = 1 g Wasser. Dies macht Wasser zum einfachsten Umrechnungsfall.",
         },
         {
             id: "cooking-tips",
             question: "Welche Substanzen sind fürs Kochen wichtig?",
-            answer:
-        "Die wichtigsten Küchen-Umrechnungen sind: Milch (1,03 g/ml), Öl (0,92 g/ml), Honig (1,4 g/ml), und Sahne (1,01 g/ml). Diese verwenden Sie am häufigsten beim Backen und Kochen.",
+            answer: "Die wichtigsten Küchen-Umrechnungen sind: Milch (1,03 g/ml), Öl (0,92 g/ml), Honig (1,4 g/ml), und Sahne (1,01 g/ml). Diese verwenden Sie am häufigsten beim Backen und Kochen.",
         },
         {
             id: "custom-density",
             question: "Was ist wenn meine Substanz nicht in der Liste steht?",
-            answer:
-        "Verwenden Sie die \"Benutzerdefinierte Dichte\" Option! Suchen Sie die Dichte Ihrer Substanz online oder auf der Produktverpackung und geben Sie den Wert manuell ein.",
+            answer: "Verwenden Sie die \"Benutzerdefinierte Dichte\" Option! Suchen Sie die Dichte Ihrer Substanz online oder auf der Produktverpackung und geben Sie den Wert manuell ein.",
         },
     ];
 
@@ -216,18 +215,26 @@ export default function UnitConverterPage() {
                                 ML zu Gramm Umrechner
                             </h1>
                             <p className="text-muted-foreground mt-2">
-                                Professionelle Umrechnung zwischen Millilitern und Gramm für
-                                über 50 Substanzen
+                                Professionelle Umrechnung zwischen Millilitern
+                                und Gramm für über 50 Substanzen
                             </p>
                         </div>
 
                         <div className="flex items-center gap-2">
-                            <Button variant="outline" size="sm" onClick={shareConverter}>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={shareConverter}
+                            >
                                 <Share2 className="h-4 w-4 mr-2" />
                                 Teilen
                             </Button>
                             {conversionHistory.length > 0 && (
-                                <Button variant="outline" size="sm" onClick={exportHistory}>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={exportHistory}
+                                >
                                     <Download className="h-4 w-4 mr-2" />
                                     Export
                                 </Button>
@@ -302,29 +309,34 @@ export default function UnitConverterPage() {
                                     </CardTitle>
                                 </CardHeader>
                                 <CardContent className="space-y-3">
-                                    {conversionHistory.slice(0, 5).map((result, index) => (
-                                        <div
-                                            key={index}
-                                            className="text-sm border-l-2 border-primary/20 pl-3 py-1"
-                                        >
-                                            <div className="font-medium">
-                                                {result.originalValue}
-                                                {" "}
-                                                {result.originalUnit}
-                                                {" "}
-                                                →
-                                                {" "}
-                                                {result.value}
-                                                {" "}
-                                                {result.unit}
-                                            </div>
-                                            {result.substance && (
-                                                <div className="text-muted-foreground text-xs">
-                                                    {result.substance.nameDE}
+                                    {conversionHistory
+                                        .slice(0, 5)
+                                        .map((result, index) => (
+                                            <div
+                                                key={index}
+                                                className="text-sm border-l-2 border-primary/20 pl-3 py-1"
+                                            >
+                                                <div className="font-medium">
+                                                    {result.originalValue}
+                                                    {" "}
+                                                    {result.originalUnit}
+                                                    {" "}
+                                                    →
+                                                    {" "}
+                                                    {result.value}
+                                                    {" "}
+                                                    {result.unit}
                                                 </div>
-                                            )}
-                                        </div>
-                                    ))}
+                                                {result.substance && (
+                                                    <div className="text-muted-foreground text-xs">
+                                                        {
+                                                            result.substance
+                                                                .nameDE
+                                                        }
+                                                    </div>
+                                                )}
+                                            </div>
+                                        ))}
                                     {conversionHistory.length > 5 && (
                                         <div className="text-xs text-muted-foreground text-center pt-2">
                                             +
@@ -342,19 +354,31 @@ export default function UnitConverterPage() {
                 {/* Information Tabs */}
                 <Tabs defaultValue="guide" className="w-full">
                     <TabsList className="grid w-full grid-cols-4">
-                        <TabsTrigger value="guide" className="flex items-center gap-2">
+                        <TabsTrigger
+                            value="guide"
+                            className="flex items-center gap-2"
+                        >
                             <Info className="h-4 w-4" />
                             <span className="hidden sm:inline">Anleitung</span>
                         </TabsTrigger>
-                        <TabsTrigger value="substances" className="flex items-center gap-2">
+                        <TabsTrigger
+                            value="substances"
+                            className="flex items-center gap-2"
+                        >
                             <Beaker className="h-4 w-4" />
                             <span className="hidden sm:inline">Substanzen</span>
                         </TabsTrigger>
-                        <TabsTrigger value="cooking" className="flex items-center gap-2">
+                        <TabsTrigger
+                            value="cooking"
+                            className="flex items-center gap-2"
+                        >
                             <ChefHat className="h-4 w-4" />
                             <span className="hidden sm:inline">Küche</span>
                         </TabsTrigger>
-                        <TabsTrigger value="faq" className="flex items-center gap-2">
+                        <TabsTrigger
+                            value="faq"
+                            className="flex items-center gap-2"
+                        >
                             <HelpCircle className="h-4 w-4" />
                             <span className="hidden sm:inline">FAQ</span>
                         </TabsTrigger>
@@ -365,88 +389,135 @@ export default function UnitConverterPage() {
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <Card>
                                 <CardHeader>
-                                    <CardTitle className="text-lg">Grundlagen</CardTitle>
+                                    <CardTitle className="text-lg">
+                                        Grundlagen
+                                    </CardTitle>
                                 </CardHeader>
                                 <CardContent className="space-y-3 text-sm">
                                     <div>
-                                        <Badge variant="secondary" className="mb-2">
+                                        <Badge
+                                            variant="secondary"
+                                            className="mb-2"
+                                        >
                                             Formel
                                         </Badge>
-                                        <p>Gewicht [g] = Volumen [ml] × Dichte [g/ml]</p>
-                                    </div>
-
-                                    <div>
-                                        <Badge variant="secondary" className="mb-2">
-                                            Beispiel
-                                        </Badge>
-                                        <p>250 ml Honig = 250 ml × 1,4 g/ml = 350 g</p>
-                                    </div>
-
-                                    <div>
-                                        <Badge variant="secondary" className="mb-2">
-                                            Tipp
-                                        </Badge>
-                                        <p>Für Wasser gilt: 1 ml = 1 g (bei Raumtemperatur)</p>
-                                    </div>
-                                </CardContent>
-                            </Card>
-
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle className="text-lg">Häufige Dichten</CardTitle>
-                                </CardHeader>
-                                <CardContent className="space-y-2 text-sm">
-                                    <div className="flex justify-between">
-                                        <span>Wasser:</span>
-                                        <span className="font-mono">1,0 g/ml</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span>Milch:</span>
-                                        <span className="font-mono">1,03 g/ml</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span>Honig:</span>
-                                        <span className="font-mono">1,4 g/ml</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span>Speiseöl:</span>
-                                        <span className="font-mono">0,92 g/ml</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span>Alkohol:</span>
-                                        <span className="font-mono">0,79 g/ml</span>
-                                    </div>
-                                </CardContent>
-                            </Card>
-
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle className="text-lg">Tipps</CardTitle>
-                                </CardHeader>
-                                <CardContent className="space-y-3 text-sm">
-                                    <div>
-                                        <Badge variant="outline" className="mb-2">
-                                            Präzision
-                                        </Badge>
                                         <p>
-                                            Verwenden Sie die richtige Dichte für genaueste
-                                            Ergebnisse.
+                                            Gewicht [g] = Volumen [ml] × Dichte
+                                            [g/ml]
                                         </p>
                                     </div>
 
                                     <div>
-                                        <Badge variant="outline" className="mb-2">
-                                            Temperatur
+                                        <Badge
+                                            variant="secondary"
+                                            className="mb-2"
+                                        >
+                                            Beispiel
                                         </Badge>
-                                        <p>Dichte kann sich mit der Temperatur ändern.</p>
+                                        <p>
+                                            250 ml Honig = 250 ml × 1,4 g/ml =
+                                            350 g
+                                        </p>
                                     </div>
 
                                     <div>
-                                        <Badge variant="outline" className="mb-2">
+                                        <Badge
+                                            variant="secondary"
+                                            className="mb-2"
+                                        >
+                                            Tipp
+                                        </Badge>
+                                        <p>
+                                            Für Wasser gilt: 1 ml = 1 g (bei
+                                            Raumtemperatur)
+                                        </p>
+                                    </div>
+                                </CardContent>
+                            </Card>
+
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle className="text-lg">
+                                        Häufige Dichten
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent className="space-y-2 text-sm">
+                                    <div className="flex justify-between">
+                                        <span>Wasser:</span>
+                                        <span className="font-mono">
+                                            1,0 g/ml
+                                        </span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span>Milch:</span>
+                                        <span className="font-mono">
+                                            1,03 g/ml
+                                        </span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span>Honig:</span>
+                                        <span className="font-mono">
+                                            1,4 g/ml
+                                        </span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span>Speiseöl:</span>
+                                        <span className="font-mono">
+                                            0,92 g/ml
+                                        </span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span>Alkohol:</span>
+                                        <span className="font-mono">
+                                            0,79 g/ml
+                                        </span>
+                                    </div>
+                                </CardContent>
+                            </Card>
+
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle className="text-lg">
+                                        Tipps
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent className="space-y-3 text-sm">
+                                    <div>
+                                        <Badge
+                                            variant="outline"
+                                            className="mb-2"
+                                        >
+                                            Präzision
+                                        </Badge>
+                                        <p>
+                                            Verwenden Sie die richtige Dichte
+                                            für genaueste Ergebnisse.
+                                        </p>
+                                    </div>
+
+                                    <div>
+                                        <Badge
+                                            variant="outline"
+                                            className="mb-2"
+                                        >
+                                            Temperatur
+                                        </Badge>
+                                        <p>
+                                            Dichte kann sich mit der Temperatur
+                                            ändern.
+                                        </p>
+                                    </div>
+
+                                    <div>
+                                        <Badge
+                                            variant="outline"
+                                            className="mb-2"
+                                        >
                                             Favoriten
                                         </Badge>
                                         <p>
-                                            Speichern Sie häufig verwendete Substanzen als Favoriten.
+                                            Speichern Sie häufig verwendete
+                                            Substanzen als Favoriten.
                                         </p>
                                     </div>
                                 </CardContent>
@@ -457,63 +528,79 @@ export default function UnitConverterPage() {
                     {/* Substances Tab */}
                     <TabsContent value="substances" className="space-y-6">
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {(["cooking", "chemistry", "common"] as const).map((category) => {
-                                const substances = getDensityDataByCategory(category);
-                                const categoryNames = {
-                                    cooking: "Kochen & Backen",
-                                    chemistry: "Chemikalien",
-                                    common: "Alltägliche Substanzen",
-                                };
+                            {(["cooking", "chemistry", "common"] as const).map(
+                                (category) => {
+                                    const substances
+                                        = getDensityDataByCategory(category);
+                                    const categoryNames = {
+                                        cooking: "Kochen & Backen",
+                                        chemistry: "Chemikalien",
+                                        common: "Alltägliche Substanzen",
+                                    };
 
-                                return (
-                                    <Card key={category}>
-                                        <CardHeader>
-                                            <CardTitle className="text-lg">
-                                                {categoryNames[category]}
-                                            </CardTitle>
-                                        </CardHeader>
-                                        <CardContent className="space-y-2">
-                                            {substances.slice(0, 8).map(substance => (
-                                                <div
-                                                    key={substance.name}
-                                                    className="flex justify-between items-center text-sm"
-                                                >
-                                                    <span>{substance.nameDE}</span>
-                                                    <div className="flex items-center gap-2">
-                                                        <span className="font-mono text-xs">
-                                                            {substance.density}
-                                                            {" "}
-                                                            g/ml
-                                                        </span>
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="sm"
-                                                            className="h-6 w-6 p-0"
-                                                            onClick={() => toggleFavorite(substance.name)}
+                                    return (
+                                        <Card key={category}>
+                                            <CardHeader>
+                                                <CardTitle className="text-lg">
+                                                    {categoryNames[category]}
+                                                </CardTitle>
+                                            </CardHeader>
+                                            <CardContent className="space-y-2">
+                                                {substances
+                                                    .slice(0, 8)
+                                                    .map(substance => (
+                                                        <div
+                                                            key={substance.name}
+                                                            className="flex justify-between items-center text-sm"
                                                         >
-                                                            <Heart
-                                                                className={`h-3 w-3 ${
-                                                                    favorites.includes(substance.name)
-                                                                        ? "fill-current text-red-500"
-                                                                        : "text-muted-foreground"
-                                                                }`}
-                                                            />
-                                                        </Button>
+                                                            <span>
+                                                                {
+                                                                    substance.nameDE
+                                                                }
+                                                            </span>
+                                                            <div className="flex items-center gap-2">
+                                                                <span className="font-mono text-xs">
+                                                                    {
+                                                                        substance.density
+                                                                    }
+                                                                    {" "}
+                                                                    g/ml
+                                                                </span>
+                                                                <Button
+                                                                    variant="ghost"
+                                                                    size="sm"
+                                                                    className="h-6 w-6 p-0"
+                                                                    onClick={() =>
+                                                                        toggleFavorite(
+                                                                            substance.name,
+                                                                        )}
+                                                                >
+                                                                    <Heart
+                                                                        className={`h-3 w-3 ${
+                                                                            favorites.includes(
+                                                                                substance.name,
+                                                                            )
+                                                                                ? "fill-current text-red-500"
+                                                                                : "text-muted-foreground"
+                                                                        }`}
+                                                                    />
+                                                                </Button>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                {substances.length > 8 && (
+                                                    <div className="text-xs text-muted-foreground text-center pt-2">
+                                                        +
+                                                        {substances.length - 8}
+                                                        {" "}
+                                                        weitere verfügbar
                                                     </div>
-                                                </div>
-                                            ))}
-                                            {substances.length > 8 && (
-                                                <div className="text-xs text-muted-foreground text-center pt-2">
-                                                    +
-                                                    {substances.length - 8}
-                                                    {" "}
-                                                    weitere verfügbar
-                                                </div>
-                                            )}
-                                        </CardContent>
-                                    </Card>
-                                );
-                            })}
+                                                )}
+                                            </CardContent>
+                                        </Card>
+                                    );
+                                },
+                            )}
                         </div>
                     </TabsContent>
 
@@ -528,28 +615,44 @@ export default function UnitConverterPage() {
                                 </CardHeader>
                                 <CardContent className="space-y-3">
                                     <div className="space-y-2 text-sm">
-                                        <div className="font-medium border-b pb-2">Backen:</div>
+                                        <div className="font-medium border-b pb-2">
+                                            Backen:
+                                        </div>
                                         <div className="grid grid-cols-2 gap-2">
                                             <span>250ml Milch =</span>
-                                            <span className="font-mono">257g</span>
+                                            <span className="font-mono">
+                                                257g
+                                            </span>
                                             <span>100ml Honig =</span>
-                                            <span className="font-mono">140g</span>
+                                            <span className="font-mono">
+                                                140g
+                                            </span>
                                             <span>200ml Öl =</span>
-                                            <span className="font-mono">184g</span>
+                                            <span className="font-mono">
+                                                184g
+                                            </span>
                                         </div>
                                     </div>
 
                                     <Separator />
 
                                     <div className="space-y-2 text-sm">
-                                        <div className="font-medium border-b pb-2">Kochen:</div>
+                                        <div className="font-medium border-b pb-2">
+                                            Kochen:
+                                        </div>
                                         <div className="grid grid-cols-2 gap-2">
                                             <span>500ml Brühe =</span>
-                                            <span className="font-mono">500g</span>
+                                            <span className="font-mono">
+                                                500g
+                                            </span>
                                             <span>150ml Sahne =</span>
-                                            <span className="font-mono">152g</span>
+                                            <span className="font-mono">
+                                                152g
+                                            </span>
                                             <span>50ml Essig =</span>
-                                            <span className="font-mono">53g</span>
+                                            <span className="font-mono">
+                                                53g
+                                            </span>
                                         </div>
                                     </div>
                                 </CardContent>
@@ -557,45 +660,62 @@ export default function UnitConverterPage() {
 
                             <Card>
                                 <CardHeader>
-                                    <CardTitle className="text-lg">Küchen-Tipps</CardTitle>
+                                    <CardTitle className="text-lg">
+                                        Küchen-Tipps
+                                    </CardTitle>
                                 </CardHeader>
                                 <CardContent className="space-y-3 text-sm">
                                     <div>
-                                        <Badge variant="secondary" className="mb-2">
+                                        <Badge
+                                            variant="secondary"
+                                            className="mb-2"
+                                        >
                                             Messbecher
                                         </Badge>
                                         <p>
-                                            Ein Messbecher für Milliliter ist oft genauer als eine
-                                            Küchenwaage für kleine Mengen.
+                                            Ein Messbecher für Milliliter ist
+                                            oft genauer als eine Küchenwaage für
+                                            kleine Mengen.
                                         </p>
                                     </div>
 
                                     <div>
-                                        <Badge variant="secondary" className="mb-2">
+                                        <Badge
+                                            variant="secondary"
+                                            className="mb-2"
+                                        >
                                             Rezepte
                                         </Badge>
                                         <p>
-                                            Amerikanische Rezepte verwenden oft Cups - 1 Cup ≈ 240ml.
+                                            Amerikanische Rezepte verwenden oft
+                                            Cups - 1 Cup ≈ 240ml.
                                         </p>
                                     </div>
 
                                     <div>
-                                        <Badge variant="secondary" className="mb-2">
+                                        <Badge
+                                            variant="secondary"
+                                            className="mb-2"
+                                        >
                                             Genauigkeit
                                         </Badge>
                                         <p>
-                                            Für präzise Ergebnisse beim Backen sollten Sie wiegen
-                                            statt messen.
+                                            Für präzise Ergebnisse beim Backen
+                                            sollten Sie wiegen statt messen.
                                         </p>
                                     </div>
 
                                     <div>
-                                        <Badge variant="secondary" className="mb-2">
+                                        <Badge
+                                            variant="secondary"
+                                            className="mb-2"
+                                        >
                                             Temperatur
                                         </Badge>
                                         <p>
-                                            Kalte Flüssigkeiten sind dichter als warme - beachten Sie
-                                            dies bei heißen Zutaten.
+                                            Kalte Flüssigkeiten sind dichter als
+                                            warme - beachten Sie dies bei heißen
+                                            Zutaten.
                                         </p>
                                     </div>
                                 </CardContent>
@@ -623,7 +743,9 @@ export default function UnitConverterPage() {
                                                 variant="ghost"
                                                 className="w-full justify-between p-4 h-auto text-left"
                                             >
-                                                <span className="font-medium">{faq.question}</span>
+                                                <span className="font-medium">
+                                                    {faq.question}
+                                                </span>
                                                 <HelpCircle className="h-4 w-4 text-muted-foreground" />
                                             </Button>
                                         </CollapsibleTrigger>

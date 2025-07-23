@@ -47,7 +47,8 @@ export default function MiddlewareDebugPage() {
                 <Card>
                     <CardContent className="p-6">
                         <p className="text-center text-muted-foreground">
-                            Diese Debug-Seite ist nur im Entwicklungsmodus verfügbar.
+                            Diese Debug-Seite ist nur im Entwicklungsmodus
+                            verfügbar.
                         </p>
                     </CardContent>
                 </Card>
@@ -112,7 +113,10 @@ export default function MiddlewareDebugPage() {
                             placeholder="Enter path to test (e.g., /account, /api/products)"
                             className="flex-1"
                         />
-                        <Button onClick={() => fetchDebugInfo(testPath)} disabled={loading}>
+                        <Button
+                            onClick={() => fetchDebugInfo(testPath)}
+                            disabled={loading}
+                        >
                             {loading ? "Testing..." : "Test Path"}
                         </Button>
                     </div>
@@ -129,14 +133,23 @@ export default function MiddlewareDebugPage() {
                             <CardContent>
                                 <div className="space-y-2">
                                     <div className="flex items-center gap-2">
-                                        <span className="font-medium">Route Group:</span>
-                                        <Badge className={getGroupColor(debugInfo.result.group)}>
-                                            {debugInfo.result.group || "UNKNOWN"}
+                                        <span className="font-medium">
+                                            Route Group:
+                                        </span>
+                                        <Badge
+                                            className={getGroupColor(
+                                                debugInfo.result.group,
+                                            )}
+                                        >
+                                            {debugInfo.result.group
+                                                || "UNKNOWN"}
                                         </Badge>
                                     </div>
                                     {debugInfo.result.pattern && (
                                         <div className="flex items-center gap-2">
-                                            <span className="font-medium">Matched Pattern:</span>
+                                            <span className="font-medium">
+                                                Matched Pattern:
+                                            </span>
                                             <code className="bg-muted px-2 py-1 rounded text-sm">
                                                 {debugInfo.result.pattern}
                                             </code>
@@ -144,7 +157,9 @@ export default function MiddlewareDebugPage() {
                                     )}
                                     {debugInfo.result.description && (
                                         <div className="flex items-center gap-2">
-                                            <span className="font-medium">Description:</span>
+                                            <span className="font-medium">
+                                                Description:
+                                            </span>
                                             <span className="text-muted-foreground">
                                                 {debugInfo.result.description}
                                             </span>
@@ -172,7 +187,11 @@ export default function MiddlewareDebugPage() {
                                     <code className="font-mono text-sm bg-muted px-2 py-1 rounded">
                                         {result.path}
                                     </code>
-                                    <Badge className={getGroupColor(result.result.group)}>
+                                    <Badge
+                                        className={getGroupColor(
+                                            result.result.group,
+                                        )}
+                                    >
                                         {result.result.group || "UNKNOWN"}
                                     </Badge>
                                 </div>
@@ -192,15 +211,21 @@ export default function MiddlewareDebugPage() {
                 <CardContent>
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                         <div className="flex items-center gap-2">
-                            <Badge className="bg-green-100 text-green-800">PUBLIC</Badge>
+                            <Badge className="bg-green-100 text-green-800">
+                                PUBLIC
+                            </Badge>
                             <span className="text-sm">No auth required</span>
                         </div>
                         <div className="flex items-center gap-2">
-                            <Badge className="bg-blue-100 text-blue-800">AUTH</Badge>
+                            <Badge className="bg-blue-100 text-blue-800">
+                                AUTH
+                            </Badge>
                             <span className="text-sm">Login/signup pages</span>
                         </div>
                         <div className="flex items-center gap-2">
-                            <Badge className="bg-red-100 text-red-800">PROTECTED</Badge>
+                            <Badge className="bg-red-100 text-red-800">
+                                PROTECTED
+                            </Badge>
                             <span className="text-sm">Auth required</span>
                         </div>
                         <div className="flex items-center gap-2">

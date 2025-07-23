@@ -1,0 +1,11 @@
+{
+    "session_id": "f3b22341-0e1f-4ab5-a867-cd41d0151deb",
+    "transcript_path": "/Users/marco/.claude/projects/-Users-marco-Github-tmp-gramm-to-kcal/f3b22341-0e1f-4ab5-a867-cd41d0151deb.jsonl",
+    "hook_event_name": "PreToolUse",
+    "tool_name": "Edit",
+    "tool_input": {
+        "file_path": "/Users/marco/Github.tmp/gramm_to_kcal/Makefile",
+        "old_string": "test:\n\t@if [ -n \"$(FILE)\" ]; then \\\n\t\tnpx jest $(FILE); \\\n\telse \\\n\t\tnpm test; \\\n\tfi",
+        "new_string": "test:\n\t@if [ -n \"$(FILE)\" ]; then \\\n\t\tpnpm exec vitest run $(FILE) >&2; \\\n\telse \\\n\t\tpnpm test >&2; \\\n\tfi"
+    }
+}

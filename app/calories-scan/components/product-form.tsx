@@ -44,7 +44,7 @@ export function ProductForm({
 
     // Recent scans for authenticated users
     const { recentScans, addRecentScan, removeRecentScan, isAuthenticated }
-    = useRecentScans();
+        = useRecentScans();
 
     // Barcode scanning state
     const [showScanner, setShowScanner] = useState(false);
@@ -81,14 +81,16 @@ export function ProductForm({
                     barcode,
                     error: result.error || "Produkt nicht gefunden",
                 });
-                toast.error(result.error || "Produkt nicht in der Datenbank gefunden");
+                toast.error(
+                    result.error || "Produkt nicht in der Datenbank gefunden",
+                );
             }
         }
         catch (error) {
             const errorMessage
-        = error instanceof Error
-            ? error.message
-            : "Fehler beim Laden der Produktdaten";
+                = error instanceof Error
+                    ? error.message
+                    : "Fehler beim Laden der Produktdaten";
             setScanResult({
                 barcode,
                 error: errorMessage,
@@ -174,13 +176,11 @@ export function ProductForm({
                                 disabled={isLoading || isLookingUp}
                                 className="flex items-center gap-2"
                             >
-                                {isLookingUp
-                                    ? (
-                                            <Loader2 className="h-4 w-4 animate-spin" />
-                                        )
-                                    : (
-                                            <Scan className="h-4 w-4" />
-                                        )}
+                                {isLookingUp ? (
+                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                    <Scan className="h-4 w-4" />
+                                )}
                                 Scannen
                             </Button>
                         )}
@@ -190,46 +190,44 @@ export function ProductForm({
                     {/* Scan Result Display */}
                     {scanResult && (
                         <div className="mb-4">
-                            {scanResult.productData
-                                ? (
-                                        <Alert>
-                                            <CheckCircle className="h-4 w-4" />
-                                            <AlertDescription>
-                                                Barcode gescannt:
-                                                {" "}
-                                                {scanResult.barcode}
-                                                <br />
-                                                Produkt automatisch erkannt und Daten eingefügt.
-                                            </AlertDescription>
-                                        </Alert>
-                                    )
-                                : scanResult.error
-                                    ? (
-                                            <Alert variant="destructive">
-                                                <AlertCircle className="h-4 w-4" />
-                                                <AlertDescription>
-                                                    Barcode:
-                                                    {" "}
-                                                    {scanResult.barcode}
-                                                    <br />
-                                                    {scanResult.error}
-                                                    {" "}
-                                                    - Bitte Daten manuell eingeben.
-                                                </AlertDescription>
-                                            </Alert>
-                                        )
-                                    : (
-                                            <Alert>
-                                                <Loader2 className="h-4 w-4 animate-spin" />
-                                                <AlertDescription>
-                                                    Barcode:
-                                                    {" "}
-                                                    {scanResult.barcode}
-                                                    <br />
-                                                    Produktdaten werden geladen...
-                                                </AlertDescription>
-                                            </Alert>
-                                        )}
+                            {scanResult.productData ? (
+                                <Alert>
+                                    <CheckCircle className="h-4 w-4" />
+                                    <AlertDescription>
+                                        Barcode gescannt:
+                                        {" "}
+                                        {scanResult.barcode}
+                                        <br />
+                                        Produkt automatisch erkannt und Daten
+                                        eingefügt.
+                                    </AlertDescription>
+                                </Alert>
+                            ) : scanResult.error ? (
+                                <Alert variant="destructive">
+                                    <AlertCircle className="h-4 w-4" />
+                                    <AlertDescription>
+                                        Barcode:
+                                        {" "}
+                                        {scanResult.barcode}
+                                        <br />
+                                        {scanResult.error}
+                                        {" "}
+                                        - Bitte Daten manuell
+                                        eingeben.
+                                    </AlertDescription>
+                                </Alert>
+                            ) : (
+                                <Alert>
+                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                    <AlertDescription>
+                                        Barcode:
+                                        {" "}
+                                        {scanResult.barcode}
+                                        <br />
+                                        Produktdaten werden geladen...
+                                    </AlertDescription>
+                                </Alert>
+                            )}
                         </div>
                     )}
 
@@ -246,18 +244,25 @@ export function ProductForm({
                                         id="name"
                                         type="text"
                                         value={name}
-                                        onChange={e => setName(e.target.value)}
+                                        onChange={e =>
+                                            setName(e.target.value)}
                                         placeholder="z.B. Vollkornbrot"
                                         required
                                         disabled={isLoading || isLookingUp}
                                         className={
-                                            isAuthenticated && recentScans.length > 0 ? "pr-10" : ""
+                                            isAuthenticated
+                                            && recentScans.length > 0
+                                                ? "pr-10"
+                                                : ""
                                         }
                                     />
-                                    {isAuthenticated && recentScans.length > 0 && (
+                                    {isAuthenticated
+                                        && recentScans.length > 0 && (
                                         <RecentScansDropdown
                                             recentScans={recentScans}
-                                            onSelect={handleRecentScanSelect}
+                                            onSelect={
+                                                handleRecentScanSelect
+                                            }
                                             onRemove={removeRecentScan}
                                             trigger={(
                                                 <Button
@@ -265,10 +270,16 @@ export function ProductForm({
                                                     variant="ghost"
                                                     size="sm"
                                                     className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 p-0 hover:bg-muted"
-                                                    disabled={isLoading || isLookingUp}
+                                                    disabled={
+                                                        isLoading
+                                                        || isLookingUp
+                                                    }
                                                 >
                                                     <ChevronDown className="h-4 w-4" />
-                                                    <span className="sr-only">Letzte Scans anzeigen</span>
+                                                    <span className="sr-only">
+                                                        Letzte Scans
+                                                        anzeigen
+                                                    </span>
                                                 </Button>
                                             )}
                                             placeholder="Suche in letzten Scans..."
@@ -283,7 +294,8 @@ export function ProductForm({
                                     id="quantity"
                                     type="number"
                                     value={quantity}
-                                    onChange={e => setQuantity(e.target.value)}
+                                    onChange={e =>
+                                        setQuantity(e.target.value)}
                                     placeholder="z.B. 100"
                                     min="0"
                                     step="0.1"
@@ -315,7 +327,9 @@ export function ProductForm({
                                 aria-label="Produkt zur Vergleichstabelle hinzufügen"
                                 disabled={isLoading || isLookingUp}
                             >
-                                {isLoading ? "Wird hinzugefügt..." : "Hinzufügen"}
+                                {isLoading
+                                    ? "Wird hinzugefügt..."
+                                    : "Hinzufügen"}
                             </Button>
 
                             {(name || quantity || kcal || scanResult) && (

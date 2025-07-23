@@ -104,7 +104,9 @@ describe("auth routes", () => {
 
     describe("getRouteGroup", () => {
         it("should identify static files as public", () => {
-            expect(getRouteGroup("/_next/static/chunks/main.js")).toBe("PUBLIC");
+            expect(getRouteGroup("/_next/static/chunks/main.js")).toBe(
+                "PUBLIC",
+            );
             expect(getRouteGroup("/_next/image")).toBe("PUBLIC");
             expect(getRouteGroup("/favicon.ico")).toBe("PUBLIC");
             expect(getRouteGroup("/logo.png")).toBe("PUBLIC");
@@ -131,8 +133,12 @@ describe("auth routes", () => {
         });
 
         it("should handle complex paths correctly", () => {
-            expect(getRouteGroup("/auth/login?returnTo=/account")).toBe("PROTECTED");
-            expect(getRouteGroup("/api/products?search=test")).toBe("API_PROTECTED");
+            expect(getRouteGroup("/auth/login?returnTo=/account")).toBe(
+                "PROTECTED",
+            );
+            expect(getRouteGroup("/api/products?search=test")).toBe(
+                "API_PROTECTED",
+            );
             expect(getRouteGroup("/calories/compare#results")).toBe("PUBLIC");
         });
     });
@@ -173,9 +179,15 @@ describe("auth routes", () => {
             const protectedRoutes = new Set(ROUTE_GROUPS.PROTECTED);
 
             // Check for overlaps between page route groups
-            const publicAuthOverlap = [...publicRoutes].filter(route => authRoutes.has(route));
-            const publicProtectedOverlap = [...publicRoutes].filter(route => protectedRoutes.has(route));
-            const authProtectedOverlap = [...authRoutes].filter(route => protectedRoutes.has(route));
+            const publicAuthOverlap = [...publicRoutes].filter((route) =>
+                authRoutes.has(route),
+            );
+            const publicProtectedOverlap = [...publicRoutes].filter((route) =>
+                protectedRoutes.has(route),
+            );
+            const authProtectedOverlap = [...authRoutes].filter((route) =>
+                protectedRoutes.has(route),
+            );
 
             expect(publicAuthOverlap).toEqual([]);
             expect(publicProtectedOverlap).toEqual([]);
@@ -183,11 +195,22 @@ describe("auth routes", () => {
         });
 
         it("should not have API routes in page route groups", () => {
-            const allApiRoutes = [...ROUTE_GROUPS.API_PUBLIC, ...ROUTE_GROUPS.API_PROTECTED];
-            const allPageRoutes = [...ROUTE_GROUPS.PUBLIC, ...ROUTE_GROUPS.AUTH, ...ROUTE_GROUPS.PROTECTED];
+            const allApiRoutes = [
+                ...ROUTE_GROUPS.API_PUBLIC,
+                ...ROUTE_GROUPS.API_PROTECTED,
+            ];
+            const allPageRoutes = [
+                ...ROUTE_GROUPS.PUBLIC,
+                ...ROUTE_GROUPS.AUTH,
+                ...ROUTE_GROUPS.PROTECTED,
+            ];
 
-            const apiInPages = allPageRoutes.filter(route => route.startsWith("/api/"));
-            const pagesInApi = allApiRoutes.filter(route => !route.startsWith("/api/"));
+            const apiInPages = allPageRoutes.filter((route) =>
+                route.startsWith("/api/"),
+            );
+            const pagesInApi = allApiRoutes.filter(
+                (route) => !route.startsWith("/api/"),
+            );
 
             expect(apiInPages).toEqual([]);
             expect(pagesInApi).toEqual([]);

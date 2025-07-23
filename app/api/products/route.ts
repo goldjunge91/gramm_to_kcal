@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
             );
         }
 
-    // TODO: Implement barcode lookup with cached API
+        // TODO: Implement barcode lookup with cached API
     }
 
     if (searchQuery !== null) {
@@ -59,7 +59,7 @@ export async function GET(request: NextRequest) {
             );
         }
 
-    // TODO: Implement product search
+        // TODO: Implement product search
     }
 
     const headers = getSecurityHeaders();
@@ -69,7 +69,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
     // Validate request size and content type
     if (!validateRequestSize(request, 1024 * 10)) {
-    // 10KB limit
+        // 10KB limit
         const securityHeaders = getSecurityHeaders();
         return NextResponse.json(
             { error: "Request too large" },

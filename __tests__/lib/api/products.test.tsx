@@ -27,7 +27,7 @@ const createWrapper = () => {
             mutations: { retry: false },
         },
     });
-    
+
     return ({ children }: { children: React.ReactNode }) => (
         <QueryClientProvider client={queryClient}>
             {children}
@@ -52,10 +52,9 @@ describe("products API", () => {
                 json: () => Promise.resolve(mockProducts),
             } as Response);
 
-            const { result } = renderHook(
-                () => useProducts("user123"),
-                { wrapper: createWrapper() }
-            );
+            const { result } = renderHook(() => useProducts("user123"), {
+                wrapper: createWrapper(),
+            });
 
             await waitFor(() => {
                 expect(result.current.isSuccess).toBe(true);
@@ -76,10 +75,9 @@ describe("products API", () => {
                 statusText: "Internal Server Error",
             } as Response);
 
-            const { result } = renderHook(
-                () => useProducts("user123"),
-                { wrapper: createWrapper() }
-            );
+            const { result } = renderHook(() => useProducts("user123"), {
+                wrapper: createWrapper(),
+            });
 
             await waitFor(() => {
                 expect(result.current.isError).toBe(true);
@@ -89,20 +87,18 @@ describe("products API", () => {
         });
 
         it("should not fetch when userId is empty", () => {
-            const { result } = renderHook(
-                () => useProducts(""),
-                { wrapper: createWrapper() }
-            );
+            const { result } = renderHook(() => useProducts(""), {
+                wrapper: createWrapper(),
+            });
 
             expect(result.current.isFetching).toBe(false);
             expect(fetch).not.toHaveBeenCalled();
         });
 
         it("should not fetch when userId is undefined", () => {
-            const { result } = renderHook(
-                () => useProducts(undefined as any),
-                { wrapper: createWrapper() }
-            );
+            const { result } = renderHook(() => useProducts(undefined as any), {
+                wrapper: createWrapper(),
+            });
 
             expect(result.current.isFetching).toBe(false);
             expect(fetch).not.toHaveBeenCalled();
@@ -111,7 +107,13 @@ describe("products API", () => {
 
     describe("useCreateProduct", () => {
         it("should create product successfully", async () => {
-            const mockProduct = { id: "1", name: "New Product", kcal: 150, userId: "user123", quantity: 100 };
+            const mockProduct = {
+                id: "1",
+                name: "New Product",
+                kcal: 150,
+                userId: "user123",
+                quantity: 100,
+            };
             const { toast } = await import("sonner");
 
             vi.mocked(fetch).mockResolvedValue({
@@ -119,13 +121,17 @@ describe("products API", () => {
                 json: () => Promise.resolve(mockProduct),
             } as Response);
 
-            const { result } = renderHook(
-                () => useCreateProduct(),
-                { wrapper: createWrapper() }
-            );
+            const { result } = renderHook(() => useCreateProduct(), {
+                wrapper: createWrapper(),
+            });
 
-            const productData = { userId: "user123", name: "New Product", kcal: 150, quantity: 100 };
-            
+            const productData = {
+                userId: "user123",
+                name: "New Product",
+                kcal: 150,
+                quantity: 100,
+            };
+
             result.current.mutate(productData);
 
             await waitFor(() => {
@@ -151,37 +157,53 @@ describe("products API", () => {
                 statusText: "Bad Request",
             } as Response);
 
-            const { result } = renderHook(
-                () => useCreateProduct(),
-                { wrapper: createWrapper() }
-            );
+            const { result } = renderHook(() => useCreateProduct(), {
+                wrapper: createWrapper(),
+            });
 
-            const productData = { userId: "user123", name: "New Product", kcal: 150, quantity: 100 };
-            
+            const productData = {
+                userId: "user123",
+                name: "New Product",
+                kcal: 150,
+                quantity: 100,
+            };
+
             result.current.mutate(productData);
 
             await waitFor(() => {
                 expect(result.current.isError).toBe(true);
             });
 
-            expect(toast.error).toHaveBeenCalledWith("Failed to create product: Bad Request");
+            expect(toast.error).toHaveBeenCalledWith(
+                "Failed to create product: Bad Request",
+            );
         });
 
         it("should invalidate products query on success", async () => {
-            const mockProduct = { id: "1", name: "New Product", kcal: 150, userId: "user123", quantity: 100 };
+            const mockProduct = {
+                id: "1",
+                name: "New Product",
+                kcal: 150,
+                userId: "user123",
+                quantity: 100,
+            };
 
             vi.mocked(fetch).mockResolvedValue({
                 ok: true,
                 json: () => Promise.resolve(mockProduct),
             } as Response);
 
-            const { result } = renderHook(
-                () => useCreateProduct(),
-                { wrapper: createWrapper() }
-            );
+            const { result } = renderHook(() => useCreateProduct(), {
+                wrapper: createWrapper(),
+            });
 
-            const productData = { userId: "user123", name: "New Product", kcal: 150, quantity: 100 };
-            
+            const productData = {
+                userId: "user123",
+                name: "New Product",
+                kcal: 150,
+                quantity: 100,
+            };
+
             result.current.mutate(productData);
 
             await waitFor(() => {

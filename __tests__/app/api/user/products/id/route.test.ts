@@ -54,11 +54,11 @@ describe("/api/user/products/[id]", () => {
         it("should update product when authenticated and authorized", async () => {
             const { auth } = await import("@/lib/auth/auth");
             const { db } = await import("@/lib/db");
-            
+
             const mockUser = { id: "user123", email: "test@example.com" };
-            const updatedProduct = { 
-                id: "product123", 
-                name: "Updated Product", 
+            const updatedProduct = {
+                id: "product123",
+                name: "Updated Product",
                 userId: "user123",
                 updatedAt: new Date(),
             };
@@ -67,22 +67,29 @@ describe("/api/user/products/[id]", () => {
                 user: mockUser,
                 session: { id: "session123" },
             });
-            
+
             const mockUpdate = {
                 set: vi.fn(() => ({
                     where: vi.fn(() => ({
-                        returning: vi.fn(() => Promise.resolve([updatedProduct])),
+                        returning: vi.fn(() =>
+                            Promise.resolve([updatedProduct]),
+                        ),
                     })),
                 })),
             };
             vi.mocked(db.update).mockReturnValue(mockUpdate);
 
-            const request = new NextRequest("http://localhost:3000/api/user/products/product123", {
-                method: "PUT",
-                body: JSON.stringify({ name: "Updated Product" }),
-            });
+            const request = new NextRequest(
+                "http://localhost:3000/api/user/products/product123",
+                {
+                    method: "PUT",
+                    body: JSON.stringify({ name: "Updated Product" }),
+                },
+            );
 
-            const response = await PUT(request, { params: { id: "product123" } });
+            const response = await PUT(request, {
+                params: { id: "product123" },
+            });
             const data = await response.json();
 
             expect(response.status).toBe(200);
@@ -92,15 +99,20 @@ describe("/api/user/products/[id]", () => {
 
         it("should return 401 when not authenticated", async () => {
             const { auth } = await import("@/lib/auth/auth");
-            
+
             vi.mocked(auth.api.getSession).mockResolvedValue(null);
 
-            const request = new NextRequest("http://localhost:3000/api/user/products/product123", {
-                method: "PUT",
-                body: JSON.stringify({ name: "Updated Product" }),
-            });
+            const request = new NextRequest(
+                "http://localhost:3000/api/user/products/product123",
+                {
+                    method: "PUT",
+                    body: JSON.stringify({ name: "Updated Product" }),
+                },
+            );
 
-            const response = await PUT(request, { params: { id: "product123" } });
+            const response = await PUT(request, {
+                params: { id: "product123" },
+            });
             const data = await response.json();
 
             expect(response.status).toBe(401);
@@ -110,13 +122,13 @@ describe("/api/user/products/[id]", () => {
         it("should return 404 when product not found or not owned by user", async () => {
             const { auth } = await import("@/lib/auth/auth");
             const { db } = await import("@/lib/db");
-            
+
             const mockUser = { id: "user123", email: "test@example.com" };
             vi.mocked(auth.api.getSession).mockResolvedValue({
                 user: mockUser,
                 session: { id: "session123" },
             });
-            
+
             const mockUpdate = {
                 set: vi.fn(() => ({
                     where: vi.fn(() => ({
@@ -126,12 +138,17 @@ describe("/api/user/products/[id]", () => {
             };
             vi.mocked(db.update).mockReturnValue(mockUpdate);
 
-            const request = new NextRequest("http://localhost:3000/api/user/products/nonexistent", {
-                method: "PUT",
-                body: JSON.stringify({ name: "Updated Product" }),
-            });
+            const request = new NextRequest(
+                "http://localhost:3000/api/user/products/nonexistent",
+                {
+                    method: "PUT",
+                    body: JSON.stringify({ name: "Updated Product" }),
+                },
+            );
 
-            const response = await PUT(request, { params: { id: "nonexistent" } });
+            const response = await PUT(request, {
+                params: { id: "nonexistent" },
+            });
             const data = await response.json();
 
             expect(response.status).toBe(404);
@@ -141,36 +158,48 @@ describe("/api/user/products/[id]", () => {
         it("should handle database errors during update", async () => {
             const { auth } = await import("@/lib/auth/auth");
             const { db } = await import("@/lib/db");
-            
+
             const mockUser = { id: "user123", email: "test@example.com" };
             vi.mocked(auth.api.getSession).mockResolvedValue({
                 user: mockUser,
                 session: { id: "session123" },
             });
-            
+
             const mockUpdate = {
                 set: vi.fn(() => ({
                     where: vi.fn(() => ({
-                        returning: vi.fn(() => Promise.reject(new Error("Database update failed"))),
+                        returning: vi.fn(() =>
+                            Promise.reject(new Error("Database update failed")),
+                        ),
                     })),
                 })),
             };
             vi.mocked(db.update).mockReturnValue(mockUpdate);
 
-            const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+            const consoleSpy = vi
+                .spyOn(console, "error")
+                .mockImplementation(() => {});
 
-            const request = new NextRequest("http://localhost:3000/api/user/products/product123", {
-                method: "PUT",
-                body: JSON.stringify({ name: "Updated Product" }),
+            const request = new NextRequest(
+                "http://localhost:3000/api/user/products/product123",
+                {
+                    method: "PUT",
+                    body: JSON.stringify({ name: "Updated Product" }),
+                },
+            );
+
+            const response = await PUT(request, {
+                params: { id: "product123" },
             });
-
-            const response = await PUT(request, { params: { id: "product123" } });
             const data = await response.json();
 
             expect(response.status).toBe(500);
             expect(data.error).toBe("Internal server error");
-            expect(consoleSpy).toHaveBeenCalledWith("Error updating product:", expect.any(Error));
-            
+            expect(consoleSpy).toHaveBeenCalledWith(
+                "Error updating product:",
+                expect.any(Error),
+            );
+
             consoleSpy.mockRestore();
         });
     });
@@ -179,10 +208,10 @@ describe("/api/user/products/[id]", () => {
         it("should soft delete product when authenticated and authorized", async () => {
             const { auth } = await import("@/lib/auth/auth");
             const { db } = await import("@/lib/db");
-            
+
             const mockUser = { id: "user123", email: "test@example.com" };
-            const deletedProduct = { 
-                id: "product123", 
+            const deletedProduct = {
+                id: "product123",
                 isDeleted: true,
                 userId: "user123",
                 updatedAt: new Date(),
@@ -192,21 +221,28 @@ describe("/api/user/products/[id]", () => {
                 user: mockUser,
                 session: { id: "session123" },
             });
-            
+
             const mockUpdate = {
                 set: vi.fn(() => ({
                     where: vi.fn(() => ({
-                        returning: vi.fn(() => Promise.resolve([deletedProduct])),
+                        returning: vi.fn(() =>
+                            Promise.resolve([deletedProduct]),
+                        ),
                     })),
                 })),
             };
             vi.mocked(db.update).mockReturnValue(mockUpdate);
 
-            const request = new NextRequest("http://localhost:3000/api/user/products/product123", {
-                method: "DELETE",
-            });
+            const request = new NextRequest(
+                "http://localhost:3000/api/user/products/product123",
+                {
+                    method: "DELETE",
+                },
+            );
 
-            const response = await DELETE(request, { params: { id: "product123" } });
+            const response = await DELETE(request, {
+                params: { id: "product123" },
+            });
             const data = await response.json();
 
             expect(response.status).toBe(200);
@@ -215,14 +251,19 @@ describe("/api/user/products/[id]", () => {
 
         it("should return 401 when not authenticated", async () => {
             const { auth } = await import("@/lib/auth/auth");
-            
+
             vi.mocked(auth.api.getSession).mockResolvedValue(null);
 
-            const request = new NextRequest("http://localhost:3000/api/user/products/product123", {
-                method: "DELETE",
-            });
+            const request = new NextRequest(
+                "http://localhost:3000/api/user/products/product123",
+                {
+                    method: "DELETE",
+                },
+            );
 
-            const response = await DELETE(request, { params: { id: "product123" } });
+            const response = await DELETE(request, {
+                params: { id: "product123" },
+            });
             const data = await response.json();
 
             expect(response.status).toBe(401);
@@ -232,13 +273,13 @@ describe("/api/user/products/[id]", () => {
         it("should return 404 when product not found or not owned by user", async () => {
             const { auth } = await import("@/lib/auth/auth");
             const { db } = await import("@/lib/db");
-            
+
             const mockUser = { id: "user123", email: "test@example.com" };
             vi.mocked(auth.api.getSession).mockResolvedValue({
                 user: mockUser,
                 session: { id: "session123" },
             });
-            
+
             const mockUpdate = {
                 set: vi.fn(() => ({
                     where: vi.fn(() => ({
@@ -248,11 +289,16 @@ describe("/api/user/products/[id]", () => {
             };
             vi.mocked(db.update).mockReturnValue(mockUpdate);
 
-            const request = new NextRequest("http://localhost:3000/api/user/products/nonexistent", {
-                method: "DELETE",
-            });
+            const request = new NextRequest(
+                "http://localhost:3000/api/user/products/nonexistent",
+                {
+                    method: "DELETE",
+                },
+            );
 
-            const response = await DELETE(request, { params: { id: "nonexistent" } });
+            const response = await DELETE(request, {
+                params: { id: "nonexistent" },
+            });
             const data = await response.json();
 
             expect(response.status).toBe(404);
@@ -262,45 +308,57 @@ describe("/api/user/products/[id]", () => {
         it("should handle database errors during deletion", async () => {
             const { auth } = await import("@/lib/auth/auth");
             const { db } = await import("@/lib/db");
-            
+
             const mockUser = { id: "user123", email: "test@example.com" };
             vi.mocked(auth.api.getSession).mockResolvedValue({
                 user: mockUser,
                 session: { id: "session123" },
             });
-            
+
             const mockUpdate = {
                 set: vi.fn(() => ({
                     where: vi.fn(() => ({
-                        returning: vi.fn(() => Promise.reject(new Error("Database delete failed"))),
+                        returning: vi.fn(() =>
+                            Promise.reject(new Error("Database delete failed")),
+                        ),
                     })),
                 })),
             };
             vi.mocked(db.update).mockReturnValue(mockUpdate);
 
-            const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+            const consoleSpy = vi
+                .spyOn(console, "error")
+                .mockImplementation(() => {});
 
-            const request = new NextRequest("http://localhost:3000/api/user/products/product123", {
-                method: "DELETE",
+            const request = new NextRequest(
+                "http://localhost:3000/api/user/products/product123",
+                {
+                    method: "DELETE",
+                },
+            );
+
+            const response = await DELETE(request, {
+                params: { id: "product123" },
             });
-
-            const response = await DELETE(request, { params: { id: "product123" } });
             const data = await response.json();
 
             expect(response.status).toBe(500);
             expect(data.error).toBe("Internal server error");
-            expect(consoleSpy).toHaveBeenCalledWith("Error deleting product:", expect.any(Error));
-            
+            expect(consoleSpy).toHaveBeenCalledWith(
+                "Error deleting product:",
+                expect.any(Error),
+            );
+
             consoleSpy.mockRestore();
         });
 
         it("should use soft delete (isDeleted flag) instead of hard delete", async () => {
             const { auth } = await import("@/lib/auth/auth");
             const { db } = await import("@/lib/db");
-            
+
             const mockUser = { id: "user123", email: "test@example.com" };
-            const deletedProduct = { 
-                id: "product123", 
+            const deletedProduct = {
+                id: "product123",
                 isDeleted: true,
                 updatedAt: new Date(),
             };
@@ -309,23 +367,28 @@ describe("/api/user/products/[id]", () => {
                 user: mockUser,
                 session: { id: "session123" },
             });
-            
+
             let capturedSetValues: any;
             const mockUpdate = {
                 set: vi.fn((values) => {
                     capturedSetValues = values;
                     return {
                         where: vi.fn(() => ({
-                            returning: vi.fn(() => Promise.resolve([deletedProduct])),
+                            returning: vi.fn(() =>
+                                Promise.resolve([deletedProduct]),
+                            ),
                         })),
                     };
                 }),
             };
             vi.mocked(db.update).mockReturnValue(mockUpdate);
 
-            const request = new NextRequest("http://localhost:3000/api/user/products/product123", {
-                method: "DELETE",
-            });
+            const request = new NextRequest(
+                "http://localhost:3000/api/user/products/product123",
+                {
+                    method: "DELETE",
+                },
+            );
 
             await DELETE(request, { params: { id: "product123" } });
 

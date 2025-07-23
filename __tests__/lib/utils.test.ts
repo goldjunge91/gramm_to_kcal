@@ -12,7 +12,9 @@ describe("utils", () => {
         });
 
         it("should handle conditional classes", () => {
-            expect(cn("btn", true && "btn-primary", false && "btn-secondary")).toBe("btn btn-primary");
+            expect(
+                cn("btn", true && "btn-primary", false && "btn-secondary"),
+            ).toBe("btn btn-primary");
         });
 
         it("should merge Tailwind classes correctly", () => {
@@ -21,15 +23,19 @@ describe("utils", () => {
         });
 
         it("should handle arrays of classes", () => {
-            expect(cn(["btn", "btn-primary"], "text-white")).toBe("btn btn-primary text-white");
+            expect(cn(["btn", "btn-primary"], "text-white")).toBe(
+                "btn btn-primary text-white",
+            );
         });
 
         it("should handle objects with conditional classes", () => {
-            expect(cn({
-                "btn": true,
-                "btn-primary": true,
-                "btn-disabled": false,
-            })).toBe("btn btn-primary");
+            expect(
+                cn({
+                    btn: true,
+                    "btn-primary": true,
+                    "btn-disabled": false,
+                }),
+            ).toBe("btn btn-primary");
         });
 
         it("should handle empty inputs", () => {
@@ -40,12 +46,14 @@ describe("utils", () => {
         });
 
         it("should handle mixed inputs", () => {
-            expect(cn(
-                "btn",
-                ["btn-primary", "text-white"],
-                { "shadow-lg": true, "disabled": false },
-                "rounded"
-            )).toBe("btn btn-primary text-white shadow-lg rounded");
+            expect(
+                cn(
+                    "btn",
+                    ["btn-primary", "text-white"],
+                    { "shadow-lg": true, disabled: false },
+                    "rounded",
+                ),
+            ).toBe("btn btn-primary text-white shadow-lg rounded");
         });
 
         it("should resolve Tailwind conflicts properly", () => {
@@ -56,19 +64,25 @@ describe("utils", () => {
         });
 
         it("should handle complex Tailwind class merging", () => {
-            expect(cn(
-                "bg-red-500 text-white px-4 py-2",
-                "bg-blue-500 px-6",
-                "hover:bg-blue-600"
-            )).toBe("text-white py-2 bg-blue-500 px-6 hover:bg-blue-600");
+            expect(
+                cn(
+                    "bg-red-500 text-white px-4 py-2",
+                    "bg-blue-500 px-6",
+                    "hover:bg-blue-600",
+                ),
+            ).toBe("text-white py-2 bg-blue-500 px-6 hover:bg-blue-600");
         });
 
         it("should preserve non-conflicting classes", () => {
-            expect(cn(
-                "flex items-center justify-center",
-                "bg-blue-500 text-white",
-                "rounded-lg shadow-md"
-            )).toBe("flex items-center justify-center bg-blue-500 text-white rounded-lg shadow-md");
+            expect(
+                cn(
+                    "flex items-center justify-center",
+                    "bg-blue-500 text-white",
+                    "rounded-lg shadow-md",
+                ),
+            ).toBe(
+                "flex items-center justify-center bg-blue-500 text-white rounded-lg shadow-md",
+            );
         });
     });
 });

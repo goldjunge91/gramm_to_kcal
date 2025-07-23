@@ -44,7 +44,9 @@ describe("login action", () => {
         formData.append("password", "");
 
         // Action redirects on validation failure - empty email triggers "Invalid email address"
-        await expect(loginAction(formData)).rejects.toThrow("REDIRECT: /auth/login?error=Invalid%20email%20address");
+        await expect(loginAction(formData)).rejects.toThrow(
+            "REDIRECT: /auth/login?error=Invalid%20email%20address",
+        );
     });
 
     it("should validate email format", async () => {
@@ -55,7 +57,9 @@ describe("login action", () => {
         formData.append("password", "password123");
 
         // Action redirects on validation failure
-        await expect(loginAction(formData)).rejects.toThrow("REDIRECT: /auth/login?error=Invalid%20email%20address");
+        await expect(loginAction(formData)).rejects.toThrow(
+            "REDIRECT: /auth/login?error=Invalid%20email%20address",
+        );
     });
 
     it("should handle successful login", async () => {
@@ -86,14 +90,18 @@ describe("login action", () => {
         const { loginAction } = await import("@/actions/login");
 
         // Better Auth might throw an error instead of returning {user: null}
-        vi.mocked(auth.api.signInEmail).mockRejectedValue(new Error("Invalid credentials"));
+        vi.mocked(auth.api.signInEmail).mockRejectedValue(
+            new Error("Invalid credentials"),
+        );
 
         const formData = new FormData();
         formData.append("email", "test@example.com");
         formData.append("password", "wrongpassword");
 
         // Should redirect with generic error message when exception is thrown
-        await expect(loginAction(formData)).rejects.toThrow("REDIRECT: /auth/login?error=Login%20failed.%20Please%20try%20again.");
+        await expect(loginAction(formData)).rejects.toThrow(
+            "REDIRECT: /auth/login?error=Login%20failed.%20Please%20try%20again.",
+        );
     });
 
     it("should log authentication attempts", async () => {
@@ -116,7 +124,9 @@ describe("login action", () => {
         }
 
         expect(consoleSpy).toHaveBeenCalledWith(
-            expect.stringContaining("[BETTER_AUTH] SIGNIN - test@example.com - SUCCESS")
+            expect.stringContaining(
+                "[BETTER_AUTH] SIGNIN - test@example.com - SUCCESS",
+            ),
         );
 
         consoleSpy.mockRestore();

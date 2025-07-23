@@ -3,11 +3,11 @@
  */
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-import { 
-    currentSessionUser, 
-    sessionHasRole, 
-    requireAuth, 
-    requireRole 
+import {
+    currentSessionUser,
+    sessionHasRole,
+    requireAuth,
+    requireRole,
 } from "@/lib/auth/auth-utils";
 
 // Mock auth module
@@ -28,51 +28,58 @@ describe("auth-utils", () => {
         it("should return user when session exists", async () => {
             const { auth } = await import("@/lib/auth/auth");
             const mockUser = { id: "user123", email: "test@example.com" };
-            
+
             vi.mocked(auth.api.getSession).mockResolvedValue({
                 user: mockUser,
                 session: { id: "session123" },
             });
 
             const result = await currentSessionUser();
-            
+
             expect(result).toEqual(mockUser);
         });
 
         it("should return null when no session", async () => {
             const { auth } = await import("@/lib/auth/auth");
-            
+
             vi.mocked(auth.api.getSession).mockResolvedValue(null);
 
             const result = await currentSessionUser();
-            
+
             expect(result).toBeNull();
         });
 
         it("should return null when session has no user", async () => {
             const { auth } = await import("@/lib/auth/auth");
-            
+
             vi.mocked(auth.api.getSession).mockResolvedValue({
                 user: null,
                 session: { id: "session123" },
             });
 
             const result = await currentSessionUser();
-            
+
             expect(result).toBeNull();
         });
 
         it("should handle errors gracefully", async () => {
             const { auth } = await import("@/lib/auth/auth");
-            const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-            
-            vi.mocked(auth.api.getSession).mockRejectedValue(new Error("Session error"));
+            const consoleSpy = vi
+                .spyOn(console, "error")
+                .mockImplementation(() => {});
+
+            vi.mocked(auth.api.getSession).mockRejectedValue(
+                new Error("Session error"),
+            );
 
             const result = await currentSessionUser();
-            
+
             expect(result).toBeNull();
-            expect(consoleSpy).toHaveBeenCalledWith("Error getting current session user:", expect.any(Error));
-            
+            expect(consoleSpy).toHaveBeenCalledWith(
+                "Error getting current session user:",
+                expect.any(Error),
+            );
+
             consoleSpy.mockRestore();
         });
     });
@@ -80,53 +87,68 @@ describe("auth-utils", () => {
     describe("sessionHasRole", () => {
         it("should return true when user has the role", async () => {
             const { auth } = await import("@/lib/auth/auth");
-            const mockUser = { id: "user123", email: "test@example.com", role: "admin" };
-            
+            const mockUser = {
+                id: "user123",
+                email: "test@example.com",
+                role: "admin",
+            };
+
             vi.mocked(auth.api.getSession).mockResolvedValue({
                 user: mockUser,
                 session: { id: "session123" },
             });
 
             const result = await sessionHasRole("admin");
-            
+
             expect(result).toBe(true);
         });
 
         it("should return false when user has different role", async () => {
             const { auth } = await import("@/lib/auth/auth");
-            const mockUser = { id: "user123", email: "test@example.com", role: "user" };
-            
+            const mockUser = {
+                id: "user123",
+                email: "test@example.com",
+                role: "user",
+            };
+
             vi.mocked(auth.api.getSession).mockResolvedValue({
                 user: mockUser,
                 session: { id: "session123" },
             });
 
             const result = await sessionHasRole("admin");
-            
+
             expect(result).toBe(false);
         });
 
         it("should return false when no session", async () => {
             const { auth } = await import("@/lib/auth/auth");
-            
+
             vi.mocked(auth.api.getSession).mockResolvedValue(null);
 
             const result = await sessionHasRole("admin");
-            
+
             expect(result).toBe(false);
         });
 
         it("should handle errors gracefully", async () => {
             const { auth } = await import("@/lib/auth/auth");
-            const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-            
-            vi.mocked(auth.api.getSession).mockRejectedValue(new Error("Role check error"));
+            const consoleSpy = vi
+                .spyOn(console, "error")
+                .mockImplementation(() => {});
+
+            vi.mocked(auth.api.getSession).mockRejectedValue(
+                new Error("Role check error"),
+            );
 
             const result = await sessionHasRole("admin");
-            
+
             expect(result).toBe(false);
-            expect(consoleSpy).toHaveBeenCalledWith("Error checking user role:", expect.any(Error));
-            
+            expect(consoleSpy).toHaveBeenCalledWith(
+                "Error checking user role:",
+                expect.any(Error),
+            );
+
             consoleSpy.mockRestore();
         });
     });
@@ -135,81 +157,99 @@ describe("auth-utils", () => {
         it("should return user when authenticated", async () => {
             const { auth } = await import("@/lib/auth/auth");
             const mockUser = { id: "user123", email: "test@example.com" };
-            
+
             vi.mocked(auth.api.getSession).mockResolvedValue({
                 user: mockUser,
                 session: { id: "session123" },
             });
 
             const result = await requireAuth();
-            
+
             expect(result).toEqual(mockUser);
         });
 
         it("should throw error when not authenticated", async () => {
             const { auth } = await import("@/lib/auth/auth");
-            
+
             vi.mocked(auth.api.getSession).mockResolvedValue(null);
 
-            await expect(requireAuth()).rejects.toThrow("Authentication required");
+            await expect(requireAuth()).rejects.toThrow(
+                "Authentication required",
+            );
         });
 
         it("should throw error when session has no user", async () => {
             const { auth } = await import("@/lib/auth/auth");
-            
+
             vi.mocked(auth.api.getSession).mockResolvedValue({
                 user: null,
                 session: { id: "session123" },
             });
 
-            await expect(requireAuth()).rejects.toThrow("Authentication required");
+            await expect(requireAuth()).rejects.toThrow(
+                "Authentication required",
+            );
         });
     });
 
     describe("requireRole", () => {
         it("should return user when has required role", async () => {
             const { auth } = await import("@/lib/auth/auth");
-            const mockUser = { id: "user123", email: "test@example.com", role: "admin" };
-            
+            const mockUser = {
+                id: "user123",
+                email: "test@example.com",
+                role: "admin",
+            };
+
             vi.mocked(auth.api.getSession).mockResolvedValue({
                 user: mockUser,
                 session: { id: "session123" },
             });
 
             const result = await requireRole("admin");
-            
+
             expect(result).toEqual(mockUser);
         });
 
         it("should throw error when user doesn't have required role", async () => {
             const { auth } = await import("@/lib/auth/auth");
-            const mockUser = { id: "user123", email: "test@example.com", role: "user" };
-            
+            const mockUser = {
+                id: "user123",
+                email: "test@example.com",
+                role: "user",
+            };
+
             vi.mocked(auth.api.getSession).mockResolvedValue({
                 user: mockUser,
                 session: { id: "session123" },
             });
 
-            await expect(requireRole("admin")).rejects.toThrow("Role 'admin' required");
+            await expect(requireRole("admin")).rejects.toThrow(
+                "Role 'admin' required",
+            );
         });
 
         it("should throw authentication error when not authenticated", async () => {
             const { auth } = await import("@/lib/auth/auth");
-            
+
             vi.mocked(auth.api.getSession).mockResolvedValue(null);
 
-            await expect(requireRole("admin")).rejects.toThrow("Authentication required");
+            await expect(requireRole("admin")).rejects.toThrow(
+                "Authentication required",
+            );
         });
 
         it("should call requireAuth first", async () => {
             const { auth } = await import("@/lib/auth/auth");
-            
+
             vi.mocked(auth.api.getSession).mockResolvedValue(null);
 
             try {
                 await requireRole("admin");
             } catch (error) {
-                expect((error as Error).message).toBe("Authentication required");
+                expect((error as Error).message).toBe(
+                    "Authentication required",
+                );
             }
         });
     });

@@ -1,13 +1,17 @@
 "use client";
 
 import type { DragEndEvent } from "@dnd-kit/core";
-import type { Cell, ColumnDef, Header, SortingState } from "@tanstack/react-table";
+import type {
+    Cell,
+    ColumnDef,
+    Header,
+    SortingState,
+} from "@tanstack/react-table";
 import type { CSSProperties } from "react";
 
 import {
     closestCenter,
     DndContext,
-
     KeyboardSensor,
     MouseSensor,
     TouchSensor,
@@ -23,11 +27,9 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import {
-
     flexRender,
     getCoreRowModel,
     getSortedRowModel,
-
     useReactTable,
 } from "@tanstack/react-table";
 import { ChevronDownIcon, ChevronUpIcon, GripVerticalIcon } from "lucide-react";
@@ -75,7 +77,9 @@ const columns: ColumnDef<Item>[] = [
         accessorKey: "location",
         cell: ({ row }) => (
             <div className="truncate">
-                <span className="text-lg leading-none">{row.original.flag}</span>
+                <span className="text-lg leading-none">
+                    {row.original.flag}
+                </span>
                 {" "}
                 {row.getValue("location")}
             </div>
@@ -169,39 +173,46 @@ export default function Component() {
                                 strategy={horizontalListSortingStrategy}
                             >
                                 {headerGroup.headers.map(header => (
-                                    <DraggableTableHeader key={header.id} header={header} />
+                                    <DraggableTableHeader
+                                        key={header.id}
+                                        header={header}
+                                    />
                                 ))}
                             </SortableContext>
                         </TableRow>
                     ))}
                 </TableHeader>
                 <TableBody>
-                    {table.getRowModel().rows?.length
-                        ? (
-                                table.getRowModel().rows.map(row => (
-                                    <TableRow
-                                        key={row.id}
-                                        data-state={row.getIsSelected() && "selected"}
+                    {table.getRowModel().rows?.length ? (
+                        table.getRowModel().rows.map(row => (
+                            <TableRow
+                                key={row.id}
+                                data-state={row.getIsSelected() && "selected"}
+                            >
+                                {row.getVisibleCells().map(cell => (
+                                    <SortableContext
+                                        key={cell.id}
+                                        items={columnOrder}
+                                        strategy={horizontalListSortingStrategy}
                                     >
-                                        {row.getVisibleCells().map(cell => (
-                                            <SortableContext
-                                                key={cell.id}
-                                                items={columnOrder}
-                                                strategy={horizontalListSortingStrategy}
-                                            >
-                                                <DragAlongCell key={cell.id} cell={cell} />
-                                            </SortableContext>
-                                        ))}
-                                    </TableRow>
-                                ))
-                            )
-                        : (
-                                <TableRow>
-                                    <TableCell colSpan={columns.length} className="h-24 text-center">
-                                        No results.
-                                    </TableCell>
-                                </TableRow>
-                            )}
+                                        <DragAlongCell
+                                            key={cell.id}
+                                            cell={cell}
+                                        />
+                                    </SortableContext>
+                                ))}
+                            </TableRow>
+                        ))
+                    ) : (
+                        <TableRow>
+                            <TableCell
+                                colSpan={columns.length}
+                                className="h-24 text-center"
+                            >
+                                No results.
+                            </TableCell>
+                        </TableRow>
+                    )}
                 </TableBody>
             </Table>
             <p className="text-muted-foreground mt-4 text-center text-sm">
@@ -218,7 +229,11 @@ export default function Component() {
                 {" "}
                 and
                 {" "}
-                <a href="https://dndkit.com/" target="_blank" rel="noopener noreferrer">
+                <a
+                    href="https://dndkit.com/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
                     dnd kit
                 </a>
             </p>
@@ -226,11 +241,7 @@ export default function Component() {
     );
 }
 
-function DraggableTableHeader({
-    header,
-}: {
-    header: Header<Item, unknown>;
-}) {
+function DraggableTableHeader({ header }: { header: Header<Item, unknown> }) {
     const {
         attributes,
         isDragging,
@@ -283,7 +294,10 @@ function DraggableTableHeader({
                 <span className="grow truncate">
                     {header.isPlaceholder
                         ? null
-                        : flexRender(header.column.columnDef.header, header.getContext())}
+                        : flexRender(
+                                header.column.columnDef.header,
+                                header.getContext(),
+                            )}
                 </span>
                 <Button
                     size="icon"

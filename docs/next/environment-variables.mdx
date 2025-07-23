@@ -31,12 +31,12 @@ For example, using [`getStaticProps`](/docs/pages/building-your-application/data
 
 ```js filename="pages/index.js"
 export async function getStaticProps() {
-  const db = await myDB.connect({
-    host: process.env.DB_HOST,
-    username: process.env.DB_USER,
-    password: process.env.DB_PASS,
-  });
-  // ...
+    const db = await myDB.connect({
+        host: process.env.DB_HOST,
+        username: process.env.DB_USER,
+        password: process.env.DB_PASS,
+    });
+    // ...
 }
 ```
 
@@ -67,12 +67,12 @@ For example:
 
 ```js filename="app/api/route.js"
 export async function GET() {
-  const db = await myDB.connect({
-    host: process.env.DB_HOST,
-    username: process.env.DB_USER,
-    password: process.env.DB_PASS,
-  });
-  // ...
+    const db = await myDB.connect({
+        host: process.env.DB_HOST,
+        username: process.env.DB_USER,
+        password: process.env.DB_PASS,
+    });
+    // ...
 }
 ```
 
@@ -110,9 +110,9 @@ Then, you can import the configuration where needed. For example:
 import "./envConfig.ts";
 
 export default defineConfig({
-  dbCredentials: {
-    connectionString: process.env.DATABASE_URL!,
-  },
+    dbCredentials: {
+        connectionString: process.env.DATABASE_URL!,
+    },
 });
 ```
 
@@ -120,9 +120,9 @@ export default defineConfig({
 import "./envConfig.js";
 
 export default defineConfig({
-  dbCredentials: {
-    connectionString: process.env.DATABASE_URL,
-  },
+    dbCredentials: {
+        connectionString: process.env.DATABASE_URL,
+    },
 });
 ```
 
@@ -161,7 +161,7 @@ import setupAnalyticsService from "../lib/my-analytics-service";
 setupAnalyticsService(process.env.NEXT_PUBLIC_ANALYTICS_ID);
 
 function HomePage() {
-  return <h1>Hello World</h1>;
+    return <h1>Hello World</h1>;
 }
 
 export default HomePage;
@@ -199,12 +199,12 @@ You can safely read environment variables on the server during dynamic rendering
 import { connection } from "next/server";
 
 export default async function Component() {
-  await connection();
-  // cookies, headers, and other Dynamic APIs
-  // will also opt into dynamic rendering, meaning
-  // this env variable is evaluated at runtime
-  const value = process.env.MY_VALUE;
-  // ...
+    await connection();
+    // cookies, headers, and other Dynamic APIs
+    // will also opt into dynamic rendering, meaning
+    // this env variable is evaluated at runtime
+    const value = process.env.MY_VALUE;
+    // ...
 }
 ```
 
@@ -212,12 +212,12 @@ export default async function Component() {
 import { connection } from "next/server";
 
 export default async function Component() {
-  await connection();
-  // cookies, headers, and other Dynamic APIs
-  // will also opt into dynamic rendering, meaning
-  // this env variable is evaluated at runtime
-  const value = process.env.MY_VALUE;
-  // ...
+    await connection();
+    // cookies, headers, and other Dynamic APIs
+    // will also opt into dynamic rendering, meaning
+    // this env variable is evaluated at runtime
+    const value = process.env.MY_VALUE;
+    // ...
 }
 ```
 
@@ -247,8 +247,8 @@ While running unit tests you can make sure to load your environment variables th
 import { loadEnvConfig } from "@next/env";
 
 export default async () => {
-  const projectDir = process.cwd();
-  loadEnvConfig(projectDir);
+    const projectDir = process.cwd();
+    loadEnvConfig(projectDir);
 };
 ```
 

@@ -77,36 +77,34 @@ export function UploadView({ onScan, onClose }: UploadViewProps) {
             <div id="temp-scanner-element" style={{ display: "none" }} />
 
             <div className="text-center">
-                {isProcessing
-                    ? (
-                            <>
-                                <Loader2 className="h-12 w-12 animate-spin mx-auto mb-4 text-muted-foreground" />
-                                <p className="text-lg font-medium text-muted-foreground">
-                                    Barcode wird gescannt...
-                                </p>
-                            </>
-                        )
-                    : (
-                            <>
-                                <Upload className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
-                                <h3 className="text-lg font-medium text-foreground mb-2">
-                                    Barcode-Bild hochladen
-                                </h3>
-                                <p className="text-sm text-muted-foreground mb-6">
-                                    Ziehe ein Bild hierher oder klicke zum Auswählen
-                                </p>
-                                <Button
-                                    onClick={() => fileInputRef.current?.click()}
-                                    disabled={isProcessing}
-                                >
-                                    <Upload className="h-4 w-4 mr-2" />
-                                    Bild auswählen
-                                </Button>
-                                <p className="text-xs text-muted-foreground mt-4">
-                                    Unterstützt: PNG, JPG • Max: 10MB
-                                </p>
-                            </>
-                        )}
+                {isProcessing ? (
+                    <>
+                        <Loader2 className="h-12 w-12 animate-spin mx-auto mb-4 text-muted-foreground" />
+                        <p className="text-lg font-medium text-muted-foreground">
+                            Barcode wird gescannt...
+                        </p>
+                    </>
+                ) : (
+                    <>
+                        <Upload className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
+                        <h3 className="text-lg font-medium text-foreground mb-2">
+                            Barcode-Bild hochladen
+                        </h3>
+                        <p className="text-sm text-muted-foreground mb-6">
+                            Ziehe ein Bild hierher oder klicke zum Auswählen
+                        </p>
+                        <Button
+                            onClick={() => fileInputRef.current?.click()}
+                            disabled={isProcessing}
+                        >
+                            <Upload className="h-4 w-4 mr-2" />
+                            Bild auswählen
+                        </Button>
+                        <p className="text-xs text-muted-foreground mt-4">
+                            Unterstützt: PNG, JPG • Max: 10MB
+                        </p>
+                    </>
+                )}
             </div>
 
             {error && (

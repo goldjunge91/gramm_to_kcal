@@ -36,12 +36,16 @@ export function RecipePreview({
             </CardHeader>
             <CardContent
                 className={
-                    showFullCard ? "recipe-preview-full" : "recipe-preview-compact"
+                    showFullCard
+                        ? "recipe-preview-full"
+                        : "recipe-preview-compact"
                 }
             >
                 <div className={containerClass}>
                     {/* Header Section */}
-                    <div className={`text-center ${showFullCard ? "mb-6" : "mb-4"}`}>
+                    <div
+                        className={`text-center ${showFullCard ? "mb-6" : "mb-4"}`}
+                    >
                         <h1
                             className={`font-bold ${showFullCard ? "text-3xl mb-3" : "text-xl mb-2"}`}
                         >
@@ -101,7 +105,9 @@ export function RecipePreview({
                         {recipe.description && (
                             <p
                                 className={`text-muted-foreground leading-relaxed max-w-2xl mx-auto ${
-                                    showFullCard ? "text-sm description-print" : "text-xs"
+                                    showFullCard
+                                        ? "text-sm description-print"
+                                        : "text-xs"
                                 }`}
                             >
                                 {recipe.description}
@@ -122,7 +128,9 @@ export function RecipePreview({
                             >
                                 <h3
                                     className={`font-semibold flex items-center gap-2 ${
-                                        showFullCard ? "text-xl card-title-print" : "text-sm"
+                                        showFullCard
+                                            ? "text-xl card-title-print"
+                                            : "text-sm"
                                     }`}
                                 >
                                     🥘 Zutaten
@@ -138,10 +146,14 @@ export function RecipePreview({
                                             <li
                                                 key={ingredient.id}
                                                 className={`flex justify-between items-center py-1 border-b border-gray-100 last:border-b-0 ${
-                                                    showFullCard ? "ingredient-item-print" : "text-xs"
+                                                    showFullCard
+                                                        ? "ingredient-item-print"
+                                                        : "text-xs"
                                                 }`}
                                             >
-                                                <span className="font-medium">{ingredient.name}</span>
+                                                <span className="font-medium">
+                                                    {ingredient.name}
+                                                </span>
                                                 <span className="text-muted-foreground">
                                                     {ingredient.quantity}
                                                     {" "}
@@ -149,7 +161,8 @@ export function RecipePreview({
                                                 </span>
                                             </li>
                                         ))}
-                                    {!showFullCard && recipe.ingredients.length > 5 && (
+                                    {!showFullCard
+                                        && recipe.ingredients.length > 5 && (
                                         <li className="text-xs text-muted-foreground text-center py-1">
                                             ... und
                                             {" "}
@@ -171,7 +184,9 @@ export function RecipePreview({
                             >
                                 <h3
                                     className={`font-semibold flex items-center gap-2 ${
-                                        showFullCard ? "text-xl card-title-print" : "text-sm"
+                                        showFullCard
+                                            ? "text-xl card-title-print"
+                                            : "text-sm"
                                     }`}
                                 >
                                     👨‍🍳 Anleitung
@@ -183,21 +198,25 @@ export function RecipePreview({
                                 >
                                     {(recipe.steps
                                         ? recipe.steps
-                                        : recipe.instructions.map((instruction, index) => ({
-                                                id: `step-${index}`,
-                                                instruction,
-                                                order: index + 1,
-                                                formattedText: undefined,
-                                                image: undefined,
-                                                imageSettings: undefined,
-                                            }))
+                                        : recipe.instructions.map(
+                                                (instruction, index) => ({
+                                                    id: `step-${index}`,
+                                                    instruction,
+                                                    order: index + 1,
+                                                    formattedText: undefined,
+                                                    image: undefined,
+                                                    imageSettings: undefined,
+                                                }),
+                                            )
                                     )
                                         .slice(0, showFullCard ? undefined : 3)
                                         .map(step => (
                                             <li
                                                 key={step.id}
                                                 className={String(
-                                                    showFullCard ? "instruction-item-print" : "",
+                                                    showFullCard
+                                                        ? "instruction-item-print"
+                                                        : "",
                                                 )}
                                             >
                                                 <div
@@ -215,33 +234,43 @@ export function RecipePreview({
                                                     <div
                                                         className={`leading-relaxed flex-1 ${showFullCard ? "text-sm" : "text-xs"}`}
                                                     >
-                                                        {step.formattedText
-                                                            ? (
-                                                                    <div
-                                                                        className="rich-text"
-                                                                        dangerouslySetInnerHTML={{
-                                                                            __html: step.formattedText,
-                                                                        }}
-                                                                    />
-                                                                )
-                                                            : (
-                                                                    <span>
-                                                                        {(step as any).instruction || "No instruction available"}
-                                                                    </span>
-                                                                )}
+                                                        {step.formattedText ? (
+                                                            <div
+                                                                className="rich-text"
+                                                                dangerouslySetInnerHTML={{
+                                                                    __html: step.formattedText,
+                                                                }}
+                                                            />
+                                                        ) : (
+                                                            <span>
+                                                                {(step as any)
+                                                                    .instruction
+                                                                    || "No instruction available"}
+                                                            </span>
+                                                        )}
                                                     </div>
                                                 </div>
                                                 {step.image && (
                                                     <div
-                                                        className={showFullCard ? "ml-9" : "ml-6 mt-2"}
+                                                        className={
+                                                            showFullCard
+                                                                ? "ml-9"
+                                                                : "ml-6 mt-2"
+                                                        }
                                                         style={{
                                                             display: "flex",
                                                             justifyContent:
-                                step.imageSettings?.position === "left"
-                                    ? "flex-start"
-                                    : step.imageSettings?.position === "right"
-                                        ? "flex-end"
-                                        : "center",
+                                                                step
+                                                                    .imageSettings
+                                                                    ?.position
+                                                                    === "left"
+                                                                    ? "flex-start"
+                                                                    : step
+                                                                        .imageSettings
+                                                                        ?.position
+                                                                        === "right"
+                                                                        ? "flex-end"
+                                                                        : "center",
                                                         }}
                                                     >
                                                         <img
@@ -254,7 +283,8 @@ export function RecipePreview({
                                                                 height: showFullCard
                                                                     ? `${step.imageSettings?.height || 150}px`
                                                                     : "60px",
-                                                                objectFit: "cover",
+                                                                objectFit:
+                                                                    "cover",
                                                                 filter: `contrast(${step.imageSettings?.quality || 80}%)`,
                                                             }}
                                                             className="rounded border"
@@ -266,13 +296,15 @@ export function RecipePreview({
                                     {!showFullCard
                                         && (recipe.steps
                                             ? recipe.steps.length > 3
-                                            : recipe.instructions.length > 3) && (
+                                            : recipe.instructions.length
+                                                > 3) && (
                                         <li className="text-xs text-muted-foreground text-center py-1">
                                             ... und
                                             {" "}
                                             {(recipe.steps
                                                 ? recipe.steps.length
-                                                : recipe.instructions.length) - 3}
+                                                : recipe.instructions
+                                                    .length) - 3}
                                             {" "}
                                             weitere Schritte
                                         </li>

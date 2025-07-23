@@ -20,10 +20,10 @@ Or provide an object as the second argument with more options. They will overwri
 import { toast } from "sonner";
 
 toast("My toast", {
-  className: "my-classname",
-  description: "My description",
-  duration: 5000,
-  icon: <MyIcon />,
+    className: "my-classname",
+    description: "My description",
+    duration: 5000,
+    icon: <MyIcon />,
 });
 ```
 
@@ -33,7 +33,7 @@ To render a toast on initial page load it is required that the function `toast()
 
 ```jsx
 setTimeout(() => {
-  toast("My toast on a page load");
+    toast("My toast on a page load");
 });
 ```
 
@@ -61,10 +61,10 @@ Renders a primary button, clicking it will close the toast and run the callback 
 
 ```jsx
 toast("My action toast", {
-  action: {
-    label: "Action",
-    onClick: () => console.log("Action!"),
-  },
+    action: {
+        label: "Action",
+        onClick: () => console.log("Action!"),
+    },
 });
 ```
 
@@ -72,7 +72,7 @@ You can also render jsx as your action.
 
 ```jsx
 toast("My action toast", {
-  action: <Button onClick={() => console.log("Action!")}>Action</Button>,
+    action: <Button onClick={() => console.log("Action!")}>Action</Button>,
 });
 ```
 
@@ -82,10 +82,10 @@ Renders a secondary button, clicking it will close the toast and run the callbac
 
 ```jsx
 toast("My cancel toast", {
-  cancel: {
-    label: "Cancel",
-    onClick: () => console.log("Cancel!"),
-  },
+    cancel: {
+        label: "Cancel",
+        onClick: () => console.log("Cancel!"),
+    },
 });
 ```
 
@@ -93,7 +93,7 @@ You can also render jsx in the cancel option.
 
 ```jsx
 toast("My cancel toast", {
-  cancel: <Button onClick={() => console.log("Cancel!")}>Cancel</Button>,
+    cancel: <Button onClick={() => console.log("Cancel!")}>Cancel</Button>,
 });
 ```
 
@@ -104,11 +104,11 @@ You can pass a function to the success/error messages to incorporate the result/
 
 ```jsx
 toast.promise(myPromise, {
-  loading: "Loading...",
-  success: (data) => {
-    return `${data.name} toast has been added`;
-  },
-  error: "Error",
+    loading: "Loading...",
+    success: (data) => {
+        return `${data.name} toast has been added`;
+    },
+    error: "Error",
 });
 ```
 
@@ -134,10 +134,10 @@ Use it to render an unstyled toast with custom jsx while maintaining the functio
 
 ```jsx
 toast.custom((t) => (
-  <div>
-    This is a custom component{" "}
-    <button onClick={() => toast.dismiss(t)}>close</button>
-  </div>
+    <div>
+        This is a custom component{" "}
+        <button onClick={() => toast.dismiss(t)}>close</button>
+    </div>
 ));
 ```
 
@@ -150,7 +150,7 @@ function. It will not affect the positioning of other toasts.
 // Available positions:
 // top-left, top-center, top-right, bottom-left, bottom-center, bottom-right
 toast("Hello World", {
-  position: "top-center",
+    position: "top-center",
 });
 ```
 
@@ -164,7 +164,7 @@ You can update a toast by using the `toast` function and passing it the id of th
 const toastId = toast("Sonner");
 
 toast.success("Toast has been updated", {
-  id: toastId,
+    id: toastId,
 });
 ```
 
@@ -174,9 +174,9 @@ You can pass `onDismiss` and `onAutoClose` callbacks to each toast. `onDismiss` 
 
 ```jsx
 toast("Event has been created", {
-  onDismiss: (t) => console.log(`Toast with id ${t.id} has been dismissed`),
-  onAutoClose: (t) =>
-    console.log(`Toast with id ${t.id} has been closed automatically`),
+    onDismiss: (t) => console.log(`Toast with id ${t.id} has been dismissed`),
+    onAutoClose: (t) =>
+        console.log(`Toast with id ${t.id} has been closed automatically`),
 });
 ```
 
@@ -186,7 +186,7 @@ If you want a toast to stay on screen forever, you can set the `duration` to [`I
 
 ```js
 toast("This toast will stay on screen forever", {
-  duration: Infinity,
+    duration: Infinity,
 });
 ```
 
@@ -212,17 +212,17 @@ You can render custom elements inside the toast like `<a />` or custom component
 
 ```jsx
 toast(
-  () => (
-    <>
-      View{" "}
-      <a href="https://google.com" target="_blank">
-        Animation on the Web
-      </a>
-    </>
-  ),
-  {
-    description: () => <button>This is a button element!</button>,
-  },
+    () => (
+        <>
+            View{" "}
+            <a href="https://google.com" target="_blank">
+                Animation on the Web
+            </a>
+        </>
+    ),
+    {
+        description: () => <button>This is a button element!</button>,
+    },
 );
 ```
 

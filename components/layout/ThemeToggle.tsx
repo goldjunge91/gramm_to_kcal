@@ -3,11 +3,7 @@
 
 import type { MotionProps, Variants } from "framer-motion";
 
-import {
-    AnimatePresence,
-    motion,
-
-} from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import * as React from "react";
 
 import { Label } from "@/components/ui/label";
@@ -68,17 +64,24 @@ function createStarVariants(index: number): Variants {
     };
 }
 
-function ThemeToggle({ ref, className, defaultChecked = true, checked: controlledChecked, onToggle, ...restProps }: DayNightSwitchProps & { ref?: React.RefObject<HTMLDivElement | null> }) {
+function ThemeToggle({
+    ref,
+    className,
+    defaultChecked = true,
+    checked: controlledChecked,
+    onToggle,
+    ...restProps
+}: DayNightSwitchProps & { ref?: React.RefObject<HTMLDivElement | null> }) {
     const id = React.useId();
     const [internalChecked, setInternalChecked]
-      = React.useState<boolean>(defaultChecked);
+        = React.useState<boolean>(defaultChecked);
 
     // Use controlled value if provided, otherwise use internal state
     const checked
-      = controlledChecked !== undefined ? controlledChecked : internalChecked;
+        = controlledChecked !== undefined ? controlledChecked : internalChecked;
 
     const handleToggle = (newValue: boolean) => {
-    // Only update internal state if not controlled
+        // Only update internal state if not controlled
         if (controlledChecked === undefined) {
             setInternalChecked(newValue);
         }
@@ -144,7 +147,9 @@ function ThemeToggle({ ref, className, defaultChecked = true, checked: controlle
                     {checked && <Clouds />}
                 </AnimatePresence>
 
-                <AnimatePresence>{!checked && <Stars count={10} />}</AnimatePresence>
+                <AnimatePresence>
+                    {!checked && <Stars count={10} />}
+                </AnimatePresence>
 
                 <div className="absolute inset-0 flex items-center justify-center">
                     <Switch

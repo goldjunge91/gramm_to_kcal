@@ -7,7 +7,7 @@ import type { Product } from "@/lib/types/types";
 export interface ExtendedOpenFoodFactsProduct {
     code: string;
     product: {
-    // Basic product info
+        // Basic product info
         product_name?: string;
         product_name_de?: string;
         product_name_en?: string;

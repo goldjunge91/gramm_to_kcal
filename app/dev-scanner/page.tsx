@@ -29,7 +29,7 @@ export default function DevScannerPage(): JSX.Element {
     const [showScanner, setShowScanner] = useState(false);
     const [showSpeedTest, setShowSpeedTest] = useState(false);
     const [currentResult, setCurrentResult]
-    = useState<EnhancedProductLookupResult | null>(null);
+        = useState<EnhancedProductLookupResult | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [speedTestResult, setSpeedTestResult] = useState<{
         detectionTime: number;
@@ -52,7 +52,8 @@ export default function DevScannerPage(): JSX.Element {
 
     // Session ID for tracking
     const [sessionId] = useState(
-        () => `session_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`,
+        () =>
+            `session_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`,
     );
 
     // Load diagnostics from sessionStorage on mount
@@ -60,13 +61,18 @@ export default function DevScannerPage(): JSX.Element {
         try {
             const stored = sessionStorage.getItem("dev-scanner-diagnostics");
             if (stored) {
-                const parsedDiagnostics = JSON.parse(stored) as ScanDiagnostics[];
+                const parsedDiagnostics = JSON.parse(
+                    stored,
+                ) as ScanDiagnostics[];
                 setDiagnostics(parsedDiagnostics);
                 updateStatsFromDiagnostics(parsedDiagnostics);
             }
         }
         catch (error) {
-            console.warn("Failed to load diagnostics from sessionStorage:", error);
+            console.warn(
+                "Failed to load diagnostics from sessionStorage:",
+                error,
+            );
         }
     }, []);
 
@@ -79,7 +85,10 @@ export default function DevScannerPage(): JSX.Element {
             );
         }
         catch (error) {
-            console.error("Failed to save diagnostics to sessionStorage:", error);
+            console.error(
+                "Failed to save diagnostics to sessionStorage:",
+                error,
+            );
         }
     }, [diagnostics]);
 
@@ -87,7 +96,9 @@ export default function DevScannerPage(): JSX.Element {
     const updateStatsFromDiagnostics = useCallback(
         (allDiagnostics: ScanDiagnostics[]) => {
             const totalScans = allDiagnostics.length;
-            const successfulScans = allDiagnostics.filter(d => d.success).length;
+            const successfulScans = allDiagnostics.filter(
+                d => d.success,
+            ).length;
             const failedScans = totalScans - successfulScans;
 
             const responseTimes = allDiagnostics
@@ -98,20 +109,22 @@ export default function DevScannerPage(): JSX.Element {
                 .filter(t => t > 0);
 
             const averageResponseTime
-        = responseTimes.length > 0
-            ? responseTimes.reduce((a, b) => a + b, 0) / responseTimes.length
-            : 0;
+                = responseTimes.length > 0
+                    ? responseTimes.reduce((a, b) => a + b, 0)
+                    / responseTimes.length
+                    : 0;
 
             const averageScanTime
-        = scanTimes.length > 0
-            ? scanTimes.reduce((a, b) => a + b, 0) / scanTimes.length
-            : 0;
+                = scanTimes.length > 0
+                    ? scanTimes.reduce((a, b) => a + b, 0) / scanTimes.length
+                    : 0;
 
             // Extract brands and categories from successful scans
             // Note: This would require storing additional product data in diagnostics
             // For now, we'll keep empty arrays
             const topBrands: Array<{ brand: string; count: number }> = [];
-            const topCategories: Array<{ category: string; count: number }> = [];
+            const topCategories: Array<{ category: string; count: number }>
+                = [];
 
             setSessionStats({
                 totalScans,
@@ -157,7 +170,9 @@ export default function DevScannerPage(): JSX.Element {
 
                 // Show toast notification
                 if (result.success) {
-                    toast.success(`Product found: ${result.product?.name || "Unknown"}`);
+                    toast.success(
+                        `Product found: ${result.product?.name || "Unknown"}`,
+                    );
                 }
                 else {
                     toast.error(`Lookup failed: ${result.error}`);
@@ -165,7 +180,7 @@ export default function DevScannerPage(): JSX.Element {
             }
             catch (error) {
                 const errorMessage
-          = error instanceof Error ? error.message : "Unknown error";
+                    = error instanceof Error ? error.message : "Unknown error";
 
                 // Update diagnostics with error
                 const updatedDiagnostics: ScanDiagnostics = {
@@ -206,9 +221,9 @@ export default function DevScannerPage(): JSX.Element {
                     userAgent: navigator.userAgent,
                     platform: navigator.platform,
                     isMobile:
-            /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-                navigator.userAgent,
-            ),
+                        /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+                            navigator.userAgent,
+                        ),
                     hasCamera: false,
                     cameraCount: 0,
                 },
@@ -300,8 +315,8 @@ export default function DevScannerPage(): JSX.Element {
                                     Barcode Scanner Developer Testing
                                 </h1>
                                 <p className="text-muted-foreground">
-                                    Advanced testing interface with performance diagnostics and
-                                    detailed product analysis
+                                    Advanced testing interface with performance
+                                    diagnostics and detailed product analysis
                                 </p>
                             </div>
                         </div>
@@ -312,7 +327,9 @@ export default function DevScannerPage(): JSX.Element {
                                 <div className="text-lg font-bold">
                                     {sessionStats.totalScans}
                                 </div>
-                                <div className="text-muted-foreground">Scans</div>
+                                <div className="text-muted-foreground">
+                                    Scans
+                                </div>
                             </div>
                             <div className="text-center">
                                 <div className="text-lg font-bold text-green-600">
@@ -325,7 +342,9 @@ export default function DevScannerPage(): JSX.Element {
                                         : 0}
                                     %
                                 </div>
-                                <div className="text-muted-foreground">Success</div>
+                                <div className="text-muted-foreground">
+                                    Success
+                                </div>
                             </div>
                             <div className="text-center">
                                 <div className="text-lg font-bold">
@@ -333,7 +352,9 @@ export default function DevScannerPage(): JSX.Element {
                                         ? `${Math.round(sessionStats.averageResponseTime)}ms`
                                         : "N/A"}
                                 </div>
-                                <div className="text-muted-foreground">Avg Time</div>
+                                <div className="text-muted-foreground">
+                                    Avg Time
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -360,7 +381,9 @@ export default function DevScannerPage(): JSX.Element {
                                     size="lg"
                                 >
                                     <Scan className="h-4 w-4 mr-2" />
-                                    {isLoading ? "Processing..." : "Start Barcode Scanner"}
+                                    {isLoading
+                                        ? "Processing..."
+                                        : "Start Barcode Scanner"}
                                 </Button>
 
                                 <Button
@@ -386,7 +409,9 @@ export default function DevScannerPage(): JSX.Element {
                                             <div className="flex justify-between">
                                                 <span>Speed:</span>
                                                 <span className="font-mono font-bold text-green-700">
-                                                    {Math.round(speedTestResult.detectionTime)}
+                                                    {Math.round(
+                                                        speedTestResult.detectionTime,
+                                                    )}
                                                     ms
                                                 </span>
                                             </div>
@@ -407,10 +432,21 @@ export default function DevScannerPage(): JSX.Element {
                                 )}
 
                                 <div className="text-sm text-muted-foreground text-center">
-                                    <p>• Camera and image upload modes available</p>
-                                    <p>• Real-time diagnostics and performance monitoring</p>
-                                    <p>• Enhanced error handling and device detection</p>
-                                    <p>• Speed test: instant detection feedback</p>
+                                    <p>
+                                        • Camera and image upload modes
+                                        available
+                                    </p>
+                                    <p>
+                                        • Real-time diagnostics and performance
+                                        monitoring
+                                    </p>
+                                    <p>
+                                        • Enhanced error handling and device
+                                        detection
+                                    </p>
+                                    <p>
+                                        • Speed test: instant detection feedback
+                                    </p>
                                 </div>
                             </CardContent>
                         </Card>
@@ -427,7 +463,10 @@ export default function DevScannerPage(): JSX.Element {
 
                     {/* Center Column: Product Detail View */}
                     <div className="lg:col-span-2">
-                        <ProductDetailView result={currentResult} className="h-fit" />
+                        <ProductDetailView
+                            result={currentResult}
+                            className="h-fit"
+                        />
                     </div>
                 </div>
 
@@ -462,7 +501,9 @@ export default function DevScannerPage(): JSX.Element {
                                     <div className="text-2xl font-bold text-red-600">
                                         {sessionStats.failedScans}
                                     </div>
-                                    <div className="text-sm text-muted-foreground">Failed</div>
+                                    <div className="text-sm text-muted-foreground">
+                                        Failed
+                                    </div>
                                 </div>
                                 <div className="text-center">
                                     <div className="text-2xl font-bold">

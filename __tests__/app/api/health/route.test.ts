@@ -48,19 +48,29 @@ describe("/api/health", () => {
         // Mock all dependencies to return healthy state
         const { db } = await import("@/lib/db");
         const { getRedisHealth } = await import("@/lib/redis");
-        const { getOpenFoodFactsHealth } = await import("@/lib/api/cached-product-lookup");
+        const { getOpenFoodFactsHealth } = await import(
+            "@/lib/api/cached-product-lookup"
+        );
         const { circuitBreakerManager } = await import("@/lib/circuit-breaker");
 
         vi.mocked(db.execute).mockResolvedValue(undefined);
-        vi.mocked(getRedisHealth).mockResolvedValue({ status: "connected", latency: 10 });
-        vi.mocked(getOpenFoodFactsHealth).mockResolvedValue({ status: "healthy", responseTime: 200 });
+        vi.mocked(getRedisHealth).mockResolvedValue({
+            status: "connected",
+            latency: 10,
+        });
+        vi.mocked(getOpenFoodFactsHealth).mockResolvedValue({
+            status: "healthy",
+            responseTime: 200,
+        });
         vi.mocked(circuitBreakerManager.getHealthSummary).mockResolvedValue({
             total: 2,
             healthy: 2,
             open: 0,
         });
 
-        const request = new NextRequest("http://localhost:3000/api/health", { headers: new Headers() });
+        const request = new NextRequest("http://localhost:3000/api/health", {
+            headers: new Headers(),
+        });
         const response = await GET(request);
         const data = await response.json();
 
@@ -69,25 +79,38 @@ describe("/api/health", () => {
         expect(data.database).toBe("connected");
         expect(data.betterAuth.configured).toBe(true);
         expect(data.betterAuth.hasGoogleAuth).toBe(true);
-        expect(data.services.redis).toEqual({ status: "connected", latency: 10 });
+        expect(data.services.redis).toEqual({
+            status: "connected",
+            latency: 10,
+        });
     });
 
     it("should handle database connection error", async () => {
         const { db } = await import("@/lib/db");
         const { getRedisHealth } = await import("@/lib/redis");
-        const { getOpenFoodFactsHealth } = await import("@/lib/api/cached-product-lookup");
+        const { getOpenFoodFactsHealth } = await import(
+            "@/lib/api/cached-product-lookup"
+        );
         const { circuitBreakerManager } = await import("@/lib/circuit-breaker");
 
         vi.mocked(db.execute).mockRejectedValue(new Error("Connection failed"));
-        vi.mocked(getRedisHealth).mockResolvedValue({ status: "connected", latency: 10 });
-        vi.mocked(getOpenFoodFactsHealth).mockResolvedValue({ status: "healthy", responseTime: 200 });
+        vi.mocked(getRedisHealth).mockResolvedValue({
+            status: "connected",
+            latency: 10,
+        });
+        vi.mocked(getOpenFoodFactsHealth).mockResolvedValue({
+            status: "healthy",
+            responseTime: 200,
+        });
         vi.mocked(circuitBreakerManager.getHealthSummary).mockResolvedValue({
             total: 2,
             healthy: 2,
             open: 0,
         });
 
-        const request = new NextRequest("http://localhost:3000/api/health", { headers: new Headers() });
+        const request = new NextRequest("http://localhost:3000/api/health", {
+            headers: new Headers(),
+        });
         const response = await GET(request);
         const data = await response.json();
 
@@ -99,9 +122,13 @@ describe("/api/health", () => {
     it("should return error response when health check fails", async () => {
         const { getRedisHealth } = await import("@/lib/redis");
 
-        vi.mocked(getRedisHealth).mockRejectedValue(new Error("Redis connection failed"));
+        vi.mocked(getRedisHealth).mockRejectedValue(
+            new Error("Redis connection failed"),
+        );
 
-        const request = new NextRequest("http://localhost:3000/api/health", { headers: new Headers() });
+        const request = new NextRequest("http://localhost:3000/api/health", {
+            headers: new Headers(),
+        });
         const response = await GET(request);
         const data = await response.json();
 
@@ -112,16 +139,26 @@ describe("/api/health", () => {
     });
 
     it("should log IP address for monitoring", async () => {
-        const consoleSpy = vi.spyOn(console, "info").mockImplementation(() => {});
-        
+        const consoleSpy = vi
+            .spyOn(console, "info")
+            .mockImplementation(() => {});
+
         const { db } = await import("@/lib/db");
         const { getRedisHealth } = await import("@/lib/redis");
-        const { getOpenFoodFactsHealth } = await import("@/lib/api/cached-product-lookup");
+        const { getOpenFoodFactsHealth } = await import(
+            "@/lib/api/cached-product-lookup"
+        );
         const { circuitBreakerManager } = await import("@/lib/circuit-breaker");
 
         vi.mocked(db.execute).mockResolvedValue(undefined);
-        vi.mocked(getRedisHealth).mockResolvedValue({ status: "connected", latency: 10 });
-        vi.mocked(getOpenFoodFactsHealth).mockResolvedValue({ status: "healthy", responseTime: 200 });
+        vi.mocked(getRedisHealth).mockResolvedValue({
+            status: "connected",
+            latency: 10,
+        });
+        vi.mocked(getOpenFoodFactsHealth).mockResolvedValue({
+            status: "healthy",
+            responseTime: 200,
+        });
         vi.mocked(circuitBreakerManager.getHealthSummary).mockResolvedValue({
             total: 2,
             healthy: 2,
@@ -131,10 +168,12 @@ describe("/api/health", () => {
         const request = new NextRequest("http://localhost:3000/api/health", {
             headers: { "x-forwarded-for": "192.168.1.1" },
         });
-        
+
         await GET(request);
 
-        expect(consoleSpy).toHaveBeenCalledWith("[HEALTH] Health check from IP: 192.168.1.1");
+        expect(consoleSpy).toHaveBeenCalledWith(
+            "[HEALTH] Health check from IP: 192.168.1.1",
+        );
         consoleSpy.mockRestore();
     });
 });

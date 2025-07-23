@@ -3,11 +3,11 @@ title: How to use Next.js as a backend for your frontend
 nav_title: Backend for Frontend
 description: Learn how to use Next.js as a backend framework
 related:
-  title: API Reference
-  description: Learn more about Route Handlers and Middleware
-  links:
-    - app/api-reference/file-conventions/route
-    - app/api-reference/file-conventions/middleware
+    title: API Reference
+    description: Learn more about Route Handlers and Middleware
+    links:
+        - app/api-reference/file-conventions/route
+        - app/api-reference/file-conventions/middleware
 ---
 
 Next.js supports the "Backend for Frontend" pattern. This lets you create public endpoints to handle HTTP requests and return any content type—not just HTML. You can also access data sources and perform side effects like updating remote data.
@@ -52,15 +52,15 @@ Use `try/catch` blocks for operations that may throw an exception:
 import { submit } from "@/lib/submit";
 
 export async function POST(request: Request) {
-  try {
-    await submit(request);
-    return new Response(null, { status: 204 });
-  } catch (reason) {
-    const message =
-      reason instanceof Error ? reason.message : "Unexpected error";
+    try {
+        await submit(request);
+        return new Response(null, { status: 204 });
+    } catch (reason) {
+        const message =
+            reason instanceof Error ? reason.message : "Unexpected error";
 
-    return new Response(message, { status: 500 });
-  }
+        return new Response(message, { status: 500 });
+    }
 }
 ```
 
@@ -68,15 +68,15 @@ export async function POST(request: Request) {
 import { submit } from "@/lib/submit";
 
 export async function POST(request) {
-  try {
-    await submit(request);
-    return new Response(null, { status: 204 });
-  } catch (reason) {
-    const message =
-      reason instanceof Error ? reason.message : "Unexpected error";
+    try {
+        await submit(request);
+        return new Response(null, { status: 204 });
+    } catch (reason) {
+        const message =
+            reason instanceof Error ? reason.message : "Unexpected error";
 
-    return new Response(message, { status: 500 });
-  }
+        return new Response(message, { status: 500 });
+    }
 }
 ```
 
@@ -106,10 +106,10 @@ For example, `app/rss.xml/route.ts` creates a Route Handler for `rss.xml`.
 
 ```ts filename="/app/rss.xml/route.ts" switcher
 export async function GET(request: Request) {
-  const rssResponse = await fetch(/* rss endpoint */);
-  const rssData = await rssResponse.json();
+    const rssResponse = await fetch(/* rss endpoint */);
+    const rssData = await rssResponse.json();
 
-  const rssFeed = `<?xml version="1.0" encoding="UTF-8" ?>
+    const rssFeed = `<?xml version="1.0" encoding="UTF-8" ?>
 <rss version="2.0">
 <channel>
  <title>${rssData.title}</title>
@@ -117,7 +117,7 @@ export async function GET(request: Request) {
  <link>${rssData.link}</link>
  <copyright>${rssData.copyright}</copyright>
  ${rssData.items.map((item) => {
-   return `<item>
+     return `<item>
     <title>${item.title}</title>
     <description>${item.description}</description>
     <link>${item.link}</link>
@@ -128,18 +128,18 @@ export async function GET(request: Request) {
 </channel>
 </rss>`;
 
-  const headers = new Headers({ "content-type": "application/xml" });
+    const headers = new Headers({ "content-type": "application/xml" });
 
-  return new Response(rssFeed, { headers });
+    return new Response(rssFeed, { headers });
 }
 ```
 
 ```js filename="/app/rss.xml/route.js" switcher
 export async function GET(request) {
-  const rssResponse = await fetch(/* rss endpoint */);
-  const rssData = await rssResponse.json();
+    const rssResponse = await fetch(/* rss endpoint */);
+    const rssData = await rssResponse.json();
 
-  const rssFeed = `<?xml version="1.0" encoding="UTF-8" ?>
+    const rssFeed = `<?xml version="1.0" encoding="UTF-8" ?>
 <rss version="2.0">
 <channel>
  <title>${rssData.title}</title>
@@ -147,7 +147,7 @@ export async function GET(request) {
  <link>${rssData.link}</link>
  <copyright>${rssData.copyright}</copyright>
  ${rssData.items.map((item) => {
-   return `<item>
+     return `<item>
     <title>${item.title}</title>
     <description>${item.description}</description>
     <link>${item.link}</link>
@@ -158,9 +158,9 @@ export async function GET(request) {
 </channel>
 </rss>`;
 
-  const headers = new Headers({ "content-type": "application/xml" });
+    const headers = new Headers({ "content-type": "application/xml" });
 
-  return new Response(rssFeed, { headers });
+    return new Response(rssFeed, { headers });
 }
 ```
 
@@ -174,15 +174,15 @@ Use Request [instance methods](https://developer.mozilla.org/en-US/docs/Web/API/
 
 ```ts filename="/app/api/echo-body/route.ts" switcher
 export async function POST(request: Request) {
-  const res = await request.json();
-  return Response.json({ res });
+    const res = await request.json();
+    return Response.json({ res });
 }
 ```
 
 ```js filename="/app/api/echo-body/route.js" switcher
 export async function POST(request) {
-  const res = await request.json();
-  return Response.json({ res });
+    const res = await request.json();
+    return Response.json({ res });
 }
 ```
 
@@ -192,21 +192,21 @@ export async function POST(request) {
 import { sendMail, validateInputs } from "@/lib/email-transporter";
 
 export async function POST(request: Request) {
-  const formData = await request.formData();
-  const email = formData.get("email");
-  const contents = formData.get("contents");
+    const formData = await request.formData();
+    const email = formData.get("email");
+    const contents = formData.get("contents");
 
-  try {
-    await validateInputs({ email, contents });
-    const info = await sendMail({ email, contents });
+    try {
+        await validateInputs({ email, contents });
+        const info = await sendMail({ email, contents });
 
-    return Response.json({ messageId: info.messageId });
-  } catch (reason) {
-    const message =
-      reason instanceof Error ? reason.message : "Unexpected exception";
+        return Response.json({ messageId: info.messageId });
+    } catch (reason) {
+        const message =
+            reason instanceof Error ? reason.message : "Unexpected exception";
 
-    return new Response(message, { status: 500 });
-  }
+        return new Response(message, { status: 500 });
+    }
 }
 ```
 
@@ -214,21 +214,21 @@ export async function POST(request: Request) {
 import { sendMail, validateInputs } from "@/lib/email-transporter";
 
 export async function POST(request) {
-  const formData = await request.formData();
-  const email = formData.get("email");
-  const contents = formData.get("contents");
+    const formData = await request.formData();
+    const email = formData.get("email");
+    const contents = formData.get("contents");
 
-  try {
-    await validateInputs({ email, contents });
-    const info = await sendMail({ email, contents });
+    try {
+        await validateInputs({ email, contents });
+        const info = await sendMail({ email, contents });
 
-    return Response.json({ messageId: info.messageId });
-  } catch (reason) {
-    const message =
-      reason instanceof Error ? reason.message : "Unexpected exception";
+        return Response.json({ messageId: info.messageId });
+    } catch (reason) {
+        const message =
+            reason instanceof Error ? reason.message : "Unexpected exception";
 
-    return new Response(message, { status: 500 });
-  }
+        return new Response(message, { status: 500 });
+    }
 }
 ```
 
@@ -236,33 +236,33 @@ You can only read the request body once. Clone the request if you need to read i
 
 ```ts filename="/app/api/clone/route.ts" switcher
 export async function POST(request: Request) {
-  try {
-    const clonedRequest = request.clone();
+    try {
+        const clonedRequest = request.clone();
 
-    await request.body();
-    await clonedRequest.body();
-    await request.body(); // Throws error
+        await request.body();
+        await clonedRequest.body();
+        await request.body(); // Throws error
 
-    return new Response(null, { status: 204 });
-  } catch {
-    return new Response(null, { status: 500 });
-  }
+        return new Response(null, { status: 204 });
+    } catch {
+        return new Response(null, { status: 500 });
+    }
 }
 ```
 
 ```js filename="/app/api/clone/route.js" switcher
 export async function POST(request) {
-  try {
-    const clonedRequest = request.clone();
+    try {
+        const clonedRequest = request.clone();
 
-    await request.body();
-    await clonedRequest.body();
-    await request.body(); // Throws error
+        await request.body();
+        await clonedRequest.body();
+        await request.body(); // Throws error
 
-    return new Response(null, { status: 204 });
-  } catch {
-    return new Response(null, { status: 500 });
-  }
+        return new Response(null, { status: 204 });
+    } catch {
+        return new Response(null, { status: 500 });
+    }
 }
 ```
 
@@ -276,26 +276,28 @@ You can also offload heavy computations to the server and reduce client battery 
 import { parseWeatherData } from "@/lib/weather";
 
 export async function POST(request: Request) {
-  const body = await request.json();
-  const searchParams = new URLSearchParams({ lat: body.lat, lng: body.lng });
+    const body = await request.json();
+    const searchParams = new URLSearchParams({ lat: body.lat, lng: body.lng });
 
-  try {
-    const weatherResponse = await fetch(`${weatherEndpoint}?${searchParams}`);
+    try {
+        const weatherResponse = await fetch(
+            `${weatherEndpoint}?${searchParams}`,
+        );
 
-    if (!weatherResponse.ok) {
-      /* handle error */
+        if (!weatherResponse.ok) {
+            /* handle error */
+        }
+
+        const weatherData = await weatherResponse.text();
+        const payload = parseWeatherData.asJSON(weatherData);
+
+        return new Response(payload, { status: 200 });
+    } catch (reason) {
+        const message =
+            reason instanceof Error ? reason.message : "Unexpected exception";
+
+        return new Response(message, { status: 500 });
     }
-
-    const weatherData = await weatherResponse.text();
-    const payload = parseWeatherData.asJSON(weatherData);
-
-    return new Response(payload, { status: 200 });
-  } catch (reason) {
-    const message =
-      reason instanceof Error ? reason.message : "Unexpected exception";
-
-    return new Response(message, { status: 500 });
-  }
 }
 ```
 
@@ -303,26 +305,28 @@ export async function POST(request: Request) {
 import { parseWeatherData } from "@/lib/weather";
 
 export async function POST(request) {
-  const body = await request.json();
-  const searchParams = new URLSearchParams({ lat: body.lat, lng: body.lng });
+    const body = await request.json();
+    const searchParams = new URLSearchParams({ lat: body.lat, lng: body.lng });
 
-  try {
-    const weatherResponse = await fetch(`${weatherEndpoint}?${searchParams}`);
+    try {
+        const weatherResponse = await fetch(
+            `${weatherEndpoint}?${searchParams}`,
+        );
 
-    if (!weatherResponse.ok) {
-      /* handle error */
+        if (!weatherResponse.ok) {
+            /* handle error */
+        }
+
+        const weatherData = await weatherResponse.text();
+        const payload = parseWeatherData.asJSON(weatherData);
+
+        return new Response(payload, { status: 200 });
+    } catch (reason) {
+        const message =
+            reason instanceof Error ? reason.message : "Unexpected exception";
+
+        return new Response(message, { status: 500 });
     }
-
-    const weatherData = await weatherResponse.text();
-    const payload = parseWeatherData.asJSON(weatherData);
-
-    return new Response(payload, { status: 200 });
-  } catch (reason) {
-    const message =
-      reason instanceof Error ? reason.message : "Unexpected exception";
-
-    return new Response(message, { status: 500 });
-  }
 }
 ```
 
@@ -336,26 +340,26 @@ You can use a Route Handler as a proxy to another backend. Add validation logic 
 import { isValidRequest } from "@/lib/utils";
 
 export async function POST(request: Request, { params }) {
-  const clonedRequest = request.clone();
-  const isValid = await isValidRequest(clonedRequest);
+    const clonedRequest = request.clone();
+    const isValid = await isValidRequest(clonedRequest);
 
-  if (!isValid) {
-    return new Response(null, { status: 400, statusText: "Bad Request" });
-  }
+    if (!isValid) {
+        return new Response(null, { status: 400, statusText: "Bad Request" });
+    }
 
-  const { slug } = await params;
-  const pathname = slug.join("/");
-  const proxyURL = new URL(pathname, "https://nextjs.org");
-  const proxyRequest = new Request(proxyURL, request);
+    const { slug } = await params;
+    const pathname = slug.join("/");
+    const proxyURL = new URL(pathname, "https://nextjs.org");
+    const proxyRequest = new Request(proxyURL, request);
 
-  try {
-    return fetch(proxyRequest);
-  } catch (reason) {
-    const message =
-      reason instanceof Error ? reason.message : "Unexpected exception";
+    try {
+        return fetch(proxyRequest);
+    } catch (reason) {
+        const message =
+            reason instanceof Error ? reason.message : "Unexpected exception";
 
-    return new Response(message, { status: 500 });
-  }
+        return new Response(message, { status: 500 });
+    }
 }
 ```
 
@@ -363,26 +367,26 @@ export async function POST(request: Request, { params }) {
 import { isValidRequest } from "@/lib/utils";
 
 export async function POST(request, { params }) {
-  const clonedRequest = request.clone();
-  const isValid = await isValidRequest(clonedRequest);
+    const clonedRequest = request.clone();
+    const isValid = await isValidRequest(clonedRequest);
 
-  if (!isValid) {
-    return new Response(null, { status: 400, statusText: "Bad Request" });
-  }
+    if (!isValid) {
+        return new Response(null, { status: 400, statusText: "Bad Request" });
+    }
 
-  const { slug } = await params;
-  const pathname = slug.join("/");
-  const proxyURL = new URL(pathname, "https://nextjs.org");
-  const proxyRequest = new Request(proxyURL, request);
+    const { slug } = await params;
+    const pathname = slug.join("/");
+    const proxyURL = new URL(pathname, "https://nextjs.org");
+    const proxyRequest = new Request(proxyURL, request);
 
-  try {
-    return fetch(proxyRequest);
-  } catch (reason) {
-    const message =
-      reason instanceof Error ? reason.message : "Unexpected exception";
+    try {
+        return fetch(proxyRequest);
+    } catch (reason) {
+        const message =
+            reason instanceof Error ? reason.message : "Unexpected exception";
 
-    return new Response(message, { status: 500 });
-  }
+        return new Response(message, { status: 500 });
+    }
 }
 ```
 
@@ -407,17 +411,17 @@ You can pass `NextRequest` to any function expecting `Request`. Likewise, you ca
 import { type NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
-  const nextUrl = request.nextUrl;
+    const nextUrl = request.nextUrl;
 
-  if (nextUrl.searchParams.get("redirect")) {
-    return NextResponse.redirect(new URL("/", request.url));
-  }
+    if (nextUrl.searchParams.get("redirect")) {
+        return NextResponse.redirect(new URL("/", request.url));
+    }
 
-  if (nextUrl.searchParams.get("rewrite")) {
-    return NextResponse.rewrite(new URL("/", request.url));
-  }
+    if (nextUrl.searchParams.get("rewrite")) {
+        return NextResponse.rewrite(new URL("/", request.url));
+    }
 
-  return NextResponse.json({ pathname: nextUrl.pathname });
+    return NextResponse.json({ pathname: nextUrl.pathname });
 }
 ```
 
@@ -425,17 +429,17 @@ export async function GET(request: NextRequest) {
 import { NextResponse } from "next/server";
 
 export async function GET(request) {
-  const nextUrl = request.nextUrl;
+    const nextUrl = request.nextUrl;
 
-  if (nextUrl.searchParams.get("redirect")) {
-    return NextResponse.redirect(new URL("/", request.url));
-  }
+    if (nextUrl.searchParams.get("redirect")) {
+        return NextResponse.redirect(new URL("/", request.url));
+    }
 
-  if (nextUrl.searchParams.get("rewrite")) {
-    return NextResponse.rewrite(new URL("/", request.url));
-  }
+    if (nextUrl.searchParams.get("rewrite")) {
+        return NextResponse.rewrite(new URL("/", request.url));
+    }
 
-  return NextResponse.json({ pathname: nextUrl.pathname });
+    return NextResponse.json({ pathname: nextUrl.pathname });
 }
 ```
 
@@ -451,21 +455,21 @@ For example, revalidate a route when content changes in a CMS. Configure the CMS
 import { type NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
-  const token = request.nextUrl.searchParams.get("token");
+    const token = request.nextUrl.searchParams.get("token");
 
-  if (token !== process.env.REVALIDATE_SECRET_TOKEN) {
-    return NextResponse.json({ success: false }, { status: 401 });
-  }
+    if (token !== process.env.REVALIDATE_SECRET_TOKEN) {
+        return NextResponse.json({ success: false }, { status: 401 });
+    }
 
-  const tag = request.nextUrl.searchParams.get("tag");
+    const tag = request.nextUrl.searchParams.get("tag");
 
-  if (!tag) {
-    return NextResponse.json({ success: false }, { status: 400 });
-  }
+    if (!tag) {
+        return NextResponse.json({ success: false }, { status: 400 });
+    }
 
-  revalidateTag(tag);
+    revalidateTag(tag);
 
-  return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true });
 }
 ```
 
@@ -473,21 +477,21 @@ export async function GET(request: NextRequest) {
 import { NextResponse } from "next/server";
 
 export async function GET(request) {
-  const token = request.nextUrl.searchParams.get("token");
+    const token = request.nextUrl.searchParams.get("token");
 
-  if (token !== process.env.REVALIDATE_SECRET_TOKEN) {
-    return NextResponse.json({ success: false }, { status: 401 });
-  }
+    if (token !== process.env.REVALIDATE_SECRET_TOKEN) {
+        return NextResponse.json({ success: false }, { status: 401 });
+    }
 
-  const tag = request.nextUrl.searchParams.get("tag");
+    const tag = request.nextUrl.searchParams.get("tag");
 
-  if (!tag) {
-    return NextResponse.json({ success: false }, { status: 400 });
-  }
+    if (!tag) {
+        return NextResponse.json({ success: false }, { status: 400 });
+    }
 
-  revalidateTag(tag);
+    revalidateTag(tag);
 
-  return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true });
 }
 ```
 
@@ -497,21 +501,21 @@ Callback URLs are another use case. When a user completes a third-party flow, th
 import { type NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
-  const token = request.nextUrl.searchParams.get("session_token");
-  const redirectUrl = request.nextUrl.searchParams.get("redirect_url");
+    const token = request.nextUrl.searchParams.get("session_token");
+    const redirectUrl = request.nextUrl.searchParams.get("redirect_url");
 
-  const response = NextResponse.redirect(new URL(redirectUrl, request.url));
+    const response = NextResponse.redirect(new URL(redirectUrl, request.url));
 
-  response.cookies.set({
-    value: token,
-    name: "_token",
-    path: "/",
-    secure: true,
-    httpOnly: true,
-    expires: undefined, // session cookie
-  });
+    response.cookies.set({
+        value: token,
+        name: "_token",
+        path: "/",
+        secure: true,
+        httpOnly: true,
+        expires: undefined, // session cookie
+    });
 
-  return response;
+    return response;
 }
 ```
 
@@ -519,21 +523,21 @@ export async function GET(request: NextRequest) {
 import { NextResponse } from "next/server";
 
 export async function GET(request) {
-  const token = request.nextUrl.searchParams.get("session_token");
-  const redirectUrl = request.nextUrl.searchParams.get("redirect_url");
+    const token = request.nextUrl.searchParams.get("session_token");
+    const redirectUrl = request.nextUrl.searchParams.get("redirect_url");
 
-  const response = NextResponse.redirect(new URL(redirectUrl, request.url));
+    const response = NextResponse.redirect(new URL(redirectUrl, request.url));
 
-  response.cookies.set({
-    value: token,
-    name: "_token",
-    path: "/",
-    secure: true,
-    httpOnly: true,
-    expires: undefined, // session cookie
-  });
+    response.cookies.set({
+        value: token,
+        name: "_token",
+        path: "/",
+        secure: true,
+        httpOnly: true,
+        expires: undefined, // session cookie
+    });
 
-  return response;
+    return response;
 }
 ```
 
@@ -543,7 +547,7 @@ export async function GET(request) {
 import { redirect } from "next/navigation";
 
 export async function GET(request: Request) {
-  redirect("https://nextjs.org/");
+    redirect("https://nextjs.org/");
 }
 ```
 
@@ -551,7 +555,7 @@ export async function GET(request: Request) {
 import { redirect } from "next/navigation";
 
 export async function GET(request) {
-  redirect("https://nextjs.org/");
+    redirect("https://nextjs.org/");
 }
 ```
 
@@ -567,16 +571,16 @@ Use `middleware` to generate a response before the request reaches a route path.
 import { isAuthenticated } from "@lib/auth";
 
 export const config = {
-  matcher: "/api/:function*",
+    matcher: "/api/:function*",
 };
 
 export function middleware(request: Request) {
-  if (!isAuthenticated(request)) {
-    return Response.json(
-      { success: false, message: "authentication failed" },
-      { status: 401 },
-    );
-  }
+    if (!isAuthenticated(request)) {
+        return Response.json(
+            { success: false, message: "authentication failed" },
+            { status: 401 },
+        );
+    }
 }
 ```
 
@@ -584,16 +588,16 @@ export function middleware(request: Request) {
 import { isAuthenticated } from "@lib/auth";
 
 export const config = {
-  matcher: "/api/:function*",
+    matcher: "/api/:function*",
 };
 
 export function middleware(request) {
-  if (!isAuthenticated(request)) {
-    return Response.json(
-      { success: false, message: "authentication failed" },
-      { status: 401 },
-    );
-  }
+    if (!isAuthenticated(request)) {
+        return Response.json(
+            { success: false, message: "authentication failed" },
+            { status: 401 },
+        );
+    }
 }
 ```
 
@@ -603,10 +607,10 @@ You can also proxy requests using `middleware`:
 import { NextResponse } from "next/server";
 
 export function middleware(request: Request) {
-  if (request.nextUrl.pathname === "/proxy-this-path") {
-    const rewriteUrl = new URL("https://nextjs.org");
-    return NextResponse.rewrite(rewriteUrl);
-  }
+    if (request.nextUrl.pathname === "/proxy-this-path") {
+        const rewriteUrl = new URL("https://nextjs.org");
+        return NextResponse.rewrite(rewriteUrl);
+    }
 }
 ```
 
@@ -614,10 +618,10 @@ export function middleware(request: Request) {
 import { NextResponse } from "next/server";
 
 export function middleware(request) {
-  if (request.nextUrl.pathname === "/proxy-this-path") {
-    const rewriteUrl = new URL("https://nextjs.org");
-    return NextResponse.rewrite(rewriteUrl);
-  }
+    if (request.nextUrl.pathname === "/proxy-this-path") {
+        const rewriteUrl = new URL("https://nextjs.org");
+        return NextResponse.rewrite(rewriteUrl);
+    }
 }
 ```
 
@@ -627,10 +631,10 @@ Another type of response `middleware` can produce are redirects:
 import { NextResponse } from "next/server";
 
 export function middleware(request: Request) {
-  if (request.nextUrl.pathname === "/v1/docs") {
-    request.nextUrl.pathname = "/v2/docs";
-    return NextResponse.redirect(request.nextUrl);
-  }
+    if (request.nextUrl.pathname === "/v1/docs") {
+        request.nextUrl.pathname = "/v2/docs";
+        return NextResponse.redirect(request.nextUrl);
+    }
 }
 ```
 
@@ -638,10 +642,10 @@ export function middleware(request: Request) {
 import { NextResponse } from "next/server";
 
 export function middleware(request) {
-  if (request.nextUrl.pathname === "/v1/docs") {
-    request.nextUrl.pathname = "/v2/docs";
-    return NextResponse.redirect(request.nextUrl);
-  }
+    if (request.nextUrl.pathname === "/v1/docs") {
+        request.nextUrl.pathname = "/v2/docs";
+        return NextResponse.redirect(request.nextUrl);
+    }
 }
 ```
 
@@ -656,13 +660,16 @@ import { NextResponse } from "next/server";
 import { checkRateLimit } from "@/lib/rate-limit";
 
 export async function POST(request: Request) {
-  const { rateLimited } = await checkRateLimit(request);
+    const { rateLimited } = await checkRateLimit(request);
 
-  if (rateLimited) {
-    return NextResponse.json({ error: "Rate limit exceeded" }, { status: 429 });
-  }
+    if (rateLimited) {
+        return NextResponse.json(
+            { error: "Rate limit exceeded" },
+            { status: 429 },
+        );
+    }
 
-  return new Response(null, { status: 204 });
+    return new Response(null, { status: 204 });
 }
 ```
 
@@ -671,13 +678,16 @@ import { NextResponse } from "next/server";
 import { checkRateLimit } from "@/lib/rate-limit";
 
 export async function POST(request) {
-  const { rateLimited } = await checkRateLimit(request);
+    const { rateLimited } = await checkRateLimit(request);
 
-  if (rateLimited) {
-    return NextResponse.json({ error: "Rate limit exceeded" }, { status: 429 });
-  }
+    if (rateLimited) {
+        return NextResponse.json(
+            { error: "Rate limit exceeded" },
+            { status: 429 },
+        );
+    }
 
-  return new Response(null, { status: 204 });
+    return new Response(null, { status: 204 });
 }
 ```
 
@@ -713,7 +723,7 @@ Community libraries often use the factory pattern for Route Handlers.
 import { createHandler } from "third-party-library";
 
 const handler = createHandler({
-  /* library-specific options */
+    /* library-specific options */
 });
 
 export const GET = handler;
@@ -752,10 +762,10 @@ For Server Components rendered on demand, fetching from Route Handlers is slower
 Server Components cover most data-fetching needs. However, fetching data client side might be necessary for:
 
 - Data that depends on client-only Web APIs:
-  - Geo-location API
-  - Storage API
-  - Audio API
-  - File API
+    - Geo-location API
+    - Storage API
+    - Audio API
+    - File API
 - Frequently polled data
 
 For these, use community libraries like [`swr`](https://swr.vercel.app/) or [`react-query`](https://tanstack.com/query/latest/docs/framework/react/overview).
@@ -778,7 +788,7 @@ This can be used to generate static HTML, JSON, TXT, or other files.
 export const dynamic = "force-static";
 
 export function GET() {
-  return new Response("Hello World", { status: 200 });
+    return new Response("Hello World", { status: 200 });
 }
 ```
 

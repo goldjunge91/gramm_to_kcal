@@ -13,13 +13,16 @@ export async function PUT(
     { params }: { params: { id: string } },
 ) {
     try {
-    // Get user session
+        // Get user session
         const session = await auth.api.getSession({
             headers: await headers(),
         });
 
         if (!session?.user) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+            return NextResponse.json(
+                { error: "Unauthorized" },
+                { status: 401 },
+            );
         }
 
         const updates = await request.json();
@@ -33,15 +36,15 @@ export async function PUT(
                 updatedAt: new Date(),
             })
             .where(
-                and(
-                    eq(products.id, id),
-                    eq(products.userId, session.user.id),
-                ),
+                and(eq(products.id, id), eq(products.userId, session.user.id)),
             )
             .returning();
 
         if (!updatedProduct) {
-            return NextResponse.json({ error: "Product not found" }, { status: 404 });
+            return NextResponse.json(
+                { error: "Product not found" },
+                { status: 404 },
+            );
         }
 
         return NextResponse.json(updatedProduct);
@@ -60,13 +63,16 @@ export async function DELETE(
     { params }: { params: { id: string } },
 ) {
     try {
-    // Get user session
+        // Get user session
         const session = await auth.api.getSession({
             headers: await headers(),
         });
 
         if (!session?.user) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+            return NextResponse.json(
+                { error: "Unauthorized" },
+                { status: 401 },
+            );
         }
 
         const { id } = params;
@@ -79,15 +85,15 @@ export async function DELETE(
                 updatedAt: new Date(),
             })
             .where(
-                and(
-                    eq(products.id, id),
-                    eq(products.userId, session.user.id),
-                ),
+                and(eq(products.id, id), eq(products.userId, session.user.id)),
             )
             .returning();
 
         if (!deletedProduct) {
-            return NextResponse.json({ error: "Product not found" }, { status: 404 });
+            return NextResponse.json(
+                { error: "Product not found" },
+                { status: 404 },
+            );
         }
 
         return NextResponse.json({ message: "Product deleted successfully" });

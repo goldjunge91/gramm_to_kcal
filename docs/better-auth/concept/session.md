@@ -1,14 +1,16 @@
 # concepts: Session Management
+
 URL: /docs/concepts/session-management
 Source: https://raw.githubusercontent.com/better-auth/better-auth/refs/heads/main/docs/content/docs/concepts/session-management.mdx
 
 Better Auth session management.
-        
-***
+
+---
 
 title: Session Management
 description: Better Auth session management.
---------------------------------------------
+
+---
 
 Better Auth manages session using a traditional cookie-based session management. The session is stored in a cookie and is sent to the server on every request. The server then verifies the session and returns the user data if the session is valid.
 
@@ -16,11 +18,11 @@ Better Auth manages session using a traditional cookie-based session management.
 
 The session table stores the session data. The session table has the following fields:
 
-* `id`: The session token. Which is also used as the session cookie.
-* `userId`: The user ID of the user.
-* `expiresAt`: The expiration date of the session.
-* `ipAddress`: The IP address of the user.
-* `userAgent`: The user agent of the user. It stores the user agent header from the request.
+- `id`: The session token. Which is also used as the session cookie.
+- `userId`: The user ID of the user.
+- `expiresAt`: The expiration date of the session.
+- `ipAddress`: The IP address of the user.
+- `userAgent`: The user agent of the user. It stores the user agent header from the request.
 
 ## Session Expiration
 
@@ -29,15 +31,15 @@ The session expires after 7 days by default. But whenever the session is used an
 You can change both the `expiresIn` and `updateAge` values by passing the `session` object to the `auth` configuration.
 
 ```ts title="auth.ts"
-import { betterAuth } from "better-auth"
+import { betterAuth } from "better-auth";
 
 export const auth = betterAuth({
     //... other config options
     session: {
         expiresIn: 60 * 60 * 24 * 7, // 7 days
-        updateAge: 60 * 60 * 24 // 1 day (every 1 day the session expiration is updated)
-    }
-})
+        updateAge: 60 * 60 * 24, // 1 day (every 1 day the session expiration is updated)
+    },
+});
 ```
 
 ### Disable Session Refresh
@@ -45,14 +47,14 @@ export const auth = betterAuth({
 You can disable session refresh so that the session is not updated regardless of the `updateAge` option.
 
 ```ts title="auth.ts"
-import { betterAuth } from "better-auth"
+import { betterAuth } from "better-auth";
 
 export const auth = betterAuth({
     //... other config options
     session: {
-        disableSessionRefresh: true
-    }
-})
+        disableSessionRefresh: true,
+    },
+});
 ```
 
 ## Session Freshness
@@ -62,27 +64,27 @@ Some endpoints in Better Auth require the session to be **fresh**. A session is 
 You can customize the `freshAge` value by passing a `session` object in the `auth` configuration:
 
 ```ts title="auth.ts"
-import { betterAuth } from "better-auth"
+import { betterAuth } from "better-auth";
 
 export const auth = betterAuth({
     //... other config options
     session: {
-        freshAge: 60 * 5 // 5 minutes (the session is fresh if created within the last 5 minutes)
-    }
-})
+        freshAge: 60 * 5, // 5 minutes (the session is fresh if created within the last 5 minutes)
+    },
+});
 ```
 
 To **disable the freshness check**, set `freshAge` to `0`:
 
 ```ts title="auth.ts"
-import { betterAuth } from "better-auth"
+import { betterAuth } from "better-auth";
 
 export const auth = betterAuth({
     //... other config options
     session: {
-        freshAge: 0 // Disable freshness check
-    }
-})
+        freshAge: 0, // Disable freshness check
+    },
+});
 ```
 
 ## Session Management
@@ -94,9 +96,9 @@ Better Auth provides a set of functions to manage sessions.
 The `getSession` function retrieves the current active session.
 
 ```ts client="client.ts"
-import { authClient } from "@/lib/client"
+import { authClient } from "@/lib/client";
 
-const { data: session } = await authClient.getSession()
+const { data: session } = await authClient.getSession();
 ```
 
 To learn how to customize the session response check the [Customizing Session Response](#customizing-session-response) section.
@@ -106,9 +108,9 @@ To learn how to customize the session response check the [Customizing Session Re
 The `useSession` action provides a reactive way to access the current session.
 
 ```ts client="client.ts"
-import { authClient } from "@/lib/client"
+import { authClient } from "@/lib/client";
 
-const { data: session } = authClient.useSession()
+const { data: session } = authClient.useSession();
 ```
 
 ### List Sessions
@@ -116,9 +118,9 @@ const { data: session } = authClient.useSession()
 The `listSessions` function returns a list of sessions that are active for the user.
 
 ```ts title="auth-client.ts"
-import { authClient } from "@/lib/client"
+import { authClient } from "@/lib/client";
 
-const sessions = await authClient.listSessions()
+const sessions = await authClient.listSessions();
 ```
 
 ### Revoke Session
@@ -129,8 +131,8 @@ To end a session, use the `revokeSession` function. Just pass the session token 
 
 ```ts title="auth-client.ts"
 await authClient.revokeSession({
-    token: "session-token"
-})
+    token: "session-token",
+});
 ```
 
 ### Revoke Other Sessions
@@ -138,7 +140,7 @@ await authClient.revokeSession({
 To revoke all other sessions except the current session, you can use the `revokeOtherSessions` function.
 
 ```ts title="auth-client.ts"
-await authClient.revokeOtherSessions()
+await authClient.revokeOtherSessions();
 ```
 
 ### Revoke All Sessions
@@ -146,7 +148,7 @@ await authClient.revokeOtherSessions()
 To revoke all sessions, you can use the `revokeSessions` function.
 
 ```ts title="auth-client.ts"
-await authClient.revokeSessions()
+await authClient.revokeSessions();
 ```
 
 ### Revoking Sessions on Password Change
@@ -158,7 +160,7 @@ await authClient.changePassword({
     newPassword: newPassword,
     currentPassword: currentPassword,
     revokeOtherSessions: true,
-})
+});
 ```
 
 ## Session Caching
@@ -172,24 +174,26 @@ When cookie caching is enabled, the server can check session validity from the c
 To turn on cookie caching, just set `session.cookieCache` in your auth config:
 
 ```ts title="auth.ts"
-import { betterAuth } from "better-auth"
+import { betterAuth } from "better-auth";
 
 export const auth = betterAuth({
     session: {
         cookieCache: {
             enabled: true,
-            maxAge: 5 * 60 // Cache duration in seconds
-        }
-    }
+            maxAge: 5 * 60, // Cache duration in seconds
+        },
+    },
 });
 ```
 
 If you want to disable returning from the cookie cache when fetching the session, you can pass `disableCookieCache:true` this will force the server to fetch the session from the database and also refresh the cookie cache.
 
 ```ts title="auth-client.ts"
-const session = await authClient.getSession({ query: {
-    disableCookieCache: true
-}})
+const session = await authClient.getSession({
+    query: {
+        disableCookieCache: true,
+    },
+});
 ```
 
 or on the server
@@ -198,7 +202,7 @@ or on the server
 await auth.api.getSession({
     query: {
         disableCookieCache: true,
-    }, 
+    },
     headers: req.headers, // pass the headers
 });
 ```
@@ -220,7 +224,7 @@ export const auth = betterAuth({
                     ...user,
                     newField: "newField",
                 },
-                session
+                session,
             };
         }),
     ],
@@ -247,7 +251,7 @@ const { data: sessionData } = await authClient.getSession();
 
 **Some Caveats**:
 
-* The passed `session` object to the callback does not infer fields added by plugins.
+- The passed `session` object to the callback does not infer fields added by plugins.
 
 However, as a workaround, you can pull up your auth options and pass it to the plugin to infer the fields.
 
@@ -255,10 +259,10 @@ However, as a workaround, you can pull up your auth options and pass it to the p
 import { betterAuth, BetterAuthOptions } from "better-auth";
 
 const options = {
-  //...config options
-  plugins: [
-    //...plugins
-  ]
+    //...config options
+    plugins: [
+        //...plugins
+    ],
 } satisfies BetterAuthOptions;
 
 export const auth = betterAuth({
@@ -269,13 +273,12 @@ export const auth = betterAuth({
             // now both user and session will infer the fields added by plugins and your custom fields
             return {
                 user,
-                session
-            }
+                session,
+            };
         }, options), // pass options here  // [!code highlight]
-    ]
-})
+    ],
+});
 ```
 
-* If you cannot use the `auth` instance as a type, inference will not work on the client.
-* Session caching, including secondary storage or cookie cache, does not include custom fields. Each time the session is fetched, your custom session function will be called.
-
+- If you cannot use the `auth` instance as a type, inference will not work on the client.
+- Session caching, including secondary storage or cookie cache, does not include custom fields. Each time the session is fetched, your custom session function will be called.

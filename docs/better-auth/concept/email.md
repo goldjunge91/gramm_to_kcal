@@ -1,14 +1,16 @@
 # concepts: Email
+
 URL: /docs/concepts/email
 Source: https://raw.githubusercontent.com/better-auth/better-auth/refs/heads/main/docs/content/docs/concepts/email.mdx
 
 Learn how to use email with Better Auth.
-        
-***
+
+---
 
 title: Email
 description: Learn how to use email with Better Auth.
------------------------------------------------------
+
+---
 
 Email is a key part of Better Auth, required for all users regardless of their authentication method. Better Auth provides email and password authentication out of the box, and a lot of utilities to help you manage email verification, password reset, and more.
 
@@ -21,28 +23,28 @@ To use otp based email verification, check out the [OTP Verification](/docs/plug
 
 To enable email verification, you need to pass a function that sends a verification email with a link.
 
-* **sendVerificationEmail**: This function is triggered when email verification starts. It accepts a data object with the following properties:
-  * `user`: The user object containing the email address.
-  * `url`: The verification URL the user must click to verify their email.
-  * `token`: The verification token used to complete the email verification to be used when implementing a custom verification URL.
+- **sendVerificationEmail**: This function is triggered when email verification starts. It accepts a data object with the following properties:
+    - `user`: The user object containing the email address.
+    - `url`: The verification URL the user must click to verify their email.
+    - `token`: The verification token used to complete the email verification to be used when implementing a custom verification URL.
 
 and a `request` object as the second parameter.
 
 ```ts title="auth.ts"
-import { betterAuth } from 'better-auth';
-import { sendEmail } from './email'; // your email sending function
+import { betterAuth } from "better-auth";
+import { sendEmail } from "./email"; // your email sending function
 
 export const auth = betterAuth({
     emailVerification: {
         sendVerificationEmail: async ({ user, url, token }, request) => {
             await sendEmail({
                 to: user.email,
-                subject: 'Verify your email address',
-                text: `Click the link to verify your email: ${url}`
-            })
-        }
-    }
-})
+                subject: "Verify your email address",
+                text: `Click the link to verify your email: ${url}`,
+            });
+        },
+    },
+});
 ```
 
 ### Triggering Email Verification
@@ -54,13 +56,13 @@ You can initiate email verification in several ways:
 To automatically send a verification email at signup, set `emailVerification.sendOnSignUp` to `true`.
 
 ```ts title="auth.ts"
-import { betterAuth } from 'better-auth';
+import { betterAuth } from "better-auth";
 
 export const auth = betterAuth({
     emailVerification: {
-        sendOnSignUp: true
-    }
-})
+        sendOnSignUp: true,
+    },
+});
 ```
 
 This sends a verification email when a user signs up. For social logins, email verification status is read from the SSO.
@@ -80,27 +82,30 @@ If you enable require email verification, users must verify their email before t
 ```ts title="auth.ts"
 export const auth = betterAuth({
     emailAndPassword: {
-        requireEmailVerification: true
-    }
-})
+        requireEmailVerification: true,
+    },
+});
 ```
 
 if a user tries to sign in without verifying their email, you can handle the error and show a message to the user.
 
 ```ts title="auth-client.ts"
-await authClient.signIn.email({
-    email: "email@example.com",
-    password: "password"
-}, {
-    onError: (ctx) => {
-        // Handle the error
-        if(ctx.error.status === 403) {
-            alert("Please verify your email address")
-        }
-        //you can also show the original error message
-        alert(ctx.error.message)
-    }
-})
+await authClient.signIn.email(
+    {
+        email: "email@example.com",
+        password: "password",
+    },
+    {
+        onError: (ctx) => {
+            // Handle the error
+            if (ctx.error.status === 403) {
+                alert("Please verify your email address");
+            }
+            //you can also show the original error message
+            alert(ctx.error.message);
+        },
+    },
+);
 ```
 
 #### 3. Manually
@@ -110,8 +115,8 @@ You can also manually trigger email verification by calling `sendVerificationEma
 ```ts
 await authClient.sendVerificationEmail({
     email: "user@email.com",
-    callbackURL: "/" // The redirect URL after verification
-})
+    callbackURL: "/", // The redirect URL after verification
+});
 ```
 
 ### Verifying the Email
@@ -123,9 +128,9 @@ For manual verification, you can send the user a custom link with the `token` an
 ```ts
 await authClient.verifyEmail({
     query: {
-        token: "" // Pass the token here
-    }
-})
+        token: "", // Pass the token here
+    },
+});
 ```
 
 ### Auto SignIn After Verification
@@ -136,9 +141,9 @@ To sign in the user automatically after they successfully verify their email, se
 const auth = betterAuth({
     //...your other options
     emailVerification: {
-        autoSignInAfterVerification: true
-    }
-})
+        autoSignInAfterVerification: true,
+    },
+});
 ```
 
 ### Callback after successful email verification
@@ -150,16 +155,16 @@ The `afterEmailVerification` function runs automatically when a user's email is 
 Here's how you can set it up:
 
 ```ts title="auth.ts"
-import { betterAuth } from 'better-auth';
+import { betterAuth } from "better-auth";
 
 export const auth = betterAuth({
     emailVerification: {
         async afterEmailVerification(user, request) {
             // Your custom logic here, e.g., grant access to premium features
             console.log(`${user.email} has been successfully verified!`);
-        }
-    }
-})
+        },
+    },
+});
 ```
 
 ## Password Reset Email
@@ -169,8 +174,8 @@ Password reset allows users to reset their password if they forget it. Better Au
 You can enable password reset by passing a function that sends a password reset email with a link.
 
 ```ts title="auth.ts"
-import { betterAuth } from 'better-auth';
-import { sendEmail } from './email'; // your email sending function
+import { betterAuth } from "better-auth";
+import { sendEmail } from "./email"; // your email sending function
 
 export const auth = betterAuth({
     emailAndPassword: {
@@ -178,14 +183,13 @@ export const auth = betterAuth({
         sendResetPassword: async ({ user, url, token }, request) => {
             await sendEmail({
                 to: user.email,
-                subject: 'Reset your password',
-                text: `Click the link to reset your password: ${url}`
-            })
-        }
-    }
-})
+                subject: "Reset your password",
+                text: `Click the link to reset your password: ${url}`,
+            });
+        },
+    },
+});
 ```
 
 Check out the [Email and Password](/docs/authentication/email-password#forget-password) guide for more details on how to implement password reset in your app.
 Also you can check out the [Otp verification](/docs/plugins/email-otp#reset-password) guide for how to implement password reset with OTP in your app.
-

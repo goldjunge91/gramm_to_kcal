@@ -1,14 +1,16 @@
 # plugins: Magic link
+
 URL: /docs/plugins/magic-link
 Source: https://raw.githubusercontent.com/better-auth/better-auth/refs/heads/main/docs/content/docs/plugins/magic-link.mdx
 
 Magic link plugin
-        
-***
+
+---
 
 title: Magic link
 description: Magic link plugin
-------------------------------
+
+---
 
 Magic link or email link is a way to authenticate users without a password. When a user enters their email, a link is sent to their email. When the user clicks on the link, they are authenticated.
 
@@ -34,6 +36,7 @@ Magic link or email link is a way to authenticate users without a password. When
         ]
     })
     ```
+
   </Step>
 
   <Step>
@@ -50,6 +53,7 @@ Magic link or email link is a way to authenticate users without a password. When
         ]
     });
     ```
+
   </Step>
 </Steps>
 
@@ -121,9 +125,9 @@ If you want to handle the verification manually, (e.g, if you send the user a di
 
 **sendMagicLink**: The `sendMagicLink` function is called when a user requests a magic link. It takes an object with the following properties:
 
-* `email`: The email address of the user.
-* `url`: The URL to be sent to the user. This URL contains the token.
-* `token`: The token if you want to send the token with custom URL.
+- `email`: The email address of the user.
+- `url`: The URL to be sent to the user. This URL contains the token.
+- `token`: The token if you want to send the token with custom URL.
 
 and a `request` object as the second parameter.
 
@@ -133,7 +137,7 @@ and a `request` object as the second parameter.
 
 **generateToken**: The `generateToken` function is called to generate a token which is used to uniquely identify the user. The default value is a random string. There is one parameter:
 
-* `email`: The email address of the user.
+- `email`: The email address of the user.
 
 <Callout type="warn">
   When using `generateToken`, ensure that the returned string is hard to guess
@@ -145,7 +149,6 @@ and a `request` object as the second parameter.
 
 The `storeToken` function can be one of the following:
 
-* `"plain"`: The token is stored in plain text.
-* `"hashed"`: The token is hashed using the default hasher.
-* `{ type: "custom-hasher", hash: (token: string) => Promise<string> }`: The token is hashed using a custom hasher.
-
+- `"plain"`: The token is stored in plain text.
+- `"hashed"`: The token is hashed using the default hasher.
+- `{ type: "custom-hasher", hash: (token: string) => Promise<string> }`: The token is hashed using a custom hasher.

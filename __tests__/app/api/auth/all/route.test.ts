@@ -45,7 +45,6 @@ describe("/api/auth/[...all]", () => {
         // The call happens during module initialization
         expect(toNextJsHandler).toHaveBeenCalledWith(mockAuth);
     });
-    
 
     it("should handle auth configuration properly", () => {
         expect(mockAuth).toBeDefined();

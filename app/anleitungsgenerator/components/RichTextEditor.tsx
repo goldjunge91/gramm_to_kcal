@@ -124,8 +124,8 @@ export function RichTextEditor({
 
                 {/* Helper Text */}
                 <div className="text-xs text-muted-foreground">
-                    💡 Tipp: Verwenden Sie die Toolbar oder Tastenkürzel (Strg+B, Strg+I,
-                    etc.) zum Formatieren
+                    💡 Tipp: Verwenden Sie die Toolbar oder Tastenkürzel
+                    (Strg+B, Strg+I, etc.) zum Formatieren
                 </div>
             </CardContent>
         </Card>

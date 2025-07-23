@@ -79,11 +79,11 @@ export function ImageEditor({
                             className="flex"
                             style={{
                                 justifyContent:
-                  settings.position === "left"
-                      ? "flex-start"
-                      : settings.position === "right"
-                          ? "flex-end"
-                          : "center",
+                                    settings.position === "left"
+                                        ? "flex-start"
+                                        : settings.position === "right"
+                                            ? "flex-end"
+                                            : "center",
                             }}
                         >
                             <img
@@ -147,7 +147,11 @@ export function ImageEditor({
                             <Button
                                 key={value}
                                 type="button"
-                                variant={settings.position === value ? "default" : "outline"}
+                                variant={
+                                    settings.position === value
+                                        ? "default"
+                                        : "outline"
+                                }
                                 size="sm"
                                 onClick={() => handlePositionChange(value)}
                                 className="flex-1"

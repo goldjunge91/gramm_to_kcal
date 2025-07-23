@@ -13,8 +13,8 @@ Or add the following to your `package.json`:
 
 ```json
 {
-  "scripts": {
-    "prettier-watch": "onchange \"**/*\" -- prettier --write --ignore-unknown {{changed}}"
-  }
+    "scripts": {
+        "prettier-watch": "onchange \"**/*\" -- prettier --write --ignore-unknown {{changed}}"
+    }
 }
 ```

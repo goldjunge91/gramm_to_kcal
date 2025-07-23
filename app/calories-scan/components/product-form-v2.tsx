@@ -33,7 +33,7 @@ export function ProductForm({
     const [kcal, setKcal] = useState("");
 
     const { recentScans, addRecentScan, removeRecentScan, isAuthenticated }
-    = useRecentScans();
+        = useRecentScans();
 
     // Getrennte States für die Scanner, wie von Ihnen gewünscht
     const [showScanner, setShowScanner] = useState(false);
@@ -92,14 +92,16 @@ export function ProductForm({
             }
             else {
                 setBarcodeStatus(result.error || "Produkt nicht gefunden");
-                toast.error(result.error || "Produkt nicht in der Datenbank gefunden");
+                toast.error(
+                    result.error || "Produkt nicht in der Datenbank gefunden",
+                );
             }
         }
         catch (error) {
             const errorMessage
-        = error instanceof Error
-            ? error.message
-            : "Fehler beim Laden der Produktdaten";
+                = error instanceof Error
+                    ? error.message
+                    : "Fehler beim Laden der Produktdaten";
             setBarcodeStatus(errorMessage);
             toast.error(errorMessage);
         }
@@ -137,7 +139,9 @@ export function ProductForm({
                                 <div className="px-3 py-1 bg-black/80 text-white rounded text-xs font-mono mr-2 flex items-center animate-pulse">
                                     <Scan className="h-4 w-4 mr-1" />
                                     <span>Barcode: </span>
-                                    <span className="font-bold ml-1">{barcode}</span>
+                                    <span className="font-bold ml-1">
+                                        {barcode}
+                                    </span>
                                     {barcodeStatus && (
                                         <span className="ml-2 text-yellow-300">
                                             {barcodeStatus}
@@ -192,18 +196,25 @@ export function ProductForm({
                                         id="name"
                                         type="text"
                                         value={name}
-                                        onChange={e => setName(e.target.value)}
+                                        onChange={e =>
+                                            setName(e.target.value)}
                                         placeholder="z.B. Vollkornbrot"
                                         required
                                         disabled={isLoading}
                                         className={
-                                            isAuthenticated && recentScans.length > 0 ? "pr-10" : ""
+                                            isAuthenticated
+                                            && recentScans.length > 0
+                                                ? "pr-10"
+                                                : ""
                                         }
                                     />
-                                    {isAuthenticated && recentScans.length > 0 && (
+                                    {isAuthenticated
+                                        && recentScans.length > 0 && (
                                         <RecentScansDropdown
                                             recentScans={recentScans}
-                                            onSelect={handleRecentScanSelect}
+                                            onSelect={
+                                                handleRecentScanSelect
+                                            }
                                             onRemove={removeRecentScan}
                                             trigger={(
                                                 <Button
@@ -214,7 +225,10 @@ export function ProductForm({
                                                     disabled={isLoading}
                                                 >
                                                     <ChevronDown className="h-4 w-4" />
-                                                    <span className="sr-only">Letzte Scans anzeigen</span>
+                                                    <span className="sr-only">
+                                                        Letzte Scans
+                                                        anzeigen
+                                                    </span>
                                                 </Button>
                                             )}
                                             placeholder="Suche in letzten Scans..."
@@ -241,7 +255,8 @@ export function ProductForm({
                                     id="quantity"
                                     type="number"
                                     value={quantity}
-                                    onChange={e => setQuantity(e.target.value)}
+                                    onChange={e =>
+                                        setQuantity(e.target.value)}
                                     placeholder="z.B. 100"
                                     min="0"
                                     step="0.1"
@@ -273,7 +288,9 @@ export function ProductForm({
                                 aria-label="Produkt zur Vergleichstabelle hinzufügen"
                                 disabled={isLoading}
                             >
-                                {isLoading ? "Wird hinzugefügt..." : "Hinzufügen"}
+                                {isLoading
+                                    ? "Wird hinzugefügt..."
+                                    : "Hinzufügen"}
                             </Button>
                             {(name || quantity || kcal || barcode) && (
                                 <Button

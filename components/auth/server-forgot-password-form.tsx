@@ -34,15 +34,20 @@ export function ServerForgotPasswordForm({
             <div className={cn("flex flex-col gap-6", className)}>
                 <Card>
                     <CardHeader>
-                        <CardTitle className="text-2xl">Check your email</CardTitle>
+                        <CardTitle className="text-2xl">
+                            Check your email
+                        </CardTitle>
                         <CardDescription>
-                            We&apos;ve sent a password reset link to your email address.
+                            We&apos;ve sent a password reset link to your email
+                            address.
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
                         <div className="space-y-4">
                             <div className="rounded-md bg-green-50 p-3 border border-green-200">
-                                <p className="text-sm text-green-600">{success}</p>
+                                <p className="text-sm text-green-600">
+                                    {success}
+                                </p>
                             </div>
                             <div className="text-center">
                                 <Link
@@ -73,7 +78,9 @@ export function ServerForgotPasswordForm({
         const formData = new FormData(e.currentTarget);
         const result = await resetPasswordAction(formData);
         if (result.success) {
-            setLocalSuccess(result.message || "Check your email for the reset link.");
+            setLocalSuccess(
+                result.message || "Check your email for the reset link.",
+            );
         }
         else {
             setLocalError(result.error || "An error occurred.");
@@ -86,8 +93,8 @@ export function ServerForgotPasswordForm({
                 <CardHeader>
                     <CardTitle className="text-2xl">Forgot password</CardTitle>
                     <CardDescription>
-                        Enter your email address and we&apos;ll send you a link to reset
-                        your password.
+                        Enter your email address and we&apos;ll send you a link
+                        to reset your password.
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -105,7 +112,9 @@ export function ServerForgotPasswordForm({
                             </div>
                             {(error || localError) && (
                                 <div className="rounded-md bg-red-50 p-3 border border-red-200">
-                                    <p className="text-sm text-red-600">{error || localError}</p>
+                                    <p className="text-sm text-red-600">
+                                        {error || localError}
+                                    </p>
                                 </div>
                             )}
                             {(success || localSuccess) && (
@@ -122,7 +131,10 @@ export function ServerForgotPasswordForm({
                         <div className="mt-4 text-center text-sm">
                             Remember your password?
                             {" "}
-                            <Link href="/auth/login" className="underline underline-offset-4">
+                            <Link
+                                href="/auth/login"
+                                className="underline underline-offset-4"
+                            >
                                 Back to login
                             </Link>
                         </div>

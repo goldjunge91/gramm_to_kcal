@@ -28,16 +28,16 @@ import { useRecentScans } from "@/hooks/use-recent-scans";
 interface ProductFormProps {
     onSubmit: (
         product: Omit<
-      Product,
-      | "id"
-      | "userId"
-      | "createdAt"
-      | "updatedAt"
-      | "syncStatus"
-      | "version"
-      | "isDeleted"
-      | "lastSyncAt"
-    >,
+            Product,
+            | "id"
+            | "userId"
+            | "createdAt"
+            | "updatedAt"
+            | "syncStatus"
+            | "version"
+            | "isDeleted"
+            | "lastSyncAt"
+        >,
     ) => Promise<void>;
     isLoading?: boolean;
     compact?: boolean;
@@ -58,7 +58,7 @@ export function ProductForm({
     const [showScanner2, setShowScanner2] = useState(false);
     // Recent scans for authenticated users
     const { recentScans, addRecentScan, removeRecentScan, isAuthenticated }
-    = useRecentScans();
+        = useRecentScans();
 
     // Handle recent scan selection
     const handleRecentScanSelect = (scan: (typeof recentScans)[0]): void => {
@@ -135,7 +135,10 @@ export function ProductForm({
                                     required
                                     disabled={isLoading}
                                     className={
-                                        isAuthenticated && recentScans.length > 0 ? "pr-20" : "pr-10"
+                                        isAuthenticated
+                                        && recentScans.length > 0
+                                            ? "pr-20"
+                                            : "pr-10"
                                     }
                                 />
                                 {isAuthenticated && recentScans.length > 0 && (
@@ -152,7 +155,9 @@ export function ProductForm({
                                                 disabled={isLoading}
                                             >
                                                 <ChevronDown className="h-4 w-4" />
-                                                <span className="sr-only">Letzte Scans anzeigen</span>
+                                                <span className="sr-only">
+                                                    Letzte Scans anzeigen
+                                                </span>
                                             </Button>
                                         )}
                                         placeholder="Suche in letzten Scans..."
@@ -180,7 +185,8 @@ export function ProductForm({
                                     id="quantity"
                                     type="number"
                                     value={quantity}
-                                    onChange={e => setQuantity(e.target.value)}
+                                    onChange={e =>
+                                        setQuantity(e.target.value)}
                                     placeholder="z.B. 100"
                                     min="0"
                                     step="0.1"
@@ -188,7 +194,10 @@ export function ProductForm({
                                     disabled={isLoading}
                                     className="pr-10"
                                 />
-                                <Dialog open={converterOpen} onOpenChange={setConverterOpen}>
+                                <Dialog
+                                    open={converterOpen}
+                                    onOpenChange={setConverterOpen}
+                                >
                                     <DialogTrigger asChild>
                                         <Button
                                             type="button"
@@ -203,17 +212,25 @@ export function ProductForm({
                                     </DialogTrigger>
                                     <DialogContent className="max-w-2xl">
                                         <DialogHeader>
-                                            <DialogTitle>ML zu Gramm Umrechner</DialogTitle>
+                                            <DialogTitle>
+                                                ML zu Gramm Umrechner
+                                            </DialogTitle>
                                             <DialogDescription>
-                                                Konvertieren Sie Milliliter in Gramm für verschiedene
+                                                Konvertieren Sie Milliliter in
+                                                Gramm für verschiedene
                                                 Substanzen
                                             </DialogDescription>
                                         </DialogHeader>
                                         <MlToGramConverter
                                             compact={true}
                                             onConversionChange={(result) => {
-                                                if (result.success && result.unit === "g") {
-                                                    setQuantity(result.value.toString());
+                                                if (
+                                                    result.success
+                                                    && result.unit === "g"
+                                                ) {
+                                                    setQuantity(
+                                                        result.value.toString(),
+                                                    );
                                                     toast.success(
                                                         `${result.originalValue} ml = ${result.value} g`,
                                                     );

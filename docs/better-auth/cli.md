@@ -1,14 +1,16 @@
 # concepts: CLI
+
 URL: /docs/concepts/cli
 Source: https://raw.githubusercontent.com/better-auth/better-auth/refs/heads/main/docs/content/docs/concepts/cli.mdx
 
 Built-in CLI for managing your project.
-        
-***
+
+---
 
 title: CLI
 description: Built-in CLI for managing your project.
-----------------------------------------------------
+
+---
 
 Better Auth comes with a built-in CLI to help you manage the database schemas, initialize your project, and generate a secret key for your application.
 
@@ -22,9 +24,9 @@ npx @better-auth/cli@latest generate
 
 ### Options
 
-* `--output` - Where to save the generated schema. For Prisma, it will be saved in prisma/schema.prisma. For Drizzle, it goes to schema.ts in your project root. For Kysely, it’s an SQL file saved as schema.sql in your project root.
-* `--config` - The path to your Better Auth config file. By default, the CLI will search for a auth.ts file in **./**, **./utils**, **./lib**, or any of these directories under `src` directory.
-* `--y` - Skip the confirmation prompt and generate the schema directly.
+- `--output` - Where to save the generated schema. For Prisma, it will be saved in prisma/schema.prisma. For Drizzle, it goes to schema.ts in your project root. For Kysely, it’s an SQL file saved as schema.sql in your project root.
+- `--config` - The path to your Better Auth config file. By default, the CLI will search for a auth.ts file in **./**, **./utils**, **./lib**, or any of these directories under `src` directory.
+- `--y` - Skip the confirmation prompt and generate the schema directly.
 
 ## Migrate
 
@@ -36,8 +38,8 @@ npx @better-auth/cli@latest migrate
 
 ### Options
 
-* `--config` - The path to your Better Auth config file. By default, the CLI will search for a auth.ts file in **./**, **./utils**, **./lib**, or any of these directories under `src` directory.
-* `--y` - Skip the confirmation prompt and apply the schema directly.
+- `--config` - The path to your Better Auth config file. By default, the CLI will search for a auth.ts file in **./**, **./utils**, **./lib**, or any of these directories under `src` directory.
+- `--y` - Skip the confirmation prompt and apply the schema directly.
 
 ## Init
 
@@ -49,11 +51,11 @@ npx @better-auth/cli@latest init
 
 ### Options
 
-* `--name` - The name of your application. (Defaults to your `package.json`'s `name` property.)
-* `--framework` - The framework your codebase is using. Currently, the only supported framework is `nextjs`.
-* `--plugins` - The plugins you want to use. You can specify multiple plugins by separating them with a comma.
-* `--database` - The database you want to use. Currently, the only supported database is `sqlite`.
-* `--package-manager` - The package manager you want to use. Currently, the only supported package managers are `npm`, `pnpm`, `yarn`, `bun`. (Defaults to the manager you used to initialize the CLI.)
+- `--name` - The name of your application. (Defaults to your `package.json`'s `name` property.)
+- `--framework` - The framework your codebase is using. Currently, the only supported framework is `nextjs`.
+- `--plugins` - The plugins you want to use. You can specify multiple plugins by separating them with a comma.
+- `--database` - The database you want to use. Currently, the only supported database is `sqlite`.
+- `--package-manager` - The package manager you want to use. Currently, the only supported package managers are `npm`, `pnpm`, `yarn`, `bun`. (Defaults to the manager you used to initialize the CLI.)
 
 ## Secret
 
@@ -69,5 +71,4 @@ npx @better-auth/cli@latest secret
 
 If you see this error, it means the CLI can’t resolve imported modules in your Better Auth config file. We're working on a fix for many of these issues, but in the meantime, you can try the following:
 
-* Remove any import aliases in your config file and use relative paths instead. After running the CLI, you can revert to using aliases.
-
+- Remove any import aliases in your config file and use relative paths instead. After running the CLI, you can revert to using aliases.

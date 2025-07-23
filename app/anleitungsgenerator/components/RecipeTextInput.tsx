@@ -20,7 +20,7 @@ export function RecipeTextInput({
     const handlePaste = (
         event: React.ClipboardEvent<HTMLTextAreaElement>,
     ): void => {
-    // Allow default paste behavior, the onChange will handle the state update
+        // Allow default paste behavior, the onChange will handle the state update
         setTimeout(() => {
             const target = event.target as HTMLTextAreaElement;
             onChange(target.value);
@@ -30,7 +30,7 @@ export function RecipeTextInput({
     const handleKeyDown = (
         event: React.KeyboardEvent<HTMLTextAreaElement>,
     ): void => {
-    // Allow Ctrl+Enter to trigger parsing
+        // Allow Ctrl+Enter to trigger parsing
         if (event.ctrlKey && event.key === "Enter") {
             event.preventDefault();
             onParse();

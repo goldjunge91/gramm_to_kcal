@@ -25,7 +25,7 @@ export async function enhancedLookupProductByBarcode(
     const startTime = performance.now();
 
     try {
-    // Validate barcode
+        // Validate barcode
         const validation = validateBarcode(barcode);
 
         if (!validation.isValid) {
@@ -199,7 +199,10 @@ export async function enhancedLookupProductByBarcode(
         console.error("Enhanced product lookup error:", error);
         return {
             success: false,
-            error: error instanceof Error ? error.message : "Unknown error occurred",
+            error:
+                error instanceof Error
+                    ? error.message
+                    : "Unknown error occurred",
             metadata: {
                 requestTime: startTime,
                 responseTime: performance.now(),
@@ -341,10 +344,12 @@ function calculateNutritionScore(
     ];
 
     const availableFields = importantFields.filter(
-        field => nutriments[field] !== undefined && nutriments[field] !== null,
+        field =>
+            nutriments[field] !== undefined && nutriments[field] !== null,
     );
 
-    const completeness = (availableFields.length / importantFields.length) * 100;
+    const completeness
+        = (availableFields.length / importantFields.length) * 100;
 
     if (completeness >= 90)
         return "Excellent";
@@ -367,22 +372,22 @@ function extractImages(
 
     // Front image
     images.front
-    = product.selected_images?.front?.display?.de
-        || product.selected_images?.front?.display?.en
-        || product.image_front_url
-        || product.image_url;
+        = product.selected_images?.front?.display?.de
+            || product.selected_images?.front?.display?.en
+            || product.image_front_url
+            || product.image_url;
 
     // Nutrition image
     images.nutrition
-    = product.selected_images?.nutrition?.display?.de
-        || product.selected_images?.nutrition?.display?.en
-        || product.image_nutrition_url;
+        = product.selected_images?.nutrition?.display?.de
+            || product.selected_images?.nutrition?.display?.en
+            || product.image_nutrition_url;
 
     // Ingredients image
     images.ingredients
-    = product.selected_images?.ingredients?.display?.de
-        || product.selected_images?.ingredients?.display?.en
-        || product.image_ingredients_url;
+        = product.selected_images?.ingredients?.display?.de
+            || product.selected_images?.ingredients?.display?.en
+            || product.image_ingredients_url;
 
     return images;
 }
@@ -424,9 +429,9 @@ function extractIngredients(
     }
 
     const ingredientsText
-    = product.ingredients_text_de
-        || product.ingredients_text_en
-        || product.ingredients_text;
+        = product.ingredients_text_de
+            || product.ingredients_text_en
+            || product.ingredients_text;
 
     if (ingredientsText) {
         return ingredientsText
@@ -451,7 +456,9 @@ function formatProductName(name: string, brands?: string): string {
             .filter(Boolean);
         if (brandList.length > 0) {
             const mainBrand = brandList[0];
-            if (!formattedName.toLowerCase().includes(mainBrand.toLowerCase())) {
+            if (
+                !formattedName.toLowerCase().includes(mainBrand.toLowerCase())
+            ) {
                 formattedName = `${mainBrand} ${formattedName}`;
             }
         }

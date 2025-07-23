@@ -143,7 +143,7 @@ function isDisposableEmail(email: string): boolean {
         "guerrillamail.com",
         "mailinator.com",
         "throwaway.email",
-    // Add more disposable email domains as needed
+        // Add more disposable email domains as needed
     ];
 
     const domain = email.split("@")[1]?.toLowerCase();
@@ -183,7 +183,7 @@ function containsSQLInjection(str: string): boolean {
 function isValidIP(ip: string): boolean {
     // Simple IPv4 validation
     const ipv4Regex
-    = /^(?:(?:25[0-5]|2[0-4]\d|[01]?\d{1,2})\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d{1,2})$/;
+        = /^(?:(?:25[0-5]|2[0-4]\d|[01]?\d{1,2})\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d{1,2})$/;
 
     // Simple IPv6 validation (basic)
     const ipv6Regex = /^(?:[0-9a-f]{1,4}:){7}[0-9a-f]{1,4}$/i;

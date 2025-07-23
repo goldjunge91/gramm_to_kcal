@@ -45,25 +45,23 @@ export default function Avatar({
 
     return (
         <div className="flex flex-col items-center space-y-4">
-            {avatarUrl
-                ? (
-                        <Image
-                            width={size}
-                            height={size}
-                            src={avatarUrl}
-                            alt="Avatar"
-                            className="rounded-full border"
-                            style={{ height: size, width: size }}
-                        />
-                    )
-                : (
-                        <div
-                            className="bg-muted rounded-full border flex items-center justify-center text-muted-foreground"
-                            style={{ height: size, width: size }}
-                        >
-                            No Image
-                        </div>
-                    )}
+            {avatarUrl ? (
+                <Image
+                    width={size}
+                    height={size}
+                    src={avatarUrl}
+                    alt="Avatar"
+                    className="rounded-full border"
+                    style={{ height: size, width: size }}
+                />
+            ) : (
+                <div
+                    className="bg-muted rounded-full border flex items-center justify-center text-muted-foreground"
+                    style={{ height: size, width: size }}
+                >
+                    No Image
+                </div>
+            )}
             <div>
                 <Button asChild disabled={uploading}>
                     <label htmlFor="avatar-upload" className="cursor-pointer">

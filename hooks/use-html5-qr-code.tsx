@@ -2,11 +2,7 @@
 
 import type { QrcodeSuccessCallback } from "html5-qrcode";
 
-import {
-    Html5Qrcode,
-    Html5QrcodeScannerState,
-
-} from "html5-qrcode";
+import { Html5Qrcode, Html5QrcodeScannerState } from "html5-qrcode";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 // Props for the custom hook
@@ -113,7 +109,9 @@ export function useHtml5QrCode({
                 const rearCamera = cameras.find(camera =>
                     /back|environment/i.test(camera.label),
                 );
-                const selectedCameraId = rearCamera ? rearCamera.id : cameras[0].id;
+                const selectedCameraId = rearCamera
+                    ? rearCamera.id
+                    : cameras[0].id;
 
                 await html5QrCode.start(
                     selectedCameraId,
@@ -126,7 +124,9 @@ export function useHtml5QrCode({
             }
             catch (error_) {
                 const errorMessage
-          = error_ instanceof Error ? error_.message : "Failed to start camera.";
+                    = error_ instanceof Error
+                        ? error_.message
+                        : "Failed to start camera.";
                 console.error("Scanner initialization failed:", error_);
                 setError(errorMessage);
                 setIsLoading(false);

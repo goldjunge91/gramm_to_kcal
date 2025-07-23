@@ -22,8 +22,8 @@ export default defineConfig({
     testDir: "./__e2e__",
     testMatch: [
         "**/auth/signup.spec.ts", // Run FIRST - creates users
-    // '**/auth/login.spec.ts', // Run SECOND - tests existing users
-    // '**/auth/logout.spec.ts', // Run THIRD - tests session cleanup
+        // '**/auth/login.spec.ts', // Run SECOND - tests existing users
+        // '**/auth/logout.spec.ts', // Run THIRD - tests session cleanup
     ],
 
     /* Sequential execution for database safety */
@@ -43,10 +43,7 @@ export default defineConfig({
     },
 
     /* Reporter optimized for development */
-    reporter: [
-        ["list"],
-        ["html", { open: "on-failure" }],
-    ],
+    reporter: [["list"], ["html", { open: "on-failure" }]],
 
     /* Shared settings */
     use: {

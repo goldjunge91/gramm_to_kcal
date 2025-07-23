@@ -6,7 +6,7 @@ const URL = env.NEXT_PUBLIC_URL!;
 export const metadata: Metadata = {
     title: "ML zu Gramm Umrechner | CalorieTracker",
     description:
-    "Professioneller ML zu Gramm Umrechner für über 50 Substanzen. Konvertieren Sie einfach zwischen Millilitern und Gramm für Kochen, Backen, Labor und mehr. Kostenlos und präzise.",
+        "Professioneller ML zu Gramm Umrechner für über 50 Substanzen. Konvertieren Sie einfach zwischen Millilitern und Gramm für Kochen, Backen, Labor und mehr. Kostenlos und präzise.",
     keywords: [
         "ml zu gramm umrechner",
         "milliliter gramm rechner",
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     openGraph: {
         title: "ML zu Gramm Umrechner - Präzise Umrechnung für 50+ Substanzen",
         description:
-      "Konvertieren Sie einfach zwischen Millilitern und Gramm. Über 50 Substanzen verfügbar - von Wasser bis Honig. Perfekt für Küche, Labor und Alltag.",
+            "Konvertieren Sie einfach zwischen Millilitern und Gramm. Über 50 Substanzen verfügbar - von Wasser bis Honig. Perfekt für Küche, Labor und Alltag.",
         type: "website",
         locale: "de_DE",
         url: URL,
@@ -50,7 +50,7 @@ export const metadata: Metadata = {
         card: "summary_large_image",
         title: "ML zu Gramm Umrechner | CalorieTracker",
         description:
-      "Präzise Umrechnung zwischen Millilitern und Gramm für 50+ Substanzen. Kostenlos und einfach zu verwenden.",
+            "Präzise Umrechnung zwischen Millilitern und Gramm für 50+ Substanzen. Kostenlos und einfach zu verwenden.",
         images: ["/twitter-unit-converter.png"], // TODO: Erstellen
         creator: "@calorietracker", // TODO: Anpassen
     },

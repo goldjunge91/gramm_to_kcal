@@ -84,7 +84,7 @@ matrix(
 will be transformed to:
 
 ```js
-matrix(1, 0, 0, 0, 1, 0, 0, 0, 1)
+matrix(1, 0, 0, 0, 1, 0, 0, 0, 1);
 
 // prettier-ignore
 matrix(
@@ -104,8 +104,8 @@ matrix(
 
 ```jsx
 <div>
-  {/* prettier-ignore */}
-  <span ugly format="" />
+    {/* prettier-ignore */}
+    <span ugly format="" />
 </div>
 ```
 
@@ -116,10 +116,16 @@ matrix(
 <div         class="x"       >hello world</div            >
 
 <!-- prettier-ignore-attribute -->
-<div (mousedown)="       onStart    (    )         " (mouseup)="         onEnd      (    )         "></div>
+<div
+    (mousedown)="       onStart    (    )         "
+    (mouseup)="         onEnd      (    )         "
+></div>
 
 <!-- prettier-ignore-attribute (mouseup) -->
-<div (mousedown)="onStart()" (mouseup)="         onEnd      (    )         "></div>
+<div
+    (mousedown)="onStart()"
+    (mouseup)="         onEnd      (    )         "
+></div>
 ```
 
 ## CSS
@@ -173,8 +179,8 @@ hello: world
 
 ```graphql
 {
-  # prettier-ignore
-  addReaction(input:{superLongInputFieldName:"MDU6SXNzdWUyMzEzOTE1NTE=",content:HOORAY}) {
+    # prettier-ignore
+    addReaction(input:{superLongInputFieldName:"MDU6SXNzdWUyMzEzOTE1NTE=",content:HOORAY}) {
     reaction {content}
   }
 }

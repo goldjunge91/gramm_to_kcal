@@ -18,7 +18,11 @@ function extractTitle(text: string): string {
 }
 
 /** Parse metadata line containing calories, time, and difficulty */
-function parseMetadata(text: string): { calories?: number; time?: string; difficulty?: string } {
+function parseMetadata(text: string): {
+    calories?: number;
+    time?: string;
+    difficulty?: string;
+} {
     const metadataRegex = /(\d+)\s*kcal\s*・\s*([^・]+)\s*・\s*([^・\n]+)/i;
     const match = text.match(metadataRegex);
 
@@ -54,7 +58,10 @@ function extractDescription(text: string): string {
 }
 
 /** Parse ingredient list from text */
-function parseIngredients(text: string): { ingredients: Ingredient[]; portions: number } {
+function parseIngredients(text: string): {
+    ingredients: Ingredient[];
+    portions: number;
+} {
     const ingredients: Ingredient[] = [];
     let portions = 1;
 
@@ -93,11 +100,17 @@ function parseIngredients(text: string): { ingredients: Ingredient[]; portions: 
                 /^(\d+(?:[.,]\d+)?) ?([⅛⅙⅕¼⅓⅜⅖½⅗⅔⅝¾⅘⅚⅞])\s+(\S.*)$/,
             );
             // Dann nur Zahl: z.B. 1.5
-            if (!quantityMatch)
-                quantityMatch = quantityAndUnit.match(/^(\d+(?:[.,]\d+)?)\s+(\S.*)$/);
+            if (!quantityMatch) {
+                quantityMatch = quantityAndUnit.match(
+                    /^(\d+(?:[.,]\d+)?)\s+(\S.*)$/,
+                );
+            }
             // Dann nur Bruch: z.B. ⅔
-            if (!quantityMatch)
-                quantityMatch = quantityAndUnit.match(/^([⅛⅙⅕¼⅓⅜⅖½⅗⅔⅝¾⅘⅚⅞])\s+(\S.*)$/);
+            if (!quantityMatch) {
+                quantityMatch = quantityAndUnit.match(
+                    /^([⅛⅙⅕¼⅓⅜⅖½⅗⅔⅝¾⅘⅚⅞])\s+(\S.*)$/,
+                );
+            }
 
             if (quantityMatch) {
                 let quantity = "";
@@ -195,7 +208,9 @@ function parseInstructions(text: string): string[] {
     const instructionText = instructionsMatch[1];
 
     // Split by numbered steps
-    const steps = instructionText.split(/\d+\.\s*/).filter(step => step.trim());
+    const steps = instructionText
+        .split(/\d+\.\s*/)
+        .filter(step => step.trim());
 
     steps.forEach((step) => {
         const trimmed = step.trim();

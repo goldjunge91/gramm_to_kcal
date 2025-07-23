@@ -47,13 +47,17 @@ export function MobileOfflineStatus(): JSX.Element {
                 <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
                         <Smartphone className="h-4 w-4 text-blue-500" />
-                        <span className="text-sm font-medium">Mobile Status</span>
+                        <span className="text-sm font-medium">
+                            Mobile Status
+                        </span>
                     </div>
 
                     {syncInProgress && (
                         <div className="flex items-center gap-1">
                             <RefreshCw className="h-3 w-3 animate-spin" />
-                            <span className="text-xs text-muted-foreground">Syncing...</span>
+                            <span className="text-xs text-muted-foreground">
+                                Syncing...
+                            </span>
                         </div>
                     )}
                 </div>
@@ -61,13 +65,11 @@ export function MobileOfflineStatus(): JSX.Element {
                 <div className="grid grid-cols-2 gap-2 text-xs">
                     {/* Connection Status */}
                     <div className="flex items-center gap-1">
-                        {isOnline
-                            ? (
-                                    <Wifi className="h-3 w-3 text-green-500" />
-                                )
-                            : (
-                                    <WifiOff className="h-3 w-3 text-red-500" />
-                                )}
+                        {isOnline ? (
+                            <Wifi className="h-3 w-3 text-green-500" />
+                        ) : (
+                            <WifiOff className="h-3 w-3 text-red-500" />
+                        )}
                         <Badge
                             variant={isOnline ? "default" : "secondary"}
                             className="text-xs"

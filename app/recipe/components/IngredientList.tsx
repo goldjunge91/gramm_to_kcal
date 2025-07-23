@@ -5,7 +5,6 @@ import type { JSX } from "react";
 import {
     closestCenter,
     DndContext,
-
     KeyboardSensor,
     PointerSensor,
     useSensor,
@@ -23,7 +22,6 @@ import {
     createColumnHelper,
     flexRender,
     getCoreRowModel,
-
     useReactTable,
 } from "@tanstack/react-table";
 import { GripVertical, Trash2 } from "lucide-react";
@@ -74,12 +72,12 @@ function DeferredQuantityInput({
     ingredientName: string;
 }) {
     const { displayValue, isDirty, handleChange, handleBlur, handleKeyDown }
-    = useDeferredInput({
-        initialValue: currentQuantity,
-        onCommit: newValue => onQuantityChange(ingredientId, newValue),
-        validator: value => !Number.isNaN(value) && value > 0,
-        formatter: value => Number.parseFloat(value),
-    });
+        = useDeferredInput({
+            initialValue: currentQuantity,
+            onCommit: newValue => onQuantityChange(ingredientId, newValue),
+            validator: value => !Number.isNaN(value) && value > 0,
+            formatter: value => Number.parseFloat(value),
+        });
 
     return (
         <Input
@@ -110,12 +108,12 @@ function DeferredScaleFactorInput({
     ingredientName: string;
 }) {
     const { displayValue, isDirty, handleChange, handleBlur, handleKeyDown }
-    = useDeferredInput({
-        initialValue: currentScaleFactor,
-        onCommit: newValue => onScaleFactorChange(ingredientId, newValue),
-        validator: value => !Number.isNaN(value) && value > 0,
-        formatter: value => Number.parseFloat(value),
-    });
+        = useDeferredInput({
+            initialValue: currentScaleFactor,
+            onCommit: newValue => onScaleFactorChange(ingredientId, newValue),
+            validator: value => !Number.isNaN(value) && value > 0,
+            formatter: value => Number.parseFloat(value),
+        });
 
     return (
         <Input
@@ -204,11 +202,15 @@ export function IngredientList({
                         <GripVertical className="h-4 w-4 text-muted-foreground" />
                     </div>
                 ),
-                cell: info => <DragHandle ingredientId={info.row.original.id} />,
+                cell: info => (
+                    <DragHandle ingredientId={info.row.original.id} />
+                ),
             }),
             columnHelper.accessor("name", {
                 header: "Zutat",
-                cell: info => <div className="font-medium">{info.getValue()}</div>,
+                cell: info => (
+                    <div className="font-medium">{info.getValue()}</div>
+                ),
             }),
             columnHelper.display({
                 id: "originalQuantity",
@@ -220,9 +222,9 @@ export function IngredientList({
                     if (!originalIngredient)
                         return <div className="text-right">-</div>;
                     const formattedValue
-            = originalIngredient.quantity % 1 === 0
-                ? originalIngredient.quantity.toString()
-                : originalIngredient.quantity.toFixed(1);
+                        = originalIngredient.quantity % 1 === 0
+                            ? originalIngredient.quantity.toString()
+                            : originalIngredient.quantity.toFixed(1);
                     return (
                         <div className="text-right text-muted-foreground font-medium">
                             {formattedValue}
@@ -241,44 +243,50 @@ export function IngredientList({
                         ? currentQuantity / originalIngredient.quantity
                         : 1;
                     const formattedValue
-            = currentQuantity % 1 === 0
-                ? currentQuantity.toString()
-                : currentQuantity.toFixed(1);
+                        = currentQuantity % 1 === 0
+                            ? currentQuantity.toString()
+                            : currentQuantity.toFixed(1);
 
                     return (
                         <div className="text-right">
                             <div className="flex items-center justify-end space-x-1">
-                                {onQuantityChange
-                                    ? (
-                                            <DeferredQuantityInput
-                                                ingredientId={info.row.original.id}
-                                                currentQuantity={currentQuantity}
-                                                onQuantityChange={onQuantityChange}
-                                                ingredientName={info.row.original.name}
-                                            />
-                                        )
-                                    : (
-                                            <div className="font-medium">{formattedValue}</div>
-                                        )}
+                                {onQuantityChange ? (
+                                    <DeferredQuantityInput
+                                        ingredientId={info.row.original.id}
+                                        currentQuantity={currentQuantity}
+                                        onQuantityChange={onQuantityChange}
+                                        ingredientName={info.row.original.name}
+                                    />
+                                ) : (
+                                    <div className="font-medium">
+                                        {formattedValue}
+                                    </div>
+                                )}
                                 <div className="text-xs text-muted-foreground">
-                                    {onScaleFactorChange
-                                        ? (
-                                                <div className="flex items-center">
-                                                    <DeferredScaleFactorInput
-                                                        ingredientId={info.row.original.id}
-                                                        currentScaleFactor={ingredientScaleFactor}
-                                                        onScaleFactorChange={onScaleFactorChange}
-                                                        ingredientName={info.row.original.name}
-                                                    />
-                                                    <span className="ml-0.5">x</span>
-                                                </div>
-                                            )
-                                        : (
-                                                <span>
-                                                    {ingredientScaleFactor.toFixed(1)}
-                                                    x
-                                                </span>
-                                            )}
+                                    {onScaleFactorChange ? (
+                                        <div className="flex items-center">
+                                            <DeferredScaleFactorInput
+                                                ingredientId={
+                                                    info.row.original.id
+                                                }
+                                                currentScaleFactor={
+                                                    ingredientScaleFactor
+                                                }
+                                                onScaleFactorChange={
+                                                    onScaleFactorChange
+                                                }
+                                                ingredientName={
+                                                    info.row.original.name
+                                                }
+                                            />
+                                            <span className="ml-0.5">x</span>
+                                        </div>
+                                    ) : (
+                                        <span>
+                                            {ingredientScaleFactor.toFixed(1)}
+                                            x
+                                        </span>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -287,7 +295,9 @@ export function IngredientList({
             }),
             columnHelper.accessor("unit", {
                 header: () => <div className="text-right">Einheit</div>,
-                cell: info => <div className="text-right">{info.getValue()}</div>,
+                cell: info => (
+                    <div className="text-right">{info.getValue()}</div>
+                ),
             }),
             columnHelper.display({
                 id: "actions",
@@ -327,8 +337,12 @@ export function IngredientList({
 
         if (active.id !== over?.id) {
             setData((items) => {
-                const oldIndex = items.findIndex(item => item.id === active.id);
-                const newIndex = items.findIndex(item => item.id === over?.id);
+                const oldIndex = items.findIndex(
+                    item => item.id === active.id,
+                );
+                const newIndex = items.findIndex(
+                    item => item.id === over?.id,
+                );
 
                 const newOrder = arrayMove(items, oldIndex, newIndex);
 
@@ -366,7 +380,8 @@ export function IngredientList({
                                             <TableHead
                                                 key={header.id}
                                                 className={
-                                                    header.column.id === "dragHandle"
+                                                    header.column.id
+                                                    === "dragHandle"
                                                         ? "w-12"
                                                         : "whitespace-nowrap px-2 py-1 text-xs md:text-sm"
                                                 }
@@ -374,7 +389,8 @@ export function IngredientList({
                                                 {header.isPlaceholder
                                                     ? null
                                                     : flexRender(
-                                                            header.column.columnDef.header,
+                                                            header.column
+                                                                .columnDef.header,
                                                             header.getContext(),
                                                         )}
                                             </TableHead>
@@ -383,44 +399,52 @@ export function IngredientList({
                                 ))}
                             </TableHeader>
                             <TableBody>
-                                {table.getRowModel().rows?.length
-                                    ? (
-                                            <SortableContext
-                                                items={data.map(item => item.id)}
-                                                strategy={verticalListSortingStrategy}
+                                {table.getRowModel().rows?.length ? (
+                                    <SortableContext
+                                        items={data.map(item => item.id)}
+                                        strategy={verticalListSortingStrategy}
+                                    >
+                                        {table.getRowModel().rows.map(row => (
+                                            <DraggableTableRow
+                                                key={row.id}
+                                                row={row}
                                             >
-                                                {table.getRowModel().rows.map(row => (
-                                                    <DraggableTableRow key={row.id} row={row}>
-                                                        {row.getVisibleCells().map(cell => (
-                                                            <TableCell
-                                                                key={cell.id}
-                                                                className={
-                                                                    cell.column.id === "dragHandle"
-                                                                        ? "w-12"
-                                                                        : "whitespace-nowrap px-2 py-1 text-xs md:text-sm"
-                                                                }
-                                                            >
-                                                                {flexRender(
-                                                                    cell.column.columnDef.cell,
-                                                                    cell.getContext(),
-                                                                )}
-                                                            </TableCell>
-                                                        ))}
-                                                    </DraggableTableRow>
-                                                ))}
-                                            </SortableContext>
-                                        )
-                                    : (
-                                            <TableRow>
-                                                <TableCell
-                                                    colSpan={columns.length}
-                                                    className="h-24 text-center whitespace-nowrap"
-                                                >
-                                                    Keine Zutaten hinzugefügt. Fügen Sie oben eine Zutat
-                                                    hinzu, um zu beginnen.
-                                                </TableCell>
-                                            </TableRow>
-                                        )}
+                                                {row
+                                                    .getVisibleCells()
+                                                    .map(cell => (
+                                                        <TableCell
+                                                            key={cell.id}
+                                                            className={
+                                                                cell.column
+                                                                    .id
+                                                                    === "dragHandle"
+                                                                    ? "w-12"
+                                                                    : "whitespace-nowrap px-2 py-1 text-xs md:text-sm"
+                                                            }
+                                                        >
+                                                            {flexRender(
+                                                                cell.column
+                                                                    .columnDef
+                                                                    .cell,
+                                                                cell.getContext(),
+                                                            )}
+                                                        </TableCell>
+                                                    ))}
+                                            </DraggableTableRow>
+                                        ))}
+                                    </SortableContext>
+                                ) : (
+                                    <TableRow>
+                                        <TableCell
+                                            colSpan={columns.length}
+                                            className="h-24 text-center whitespace-nowrap"
+                                        >
+                                            Keine Zutaten hinzugefügt. Fügen Sie
+                                            oben eine Zutat hinzu, um zu
+                                            beginnen.
+                                        </TableCell>
+                                    </TableRow>
+                                )}
                             </TableBody>
                         </Table>
                     </DndContext>

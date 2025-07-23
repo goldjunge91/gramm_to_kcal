@@ -4,12 +4,12 @@ Styling can be done globally via `toastOptions`, this way every toast will have 
 
 ```jsx
 <Toaster
-  toastOptions={{
-    style: {
-      background: "red",
-    },
-    className: "class",
-  }}
+    toastOptions={{
+        style: {
+            background: "red",
+        },
+        className: "class",
+    }}
 />
 ```
 
@@ -17,10 +17,10 @@ You can also use the same props when calling `toast` to style a specific toast.
 
 ```jsx
 toast("Hello World", {
-  style: {
-    background: "red",
-  },
-  className: "class",
+    style: {
+        background: "red",
+    },
+    className: "class",
 });
 ```
 
@@ -30,17 +30,17 @@ The preferred way to style the toasts with tailwind is by using the `unstyled` p
 
 ```jsx
 <Toaster
-  toastOptions={{
-    unstyled: true,
-    classNames: {
-      toast: "bg-blue-400",
-      title: "text-red-400",
-      description: "text-red-400",
-      actionButton: "bg-zinc-400",
-      cancelButton: "bg-orange-400",
-      closeButton: "bg-lime-400",
-    },
-  }}
+    toastOptions={{
+        unstyled: true,
+        classNames: {
+            toast: "bg-blue-400",
+            title: "text-red-400",
+            description: "text-red-400",
+            actionButton: "bg-zinc-400",
+            cancelButton: "bg-orange-400",
+            closeButton: "bg-lime-400",
+        },
+    }}
 />
 ```
 
@@ -48,15 +48,15 @@ You can do the same when calling `toast()`.
 
 ```jsx
 toast("Hello World", {
-  unstyled: true,
-  classNames: {
-    toast: "bg-blue-400",
-    title: "text-red-400 text-2xl",
-    description: "text-red-400",
-    actionButton: "bg-zinc-400",
-    cancelButton: "bg-orange-400",
-    closeButton: "bg-lime-400",
-  },
+    unstyled: true,
+    classNames: {
+        toast: "bg-blue-400",
+        title: "text-red-400 text-2xl",
+        description: "text-red-400",
+        actionButton: "bg-zinc-400",
+        cancelButton: "bg-orange-400",
+        closeButton: "bg-lime-400",
+    },
 });
 ```
 
@@ -64,15 +64,15 @@ Styling per toast type is also possible.
 
 ```jsx
 <Toaster
-  toastOptions={{
-    unstyled: true,
-    classNames: {
-      error: "bg-red-400",
-      success: "text-green-400",
-      warning: "text-yellow-400",
-      info: "bg-blue-400",
-    },
-  }}
+    toastOptions={{
+        unstyled: true,
+        classNames: {
+            error: "bg-red-400",
+            success: "text-green-400",
+            warning: "text-yellow-400",
+            info: "bg-blue-400",
+        },
+    }}
 />
 ```
 
@@ -82,13 +82,13 @@ You can change the default icons using the `icons` prop:
 
 ```jsx
 <Toaster
-  icons={{
-    success: <SuccessIcon />,
-    info: <InfoIcon />,
-    warning: <WarningIcon />,
-    error: <ErrorIcon />,
-    loading: <LoadingIcon />,
-  }}
+    icons={{
+        success: <SuccessIcon />,
+        info: <InfoIcon />,
+        warning: <WarningIcon />,
+        error: <ErrorIcon />,
+        loading: <LoadingIcon />,
+    }}
 />
 ```
 
@@ -96,6 +96,6 @@ You can also set an icon for each toast:
 
 ```jsx
 toast("Hello World", {
-  icon: <Icon />,
+    icon: <Icon />,
 });
 ```

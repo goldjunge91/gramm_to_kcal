@@ -51,8 +51,14 @@ export async function signupAction(formData: FormData) {
     // Input validation with Zod
     const validation = signUpSchema.safeParse(rawData);
     if (!validation.success) {
-        const errorMessage = validation.error.issues[0]?.message || "Invalid input";
-        logAuthAttempt("signup", rawData.email || "unknown", false, errorMessage);
+        const errorMessage
+            = validation.error.issues[0]?.message || "Invalid input";
+        logAuthAttempt(
+            "signup",
+            rawData.email || "unknown",
+            false,
+            errorMessage,
+        );
         redirect(`/auth/sign-up?error=${encodeURIComponent(errorMessage)}`);
     }
 
@@ -69,7 +75,9 @@ export async function signupAction(formData: FormData) {
 
         if (!result.user) {
             logAuthAttempt("signup", email, false, "Signup failed");
-            redirect(`/auth/sign-up?error=${encodeURIComponent("Account creation failed")}`);
+            redirect(
+                `/auth/sign-up?error=${encodeURIComponent("Account creation failed")}`,
+            );
         }
 
         logAuthAttempt("signup", email, true);
@@ -81,8 +89,11 @@ export async function signupAction(formData: FormData) {
         redirect(REDIRECT_PATHS.DEFAULT_AFTER_LOGIN);
     }
     catch (error) {
-        const errorMsg = error instanceof Error ? error.message : "Unexpected error";
+        const errorMsg
+            = error instanceof Error ? error.message : "Unexpected error";
         logAuthAttempt("signup", email, false, errorMsg);
-        redirect(`/auth/sign-up?error=${encodeURIComponent("Account creation failed")}`);
+        redirect(
+            `/auth/sign-up?error=${encodeURIComponent("Account creation failed")}`,
+        );
     }
 }

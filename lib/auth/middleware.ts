@@ -7,11 +7,7 @@ import type { NextRequest } from "next/server";
 import { getSessionCookie } from "better-auth/cookies";
 import { NextResponse } from "next/server";
 
-import {
-    isAuthRoute,
-    isPublicRoute,
-    REDIRECT_PATHS,
-} from "@/lib/auth/routes";
+import { isAuthRoute, isPublicRoute, REDIRECT_PATHS } from "@/lib/auth/routes";
 
 export function evaluateAuthRoute({
     pathname,

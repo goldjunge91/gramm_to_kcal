@@ -7,6 +7,10 @@
                     {
                         "type": "command",
                         "command": "tdd-guard"
+                    },
+                    {
+                        "type": "command",
+                        "command": "/Users/marco/Github.tmp/gramm_to_kcal/ts-tdd-guard.sh"
                     }
                 ]
             }

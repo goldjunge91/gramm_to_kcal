@@ -1,14 +1,16 @@
 # authentication: Email & Password
+
 URL: /docs/authentication/email-password
 Source: https://raw.githubusercontent.com/better-auth/better-auth/refs/heads/main/docs/content/docs/authentication/email-password.mdx
 
 Implementing email and password authentication with Better Auth.
-        
-***
+
+---
 
 title: Email & Password
 description: Implementing email and password authentication with Better Auth.
------------------------------------------------------------------------------
+
+---
 
 Email and password authentication is a common method used by many applications. Better Auth provides a built-in email and password authenticator that you can easily integrate into your project.
 
@@ -26,9 +28,10 @@ To enable email and password authentication, you need to set the `emailAndPasswo
 import { betterAuth } from "better-auth";
 
 export const auth = betterAuth({
-  emailAndPassword: { // [!code highlight]
-    enabled: true, // [!code highlight]
-  }, // [!code highlight]
+    emailAndPassword: {
+        // [!code highlight]
+        enabled: true, // [!code highlight]
+    }, // [!code highlight]
 });
 ```
 
@@ -118,13 +121,13 @@ To sign a user out, you can use the `signOut` function provided by the client.
 
 you can pass `fetchOptions` to redirect onSuccess
 
-```ts title="auth-client.ts" 
+```ts title="auth-client.ts"
 await authClient.signOut({
-  fetchOptions: {
-    onSuccess: () => {
-      router.push("/login"); // redirect to login page
+    fetchOptions: {
+        onSuccess: () => {
+            router.push("/login"); // redirect to login page
+        },
     },
-  },
 });
 ```
 
@@ -132,9 +135,9 @@ await authClient.signOut({
 
 To enable email verification, you need to pass a function that sends a verification email with a link. The `sendVerificationEmail` function takes a data object with the following properties:
 
-* `user`: The user object.
-* `url`: The URL to send to the user which contains the token.
-* `token`: A verification token used to complete the email verification.
+- `user`: The user object.
+- `url`: The URL to send to the user which contains the token.
+- `token`: A verification token used to complete the email verification.
 
 and a `request` object as the second parameter.
 
@@ -143,15 +146,15 @@ import { betterAuth } from "better-auth";
 import { sendEmail } from "./email"; // your email sending function
 
 export const auth = betterAuth({
-  emailVerification: {
-    sendVerificationEmail: async ( { user, url, token }, request) => {
-      await sendEmail({
-        to: user.email,
-        subject: "Verify your email address",
-        text: `Click the link to verify your email: ${url}`,
-      });
+    emailVerification: {
+        sendVerificationEmail: async ({ user, url, token }, request) => {
+            await sendEmail({
+                to: user.email,
+                subject: "Verify your email address",
+                text: `Click the link to verify your email: ${url}`,
+            });
+        },
     },
-  },
 });
 ```
 
@@ -170,9 +173,9 @@ If you enable require email verification, users must verify their email before t
 
 ```ts title="auth.ts"
 export const auth = betterAuth({
-  emailAndPassword: {
-    requireEmailVerification: true,
-  },
+    emailAndPassword: {
+        requireEmailVerification: true,
+    },
 });
 ```
 
@@ -180,20 +183,20 @@ If a user tries to sign in without verifying their email, you can handle the err
 
 ```ts title="auth-client.ts"
 await authClient.signIn.email(
-  {
-    email: "email@example.com",
-    password: "password",
-  },
-  {
-    onError: (ctx) => {
-      // Handle the error
-      if (ctx.error.status === 403) {
-        alert("Please verify your email address");
-      }
-      //you can also show the original error message
-      alert(ctx.error.message);
+    {
+        email: "email@example.com",
+        password: "password",
     },
-  }
+    {
+        onError: (ctx) => {
+            // Handle the error
+            if (ctx.error.status === 403) {
+                alert("Please verify your email address");
+            }
+            //you can also show the original error message
+            alert(ctx.error.message);
+        },
+    },
 );
 ```
 
@@ -203,8 +206,8 @@ You can trigger the email verification manually by calling the `sendVerification
 
 ```ts
 await authClient.sendVerificationEmail({
-  email: "user@email.com",
-  callbackURL: "/", // The redirect URL after verification
+    email: "user@email.com",
+    callbackURL: "/", // The redirect URL after verification
 });
 ```
 
@@ -212,9 +215,9 @@ await authClient.sendVerificationEmail({
 
 To allow users to reset a password first you need to provide `sendResetPassword` function to the email and password authenticator. The `sendResetPassword` function takes a data object with the following properties:
 
-* `user`: The user object.
-* `url`: The URL to send to the user which contains the token.
-* `token`: A verification token used to complete the password reset.
+- `user`: The user object.
+- `url`: The URL to send to the user which contains the token.
+- `token`: A verification token used to complete the password reset.
 
 and a `request` object as the second parameter.
 
@@ -223,20 +226,20 @@ import { betterAuth } from "better-auth";
 import { sendEmail } from "./email"; // your email sending function
 
 export const auth = betterAuth({
-  emailAndPassword: {
-    enabled: true,
-    sendResetPassword: async ({user, url, token}, request) => {
-      await sendEmail({
-        to: user.email,
-        subject: "Reset your password",
-        text: `Click the link to reset your password: ${url}`,
-      });
+    emailAndPassword: {
+        enabled: true,
+        sendResetPassword: async ({ user, url, token }, request) => {
+            await sendEmail({
+                to: user.email,
+                subject: "Reset your password",
+                text: `Click the link to reset your password: ${url}`,
+            });
+        },
+        onPasswordReset: async ({ user }, request) => {
+            // your logic here
+            console.log(`Password for user ${user.email} has been reset.`);
+        },
     },
-    onPasswordReset: async ({ user }, request) => {
-      // your logic here
-      console.log(`Password for user ${user.email} has been reset.`);
-    },
-  },
 });
 ```
 
@@ -261,13 +264,12 @@ Once you configured your server you can call `requestPasswordReset` function to 
 
 When a user clicks on the link in the email, they will be redirected to the reset password page. You can add the reset password page to your app. Then you can use `resetPassword` function to reset the password. It takes an object with the following properties:
 
-* `newPassword`: The new password of the user.
+- `newPassword`: The new password of the user.
 
 ```ts title="auth-client.ts"
-
 const { data, error } = await authClient.resetPassword({
-  newPassword: "password1234",
-  token,
+    newPassword: "password1234",
+    token,
 });
 ```
 
@@ -275,27 +277,28 @@ const { data, error } = await authClient.resetPassword({
   ```ts
   const token = new URLSearchParams(window.location.search).get("token");
 
-  if (!token) {
-    // Handle the error
-  }
+if (!token) {
+// Handle the error
+}
 
-  type resetPassword = {
-      /**
-       * The new password to set 
-       */
-      newPassword: string = "password1234"
-      /**
-       * The token to reset the password 
-       */
-      token: string
-  }
-  ```
+type resetPassword = {
+/**
+_ The new password to set
+_/
+newPassword: string = "password1234"
+/**
+_ The token to reset the password
+_/
+token: string
+}
+
+````
 </APIMethod>
 
 ### Update password
 
 <Callout type="warn">
-  This only works on server-side, and the following code may change over time.
+This only works on server-side, and the following code may change over time.
 </Callout>
 
 To set a password, you must hash it first:
@@ -303,12 +306,12 @@ To set a password, you must hash it first:
 ```ts
 const ctx = await auth.$context;
 const hash = await ctx.password.hash("your-new-password");
-```
+````
 
 Then, to set the password:
 
 ```ts
-await ctx.internalAdapter.updatePassword("userId", hash) //(you can also use your orm directly)
+await ctx.internalAdapter.updatePassword("userId", hash); //(you can also use your orm directly)
 ```
 
 ### Configuration
@@ -337,7 +340,7 @@ export const auth = betterAuth({
 ```
 
 <TypeTable
-  type={{
+type={{
   enabled: {
     description: "Enable email and password authentication.",
     type: "boolean",
@@ -390,4 +393,3 @@ export const auth = betterAuth({
   },
 }}
 />
-

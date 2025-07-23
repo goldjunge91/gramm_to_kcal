@@ -8,7 +8,11 @@ export function calculateKcalPer100g(product: Product): number {
 }
 
 /** Scale recipe ingredients based on portion changes */
-export function scaleRecipe(ingredients: Ingredient[], originalPortions: number, desiredPortions: number): Ingredient[] {
+export function scaleRecipe(
+    ingredients: Ingredient[],
+    originalPortions: number,
+    desiredPortions: number,
+): Ingredient[] {
     if (!originalPortions || originalPortions === 0)
         return ingredients;
 

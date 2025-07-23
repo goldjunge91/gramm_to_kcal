@@ -15,8 +15,8 @@ export default defineConfig({
     testDir: "./__e2e__/", // Passe ggf. an deinen Testordner an
     testIgnore: [
         "**/auth/**", // Ignoriere alle Tests im Ordner experimental
-    // '**/*.skip.ts',                 // Ignoriere alle Dateien mit .skip.ts
-    // '**/auth/legacy-login.spec.ts', // Ignoriere eine bestimmte Datei
+        // '**/*.skip.ts',                 // Ignoriere alle Dateien mit .skip.ts
+        // '**/auth/legacy-login.spec.ts', // Ignoriere eine bestimmte Datei
     ],
     timeout: 30 * 1000,
     expect: {
@@ -74,15 +74,15 @@ export default defineConfig({
         //   use: { ...devices['iPhone 12'] },
         // },
 
-    /* Test against branded browsers. */
-    // {
-    //   name: 'Microsoft Edge',
-    //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
-    // },
-    // {
-    //   name: 'Google Chrome',
-    //   use: { ...devices['Desktop Chrome'], channel: 'chrome' },
-    // },
+        /* Test against branded browsers. */
+        // {
+        //   name: 'Microsoft Edge',
+        //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
+        // },
+        // {
+        //   name: 'Google Chrome',
+        //   use: { ...devices['Desktop Chrome'], channel: 'chrome' },
+        // },
     ],
     /* Run your local dev server before starting the tests */
     outputDir: "test-results/",

@@ -1,13 +1,20 @@
 "use client";
 
 import type { DragEndEvent } from "@dnd-kit/core";
-import type { Cell, ColumnDef, ExpandedState, Header, Row, SortingState, TableOptions } from "@tanstack/react-table";
+import type {
+    Cell,
+    ColumnDef,
+    ExpandedState,
+    Header,
+    Row,
+    SortingState,
+    TableOptions,
+} from "@tanstack/react-table";
 import type { CSSProperties, ReactNode } from "react";
 
 import {
     closestCenter,
     DndContext,
-
     KeyboardSensor,
     MouseSensor,
     TouchSensor,
@@ -23,14 +30,12 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import {
-
     flexRender,
     getCoreRowModel,
     getExpandedRowModel,
     getFilteredRowModel,
     getPaginationRowModel,
     getSortedRowModel,
-
     useReactTable,
 } from "@tanstack/react-table";
 import {
@@ -41,14 +46,7 @@ import {
     GripVerticalIcon,
     InfoIcon,
 } from "lucide-react";
-import {
-
-    Fragment,
-
-    useId,
-    useMemo,
-    useState,
-} from "react";
+import { Fragment, useId, useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -90,11 +88,7 @@ export interface TableProps<T> {
 }
 
 // Draggable Table Header Component
-function DraggableTableHeader<T,>({
-    header,
-}: {
-    header: Header<T, unknown>;
-}) {
+function DraggableTableHeader<T>({ header }: { header: Header<T, unknown> }) {
     const {
         attributes,
         isDragging,
@@ -117,7 +111,7 @@ function DraggableTableHeader<T,>({
     };
 
     const isDraggableColumn
-    = (header.column.columnDef as TableColumn<T>).draggable !== false;
+        = (header.column.columnDef as TableColumn<T>).draggable !== false;
 
     return (
         <TableHead
@@ -152,7 +146,10 @@ function DraggableTableHeader<T,>({
                 <span className="grow truncate">
                     {header.isPlaceholder
                         ? null
-                        : flexRender(header.column.columnDef.header, header.getContext())}
+                        : flexRender(
+                                header.column.columnDef.header,
+                                header.getContext(),
+                            )}
                 </span>
                 {header.column.getCanSort() && (
                     <Button
@@ -200,7 +197,7 @@ function DraggableTableHeader<T,>({
 }
 
 // Drag Along Cell Component
-function DragAlongCell<T,>({ cell }: { cell: Cell<T, unknown> }) {
+function DragAlongCell<T>({ cell }: { cell: Cell<T, unknown> }) {
     const { isDragging, setNodeRef, transform, transition } = useSortable({
         id: cell.column.id,
     });
@@ -256,39 +253,37 @@ export function EnhancedTable<T>({
             id: "expander",
             header: () => null,
             cell: ({ row }: { row: Row<T> }) => {
-                return row.getCanExpand()
-                    ? (
-                            <Button
-                                size="icon"
-                                variant="ghost"
-                                className="size-7 shadow-none text-muted-foreground"
-                                onClick={() => {
-                                    row.getToggleExpandedHandler()();
-                                    onRowExpand?.(row);
-                                }}
-                                aria-expanded={row.getIsExpanded()}
-                                aria-label={
-                                    row.getIsExpanded() ? `Collapse details` : `Expand details`
-                                }
-                            >
-                                {row.getIsExpanded()
-                                    ? (
-                                            <ChevronUpIcon
-                                                className="opacity-60"
-                                                size={16}
-                                                aria-hidden="true"
-                                            />
-                                        )
-                                    : (
-                                            <ChevronDownIcon
-                                                className="opacity-60"
-                                                size={16}
-                                                aria-hidden="true"
-                                            />
-                                        )}
-                            </Button>
-                        )
-                    : null;
+                return row.getCanExpand() ? (
+                    <Button
+                        size="icon"
+                        variant="ghost"
+                        className="size-7 shadow-none text-muted-foreground"
+                        onClick={() => {
+                            row.getToggleExpandedHandler()();
+                            onRowExpand?.(row);
+                        }}
+                        aria-expanded={row.getIsExpanded()}
+                        aria-label={
+                            row.getIsExpanded()
+                                ? `Collapse details`
+                                : `Expand details`
+                        }
+                    >
+                        {row.getIsExpanded() ? (
+                            <ChevronUpIcon
+                                className="opacity-60"
+                                size={16}
+                                aria-hidden="true"
+                            />
+                        ) : (
+                            <ChevronDownIcon
+                                className="opacity-60"
+                                size={16}
+                                aria-hidden="true"
+                            />
+                        )}
+                    </Button>
+                ) : null;
             },
             draggable: false,
         };
@@ -321,7 +316,9 @@ export function EnhancedTable<T>({
         ...(pagination && {
             initialState: {
                 pagination: {
-                    pageSize: compact ? Math.max(5, Math.floor(pageSize / 2)) : pageSize,
+                    pageSize: compact
+                        ? Math.max(5, Math.floor(pageSize / 2))
+                        : pageSize,
                 },
             },
         }),
@@ -356,125 +353,135 @@ export function EnhancedTable<T>({
                 <TableHeader>
                     {table.getHeaderGroups().map(headerGroup => (
                         <TableRow key={headerGroup.id} className="bg-muted/50">
-                            {draggableColumns
-                                ? (
-                                        <SortableContext
-                                            items={columnOrder}
-                                            strategy={horizontalListSortingStrategy}
-                                        >
-                                            {headerGroup.headers.map(header => (
-                                                <DraggableTableHeader key={header.id} header={header} />
-                                            ))}
-                                        </SortableContext>
-                                    )
-                                : (
-                                        headerGroup.headers.map(header => (
-                                            <TableHead key={header.id}>
-                                                {header.isPlaceholder
-                                                    ? null
-                                                    : flexRender(
-                                                            header.column.columnDef.header,
-                                                            header.getContext(),
-                                                        )}
-                                            </TableHead>
-                                        ))
-                                    )}
+                            {draggableColumns ? (
+                                <SortableContext
+                                    items={columnOrder}
+                                    strategy={horizontalListSortingStrategy}
+                                >
+                                    {headerGroup.headers.map(header => (
+                                        <DraggableTableHeader
+                                            key={header.id}
+                                            header={header}
+                                        />
+                                    ))}
+                                </SortableContext>
+                            ) : (
+                                headerGroup.headers.map(header => (
+                                    <TableHead key={header.id}>
+                                        {header.isPlaceholder
+                                            ? null
+                                            : flexRender(
+                                                    header.column.columnDef
+                                                        .header,
+                                                    header.getContext(),
+                                                )}
+                                    </TableHead>
+                                ))
+                            )}
                         </TableRow>
                     ))}
                 </TableHeader>
                 <TableBody>
-                    {table.getRowModel().rows?.length
-                        ? (
-                                table.getRowModel().rows.map(row => (
-                                    <Fragment key={row.id}>
-                                        <TableRow
-                                            key={`${row.id}-main`}
-                                            data-state={row.getIsSelected() && "selected"}
-                                        >
-                                            {row.getVisibleCells().map(cell =>
-                                                draggableColumns
-                                                    ? (
-                                                            <SortableContext
-                                                                key={cell.id}
-                                                                items={columnOrder}
-                                                                strategy={horizontalListSortingStrategy}
-                                                            >
-                                                                <DragAlongCell key={cell.id} cell={cell} />
-                                                            </SortableContext>
-                                                        )
-                                                    : (
-                                                            <TableCell
-                                                                key={cell.id}
-                                                                className={cn(
-                                                                    "whitespace-nowrap",
-                                                                    expandableRows
-                                                                    && "[&:has([aria-expanded])]:w-px [&:has([aria-expanded])]:py-0 [&:has([aria-expanded])]:pr-0",
-                                                                )}
-                                                            >
-                                                                {flexRender(
-                                                                    cell.column.columnDef.cell,
-                                                                    cell.getContext(),
-                                                                )}
-                                                            </TableCell>
-                                                        ),
-                                            )}
-                                        </TableRow>
-                                        {expandableRows && row.getIsExpanded() && (
-                                            <TableRow key={`${row.id}-expanded`}>
-                                                <TableCell colSpan={row.getVisibleCells().length}>
-                                                    <div className="text-primary/80 flex items-start py-2">
-                                                        <span
-                                                            className="me-3 mt-0.5 flex w-7 shrink-0 justify-center"
-                                                            aria-hidden="true"
-                                                        >
-                                                            <InfoIcon className="opacity-60" size={16} />
-                                                        </span>
-                                                        <div className="flex-1">
-                                                            {expandedContent
-                                                                ? (
-                                                                        expandedContent(row)
-                                                                    )
-                                                                : (
-                                                                        <p className="text-sm">Expanded content</p>
-                                                                    )}
-                                                        </div>
-                                                    </div>
-                                                </TableCell>
-                                            </TableRow>
-                                        )}
-                                    </Fragment>
-                                ))
-                            )
-                        : (
-                                <TableRow>
-                                    <TableCell
-                                        colSpan={enhancedColumns.length}
-                                        className="h-24 text-center"
-                                    >
-                                        No results.
-                                    </TableCell>
+                    {table.getRowModel().rows?.length ? (
+                        table.getRowModel().rows.map(row => (
+                            <Fragment key={row.id}>
+                                <TableRow
+                                    key={`${row.id}-main`}
+                                    data-state={
+                                        row.getIsSelected() && "selected"
+                                    }
+                                >
+                                    {row.getVisibleCells().map(cell =>
+                                        draggableColumns ? (
+                                            <SortableContext
+                                                key={cell.id}
+                                                items={columnOrder}
+                                                strategy={
+                                                    horizontalListSortingStrategy
+                                                }
+                                            >
+                                                <DragAlongCell
+                                                    key={cell.id}
+                                                    cell={cell}
+                                                />
+                                            </SortableContext>
+                                        ) : (
+                                            <TableCell
+                                                key={cell.id}
+                                                className={cn(
+                                                    "whitespace-nowrap",
+                                                    expandableRows
+                                                    && "[&:has([aria-expanded])]:w-px [&:has([aria-expanded])]:py-0 [&:has([aria-expanded])]:pr-0",
+                                                )}
+                                            >
+                                                {flexRender(
+                                                    cell.column.columnDef.cell,
+                                                    cell.getContext(),
+                                                )}
+                                            </TableCell>
+                                        ),
+                                    )}
                                 </TableRow>
-                            )}
+                                {expandableRows && row.getIsExpanded() && (
+                                    <TableRow key={`${row.id}-expanded`}>
+                                        <TableCell
+                                            colSpan={
+                                                row.getVisibleCells().length
+                                            }
+                                        >
+                                            <div className="text-primary/80 flex items-start py-2">
+                                                <span
+                                                    className="me-3 mt-0.5 flex w-7 shrink-0 justify-center"
+                                                    aria-hidden="true"
+                                                >
+                                                    <InfoIcon
+                                                        className="opacity-60"
+                                                        size={16}
+                                                    />
+                                                </span>
+                                                <div className="flex-1">
+                                                    {expandedContent ? (
+                                                        expandedContent(row)
+                                                    ) : (
+                                                        <p className="text-sm">
+                                                            Expanded content
+                                                        </p>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </TableCell>
+                                    </TableRow>
+                                )}
+                            </Fragment>
+                        ))
+                    ) : (
+                        <TableRow>
+                            <TableCell
+                                colSpan={enhancedColumns.length}
+                                className="h-24 text-center"
+                            >
+                                No results.
+                            </TableCell>
+                        </TableRow>
+                    )}
                 </TableBody>
             </Table>
         </div>
     );
 
-    const wrappedTable = draggableColumns
-        ? (
-                <DndContext
-                    id={useId()}
-                    collisionDetection={closestCenter}
-                    modifiers={[restrictToHorizontalAxis]}
-                    onDragEnd={handleDragEnd}
-                    sensors={sensors}
-                >
-                    {tableContent}
-                </DndContext>
-            )
-        : (
-                tableContent
-            );
+    const wrappedTable = draggableColumns ? (
+        <DndContext
+            id={useId()}
+            collisionDetection={closestCenter}
+            modifiers={[restrictToHorizontalAxis]}
+            onDragEnd={handleDragEnd}
+            sensors={sensors}
+        >
+            {tableContent}
+        </DndContext>
+    ) : (
+        tableContent
+    );
 
     if (!title && !searchable && !pagination) {
         return <div className={className}>{wrappedTable}</div>;
@@ -490,7 +497,8 @@ export function EnhancedTable<T>({
                             <Input
                                 placeholder={searchPlaceholder}
                                 value={globalFilter ?? ""}
-                                onChange={event => setGlobalFilter(event.target.value)}
+                                onChange={event =>
+                                    setGlobalFilter(event.target.value)}
                                 className={compact ? "w-full" : "max-w-sm"}
                             />
                         </div>

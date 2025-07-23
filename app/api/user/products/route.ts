@@ -10,13 +10,16 @@ import { products } from "@/lib/db/schemas";
 
 export async function GET() {
     try {
-    // Get user session
+        // Get user session
         const session = await auth.api.getSession({
             headers: await headers(),
         });
 
         if (!session?.user) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+            return NextResponse.json(
+                { error: "Unauthorized" },
+                { status: 401 },
+            );
         }
 
         // Fetch user's products
@@ -44,13 +47,16 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
     try {
-    // Get user session
+        // Get user session
         const session = await auth.api.getSession({
             headers: await headers(),
         });
 
         if (!session?.user) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+            return NextResponse.json(
+                { error: "Unauthorized" },
+                { status: 401 },
+            );
         }
 
         const productData = await request.json();
@@ -85,9 +91,16 @@ export async function POST(request: NextRequest) {
     }
     catch (error) {
         console.error("Error creating product - full error:", error);
-        console.error("Error stack:", error instanceof Error ? error.stack : "No stack");
+        console.error(
+            "Error stack:",
+            error instanceof Error ? error.stack : "No stack",
+        );
         return NextResponse.json(
-            { error: "Internal server error", details: error instanceof Error ? error.message : "Unknown error" },
+            {
+                error: "Internal server error",
+                details:
+                    error instanceof Error ? error.message : "Unknown error",
+            },
             { status: 500 },
         );
     }

@@ -26,11 +26,11 @@ export function ThemeSwitcher(props: any) {
         else if (theme === "dark") {
             setIsLightMode(false);
         }
-    // For gunter theme, we keep the current light/dark state
+        // For gunter theme, we keep the current light/dark state
     }, [theme, mounted]);
 
     const handleToggle = (checked: boolean) => {
-    // If gunter is active, switching to light/dark should deactivate gunter
+        // If gunter is active, switching to light/dark should deactivate gunter
         if (theme === "gunter") {
             // Switch to the toggled light/dark theme
             const newTheme = checked ? "light" : "dark";
@@ -48,7 +48,12 @@ export function ThemeSwitcher(props: any) {
     // Show consistent state during SSR/hydration
     if (!mounted) {
         return (
-            <ThemeToggle {...props} checked={true} onToggle={() => {}} className="" />
+            <ThemeToggle
+                {...props}
+                checked={true}
+                onToggle={() => {}}
+                className=""
+            />
         );
     }
 

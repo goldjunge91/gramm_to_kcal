@@ -23,7 +23,9 @@ export default function Component() {
             data-loading={isLoading || undefined}
             className="group relative disabled:opacity-100"
         >
-            <span className="group-data-loading:text-transparent">Click me</span>
+            <span className="group-data-loading:text-transparent">
+                Click me
+            </span>
             {isLoading && (
                 <div className="absolute inset-0 flex items-center justify-center">
                     <LoaderCircleIcon

@@ -23,7 +23,9 @@ export default function AnleitungsgeneratorPage(): JSX.Element {
     const [showPreview, setShowPreview] = useState<boolean>(false);
     const [showStepEditor, setShowStepEditor] = useState<boolean>(false);
     const [showPreviewPanel, setShowPreviewPanel] = useState<boolean>(false);
-    const [previewMode, setPreviewMode] = useState<"compact" | "full">("compact");
+    const [previewMode, setPreviewMode] = useState<"compact" | "full">(
+        "compact",
+    );
 
     const handleParseRecipe = (): void => {
         if (!inputText.trim()) {
@@ -89,19 +91,23 @@ export default function AnleitungsgeneratorPage(): JSX.Element {
                         <CardContent>
                             <div className="text-sm text-muted-foreground">
                                 <p className="mb-2">
-                                    Ihr Rezepttext sollte folgendes Format haben:
+                                    Ihr Rezepttext sollte folgendes Format
+                                    haben:
                                 </p>
                                 <ul className="list-disc list-inside space-y-1">
                                     <li>Titel mit optionalen Emojis</li>
                                     <li>
-                                        Kalorien, Zeit und Schwierigkeit (z.B. "359 kcal ・ 5
-                                        Minuten ・ Leicht")
+                                        Kalorien, Zeit und Schwierigkeit (z.B.
+                                        "359 kcal ・ 5 Minuten ・ Leicht")
                                     </li>
                                     <li>Beschreibungstext</li>
-                                    <li>"Zutaten für X Portion:" gefolgt von Zutatenliste</li>
                                     <li>
-                                        "Anleitung für X Portion:" gefolgt von nummerierten
-                                        Schritten
+                                        "Zutaten für X Portion:" gefolgt von
+                                        Zutatenliste
+                                    </li>
+                                    <li>
+                                        "Anleitung für X Portion:" gefolgt von
+                                        nummerierten Schritten
                                     </li>
                                 </ul>
                             </div>
@@ -117,18 +123,25 @@ export default function AnleitungsgeneratorPage(): JSX.Element {
                                 🖨️ Drucken
                             </Button>
                             <Button
-                                onClick={() => setShowPreviewPanel(!showPreviewPanel)}
-                                variant={showPreviewPanel ? "default" : "outline"}
+                                onClick={() =>
+                                    setShowPreviewPanel(!showPreviewPanel)}
+                                variant={
+                                    showPreviewPanel ? "default" : "outline"
+                                }
                             >
                                 👁️ Live-Vorschau
                             </Button>
                             <Button
-                                onClick={() => setShowStepEditor(!showStepEditor)}
+                                onClick={() =>
+                                    setShowStepEditor(!showStepEditor)}
                                 variant={showStepEditor ? "default" : "outline"}
                             >
                                 ✍️ Schritte bearbeiten
                             </Button>
-                            <Button onClick={() => setShowPreview(false)} variant="outline">
+                            <Button
+                                onClick={() => setShowPreview(false)}
+                                variant="outline"
+                            >
                                 ✏️ Text bearbeiten
                             </Button>
                             <Button onClick={handleReset} variant="outline">
@@ -141,14 +154,22 @@ export default function AnleitungsgeneratorPage(): JSX.Element {
                             <div className="flex gap-2 justify-center">
                                 <Button
                                     onClick={() => setPreviewMode("compact")}
-                                    variant={previewMode === "compact" ? "default" : "outline"}
+                                    variant={
+                                        previewMode === "compact"
+                                            ? "default"
+                                            : "outline"
+                                    }
                                     size="sm"
                                 >
                                     📱 Kompakt
                                 </Button>
                                 <Button
                                     onClick={() => setPreviewMode("full")}
-                                    variant={previewMode === "full" ? "default" : "outline"}
+                                    variant={
+                                        previewMode === "full"
+                                            ? "default"
+                                            : "outline"
+                                    }
                                     size="sm"
                                 >
                                     📄 A4-Format

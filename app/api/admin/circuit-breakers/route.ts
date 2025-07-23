@@ -21,11 +21,14 @@ export async function GET(request: NextRequest) {
     // Note: Rate limiting handled by Better Auth middleware
 
     // Log admin circuit breaker access for monitoring
-    const ip = request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip") || "unknown";
+    const ip
+        = request.headers.get("x-forwarded-for")
+            || request.headers.get("x-real-ip")
+            || "unknown";
     console.info(`[CIRCUIT-BREAKER] Admin GET request from IP: ${ip}`);
 
     try {
-    // Get all circuit breaker statuses
+        // Get all circuit breaker statuses
         const allStatus = await circuitBreakerManager.getAllStatus();
         const healthSummary = await circuitBreakerManager.getHealthSummary();
 
@@ -46,7 +49,8 @@ export async function GET(request: NextRequest) {
         return NextResponse.json(
             {
                 error: "Failed to get circuit breaker status",
-                details: error instanceof Error ? error.message : "Unknown error",
+                details:
+                    error instanceof Error ? error.message : "Unknown error",
             },
             { status: 500, headers },
         );
@@ -56,7 +60,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
     // Validate request size and content type
     if (!validateRequestSize(request, 1024)) {
-    // 1KB limit
+        // 1KB limit
         const securityHeaders = getSecurityHeaders();
         return NextResponse.json(
             { error: "Request too large" },
@@ -171,7 +175,8 @@ export async function POST(request: NextRequest) {
         return NextResponse.json(
             {
                 error: "Circuit breaker operation failed",
-                details: error instanceof Error ? error.message : "Unknown error",
+                details:
+                    error instanceof Error ? error.message : "Unknown error",
             },
             { status: 500, headers },
         );
@@ -181,13 +186,15 @@ export async function POST(request: NextRequest) {
 // Health check endpoint specifically for circuit breakers
 export async function HEAD(request: NextRequest) {
     try {
-    // Logging für Monitoring
+        // Logging für Monitoring
         const ip
-      = request.headers.get("x-forwarded-for")?.split(",")[0]
-          || request.headers.get("x-real-ip")
-          || "unknown";
+            = request.headers.get("x-forwarded-for")?.split(",")[0]
+                || request.headers.get("x-real-ip")
+                || "unknown";
         const userAgent = request.headers.get("user-agent") || "unknown";
-        console.info(`[CB-Health] HEAD request from IP: ${ip}, UA: ${userAgent}`);
+        console.info(
+            `[CB-Health] HEAD request from IP: ${ip}, UA: ${userAgent}`,
+        );
 
         const healthSummary = await circuitBreakerManager.getHealthSummary();
         const allHealthy = healthSummary.healthy === healthSummary.total;
@@ -198,7 +205,10 @@ export async function HEAD(request: NextRequest) {
             allHealthy ? "healthy" : "degraded",
         );
         headers.set("X-Circuit-Breaker-Total", healthSummary.total.toString());
-        headers.set("X-Circuit-Breaker-Healthy", healthSummary.healthy.toString());
+        headers.set(
+            "X-Circuit-Breaker-Healthy",
+            healthSummary.healthy.toString(),
+        );
         headers.set("X-Circuit-Breaker-Open", healthSummary.open.toString());
 
         return new NextResponse(null, {

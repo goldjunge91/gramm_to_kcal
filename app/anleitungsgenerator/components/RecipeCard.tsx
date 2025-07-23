@@ -73,7 +73,9 @@ export function RecipeCard({ recipe }: RecipeCardProps): JSX.Element {
                                     key={ingredient.id}
                                     className="flex justify-between items-center py-1 border-b border-gray-100 last:border-b-0 ingredient-item-print"
                                 >
-                                    <span className="font-medium">{ingredient.name}</span>
+                                    <span className="font-medium">
+                                        {ingredient.name}
+                                    </span>
                                     <span className="text-muted-foreground">
                                         {ingredient.quantity}
                                         {" "}
@@ -96,24 +98,27 @@ export function RecipeCard({ recipe }: RecipeCardProps): JSX.Element {
                         <ol className="space-y-3 instructions-list-print">
                             {recipe.steps
                                 ? recipe.steps.map(step => (
-                                        <li key={step.id} className="instruction-item-print">
+                                        <li
+                                            key={step.id}
+                                            className="instruction-item-print"
+                                        >
                                             <div className="flex gap-3 mb-2">
                                                 <span className="flex-shrink-0 w-6 h-6 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-sm font-bold step-number-print">
                                                     {step.order}
                                                 </span>
                                                 <div className="text-sm leading-relaxed flex-1">
-                                                    {step.formattedText
-                                                        ? (
-                                                                <div
-                                                                    className="rich-text"
-                                                                    dangerouslySetInnerHTML={{
-                                                                        __html: step.formattedText,
-                                                                    }}
-                                                                />
-                                                            )
-                                                        : (
-                                                                <span>{step.instruction}</span>
-                                                            )}
+                                                    {step.formattedText ? (
+                                                        <div
+                                                            className="rich-text"
+                                                            dangerouslySetInnerHTML={{
+                                                                __html: step.formattedText,
+                                                            }}
+                                                        />
+                                                    ) : (
+                                                        <span>
+                                                            {step.instruction}
+                                                        </span>
+                                                    )}
                                                 </div>
                                             </div>
                                             {step.image && (
@@ -122,11 +127,16 @@ export function RecipeCard({ recipe }: RecipeCardProps): JSX.Element {
                                                     style={{
                                                         display: "flex",
                                                         justifyContent:
-                              step.imageSettings?.position === "left"
-                                  ? "flex-start"
-                                  : step.imageSettings?.position === "right"
-                                      ? "flex-end"
-                                      : "center",
+                                                          step.imageSettings
+                                                              ?.position
+                                                              === "left"
+                                                              ? "flex-start"
+                                                              : step
+                                                                  .imageSettings
+                                                                  ?.position
+                                                                  === "right"
+                                                                  ? "flex-end"
+                                                                  : "center",
                                                     }}
                                                 >
                                                     <img
@@ -144,19 +154,21 @@ export function RecipeCard({ recipe }: RecipeCardProps): JSX.Element {
                                             )}
                                         </li>
                                     ))
-                                : recipe.instructions.map((instruction, index) => (
-                                        <li
-                                            key={index}
-                                            className="flex gap-3 instruction-item-print"
-                                        >
-                                            <span className="flex-shrink-0 w-6 h-6 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-sm font-bold step-number-print">
-                                                {index + 1}
-                                            </span>
-                                            <span className="text-sm leading-relaxed">
-                                                {instruction}
-                                            </span>
-                                        </li>
-                                    ))}
+                                : recipe.instructions.map(
+                                        (instruction, index) => (
+                                            <li
+                                                key={index}
+                                                className="flex gap-3 instruction-item-print"
+                                            >
+                                                <span className="flex-shrink-0 w-6 h-6 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-sm font-bold step-number-print">
+                                                    {index + 1}
+                                                </span>
+                                                <span className="text-sm leading-relaxed">
+                                                    {instruction}
+                                                </span>
+                                            </li>
+                                        ),
+                                    )}
                         </ol>
                     </CardContent>
                 </Card>

@@ -26,34 +26,42 @@ describe("/api/products", () => {
 
     describe("GET", () => {
         it("should validate barcode query parameter", async () => {
-            const { validateRequest } = await import("../../../../lib/validations/request-validation");
-            
+            const { validateRequest } = await import(
+                "../../../../lib/validations/request-validation"
+            );
+
             vi.mocked(validateRequest).mockResolvedValue({
                 success: true,
                 data: { barcode: "1234567890123" },
             });
 
-            const request = new NextRequest("http://localhost:3000/api/products?barcode=1234567890123");
+            const request = new NextRequest(
+                "http://localhost:3000/api/products?barcode=1234567890123",
+            );
             const response = await GET(request);
 
             expect(validateRequest).toHaveBeenCalledWith(
                 request,
                 expect.anything(),
-                { source: "query" }
+                { source: "query" },
             );
             expect(response.status).toBe(200);
         });
 
         it("should return error for invalid barcode", async () => {
-            const { validateRequest, getSecurityHeaders } = await import("../../../../lib/validations/request-validation");
-            
+            const { validateRequest, getSecurityHeaders } = await import(
+                "../../../../lib/validations/request-validation"
+            );
+
             vi.mocked(validateRequest).mockResolvedValue({
                 success: false,
                 error: "Invalid barcode format",
             });
             vi.mocked(getSecurityHeaders).mockReturnValue(new Headers());
 
-            const request = new NextRequest("http://localhost:3000/api/products?barcode=invalid");
+            const request = new NextRequest(
+                "http://localhost:3000/api/products?barcode=invalid",
+            );
             const response = await GET(request);
             const data = await response.json();
 
@@ -62,34 +70,42 @@ describe("/api/products", () => {
         });
 
         it("should validate search query parameter", async () => {
-            const { validateRequest } = await import("../../../../lib/validations/request-validation");
-            
+            const { validateRequest } = await import(
+                "../../../../lib/validations/request-validation"
+            );
+
             vi.mocked(validateRequest).mockResolvedValue({
                 success: true,
                 data: { q: "coca cola" },
             });
 
-            const request = new NextRequest("http://localhost:3000/api/products?q=coca+cola");
+            const request = new NextRequest(
+                "http://localhost:3000/api/products?q=coca+cola",
+            );
             const response = await GET(request);
 
             expect(validateRequest).toHaveBeenCalledWith(
                 request,
                 expect.anything(),
-                { source: "query" }
+                { source: "query" },
             );
             expect(response.status).toBe(200);
         });
 
         it("should return error for invalid search query", async () => {
-            const { validateRequest, getSecurityHeaders } = await import("../../../../lib/validations/request-validation");
-            
+            const { validateRequest, getSecurityHeaders } = await import(
+                "../../../../lib/validations/request-validation"
+            );
+
             vi.mocked(validateRequest).mockResolvedValue({
                 success: false,
                 error: "Invalid search query",
             });
             vi.mocked(getSecurityHeaders).mockReturnValue(new Headers());
 
-            const request = new NextRequest("http://localhost:3000/api/products?q=");
+            const request = new NextRequest(
+                "http://localhost:3000/api/products?q=",
+            );
             const response = await GET(request);
             const data = await response.json();
 
@@ -98,10 +114,14 @@ describe("/api/products", () => {
         });
 
         it("should return success response without parameters", async () => {
-            const { getSecurityHeaders } = await import("../../../../lib/validations/request-validation");
+            const { getSecurityHeaders } = await import(
+                "../../../../lib/validations/request-validation"
+            );
             vi.mocked(getSecurityHeaders).mockReturnValue(new Headers());
 
-            const request = new NextRequest("http://localhost:3000/api/products");
+            const request = new NextRequest(
+                "http://localhost:3000/api/products",
+            );
             const response = await GET(request);
             const data = await response.json();
 
@@ -112,16 +132,21 @@ describe("/api/products", () => {
 
     describe("POST", () => {
         it("should reject requests that are too large", async () => {
-            const { validateRequestSize, getSecurityHeaders } = await import("../../../../lib/validations/request-validation");
-            
+            const { validateRequestSize, getSecurityHeaders } = await import(
+                "../../../../lib/validations/request-validation"
+            );
+
             vi.mocked(validateRequestSize).mockReturnValue(false);
             vi.mocked(getSecurityHeaders).mockReturnValue(new Headers());
 
-            const request = new NextRequest("http://localhost:3000/api/products", {
-                method: "POST",
-                body: JSON.stringify({ name: "test" }),
-            });
-            
+            const request = new NextRequest(
+                "http://localhost:3000/api/products",
+                {
+                    method: "POST",
+                    body: JSON.stringify({ name: "test" }),
+                },
+            );
+
             const response = await POST(request);
             const data = await response.json();
 
@@ -130,18 +155,25 @@ describe("/api/products", () => {
         });
 
         it("should reject invalid content type", async () => {
-            const { validateRequestSize, validateContentType, getSecurityHeaders } = await import("../../../../lib/validations/request-validation");
-            
+            const {
+                validateRequestSize,
+                validateContentType,
+                getSecurityHeaders,
+            } = await import("../../../../lib/validations/request-validation");
+
             vi.mocked(validateRequestSize).mockReturnValue(true);
             vi.mocked(validateContentType).mockReturnValue(false);
             vi.mocked(getSecurityHeaders).mockReturnValue(new Headers());
 
-            const request = new NextRequest("http://localhost:3000/api/products", {
-                method: "POST",
-                headers: { "content-type": "text/plain" },
-                body: "invalid",
-            });
-            
+            const request = new NextRequest(
+                "http://localhost:3000/api/products",
+                {
+                    method: "POST",
+                    headers: { "content-type": "text/plain" },
+                    body: "invalid",
+                },
+            );
+
             const response = await POST(request);
             const data = await response.json();
 
@@ -150,8 +182,13 @@ describe("/api/products", () => {
         });
 
         it("should validate request body with Zod schema", async () => {
-            const { validateRequestSize, validateContentType, validateRequest, getSecurityHeaders } = await import("../../../../lib/validations/request-validation");
-            
+            const {
+                validateRequestSize,
+                validateContentType,
+                validateRequest,
+                getSecurityHeaders,
+            } = await import("../../../../lib/validations/request-validation");
+
             vi.mocked(validateRequestSize).mockReturnValue(true);
             vi.mocked(validateContentType).mockReturnValue(true);
             vi.mocked(validateRequest).mockResolvedValue({
@@ -160,12 +197,15 @@ describe("/api/products", () => {
             });
             vi.mocked(getSecurityHeaders).mockReturnValue(new Headers());
 
-            const request = new NextRequest("http://localhost:3000/api/products", {
-                method: "POST",
-                headers: { "content-type": "application/json" },
-                body: JSON.stringify({ invalid: "data" }),
-            });
-            
+            const request = new NextRequest(
+                "http://localhost:3000/api/products",
+                {
+                    method: "POST",
+                    headers: { "content-type": "application/json" },
+                    body: JSON.stringify({ invalid: "data" }),
+                },
+            );
+
             const response = await POST(request);
             const data = await response.json();
 
@@ -174,8 +214,13 @@ describe("/api/products", () => {
         });
 
         it("should create product successfully with valid data", async () => {
-            const { validateRequestSize, validateContentType, validateRequest, getSecurityHeaders } = await import("../../../../lib/validations/request-validation");
-            
+            const {
+                validateRequestSize,
+                validateContentType,
+                validateRequest,
+                getSecurityHeaders,
+            } = await import("../../../../lib/validations/request-validation");
+
             vi.mocked(validateRequestSize).mockReturnValue(true);
             vi.mocked(validateContentType).mockReturnValue(true);
             vi.mocked(validateRequest).mockResolvedValue({
@@ -184,18 +229,29 @@ describe("/api/products", () => {
             });
             vi.mocked(getSecurityHeaders).mockReturnValue(new Headers());
 
-            const request = new NextRequest("http://localhost:3000/api/products", {
-                method: "POST",
-                headers: { "content-type": "application/json" },
-                body: JSON.stringify({ name: "Test Product", quantity: 100, kcal: 200 }),
-            });
-            
+            const request = new NextRequest(
+                "http://localhost:3000/api/products",
+                {
+                    method: "POST",
+                    headers: { "content-type": "application/json" },
+                    body: JSON.stringify({
+                        name: "Test Product",
+                        quantity: 100,
+                        kcal: 200,
+                    }),
+                },
+            );
+
             const response = await POST(request);
             const data = await response.json();
 
             expect(response.status).toBe(200);
             expect(data.message).toBe("Product created successfully");
-            expect(data.product).toEqual({ name: "Test Product", quantity: 100, kcal: 200 });
+            expect(data.product).toEqual({
+                name: "Test Product",
+                quantity: 100,
+                kcal: 200,
+            });
         });
     });
 });

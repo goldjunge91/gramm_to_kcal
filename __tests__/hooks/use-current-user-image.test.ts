@@ -9,7 +9,8 @@ import { useCurrentUserImage } from "@/hooks/use-current-user-image";
 // Mock auth client
 const mockUseSession = vi.fn();
 vi.mock("@/lib/auth/auth-client", async (importActual) => {
-    const actual = await importActual<typeof import("@/lib/auth/auth-client")>();
+    const actual =
+        await importActual<typeof import("@/lib/auth/auth-client")>();
     return {
         ...actual,
         useSession: mockUseSession,
@@ -34,25 +35,25 @@ describe("useCurrentUserImage", () => {
         });
 
         const { result } = renderHook(() => useCurrentUserImage());
-        
+
         expect(result.current).toBe("https://example.com/avatar.jpg");
     });
 
     it("should return null when no session", () => {
-        mockUseSession
-        
+        mockUseSession;
+
         mockUseSession.mockReturnValue({
             data: null,
         });
 
         const { result } = renderHook(() => useCurrentUserImage());
-        
+
         expect(result.current).toBeNull();
     });
 
     it("should return null when session has no user", () => {
-        mockUseSession
-        
+        mockUseSession;
+
         mockUseSession.mockReturnValue({
             data: {
                 user: null,
@@ -60,13 +61,13 @@ describe("useCurrentUserImage", () => {
         });
 
         const { result } = renderHook(() => useCurrentUserImage());
-        
+
         expect(result.current).toBeNull();
     });
 
     it("should return null when user has no image", () => {
-        mockUseSession
-        
+        mockUseSession;
+
         mockUseSession.mockReturnValue({
             data: {
                 user: {
@@ -79,13 +80,13 @@ describe("useCurrentUserImage", () => {
         });
 
         const { result } = renderHook(() => useCurrentUserImage());
-        
+
         expect(result.current).toBeNull();
     });
 
     it("should return null when user image is empty string", () => {
-        mockUseSession
-        
+        mockUseSession;
+
         mockUseSession.mockReturnValue({
             data: {
                 user: {
@@ -98,19 +99,19 @@ describe("useCurrentUserImage", () => {
         });
 
         const { result } = renderHook(() => useCurrentUserImage());
-        
+
         expect(result.current).toBeNull();
     });
 
     it("should handle undefined session data", () => {
-        mockUseSession
-        
+        mockUseSession;
+
         mockUseSession.mockReturnValue({
             data: undefined,
         });
 
         const { result } = renderHook(() => useCurrentUserImage());
-        
+
         expect(result.current).toBeNull();
     });
 });

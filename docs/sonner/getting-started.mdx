@@ -40,18 +40,18 @@ It can be placed anywhere, even in server components such as `layout.tsx`.
 import { Toaster } from "sonner";
 
 export default function RootLayout({
-  children,
+    children,
 }: {
-  children: React.ReactNode;
+    children: React.ReactNode;
 }) {
-  return (
-    <html lang="en">
-      <body>
-        {children}
-        <Toaster />
-      </body>
-    </html>
-  );
+    return (
+        <html lang="en">
+            <body>
+                {children}
+                <Toaster />
+            </body>
+        </html>
+    );
 }
 ```
 
@@ -61,11 +61,11 @@ export default function RootLayout({
 import { toast } from "sonner";
 
 function MyToast() {
-  return (
-    <button onClick={() => toast("This is a sonner toast")}>
-      Render my toast
-    </button>
-  );
+    return (
+        <button onClick={() => toast("This is a sonner toast")}>
+            Render my toast
+        </button>
+    );
 }
 ```
 

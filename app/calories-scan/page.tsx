@@ -78,7 +78,9 @@ export default function CaloriesScanPage(): JSX.Element {
                             <CardDescription className="text-sm">
                                 Scanne Barcodes für automatische Produktdaten
                                 {!isAuthenticated && " (Temporäre Sitzung)"}
-                                {isAuthenticated && !isOnline && " (Offline-Modus)"}
+                                {isAuthenticated
+                                    && !isOnline
+                                    && " (Offline-Modus)"}
                             </CardDescription>
                         </div>
 
@@ -97,7 +99,9 @@ export default function CaloriesScanPage(): JSX.Element {
                     {/* Link back to original calories page */}
                     <div className="pt-2">
                         <Button variant="outline" size="sm" asChild>
-                            <Link href="/calories">← Zurück zur manuellen Eingabe</Link>
+                            <Link href="/calories">
+                                ← Zurück zur manuellen Eingabe
+                            </Link>
                         </Button>
                     </div>
                 </CardHeader>
@@ -105,8 +109,10 @@ export default function CaloriesScanPage(): JSX.Element {
                 <CardContent className="space-y-4">
                     {/* Desktop: Always show form, Mobile: Toggle */}
                     {(!isMobile || showForm) && (
-                    // <>
-                        <div className={isMobile ? "border rounded-lg p-4" : ""}>
+                        // <>
+                        <div
+                            className={isMobile ? "border rounded-lg p-4" : ""}
+                        >
                             <ProductForm
                                 onSubmit={handleAddProduct}
                                 isLoading={isCreating}
@@ -176,7 +182,9 @@ export default function CaloriesScanPage(): JSX.Element {
                                 : isOnline
                                     ? " Synced"
                                     : " Cached offline"}
-                            {isAuthenticated && syncInProgress && " • Syncing..."}
+                            {isAuthenticated
+                                && syncInProgress
+                                && " • Syncing..."}
                         </div>
                     )}
                 </CardContent>

@@ -1,51 +1,69 @@
 {
-    "session_id": "bc8d2f91-62a6-4891-9bbd-49633fce082a",
-    "transcript_path": "/Users/marco/.claude/projects/-Users-marco-Github-tmp-gramm-to-kcal/bc8d2f91-62a6-4891-9bbd-49633fce082a.jsonl",
+    "session_id": "faabe45f-2a0c-46cc-8c2a-49e1cfbb0faf",
+    "transcript_path": "/Users/marco/.claude/projects/-Users-marco-Github-tmp-gramm-to-kcal/faabe45f-2a0c-46cc-8c2a-49e1cfbb0faf.jsonl",
     "hook_event_name": "PreToolUse",
     "tool_name": "TodoWrite",
     "tool_input": {
         "todos": [
             {
-                "content": "Fix ESBuild syntax error in products.test.ts",
+                "content": "Analyze overall project structure and architecture",
                 "status": "completed",
                 "priority": "high",
-                "id": "fix_esbuild_syntax"
+                "id": "analyze-project-structure"
             },
             {
-                "content": "Add server-only package mock for auth-utils test",
+                "content": "Review Next.js configuration and build setup",
                 "status": "completed",
                 "priority": "high",
-                "id": "add_server_only_mock"
+                "id": "analyze-nextjs-config"
             },
             {
-                "content": "Fix action function import/export naming mismatches",
-                "status": "completed",
-                "priority": "high",
-                "id": "fix_action_imports"
-            },
-            {
-                "content": "Enhance vitest configuration for Next.js modules",
-                "status": "completed",
-                "priority": "medium",
-                "id": "enhance_vitest_config"
-            },
-            {
-                "content": "Fix relative import paths in modified test files",
-                "status": "completed",
-                "priority": "high",
-                "id": "fix_import_paths"
-            },
-            {
-                "content": "Update login test expectations to match actual error messages",
+                "content": "Examine database schema, queries, and Drizzle ORM usage",
                 "status": "in_progress",
                 "priority": "high",
-                "id": "fix_login_test_expectations"
+                "id": "analyze-database-performance"
             },
             {
-                "content": "Review all remaining test failures from test.json",
+                "content": "Review Better-auth configuration and performance",
+                "status": "pending",
+                "priority": "medium",
+                "id": "analyze-auth-performance"
+            },
+            {
+                "content": "Examine API routes for performance bottlenecks",
                 "status": "pending",
                 "priority": "high",
-                "id": "review_remaining_failures"
+                "id": "analyze-api-routes"
+            },
+            {
+                "content": "Review React components for rendering optimizations",
+                "status": "pending",
+                "priority": "medium",
+                "id": "analyze-frontend-components"
+            },
+            {
+                "content": "Review caching implementation and opportunities",
+                "status": "pending",
+                "priority": "high",
+                "id": "analyze-caching-strategies"
+            },
+            {
+                "content": "Check bundle size and code splitting opportunities",
+                "status": "pending",
+                "priority": "medium",
+                "id": "analyze-bundle-optimization"
+            },
+            {
+                "content": "Review testing setup for performance improvements",
+                "status": "pending",
+                "priority": "low",
+                "id": "analyze-testing-efficiency"
+            },
+            {
+                "content": "Compile comprehensive optimization recommendations",
+                "status": "pending",
+                "priority": "high",
+                "id": "compile-recommendations"
             }
         ]
     }
