@@ -34,7 +34,7 @@ function generateCorrelationId(): string {
 /**
  * Verify if user has admin privileges
  */
-export async function verifyAdminAccess(request: NextRequest): Promise<AdminAuthResult> {
+export async function verifyAdminAccess(_request: NextRequest): Promise<AdminAuthResult> {
     const correlationId = generateCorrelationId();
 
     try {
