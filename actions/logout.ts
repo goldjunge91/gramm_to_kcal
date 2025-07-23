@@ -15,7 +15,7 @@ export async function signOutUser() {
         });
 
         revalidatePath("/", "layout");
-        redirect("/auth/login");
+        redirect("/");
     }
     catch (error) {
         console.error("Sign out error:", error);

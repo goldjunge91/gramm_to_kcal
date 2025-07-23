@@ -38,3 +38,34 @@ And check out the following files:
 Visit https://playwright.dev/docs/intro for more information. ✨
 
 Happy hacking! 🎭
+
+# Interactive mode with algorithm performance focus
+
+claude --append-system-prompt "When writing code, prioritize algorithm efficiency and performance optimization. Always analyze time and space complexity and suggest performance improvements."
+
+# Start session with security mindset
+
+claude --append-system-prompt "You are a senior backend engineer specializing in secure API development. Prioritize input validation, authentication, and proper error handling. Always include rate limiting and logging."
+
+claude --append-system-prompt "You are a senior backend engineer specializing in secure API development. Prioritize input validation, authentication, and proper error handling. Always include rate limiting and logging."
+
+Practical Development Examples
+Code review specialist - You could use this when you need thorough code analysis:
+
+claude --append-system-prompt "You are conducting a senior-level code review. Focus on: 1) Performance bottlenecks, 2) Security vulnerabilities, 3) Code maintainability, 4) Test coverage gaps. Provide specific line-by-line feedback with improvement suggestions."
+
+Legacy code modernization - Helpful when working with older codebases:
+
+claude --append-system-prompt "You are modernizing legacy code. Prioritize backwards compatibility while introducing modern patterns. Always explain migration strategies and potential breaking changes."
+
+hen to Use System Prompts
+Print mode scenarios:
+
+Single-task focus - Working on one specific type of problem that needs expert attention
+Code review sessions - Adding consistent review criteria for quality checks
+Specialized analysis - Security audits, performance optimization, or architecture review
+Interactive mode scenarios:
+
+Long coding sessions - Maintaining consistent expertise and focus throughout development
+Performance optimization - Focusing on algorithm efficiency and performance improvements across an entire project
+Learning sessions - Having Claude teach specific concepts or patterns consistently

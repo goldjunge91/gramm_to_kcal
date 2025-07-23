@@ -1,136 +1,81 @@
 {
     "testModules": [
         {
-            "moduleId": "/Users/marco/Github.tmp/gramm_to_kcal/__tests__/lib/api/products.test.tsx",
+            "moduleId": "/Users/marco/Github.tmp/gramm_to_kcal/__tests__/actions/login.test.ts",
             "tests": [
                 {
-                    "name": "should fetch products for valid user",
-                    "fullName": "products API > useProducts > should fetch products for valid user",
+                    "name": "should validate email and password requirements",
+                    "fullName": "login action > should validate email and password requirements",
                     "state": "passed"
                 },
                 {
-                    "name": "should handle fetch errors",
-                    "fullName": "products API > useProducts > should handle fetch errors",
+                    "name": "should validate email format",
+                    "fullName": "login action > should validate email format",
                     "state": "passed"
                 },
                 {
-                    "name": "should not fetch when userId is empty",
-                    "fullName": "products API > useProducts > should not fetch when userId is empty",
+                    "name": "should handle successful login",
+                    "fullName": "login action > should handle successful login",
                     "state": "passed"
                 },
                 {
-                    "name": "should not fetch when userId is undefined",
-                    "fullName": "products API > useProducts > should not fetch when userId is undefined",
+                    "name": "should handle login errors",
+                    "fullName": "login action > should handle login errors",
                     "state": "passed"
                 },
                 {
-                    "name": "should support cursor-based pagination",
-                    "fullName": "products API > useProducts > should support cursor-based pagination",
-                    "state": "passed"
-                },
-                {
-                    "name": "should extract products array from paginated response",
-                    "fullName": "products API > useProductsList > should extract products array from paginated response",
-                    "state": "passed"
-                },
-                {
-                    "name": "should create product successfully",
-                    "fullName": "products API > useCreateProduct > should create product successfully",
-                    "state": "passed"
-                },
-                {
-                    "name": "should handle creation errors",
-                    "fullName": "products API > useCreateProduct > should handle creation errors",
-                    "state": "passed"
-                },
-                {
-                    "name": "should invalidate products query on success",
-                    "fullName": "products API > useCreateProduct > should invalidate products query on success",
+                    "name": "should log authentication attempts",
+                    "fullName": "login action > should log authentication attempts",
                     "state": "passed"
                 }
             ]
         },
         {
-            "moduleId": "/Users/marco/Github.tmp/gramm_to_kcal/__tests__/hooks/use-mobile.test.ts",
+            "moduleId": "/Users/marco/Github.tmp/gramm_to_kcal/__tests__/app/api/products/route.test.ts",
             "tests": [
                 {
-                    "name": "should return false for desktop screen size",
-                    "fullName": "useIsMobile > should return false for desktop screen size",
+                    "name": "should validate barcode query parameter",
+                    "fullName": "/api/products > GET > should validate barcode query parameter",
                     "state": "passed"
                 },
                 {
-                    "name": "should return true for mobile screen size",
-                    "fullName": "useIsMobile > should return true for mobile screen size",
+                    "name": "should return error for invalid barcode",
+                    "fullName": "/api/products > GET > should return error for invalid barcode",
                     "state": "passed"
                 },
                 {
-                    "name": "should detect iPhone user agent",
-                    "fullName": "useIsMobile > should detect iPhone user agent",
+                    "name": "should validate search query parameter",
+                    "fullName": "/api/products > GET > should validate search query parameter",
                     "state": "passed"
                 },
                 {
-                    "name": "should detect iPad user agent",
-                    "fullName": "useIsMobile > should detect iPad user agent",
+                    "name": "should return error for invalid search query",
+                    "fullName": "/api/products > GET > should return error for invalid search query",
                     "state": "passed"
                 },
                 {
-                    "name": "should detect Android user agent",
-                    "fullName": "useIsMobile > should detect Android user agent",
+                    "name": "should return success response without parameters",
+                    "fullName": "/api/products > GET > should return success response without parameters",
                     "state": "passed"
                 },
                 {
-                    "name": "should not detect desktop user agent as mobile",
-                    "fullName": "useIsMobile > should not detect desktop user agent as mobile",
+                    "name": "should reject requests that are too large",
+                    "fullName": "/api/products > POST > should reject requests that are too large",
                     "state": "passed"
                 },
                 {
-                    "name": "should set up media query listener",
-                    "fullName": "useIsMobile > should set up media query listener",
+                    "name": "should reject invalid content type",
+                    "fullName": "/api/products > POST > should reject invalid content type",
                     "state": "passed"
                 },
                 {
-                    "name": "should respond to media query changes",
-                    "fullName": "useIsMobile > should respond to media query changes",
+                    "name": "should validate request body with Zod schema",
+                    "fullName": "/api/products > POST > should validate request body with Zod schema",
                     "state": "passed"
                 },
                 {
-                    "name": "should clean up media query listener on unmount",
-                    "fullName": "useIsMobile > should clean up media query listener on unmount",
-                    "state": "passed"
-                },
-                {
-                    "name": "should handle edge case at exact breakpoint",
-                    "fullName": "useIsMobile > should handle edge case at exact breakpoint",
-                    "state": "passed"
-                },
-                {
-                    "name": "should handle edge case just below breakpoint",
-                    "fullName": "useIsMobile > should handle edge case just below breakpoint",
-                    "state": "passed"
-                },
-                {
-                    "name": "should return true when either condition is met",
-                    "fullName": "useIsMobile > should return true when either condition is met",
-                    "state": "passed"
-                }
-            ]
-        },
-        {
-            "moduleId": "/Users/marco/Github.tmp/gramm_to_kcal/__tests__/components/auth/google-oauth-image.test.tsx",
-            "tests": [
-                {
-                    "name": "should display Google profile image when available",
-                    "fullName": "Google OAuth Image Loading > should display Google profile image when available",
-                    "state": "passed"
-                },
-                {
-                    "name": "should show fallback initials when image fails to load",
-                    "fullName": "Google OAuth Image Loading > should show fallback initials when image fails to load",
-                    "state": "passed"
-                },
-                {
-                    "name": "should handle Google lh3 domain specifically",
-                    "fullName": "Google OAuth Image Loading > should handle Google lh3 domain specifically",
+                    "name": "should create product successfully with valid data",
+                    "fullName": "/api/products > POST > should create product successfully with valid data",
                     "state": "passed"
                 }
             ]
@@ -164,256 +109,6 @@
                 {
                     "name": "should redirect with an error if signUpEmail throws",
                     "fullName": "signupAction > should redirect with an error if signUpEmail throws",
-                    "state": "passed"
-                }
-            ]
-        },
-        {
-            "moduleId": "/Users/marco/Github.tmp/gramm_to_kcal/__tests__/lib/calculations.test.ts",
-            "tests": [
-                {
-                    "name": "should calculate calories per 1g correctly for normal cases",
-                    "fullName": "calculateKcalPer100g > should calculate calories per 1g correctly for normal cases",
-                    "state": "passed"
-                },
-                {
-                    "name": "should handle decimal values correctly",
-                    "fullName": "calculateKcalPer100g > should handle decimal values correctly",
-                    "state": "passed"
-                },
-                {
-                    "name": "should return 0 when quantity is 0",
-                    "fullName": "calculateKcalPer100g > should return 0 when quantity is 0",
-                    "state": "passed"
-                },
-                {
-                    "name": "should return 0 when quantity is undefined/null",
-                    "fullName": "calculateKcalPer100g > should return 0 when quantity is undefined/null",
-                    "state": "passed"
-                },
-                {
-                    "name": "should handle very small quantities",
-                    "fullName": "calculateKcalPer100g > should handle very small quantities",
-                    "state": "passed"
-                },
-                {
-                    "name": "should scale recipe up correctly",
-                    "fullName": "scaleRecipe > should scale recipe up correctly",
-                    "state": "passed"
-                },
-                {
-                    "name": "should scale recipe down correctly",
-                    "fullName": "scaleRecipe > should scale recipe down correctly",
-                    "state": "passed"
-                },
-                {
-                    "name": "should handle fractional scaling",
-                    "fullName": "scaleRecipe > should handle fractional scaling",
-                    "state": "passed"
-                },
-                {
-                    "name": "should return original ingredients when originalPortions is 0",
-                    "fullName": "scaleRecipe > should return original ingredients when originalPortions is 0",
-                    "state": "passed"
-                },
-                {
-                    "name": "should handle empty ingredients array",
-                    "fullName": "scaleRecipe > should handle empty ingredients array",
-                    "state": "passed"
-                },
-                {
-                    "name": "should handle scaling to same portions (no change)",
-                    "fullName": "scaleRecipe > should handle scaling to same portions (no change)",
-                    "state": "passed"
-                },
-                {
-                    "name": "should handle decimal quantities",
-                    "fullName": "scaleRecipe > should handle decimal quantities",
-                    "state": "passed"
-                }
-            ]
-        },
-        {
-            "moduleId": "/Users/marco/Github.tmp/gramm_to_kcal/__tests__/app/api/health/route.test.ts",
-            "tests": [
-                {
-                    "name": "should return healthy status when all services are working",
-                    "fullName": "/api/health > should return healthy status when all services are working",
-                    "state": "passed"
-                },
-                {
-                    "name": "should handle database connection error",
-                    "fullName": "/api/health > should handle database connection error",
-                    "state": "passed"
-                },
-                {
-                    "name": "should return error response when health check fails",
-                    "fullName": "/api/health > should return error response when health check fails",
-                    "state": "passed"
-                },
-                {
-                    "name": "should log IP address for monitoring",
-                    "fullName": "/api/health > should log IP address for monitoring",
-                    "state": "passed"
-                }
-            ]
-        },
-        {
-            "moduleId": "/Users/marco/Github.tmp/gramm_to_kcal/__tests__/actions/login.test.ts",
-            "tests": [
-                {
-                    "name": "should validate email and password requirements",
-                    "fullName": "login action > should validate email and password requirements",
-                    "state": "passed"
-                },
-                {
-                    "name": "should validate email format",
-                    "fullName": "login action > should validate email format",
-                    "state": "passed"
-                },
-                {
-                    "name": "should handle successful login",
-                    "fullName": "login action > should handle successful login",
-                    "state": "passed"
-                },
-                {
-                    "name": "should handle login errors",
-                    "fullName": "login action > should handle login errors",
-                    "state": "passed"
-                },
-                {
-                    "name": "should log authentication attempts",
-                    "fullName": "login action > should log authentication attempts",
-                    "state": "passed"
-                }
-            ]
-        },
-        {
-            "moduleId": "/Users/marco/Github.tmp/gramm_to_kcal/__tests__/app/api/admin/circuit-breakers/route.test.ts",
-            "tests": [
-                {
-                    "name": "should return circuit breaker status",
-                    "fullName": "/api/admin/circuit-breakers > GET > should return circuit breaker status",
-                    "state": "passed"
-                },
-                {
-                    "name": "should handle errors when getting status",
-                    "fullName": "/api/admin/circuit-breakers > GET > should handle errors when getting status",
-                    "state": "passed"
-                },
-                {
-                    "name": "should log admin access for monitoring",
-                    "fullName": "/api/admin/circuit-breakers > GET > should log admin access for monitoring",
-                    "state": "passed"
-                },
-                {
-                    "name": "should reject requests that are too large",
-                    "fullName": "/api/admin/circuit-breakers > POST > should reject requests that are too large",
-                    "state": "passed"
-                },
-                {
-                    "name": "should reset specific service circuit breaker",
-                    "fullName": "/api/admin/circuit-breakers > POST > should reset specific service circuit breaker",
-                    "state": "passed"
-                },
-                {
-                    "name": "should reset all circuit breakers",
-                    "fullName": "/api/admin/circuit-breakers > POST > should reset all circuit breakers",
-                    "state": "passed"
-                },
-                {
-                    "name": "should handle service not found error",
-                    "fullName": "/api/admin/circuit-breakers > POST > should handle service not found error",
-                    "state": "passed"
-                },
-                {
-                    "name": "should prevent closing all circuit breakers at once",
-                    "fullName": "/api/admin/circuit-breakers > POST > should prevent closing all circuit breakers at once",
-                    "state": "passed"
-                },
-                {
-                    "name": "should return healthy status when all circuit breakers are healthy",
-                    "fullName": "/api/admin/circuit-breakers > HEAD > should return healthy status when all circuit breakers are healthy",
-                    "state": "passed"
-                },
-                {
-                    "name": "should return degraded status when some circuit breakers are open",
-                    "fullName": "/api/admin/circuit-breakers > HEAD > should return degraded status when some circuit breakers are open",
-                    "state": "passed"
-                },
-                {
-                    "name": "should handle errors in HEAD request",
-                    "fullName": "/api/admin/circuit-breakers > HEAD > should handle errors in HEAD request",
-                    "state": "passed"
-                }
-            ]
-        },
-        {
-            "moduleId": "/Users/marco/Github.tmp/gramm_to_kcal/__tests__/hooks/useDeferredInput.test.ts",
-            "tests": [
-                {
-                    "name": "should initialize with initial value",
-                    "fullName": "useDeferredInput > should initialize with initial value",
-                    "state": "passed"
-                },
-                {
-                    "name": "should handle input changes",
-                    "fullName": "useDeferredInput > should handle input changes",
-                    "state": "passed"
-                },
-                {
-                    "name": "should commit value on blur",
-                    "fullName": "useDeferredInput > should commit value on blur",
-                    "state": "passed"
-                },
-                {
-                    "name": "should commit value on Enter key",
-                    "fullName": "useDeferredInput > should commit value on Enter key",
-                    "state": "passed"
-                },
-                {
-                    "name": "should reset value on Escape key",
-                    "fullName": "useDeferredInput > should reset value on Escape key",
-                    "state": "passed"
-                },
-                {
-                    "name": "should use custom validator",
-                    "fullName": "useDeferredInput > should use custom validator",
-                    "state": "passed"
-                },
-                {
-                    "name": "should use custom formatter",
-                    "fullName": "useDeferredInput > should use custom formatter",
-                    "state": "passed"
-                },
-                {
-                    "name": "should handle invalid number input",
-                    "fullName": "useDeferredInput > should handle invalid number input",
-                    "state": "passed"
-                },
-                {
-                    "name": "should update when initial value changes",
-                    "fullName": "useDeferredInput > should update when initial value changes",
-                    "state": "passed"
-                },
-                {
-                    "name": "should handle reset function",
-                    "fullName": "useDeferredInput > should handle reset function",
-                    "state": "passed"
-                },
-                {
-                    "name": "should not commit if not dirty",
-                    "fullName": "useDeferredInput > should not commit if not dirty",
-                    "state": "passed"
-                },
-                {
-                    "name": "should handle string values correctly",
-                    "fullName": "useDeferredInput > should handle string values correctly",
-                    "state": "passed"
-                },
-                {
-                    "name": "should handle complex validation scenarios",
-                    "fullName": "useDeferredInput > should handle complex validation scenarios",
                     "state": "passed"
                 }
             ]
@@ -489,166 +184,161 @@
             ]
         },
         {
-            "moduleId": "/Users/marco/Github.tmp/gramm_to_kcal/__tests__/lib/auth/auth-utils.test.ts",
+            "moduleId": "/Users/marco/Github.tmp/gramm_to_kcal/__tests__/hooks/useDeferredInput.test.ts",
             "tests": [
                 {
-                    "name": "should return user when session exists",
-                    "fullName": "auth-utils > currentSessionUser > should return user when session exists",
+                    "name": "should initialize with initial value",
+                    "fullName": "useDeferredInput > should initialize with initial value",
                     "state": "passed"
                 },
                 {
-                    "name": "should return null when no session",
-                    "fullName": "auth-utils > currentSessionUser > should return null when no session",
+                    "name": "should handle input changes",
+                    "fullName": "useDeferredInput > should handle input changes",
                     "state": "passed"
                 },
                 {
-                    "name": "should return null when session has no user",
-                    "fullName": "auth-utils > currentSessionUser > should return null when session has no user",
+                    "name": "should commit value on blur",
+                    "fullName": "useDeferredInput > should commit value on blur",
                     "state": "passed"
                 },
                 {
-                    "name": "should handle errors gracefully",
-                    "fullName": "auth-utils > currentSessionUser > should handle errors gracefully",
+                    "name": "should commit value on Enter key",
+                    "fullName": "useDeferredInput > should commit value on Enter key",
                     "state": "passed"
                 },
                 {
-                    "name": "should return true when user has the role",
-                    "fullName": "auth-utils > sessionHasRole > should return true when user has the role",
+                    "name": "should reset value on Escape key",
+                    "fullName": "useDeferredInput > should reset value on Escape key",
                     "state": "passed"
                 },
                 {
-                    "name": "should return false when user has different role",
-                    "fullName": "auth-utils > sessionHasRole > should return false when user has different role",
+                    "name": "should use custom validator",
+                    "fullName": "useDeferredInput > should use custom validator",
                     "state": "passed"
                 },
                 {
-                    "name": "should return false when no session",
-                    "fullName": "auth-utils > sessionHasRole > should return false when no session",
+                    "name": "should use custom formatter",
+                    "fullName": "useDeferredInput > should use custom formatter",
                     "state": "passed"
                 },
                 {
-                    "name": "should handle errors gracefully",
-                    "fullName": "auth-utils > sessionHasRole > should handle errors gracefully",
+                    "name": "should handle invalid number input",
+                    "fullName": "useDeferredInput > should handle invalid number input",
                     "state": "passed"
                 },
                 {
-                    "name": "should return user when authenticated",
-                    "fullName": "auth-utils > requireAuth > should return user when authenticated",
+                    "name": "should update when initial value changes",
+                    "fullName": "useDeferredInput > should update when initial value changes",
                     "state": "passed"
                 },
                 {
-                    "name": "should throw error when not authenticated",
-                    "fullName": "auth-utils > requireAuth > should throw error when not authenticated",
+                    "name": "should handle reset function",
+                    "fullName": "useDeferredInput > should handle reset function",
                     "state": "passed"
                 },
                 {
-                    "name": "should throw error when session has no user",
-                    "fullName": "auth-utils > requireAuth > should throw error when session has no user",
+                    "name": "should not commit if not dirty",
+                    "fullName": "useDeferredInput > should not commit if not dirty",
                     "state": "passed"
                 },
                 {
-                    "name": "should return user when has required role",
-                    "fullName": "auth-utils > requireRole > should return user when has required role",
+                    "name": "should handle string values correctly",
+                    "fullName": "useDeferredInput > should handle string values correctly",
                     "state": "passed"
                 },
                 {
-                    "name": "should throw error when user doesn't have required role",
-                    "fullName": "auth-utils > requireRole > should throw error when user doesn't have required role",
-                    "state": "passed"
-                },
-                {
-                    "name": "should throw authentication error when not authenticated",
-                    "fullName": "auth-utils > requireRole > should throw authentication error when not authenticated",
-                    "state": "passed"
-                },
-                {
-                    "name": "should call requireAuth first",
-                    "fullName": "auth-utils > requireRole > should call requireAuth first",
+                    "name": "should handle complex validation scenarios",
+                    "fullName": "useDeferredInput > should handle complex validation scenarios",
                     "state": "passed"
                 }
             ]
         },
         {
-            "moduleId": "/Users/marco/Github.tmp/gramm_to_kcal/__tests__/hooks/use-current-user-image.test.ts",
+            "moduleId": "/Users/marco/Github.tmp/gramm_to_kcal/__tests__/lib/api/products.test.tsx",
             "tests": [
                 {
-                    "name": "should return user image when session exists",
-                    "fullName": "useCurrentUserImage > should return user image when session exists",
+                    "name": "should fetch products for valid user",
+                    "fullName": "products API > useProducts > should fetch products for valid user",
                     "state": "passed"
                 },
                 {
-                    "name": "should return null when no session",
-                    "fullName": "useCurrentUserImage > should return null when no session",
+                    "name": "should handle fetch errors",
+                    "fullName": "products API > useProducts > should handle fetch errors",
                     "state": "passed"
                 },
                 {
-                    "name": "should return null when session has no user",
-                    "fullName": "useCurrentUserImage > should return null when session has no user",
+                    "name": "should not fetch when userId is empty",
+                    "fullName": "products API > useProducts > should not fetch when userId is empty",
                     "state": "passed"
                 },
                 {
-                    "name": "should return null when user has no image",
-                    "fullName": "useCurrentUserImage > should return null when user has no image",
+                    "name": "should not fetch when userId is undefined",
+                    "fullName": "products API > useProducts > should not fetch when userId is undefined",
                     "state": "passed"
                 },
                 {
-                    "name": "should return null when user image is empty string",
-                    "fullName": "useCurrentUserImage > should return null when user image is empty string",
+                    "name": "should support cursor-based pagination",
+                    "fullName": "products API > useProducts > should support cursor-based pagination",
                     "state": "passed"
                 },
                 {
-                    "name": "should handle undefined session data",
-                    "fullName": "useCurrentUserImage > should handle undefined session data",
+                    "name": "should extract products array from paginated response",
+                    "fullName": "products API > useProductsList > should extract products array from paginated response",
+                    "state": "passed"
+                },
+                {
+                    "name": "should create product successfully",
+                    "fullName": "products API > useCreateProduct > should create product successfully",
+                    "state": "passed"
+                },
+                {
+                    "name": "should handle creation errors",
+                    "fullName": "products API > useCreateProduct > should handle creation errors",
+                    "state": "passed"
+                },
+                {
+                    "name": "should invalidate products query on success",
+                    "fullName": "products API > useCreateProduct > should invalidate products query on success",
                     "state": "passed"
                 }
             ]
         },
         {
-            "moduleId": "/Users/marco/Github.tmp/gramm_to_kcal/__tests__/app/api/products/route.test.ts",
+            "moduleId": "/Users/marco/Github.tmp/gramm_to_kcal/__tests__/components/auth/google-oauth-image.test.tsx",
             "tests": [
                 {
-                    "name": "should validate barcode query parameter",
-                    "fullName": "/api/products > GET > should validate barcode query parameter",
+                    "name": "should display Google profile image when available",
+                    "fullName": "Google OAuth Image Loading > should display Google profile image when available",
                     "state": "passed"
                 },
                 {
-                    "name": "should return error for invalid barcode",
-                    "fullName": "/api/products > GET > should return error for invalid barcode",
+                    "name": "should show fallback initials when image fails to load",
+                    "fullName": "Google OAuth Image Loading > should show fallback initials when image fails to load",
                     "state": "passed"
                 },
                 {
-                    "name": "should validate search query parameter",
-                    "fullName": "/api/products > GET > should validate search query parameter",
+                    "name": "should handle Google lh3 domain specifically",
+                    "fullName": "Google OAuth Image Loading > should handle Google lh3 domain specifically",
+                    "state": "passed"
+                }
+            ]
+        },
+        {
+            "moduleId": "/Users/marco/Github.tmp/gramm_to_kcal/__tests__/lib/auth/auth-client.test.ts",
+            "tests": [
+                {
+                    "name": "should create auth client with correct baseURL",
+                    "fullName": "auth-client > should create auth client with correct baseURL",
                     "state": "passed"
                 },
                 {
-                    "name": "should return error for invalid search query",
-                    "fullName": "/api/products > GET > should return error for invalid search query",
+                    "name": "should export auth methods",
+                    "fullName": "auth-client > should export auth methods",
                     "state": "passed"
                 },
                 {
-                    "name": "should return success response without parameters",
-                    "fullName": "/api/products > GET > should return success response without parameters",
-                    "state": "passed"
-                },
-                {
-                    "name": "should reject requests that are too large",
-                    "fullName": "/api/products > POST > should reject requests that are too large",
-                    "state": "passed"
-                },
-                {
-                    "name": "should reject invalid content type",
-                    "fullName": "/api/products > POST > should reject invalid content type",
-                    "state": "passed"
-                },
-                {
-                    "name": "should validate request body with Zod schema",
-                    "fullName": "/api/products > POST > should validate request body with Zod schema",
-                    "state": "passed"
-                },
-                {
-                    "name": "should create product successfully with valid data",
-                    "fullName": "/api/products > POST > should create product successfully with valid data",
+                    "name": "should handle different environment URLs",
+                    "fullName": "auth-client > should handle different environment URLs",
                     "state": "passed"
                 }
             ]
@@ -664,6 +354,71 @@
                 {
                     "name": "should return '?' when session is missing or user name is falsy",
                     "fullName": "should return '?' when session is missing or user name is falsy",
+                    "state": "passed"
+                }
+            ]
+        },
+        {
+            "moduleId": "/Users/marco/Github.tmp/gramm_to_kcal/__tests__/hooks/use-mobile.test.ts",
+            "tests": [
+                {
+                    "name": "should return false for desktop screen size",
+                    "fullName": "useIsMobile > should return false for desktop screen size",
+                    "state": "passed"
+                },
+                {
+                    "name": "should return true for mobile screen size",
+                    "fullName": "useIsMobile > should return true for mobile screen size",
+                    "state": "passed"
+                },
+                {
+                    "name": "should detect iPhone user agent",
+                    "fullName": "useIsMobile > should detect iPhone user agent",
+                    "state": "passed"
+                },
+                {
+                    "name": "should detect iPad user agent",
+                    "fullName": "useIsMobile > should detect iPad user agent",
+                    "state": "passed"
+                },
+                {
+                    "name": "should detect Android user agent",
+                    "fullName": "useIsMobile > should detect Android user agent",
+                    "state": "passed"
+                },
+                {
+                    "name": "should not detect desktop user agent as mobile",
+                    "fullName": "useIsMobile > should not detect desktop user agent as mobile",
+                    "state": "passed"
+                },
+                {
+                    "name": "should set up media query listener",
+                    "fullName": "useIsMobile > should set up media query listener",
+                    "state": "passed"
+                },
+                {
+                    "name": "should respond to media query changes",
+                    "fullName": "useIsMobile > should respond to media query changes",
+                    "state": "passed"
+                },
+                {
+                    "name": "should clean up media query listener on unmount",
+                    "fullName": "useIsMobile > should clean up media query listener on unmount",
+                    "state": "passed"
+                },
+                {
+                    "name": "should handle edge case at exact breakpoint",
+                    "fullName": "useIsMobile > should handle edge case at exact breakpoint",
+                    "state": "passed"
+                },
+                {
+                    "name": "should handle edge case just below breakpoint",
+                    "fullName": "useIsMobile > should handle edge case just below breakpoint",
+                    "state": "passed"
+                },
+                {
+                    "name": "should return true when either condition is met",
+                    "fullName": "useIsMobile > should return true when either condition is met",
                     "state": "passed"
                 }
             ]
@@ -709,6 +464,346 @@
                 {
                     "name": "should handle database errors during creation",
                     "fullName": "/api/user/products > POST > should handle database errors during creation",
+                    "state": "passed"
+                }
+            ]
+        },
+        {
+            "moduleId": "/Users/marco/Github.tmp/gramm_to_kcal/__tests__/app/api/user/products/id/route.test.ts",
+            "tests": [
+                {
+                    "name": "should update product when authenticated and authorized",
+                    "fullName": "/api/user/products/[id] > PUT > should update product when authenticated and authorized",
+                    "state": "passed"
+                },
+                {
+                    "name": "should return 401 when not authenticated",
+                    "fullName": "/api/user/products/[id] > PUT > should return 401 when not authenticated",
+                    "state": "passed"
+                },
+                {
+                    "name": "should return 404 when product not found or not owned by user",
+                    "fullName": "/api/user/products/[id] > PUT > should return 404 when product not found or not owned by user",
+                    "state": "passed"
+                },
+                {
+                    "name": "should handle database errors during update",
+                    "fullName": "/api/user/products/[id] > PUT > should handle database errors during update",
+                    "state": "passed"
+                },
+                {
+                    "name": "should soft delete product when authenticated and authorized",
+                    "fullName": "/api/user/products/[id] > DELETE > should soft delete product when authenticated and authorized",
+                    "state": "passed"
+                },
+                {
+                    "name": "should return 401 when not authenticated",
+                    "fullName": "/api/user/products/[id] > DELETE > should return 401 when not authenticated",
+                    "state": "passed"
+                },
+                {
+                    "name": "should return 404 when product not found or not owned by user",
+                    "fullName": "/api/user/products/[id] > DELETE > should return 404 when product not found or not owned by user",
+                    "state": "passed"
+                },
+                {
+                    "name": "should handle database errors during deletion",
+                    "fullName": "/api/user/products/[id] > DELETE > should handle database errors during deletion",
+                    "state": "passed"
+                },
+                {
+                    "name": "should use soft delete (isDeleted flag) instead of hard delete",
+                    "fullName": "/api/user/products/[id] > DELETE > should use soft delete (isDeleted flag) instead of hard delete",
+                    "state": "passed"
+                }
+            ]
+        },
+        {
+            "moduleId": "/Users/marco/Github.tmp/gramm_to_kcal/__tests__/app/api/health/route.test.ts",
+            "tests": [
+                {
+                    "name": "should return healthy status when all services are working",
+                    "fullName": "/api/health > should return healthy status when all services are working",
+                    "state": "passed"
+                },
+                {
+                    "name": "should handle database connection error",
+                    "fullName": "/api/health > should handle database connection error",
+                    "state": "passed"
+                },
+                {
+                    "name": "should return error response when health check fails",
+                    "fullName": "/api/health > should return error response when health check fails",
+                    "state": "passed"
+                },
+                {
+                    "name": "should log IP address for monitoring",
+                    "fullName": "/api/health > should log IP address for monitoring",
+                    "state": "passed"
+                }
+            ]
+        },
+        {
+            "moduleId": "/Users/marco/Github.tmp/gramm_to_kcal/__tests__/app/api/admin/circuit-breakers/route.test.ts",
+            "tests": [
+                {
+                    "name": "should return circuit breaker status",
+                    "fullName": "/api/admin/circuit-breakers > GET > should return circuit breaker status",
+                    "state": "passed"
+                },
+                {
+                    "name": "should handle errors when getting status",
+                    "fullName": "/api/admin/circuit-breakers > GET > should handle errors when getting status",
+                    "state": "passed"
+                },
+                {
+                    "name": "should log admin access for monitoring",
+                    "fullName": "/api/admin/circuit-breakers > GET > should log admin access for monitoring",
+                    "state": "passed"
+                },
+                {
+                    "name": "should reject requests that are too large",
+                    "fullName": "/api/admin/circuit-breakers > POST > should reject requests that are too large",
+                    "state": "passed"
+                },
+                {
+                    "name": "should reset specific service circuit breaker",
+                    "fullName": "/api/admin/circuit-breakers > POST > should reset specific service circuit breaker",
+                    "state": "passed"
+                },
+                {
+                    "name": "should reset all circuit breakers",
+                    "fullName": "/api/admin/circuit-breakers > POST > should reset all circuit breakers",
+                    "state": "passed"
+                },
+                {
+                    "name": "should handle service not found error",
+                    "fullName": "/api/admin/circuit-breakers > POST > should handle service not found error",
+                    "state": "passed"
+                },
+                {
+                    "name": "should prevent closing all circuit breakers at once",
+                    "fullName": "/api/admin/circuit-breakers > POST > should prevent closing all circuit breakers at once",
+                    "state": "passed"
+                },
+                {
+                    "name": "should return healthy status when all circuit breakers are healthy",
+                    "fullName": "/api/admin/circuit-breakers > HEAD > should return healthy status when all circuit breakers are healthy",
+                    "state": "passed"
+                },
+                {
+                    "name": "should return degraded status when some circuit breakers are open",
+                    "fullName": "/api/admin/circuit-breakers > HEAD > should return degraded status when some circuit breakers are open",
+                    "state": "passed"
+                },
+                {
+                    "name": "should handle errors in HEAD request",
+                    "fullName": "/api/admin/circuit-breakers > HEAD > should handle errors in HEAD request",
+                    "state": "passed"
+                }
+            ]
+        },
+        {
+            "moduleId": "/Users/marco/Github.tmp/gramm_to_kcal/__tests__/lib/calculations.test.ts",
+            "tests": [
+                {
+                    "name": "should calculate calories per 1g correctly for normal cases",
+                    "fullName": "calculateKcalPer100g > should calculate calories per 1g correctly for normal cases",
+                    "state": "passed"
+                },
+                {
+                    "name": "should handle decimal values correctly",
+                    "fullName": "calculateKcalPer100g > should handle decimal values correctly",
+                    "state": "passed"
+                },
+                {
+                    "name": "should return 0 when quantity is 0",
+                    "fullName": "calculateKcalPer100g > should return 0 when quantity is 0",
+                    "state": "passed"
+                },
+                {
+                    "name": "should return 0 when quantity is undefined/null",
+                    "fullName": "calculateKcalPer100g > should return 0 when quantity is undefined/null",
+                    "state": "passed"
+                },
+                {
+                    "name": "should handle very small quantities",
+                    "fullName": "calculateKcalPer100g > should handle very small quantities",
+                    "state": "passed"
+                },
+                {
+                    "name": "should scale recipe up correctly",
+                    "fullName": "scaleRecipe > should scale recipe up correctly",
+                    "state": "passed"
+                },
+                {
+                    "name": "should scale recipe down correctly",
+                    "fullName": "scaleRecipe > should scale recipe down correctly",
+                    "state": "passed"
+                },
+                {
+                    "name": "should handle fractional scaling",
+                    "fullName": "scaleRecipe > should handle fractional scaling",
+                    "state": "passed"
+                },
+                {
+                    "name": "should return original ingredients when originalPortions is 0",
+                    "fullName": "scaleRecipe > should return original ingredients when originalPortions is 0",
+                    "state": "passed"
+                },
+                {
+                    "name": "should handle empty ingredients array",
+                    "fullName": "scaleRecipe > should handle empty ingredients array",
+                    "state": "passed"
+                },
+                {
+                    "name": "should handle scaling to same portions (no change)",
+                    "fullName": "scaleRecipe > should handle scaling to same portions (no change)",
+                    "state": "passed"
+                },
+                {
+                    "name": "should handle decimal quantities",
+                    "fullName": "scaleRecipe > should handle decimal quantities",
+                    "state": "passed"
+                }
+            ]
+        },
+        {
+            "moduleId": "/Users/marco/Github.tmp/gramm_to_kcal/__tests__/actions/password.test.ts",
+            "tests": [
+                {
+                    "name": "should return an error if email is not provided",
+                    "fullName": "password actions > resetPasswordAction > should return an error if email is not provided",
+                    "state": "passed"
+                },
+                {
+                    "name": "should return a success message for a valid email",
+                    "fullName": "password actions > resetPasswordAction > should return a success message for a valid email",
+                    "state": "passed"
+                },
+                {
+                    "name": "should return an error if password is not provided",
+                    "fullName": "password actions > updatePasswordAction > should return an error if password is not provided",
+                    "state": "passed"
+                },
+                {
+                    "name": "should return an error if password is less than 8 characters",
+                    "fullName": "password actions > updatePasswordAction > should return an error if password is less than 8 characters",
+                    "state": "passed"
+                },
+                {
+                    "name": "should return an error if user is not authenticated",
+                    "fullName": "password actions > updatePasswordAction > should return an error if user is not authenticated",
+                    "state": "passed"
+                },
+                {
+                    "name": "should update the password and return a success message",
+                    "fullName": "password actions > updatePasswordAction > should update the password and return a success message",
+                    "state": "passed"
+                },
+                {
+                    "name": "should return an error if password update fails",
+                    "fullName": "password actions > updatePasswordAction > should return an error if password update fails",
+                    "state": "passed"
+                }
+            ]
+        },
+        {
+            "moduleId": "/Users/marco/Github.tmp/gramm_to_kcal/__tests__/lib/auth/admin-auth.test.ts",
+            "tests": [
+                {
+                    "name": "should authorize user with admin role",
+                    "fullName": "Admin Authorization > verifyAdminAccess > should authorize user with admin role",
+                    "state": "passed"
+                },
+                {
+                    "name": "should authorize user with super_admin role",
+                    "fullName": "Admin Authorization > verifyAdminAccess > should authorize user with super_admin role",
+                    "state": "passed"
+                },
+                {
+                    "name": "should reject user without session",
+                    "fullName": "Admin Authorization > verifyAdminAccess > should reject user without session",
+                    "state": "passed"
+                },
+                {
+                    "name": "should reject user without admin role",
+                    "fullName": "Admin Authorization > verifyAdminAccess > should reject user without admin role",
+                    "state": "passed"
+                },
+                {
+                    "name": "should reject user with no role",
+                    "fullName": "Admin Authorization > verifyAdminAccess > should reject user with no role",
+                    "state": "passed"
+                },
+                {
+                    "name": "should handle session check errors",
+                    "fullName": "Admin Authorization > verifyAdminAccess > should handle session check errors",
+                    "state": "passed"
+                },
+                {
+                    "name": "should call handler when user is authorized",
+                    "fullName": "Admin Authorization > withAdminAuth middleware > should call handler when user is authorized",
+                    "state": "passed"
+                },
+                {
+                    "name": "should return 403 when user is not authorized",
+                    "fullName": "Admin Authorization > withAdminAuth middleware > should return 403 when user is not authorized",
+                    "state": "passed"
+                },
+                {
+                    "name": "should return 403 when user has insufficient privileges",
+                    "fullName": "Admin Authorization > withAdminAuth middleware > should return 403 when user has insufficient privileges",
+                    "state": "passed"
+                },
+                {
+                    "name": "should log admin action with all details",
+                    "fullName": "Admin Authorization > logAdminAction > should log admin action with all details",
+                    "state": "passed"
+                },
+                {
+                    "name": "should not log if user is not provided",
+                    "fullName": "Admin Authorization > logAdminAction > should not log if user is not provided",
+                    "state": "passed"
+                },
+                {
+                    "name": "should contain expected admin roles",
+                    "fullName": "Admin Authorization > ADMIN_ROLES configuration > should contain expected admin roles",
+                    "state": "passed"
+                }
+            ]
+        },
+        {
+            "moduleId": "/Users/marco/Github.tmp/gramm_to_kcal/__tests__/hooks/use-current-user-image.test.ts",
+            "tests": [
+                {
+                    "name": "should return user image when session exists",
+                    "fullName": "useCurrentUserImage > should return user image when session exists",
+                    "state": "passed"
+                },
+                {
+                    "name": "should return null when no session",
+                    "fullName": "useCurrentUserImage > should return null when no session",
+                    "state": "passed"
+                },
+                {
+                    "name": "should return null when session has no user",
+                    "fullName": "useCurrentUserImage > should return null when session has no user",
+                    "state": "passed"
+                },
+                {
+                    "name": "should return null when user has no image",
+                    "fullName": "useCurrentUserImage > should return null when user has no image",
+                    "state": "passed"
+                },
+                {
+                    "name": "should return null when user image is empty string",
+                    "fullName": "useCurrentUserImage > should return null when user image is empty string",
+                    "state": "passed"
+                },
+                {
+                    "name": "should handle undefined session data",
+                    "fullName": "useCurrentUserImage > should handle undefined session data",
                     "state": "passed"
                 }
             ]
@@ -879,171 +974,6 @@
             ]
         },
         {
-            "moduleId": "/Users/marco/Github.tmp/gramm_to_kcal/__tests__/app/api/user/products/id/route.test.ts",
-            "tests": [
-                {
-                    "name": "should update product when authenticated and authorized",
-                    "fullName": "/api/user/products/[id] > PUT > should update product when authenticated and authorized",
-                    "state": "passed"
-                },
-                {
-                    "name": "should return 401 when not authenticated",
-                    "fullName": "/api/user/products/[id] > PUT > should return 401 when not authenticated",
-                    "state": "passed"
-                },
-                {
-                    "name": "should return 404 when product not found or not owned by user",
-                    "fullName": "/api/user/products/[id] > PUT > should return 404 when product not found or not owned by user",
-                    "state": "passed"
-                },
-                {
-                    "name": "should handle database errors during update",
-                    "fullName": "/api/user/products/[id] > PUT > should handle database errors during update",
-                    "state": "passed"
-                },
-                {
-                    "name": "should soft delete product when authenticated and authorized",
-                    "fullName": "/api/user/products/[id] > DELETE > should soft delete product when authenticated and authorized",
-                    "state": "passed"
-                },
-                {
-                    "name": "should return 401 when not authenticated",
-                    "fullName": "/api/user/products/[id] > DELETE > should return 401 when not authenticated",
-                    "state": "passed"
-                },
-                {
-                    "name": "should return 404 when product not found or not owned by user",
-                    "fullName": "/api/user/products/[id] > DELETE > should return 404 when product not found or not owned by user",
-                    "state": "passed"
-                },
-                {
-                    "name": "should handle database errors during deletion",
-                    "fullName": "/api/user/products/[id] > DELETE > should handle database errors during deletion",
-                    "state": "passed"
-                },
-                {
-                    "name": "should use soft delete (isDeleted flag) instead of hard delete",
-                    "fullName": "/api/user/products/[id] > DELETE > should use soft delete (isDeleted flag) instead of hard delete",
-                    "state": "passed"
-                }
-            ]
-        },
-        {
-            "moduleId": "/Users/marco/Github.tmp/gramm_to_kcal/__tests__/lib/auth/auth-client.test.ts",
-            "tests": [
-                {
-                    "name": "should create auth client with correct baseURL",
-                    "fullName": "auth-client > should create auth client with correct baseURL",
-                    "state": "passed"
-                },
-                {
-                    "name": "should export auth methods",
-                    "fullName": "auth-client > should export auth methods",
-                    "state": "passed"
-                },
-                {
-                    "name": "should handle different environment URLs",
-                    "fullName": "auth-client > should handle different environment URLs",
-                    "state": "passed"
-                }
-            ]
-        },
-        {
-            "moduleId": "/Users/marco/Github.tmp/gramm_to_kcal/__tests__/actions/password.test.ts",
-            "tests": [
-                {
-                    "name": "should return an error if email is not provided",
-                    "fullName": "password actions > resetPasswordAction > should return an error if email is not provided",
-                    "state": "passed"
-                },
-                {
-                    "name": "should return a success message for a valid email",
-                    "fullName": "password actions > resetPasswordAction > should return a success message for a valid email",
-                    "state": "passed"
-                },
-                {
-                    "name": "should return an error if password is not provided",
-                    "fullName": "password actions > updatePasswordAction > should return an error if password is not provided",
-                    "state": "passed"
-                },
-                {
-                    "name": "should return an error if password is less than 8 characters",
-                    "fullName": "password actions > updatePasswordAction > should return an error if password is less than 8 characters",
-                    "state": "passed"
-                },
-                {
-                    "name": "should return an error if user is not authenticated",
-                    "fullName": "password actions > updatePasswordAction > should return an error if user is not authenticated",
-                    "state": "passed"
-                },
-                {
-                    "name": "should update the password and return a success message",
-                    "fullName": "password actions > updatePasswordAction > should update the password and return a success message",
-                    "state": "passed"
-                },
-                {
-                    "name": "should return an error if password update fails",
-                    "fullName": "password actions > updatePasswordAction > should return an error if password update fails",
-                    "state": "passed"
-                }
-            ]
-        },
-        {
-            "moduleId": "/Users/marco/Github.tmp/gramm_to_kcal/__tests__/lib/utils.test.ts",
-            "tests": [
-                {
-                    "name": "should merge class names",
-                    "fullName": "utils > cn (className utility) > should merge class names",
-                    "state": "passed"
-                },
-                {
-                    "name": "should handle conditional classes",
-                    "fullName": "utils > cn (className utility) > should handle conditional classes",
-                    "state": "passed"
-                },
-                {
-                    "name": "should merge Tailwind classes correctly",
-                    "fullName": "utils > cn (className utility) > should merge Tailwind classes correctly",
-                    "state": "passed"
-                },
-                {
-                    "name": "should handle arrays of classes",
-                    "fullName": "utils > cn (className utility) > should handle arrays of classes",
-                    "state": "passed"
-                },
-                {
-                    "name": "should handle objects with conditional classes",
-                    "fullName": "utils > cn (className utility) > should handle objects with conditional classes",
-                    "state": "passed"
-                },
-                {
-                    "name": "should handle empty inputs",
-                    "fullName": "utils > cn (className utility) > should handle empty inputs",
-                    "state": "passed"
-                },
-                {
-                    "name": "should handle mixed inputs",
-                    "fullName": "utils > cn (className utility) > should handle mixed inputs",
-                    "state": "passed"
-                },
-                {
-                    "name": "should resolve Tailwind conflicts properly",
-                    "fullName": "utils > cn (className utility) > should resolve Tailwind conflicts properly",
-                    "state": "passed"
-                },
-                {
-                    "name": "should handle complex Tailwind class merging",
-                    "fullName": "utils > cn (className utility) > should handle complex Tailwind class merging",
-                    "state": "passed"
-                },
-                {
-                    "name": "should preserve non-conflicting classes",
-                    "fullName": "utils > cn (className utility) > should preserve non-conflicting classes",
-                    "state": "passed"
-                }
-            ]
-        },
-        {
             "moduleId": "/Users/marco/Github.tmp/gramm_to_kcal/__tests__/lib/unit-converter.test.ts",
             "tests": [
                 {
@@ -1179,6 +1109,61 @@
             ]
         },
         {
+            "moduleId": "/Users/marco/Github.tmp/gramm_to_kcal/__tests__/lib/utils.test.ts",
+            "tests": [
+                {
+                    "name": "should merge class names",
+                    "fullName": "utils > cn (className utility) > should merge class names",
+                    "state": "passed"
+                },
+                {
+                    "name": "should handle conditional classes",
+                    "fullName": "utils > cn (className utility) > should handle conditional classes",
+                    "state": "passed"
+                },
+                {
+                    "name": "should merge Tailwind classes correctly",
+                    "fullName": "utils > cn (className utility) > should merge Tailwind classes correctly",
+                    "state": "passed"
+                },
+                {
+                    "name": "should handle arrays of classes",
+                    "fullName": "utils > cn (className utility) > should handle arrays of classes",
+                    "state": "passed"
+                },
+                {
+                    "name": "should handle objects with conditional classes",
+                    "fullName": "utils > cn (className utility) > should handle objects with conditional classes",
+                    "state": "passed"
+                },
+                {
+                    "name": "should handle empty inputs",
+                    "fullName": "utils > cn (className utility) > should handle empty inputs",
+                    "state": "passed"
+                },
+                {
+                    "name": "should handle mixed inputs",
+                    "fullName": "utils > cn (className utility) > should handle mixed inputs",
+                    "state": "passed"
+                },
+                {
+                    "name": "should resolve Tailwind conflicts properly",
+                    "fullName": "utils > cn (className utility) > should resolve Tailwind conflicts properly",
+                    "state": "passed"
+                },
+                {
+                    "name": "should handle complex Tailwind class merging",
+                    "fullName": "utils > cn (className utility) > should handle complex Tailwind class merging",
+                    "state": "passed"
+                },
+                {
+                    "name": "should preserve non-conflicting classes",
+                    "fullName": "utils > cn (className utility) > should preserve non-conflicting classes",
+                    "state": "passed"
+                }
+            ]
+        },
+        {
             "moduleId": "/Users/marco/Github.tmp/gramm_to_kcal/__tests__/lib/auth/routes.test.ts",
             "tests": [
                 {
@@ -1299,6 +1284,106 @@
             ]
         },
         {
+            "moduleId": "/Users/marco/Github.tmp/gramm_to_kcal/__tests__/lib/auth/auth-utils.test.ts",
+            "tests": [
+                {
+                    "name": "should return user when session exists",
+                    "fullName": "auth-utils > currentSessionUser > should return user when session exists",
+                    "state": "passed"
+                },
+                {
+                    "name": "should return null when no session",
+                    "fullName": "auth-utils > currentSessionUser > should return null when no session",
+                    "state": "passed"
+                },
+                {
+                    "name": "should return null when session has no user",
+                    "fullName": "auth-utils > currentSessionUser > should return null when session has no user",
+                    "state": "passed"
+                },
+                {
+                    "name": "should handle errors gracefully",
+                    "fullName": "auth-utils > currentSessionUser > should handle errors gracefully",
+                    "state": "passed"
+                },
+                {
+                    "name": "should return true when user has the role",
+                    "fullName": "auth-utils > sessionHasRole > should return true when user has the role",
+                    "state": "passed"
+                },
+                {
+                    "name": "should return false when user has different role",
+                    "fullName": "auth-utils > sessionHasRole > should return false when user has different role",
+                    "state": "passed"
+                },
+                {
+                    "name": "should return false when no session",
+                    "fullName": "auth-utils > sessionHasRole > should return false when no session",
+                    "state": "passed"
+                },
+                {
+                    "name": "should handle errors gracefully",
+                    "fullName": "auth-utils > sessionHasRole > should handle errors gracefully",
+                    "state": "passed"
+                },
+                {
+                    "name": "should return user when authenticated",
+                    "fullName": "auth-utils > requireAuth > should return user when authenticated",
+                    "state": "passed"
+                },
+                {
+                    "name": "should throw error when not authenticated",
+                    "fullName": "auth-utils > requireAuth > should throw error when not authenticated",
+                    "state": "passed"
+                },
+                {
+                    "name": "should throw error when session has no user",
+                    "fullName": "auth-utils > requireAuth > should throw error when session has no user",
+                    "state": "passed"
+                },
+                {
+                    "name": "should return user when has required role",
+                    "fullName": "auth-utils > requireRole > should return user when has required role",
+                    "state": "passed"
+                },
+                {
+                    "name": "should throw error when user doesn't have required role",
+                    "fullName": "auth-utils > requireRole > should throw error when user doesn't have required role",
+                    "state": "passed"
+                },
+                {
+                    "name": "should throw authentication error when not authenticated",
+                    "fullName": "auth-utils > requireRole > should throw authentication error when not authenticated",
+                    "state": "passed"
+                },
+                {
+                    "name": "should call requireAuth first",
+                    "fullName": "auth-utils > requireRole > should call requireAuth first",
+                    "state": "passed"
+                }
+            ]
+        },
+        {
+            "moduleId": "/Users/marco/Github.tmp/gramm_to_kcal/__tests__/app/api/auth/all/route.test.ts",
+            "tests": [
+                {
+                    "name": "should export GET and POST handlers",
+                    "fullName": "/api/auth/[...all] > should export GET and POST handlers",
+                    "state": "passed"
+                },
+                {
+                    "name": "should use toNextJsHandler from better-auth",
+                    "fullName": "/api/auth/[...all] > should use toNextJsHandler from better-auth",
+                    "state": "passed"
+                },
+                {
+                    "name": "should handle auth configuration properly",
+                    "fullName": "/api/auth/[...all] > should handle auth configuration properly",
+                    "state": "passed"
+                }
+            ]
+        },
+        {
             "moduleId": "/Users/marco/Github.tmp/gramm_to_kcal/__tests__/actions/logout.test.ts",
             "tests": [
                 {
@@ -1334,21 +1419,11 @@
             ]
         },
         {
-            "moduleId": "/Users/marco/Github.tmp/gramm_to_kcal/__tests__/app/api/auth/all/route.test.ts",
+            "moduleId": "/Users/marco/Github.tmp/gramm_to_kcal/__tests__/hello-world.test.ts",
             "tests": [
                 {
-                    "name": "should export GET and POST handlers",
-                    "fullName": "/api/auth/[...all] > should export GET and POST handlers",
-                    "state": "passed"
-                },
-                {
-                    "name": "should use toNextJsHandler from better-auth",
-                    "fullName": "/api/auth/[...all] > should use toNextJsHandler from better-auth",
-                    "state": "passed"
-                },
-                {
-                    "name": "should handle auth configuration properly",
-                    "fullName": "/api/auth/[...all] > should handle auth configuration properly",
+                    "name": "sollte 1 + 1 gleich 2 ergeben",
+                    "fullName": "anwendungsfunktionalität > sollte 1 + 1 gleich 2 ergeben",
                     "state": "passed"
                 }
             ]
@@ -1384,16 +1459,6 @@
                 {
                     "name": "should allow access to protected routes with valid session",
                     "fullName": "evaluateAuthRoute > should allow access to protected routes with valid session",
-                    "state": "passed"
-                }
-            ]
-        },
-        {
-            "moduleId": "/Users/marco/Github.tmp/gramm_to_kcal/__tests__/hello-world.test.ts",
-            "tests": [
-                {
-                    "name": "sollte 1 + 1 gleich 2 ergeben",
-                    "fullName": "anwendungsfunktionalität > sollte 1 + 1 gleich 2 ergeben",
                     "state": "passed"
                 }
             ]

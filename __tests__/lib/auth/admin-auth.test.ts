@@ -1,0 +1,296 @@
+/**
+ * Tests for Admin Authorization utilities
+ */
+import { NextRequest } from "next/server";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
+import { verifyAdminAccess, withAdminAuth, logAdminAction, ADMIN_ROLES } from "@/lib/auth/admin-auth";
+
+// Mock Better Auth
+vi.mock("@/lib/auth/auth", () => ({
+    auth: {
+        api: {
+            getSession: vi.fn(),
+        },
+    },
+}));
+
+vi.mock("next/headers", () => ({
+    headers: vi.fn(() => Promise.resolve(new Headers())),
+}));
+
+describe("Admin Authorization", () => {
+    beforeEach(() => {
+        vi.clearAllMocks();
+    });
+
+    describe("verifyAdminAccess", () => {
+        it("should authorize user with admin role", async () => {
+            const mockSession = {
+                user: {
+                    id: "admin-123",
+                    email: "admin@example.com",
+                    role: "admin",
+                },
+            };
+
+            const { auth } = await import("@/lib/auth/auth");
+            vi.mocked(auth.api.getSession).mockResolvedValue(mockSession);
+
+            const request = new NextRequest("http://localhost:3000/api/admin/test");
+            const result = await verifyAdminAccess(request);
+
+            expect(result.authorized).toBe(true);
+            expect(result.user).toEqual({
+                id: "admin-123",
+                email: "admin@example.com",
+                role: "admin",
+            });
+            expect(result.correlationId).toBeDefined();
+        });
+
+        it("should authorize user with super_admin role", async () => {
+            const mockSession = {
+                user: {
+                    id: "super-123",
+                    email: "super@example.com",
+                    role: "super_admin",
+                },
+            };
+
+            const { auth } = await import("@/lib/auth/auth");
+            vi.mocked(auth.api.getSession).mockResolvedValue(mockSession);
+
+            const request = new NextRequest("http://localhost:3000/api/admin/test");
+            const result = await verifyAdminAccess(request);
+
+            expect(result.authorized).toBe(true);
+            expect(result.user?.role).toBe("super_admin");
+        });
+
+        it("should reject user without session", async () => {
+            const { auth } = await import("@/lib/auth/auth");
+            vi.mocked(auth.api.getSession).mockResolvedValue(null);
+
+            const request = new NextRequest("http://localhost:3000/api/admin/test");
+            const result = await verifyAdminAccess(request);
+
+            expect(result.authorized).toBe(false);
+            expect(result.error).toBe("No active session");
+            expect(result.correlationId).toBeDefined();
+        });
+
+        it("should reject user without admin role", async () => {
+            const mockSession = {
+                user: {
+                    id: "user-123",
+                    email: "user@example.com",
+                    role: "user",
+                },
+            };
+
+            const { auth } = await import("@/lib/auth/auth");
+            vi.mocked(auth.api.getSession).mockResolvedValue(mockSession);
+
+            const request = new NextRequest("http://localhost:3000/api/admin/test");
+            const result = await verifyAdminAccess(request);
+
+            expect(result.authorized).toBe(false);
+            expect(result.error).toContain("Insufficient privileges");
+            expect(result.correlationId).toBeDefined();
+        });
+
+        it("should reject user with no role", async () => {
+            const mockSession = {
+                user: {
+                    id: "user-123",
+                    email: "user@example.com",
+                    role: null,
+                },
+            };
+
+            const { auth } = await import("@/lib/auth/auth");
+            vi.mocked(auth.api.getSession).mockResolvedValue(mockSession);
+
+            const request = new NextRequest("http://localhost:3000/api/admin/test");
+            const result = await verifyAdminAccess(request);
+
+            expect(result.authorized).toBe(false);
+            expect(result.error).toContain("Insufficient privileges");
+        });
+
+        it("should handle session check errors", async () => {
+            const { auth } = await import("@/lib/auth/auth");
+            vi.mocked(auth.api.getSession).mockRejectedValue(new Error("Session error"));
+
+            const request = new NextRequest("http://localhost:3000/api/admin/test");
+            const result = await verifyAdminAccess(request);
+
+            expect(result.authorized).toBe(false);
+            expect(result.error).toBe("Authorization check failed");
+            expect(result.correlationId).toBeDefined();
+        });
+    });
+
+    describe("withAdminAuth middleware", () => {
+        it("should call handler when user is authorized", async () => {
+            const mockSession = {
+                user: {
+                    id: "admin-123",
+                    email: "admin@example.com",
+                    role: "admin",
+                },
+            };
+
+            const { auth } = await import("@/lib/auth/auth");
+            vi.mocked(auth.api.getSession).mockResolvedValue(mockSession);
+
+            const mockHandler = vi.fn().mockResolvedValue(new Response("Success"));
+            const wrappedHandler = withAdminAuth(mockHandler);
+
+            const request = new NextRequest("http://localhost:3000/api/admin/test");
+            await wrappedHandler(request);
+
+            expect(mockHandler).toHaveBeenCalled();
+            expect(mockHandler).toHaveBeenCalledWith(
+                request,
+                expect.objectContaining({
+                    authorized: true,
+                    user: expect.objectContaining({
+                        id: "admin-123",
+                        email: "admin@example.com",
+                        role: "admin",
+                    }),
+                })
+            );
+        });
+
+        it("should return 403 when user is not authorized", async () => {
+            const { auth } = await import("@/lib/auth/auth");
+            vi.mocked(auth.api.getSession).mockResolvedValue(null);
+
+            const mockHandler = vi.fn();
+            const wrappedHandler = withAdminAuth(mockHandler);
+
+            const request = new NextRequest("http://localhost:3000/api/admin/test");
+            const response = await wrappedHandler(request);
+
+            expect(mockHandler).not.toHaveBeenCalled();
+            expect(response.status).toBe(403);
+
+            const data = await response.json();
+            expect(data.error).toBe("Forbidden");
+            expect(data.correlationId).toBeDefined();
+        });
+
+        it("should return 403 when user has insufficient privileges", async () => {
+            const mockSession = {
+                user: {
+                    id: "user-123",
+                    email: "user@example.com",
+                    role: "user",
+                },
+            };
+
+            const { auth } = await import("@/lib/auth/auth");
+            vi.mocked(auth.api.getSession).mockResolvedValue(mockSession);
+
+            const mockHandler = vi.fn();
+            const wrappedHandler = withAdminAuth(mockHandler);
+
+            const request = new NextRequest("http://localhost:3000/api/admin/test");
+            const response = await wrappedHandler(request);
+
+            expect(mockHandler).not.toHaveBeenCalled();
+            expect(response.status).toBe(403);
+
+            const data = await response.json();
+            expect(data.error).toBe("Forbidden");
+            expect(data.message).toContain("Insufficient privileges");
+        });
+    });
+
+    describe("logAdminAction", () => {
+        it("should log admin action with all details", () => {
+            const consoleSpy = vi.spyOn(console, "info").mockImplementation(() => {});
+
+            const authResult = {
+                authorized: true,
+                user: {
+                    id: "admin-123",
+                    email: "admin@example.com",
+                    role: "admin",
+                },
+                correlationId: "test-correlation-123",
+            };
+
+            const request = new NextRequest("http://localhost:3000/api/admin/test", {
+                headers: {
+                    "x-forwarded-for": "192.168.1.1",
+                    "user-agent": "Mozilla/5.0",
+                },
+            });
+
+            logAdminAction(
+                authResult,
+                request,
+                "TEST_ACTION",
+                "test-resource",
+                true,
+                { key: "value" }
+            );
+
+            expect(consoleSpy).toHaveBeenCalledWith(
+                expect.stringContaining('[ADMIN-AUDIT]')
+            );
+
+            const logCall = consoleSpy.mock.calls[0][0];
+            const logData = JSON.parse(logCall.replace('[ADMIN-AUDIT] ', ''));
+
+            expect(logData).toMatchObject({
+                correlationId: "test-correlation-123",
+                adminUserId: "admin-123",
+                adminEmail: "admin@example.com",
+                action: "TEST_ACTION",
+                resource: "test-resource",
+                success: true,
+                details: { key: "value" },
+                ip: "192.168.1.1",
+                userAgent: "Mozilla/5.0",
+            });
+
+            expect(logData.timestamp).toBeDefined();
+
+            consoleSpy.mockRestore();
+        });
+
+        it("should not log if user is not provided", () => {
+            const consoleSpy = vi.spyOn(console, "info").mockImplementation(() => {});
+
+            const authResult = {
+                authorized: false,
+                correlationId: "test-correlation-123",
+            };
+
+            const request = new NextRequest("http://localhost:3000/api/admin/test");
+
+            logAdminAction(
+                authResult,
+                request,
+                "TEST_ACTION",
+                "test-resource",
+                true
+            );
+
+            expect(consoleSpy).not.toHaveBeenCalled();
+
+            consoleSpy.mockRestore();
+        });
+    });
+
+    describe("ADMIN_ROLES configuration", () => {
+        it("should contain expected admin roles", () => {
+            expect(ADMIN_ROLES).toEqual(['admin', 'super_admin']);
+        });
+    });
+});

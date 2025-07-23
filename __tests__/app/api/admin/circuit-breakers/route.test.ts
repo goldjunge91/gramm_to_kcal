@@ -2,9 +2,10 @@
  * Tests for circuit breakers admin API route
  */
 import { NextRequest } from "next/server";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { GET, POST, HEAD } from "@/app/api/admin/circuit-breakers/route";
+import { GET, HEAD, POST } from "@/app/api/admin/circuit-breakers/route";
+import { CircuitState } from "@/lib/circuit-breaker";
 
 // Mock circuit breaker
 const mockCircuitBreaker = {
@@ -14,21 +15,42 @@ const mockCircuitBreaker = {
 };
 
 // Mock dependencies
-vi.mock("@/lib/circuit-breaker", () => ({
-    circuitBreakerManager: {
-        getAllStatus: vi.fn(),
-        getHealthSummary: vi.fn(),
-        get: vi.fn(),
-        emergencyResetAll: vi.fn(),
-        emergencyOpenAll: vi.fn(),
-    },
-}));
+vi.mock("@/lib/circuit-breaker", async (importOriginal) => {
+    const actual = await importOriginal();
+    return {
+        ...actual,
+        circuitBreakerManager: {
+            getAllStatus: vi.fn(),
+            getHealthSummary: vi.fn(),
+            get: vi.fn(),
+            emergencyResetAll: vi.fn(),
+            emergencyOpenAll: vi.fn(),
+        },
+    };
+});
 
 vi.mock("@/lib/validations/request-validation", () => ({
     validateRequest: vi.fn(),
     validateRequestSize: vi.fn(),
     validateContentType: vi.fn(),
     getSecurityHeaders: vi.fn(() => new Headers()),
+}));
+
+// Mock auth with admin session
+vi.mock("@/lib/auth/auth", () => ({
+    auth: {
+        api: {
+            getSession: vi.fn(() =>
+                Promise.resolve({
+                    user: {
+                        id: "admin-123",
+                        email: "admin@test.com",
+                        role: "admin",
+                    },
+                })
+            ),
+        },
+    },
 }));
 
 describe("/api/admin/circuit-breakers", () => {
@@ -42,19 +64,72 @@ describe("/api/admin/circuit-breakers", () => {
                 "@/lib/circuit-breaker"
             );
 
-            vi.mocked(circuitBreakerManager.getAllStatus).mockResolvedValue({
-                openFoodFacts: {
-                    state: "closed",
-                    failures: 0,
-                    lastFailure: null,
+            vi.mocked(circuitBreakerManager.getAllStatus).mockResolvedValue([
+                {
+                    name: "openFoodFacts",
+                    status: {
+                        serviceName: "openFoodFacts",
+                        state: CircuitState.CLOSED,
+                        config: {
+                            failureThreshold: 5,
+                            recoveryTimeout: 30000,
+                            successThreshold: 3,
+                            timeout: 10000,
+                            monitoringWindow: 60000,
+                        },
+                        metrics: {
+                            failures: 0,
+                            successes: 0,
+                            lastFailure: undefined,
+                            lastSuccess: undefined,
+                        },
+                        isHealthy: true,
+                        canRetry: true,
+                    },
                 },
-                redis: { state: "closed", failures: 0, lastFailure: null },
-            });
+                {
+                    name: "redis",
+                    status: {
+                        serviceName: "redis",
+                        state: CircuitState.CLOSED,
+                        config: {
+                            failureThreshold: 3,
+                            recoveryTimeout: 10000,
+                            successThreshold: 2,
+                            timeout: 5000,
+                            monitoringWindow: 30000,
+                        },
+                        metrics: {
+                            failures: 0,
+                            successes: 0,
+                            lastFailure: undefined,
+                            lastSuccess: undefined,
+                        },
+                        isHealthy: true,
+                        canRetry: true,
+                    },
+                },
+            ]);
             vi.mocked(circuitBreakerManager.getHealthSummary).mockResolvedValue(
                 {
                     total: 2,
                     healthy: 2,
                     open: 0,
+                    halfOpen: 0,
+                    services: {
+                        openFoodFacts: {
+                            state: CircuitState.CLOSED,
+                            healthy: true,
+                            failures: 0,
+                            successes: 0,
+                        },
+                        redis: {
+                            state: CircuitState.CLOSED,
+                            healthy: true,
+                            failures: 0,
+                            successes: 0,
+                        },
+                    },
                 },
             );
 
@@ -65,7 +140,7 @@ describe("/api/admin/circuit-breakers", () => {
             const data = await response.json();
 
             expect(response.status).toBe(200);
-            expect(data.summary).toEqual({ total: 2, healthy: 2, open: 0 });
+            expect(data.summary).toMatchObject({ total: 2, healthy: 2, open: 0 });
             expect(data.services).toBeDefined();
             expect(data.timestamp).toBeDefined();
         });
@@ -98,12 +173,14 @@ describe("/api/admin/circuit-breakers", () => {
                 "@/lib/circuit-breaker"
             );
 
-            vi.mocked(circuitBreakerManager.getAllStatus).mockResolvedValue({});
+            vi.mocked(circuitBreakerManager.getAllStatus).mockResolvedValue([]);
             vi.mocked(circuitBreakerManager.getHealthSummary).mockResolvedValue(
                 {
                     total: 0,
                     healthy: 0,
                     open: 0,
+                    halfOpen: 0,
+                    services: {},
                 },
             );
 
@@ -116,8 +193,12 @@ describe("/api/admin/circuit-breakers", () => {
 
             await GET(request);
 
+            // Verify enhanced admin logging is working
             expect(consoleSpy).toHaveBeenCalledWith(
-                "[CIRCUIT-BREAKER] Admin GET request from IP: 192.168.1.1",
+                expect.stringContaining("[ADMIN-AUTH] Admin access granted: admin@test.com"),
+            );
+            expect(consoleSpy).toHaveBeenCalledWith(
+                expect.stringContaining("[ADMIN-AUDIT]"),
             );
             consoleSpy.mockRestore();
         });
@@ -165,13 +246,15 @@ describe("/api/admin/circuit-breakers", () => {
             });
             vi.mocked(getSecurityHeaders).mockReturnValue(new Headers());
             vi.mocked(circuitBreakerManager.get).mockReturnValue(
-                mockCircuitBreaker,
+                mockCircuitBreaker as any,
             );
             vi.mocked(circuitBreakerManager.getHealthSummary).mockResolvedValue(
                 {
                     total: 2,
                     healthy: 2,
                     open: 0,
+                    halfOpen: 0,
+                    services: {},
                 },
             );
 
@@ -220,6 +303,8 @@ describe("/api/admin/circuit-breakers", () => {
                     total: 2,
                     healthy: 2,
                     open: 0,
+                    halfOpen: 0,
+                    services: {},
                 },
             );
 
@@ -258,7 +343,7 @@ describe("/api/admin/circuit-breakers", () => {
                 data: { action: "reset", service: "nonexistent" },
             });
             vi.mocked(getSecurityHeaders).mockReturnValue(new Headers());
-            vi.mocked(circuitBreakerManager.get).mockReturnValue(null);
+            vi.mocked(circuitBreakerManager.get).mockReturnValue(undefined);
 
             const request = new NextRequest(
                 "http://localhost:3000/api/admin/circuit-breakers",
@@ -326,6 +411,8 @@ describe("/api/admin/circuit-breakers", () => {
                     total: 2,
                     healthy: 2,
                     open: 0,
+                    halfOpen: 0,
+                    services: {},
                 },
             );
 
@@ -356,6 +443,8 @@ describe("/api/admin/circuit-breakers", () => {
                     total: 2,
                     healthy: 1,
                     open: 1,
+                    halfOpen: 0,
+                    services: {},
                 },
             );
 

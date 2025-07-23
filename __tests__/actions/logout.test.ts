@@ -1,8 +1,8 @@
-import { describe, it, expect, vi } from 'vitest';
 import { signOutUser } from '@/actions/logout';
 import { auth } from '@/lib/auth/auth';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
+import { describe, expect, it, vi } from 'vitest';
 
 vi.mock('@/lib/auth/auth', () => ({
   auth: {
@@ -26,7 +26,7 @@ describe('signOutUser', () => {
 
     expect(auth.api.signOut).toHaveBeenCalled();
     expect(revalidatePath).toHaveBeenCalledWith('/', 'layout');
-    expect(redirect).toHaveBeenCalledWith('/auth/login');
+    expect(redirect).toHaveBeenCalledWith('/');
   });
 
   it('should redirect to the login page with an error message if sign out fails', async () => {

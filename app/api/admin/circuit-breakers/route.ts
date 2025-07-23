@@ -3,6 +3,7 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
+import { logAdminAction, withAdminAuth } from "@/lib/auth/admin-auth";
 import { circuitBreakerManager } from "@/lib/circuit-breaker";
 import {
     getSecurityHeaders,
@@ -17,15 +18,16 @@ const AdminActionSchema = z.object({
     service: z.string().optional(), // If not provided, applies to all services
 });
 
-export async function GET(request: NextRequest) {
-    // Note: Rate limiting handled by Better Auth middleware
-
-    // Log admin circuit breaker access for monitoring
-    const ip
-        = request.headers.get("x-forwarded-for")
-            || request.headers.get("x-real-ip")
-            || "unknown";
-    console.info(`[CIRCUIT-BREAKER] Admin GET request from IP: ${ip}`);
+export const GET = withAdminAuth(async (request: NextRequest, authResult) => {
+    // Log admin circuit breaker access for monitoring with correlation ID
+    logAdminAction(
+        authResult,
+        request,
+        "VIEW_CIRCUIT_BREAKERS",
+        "circuit-breakers",
+        true,
+        { endpoint: "GET /api/admin/circuit-breakers" },
+    );
 
     try {
         // Get all circuit breaker statuses
@@ -55,7 +57,7 @@ export async function GET(request: NextRequest) {
             { status: 500, headers },
         );
     }
-}
+});
 
 export async function POST(request: NextRequest) {
     // Validate request size and content type
@@ -184,7 +186,7 @@ export async function POST(request: NextRequest) {
 }
 
 // Health check endpoint specifically for circuit breakers
-export async function HEAD(request: NextRequest) {
+export const HEAD = withAdminAuth(async (request: NextRequest, _authResult) => {
     try {
         // Logging für Monitoring
         const ip
@@ -223,4 +225,4 @@ export async function HEAD(request: NextRequest) {
             headers,
         });
     }
-}
+});

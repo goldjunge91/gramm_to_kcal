@@ -59,6 +59,7 @@ export const ROUTE_GROUPS: Record<RouteGroup, string[]> = {
         "/api/user",
         "/api/recipes",
         "/api/ingredients",
+        "/api/admin",
     ],
 };
 
@@ -102,6 +103,11 @@ export const ROUTE_CONFIGS: RouteConfig[] = [
         pattern: "/api/debug",
         group: "API_PUBLIC",
         description: "Debug endpoints (development only)",
+    },
+    {
+        pattern: "/api/admin.*",
+        group: "API_PROTECTED",
+        description: "Admin API endpoints (require authentication + admin role)",
     },
     {
         pattern: "/api/.*",
