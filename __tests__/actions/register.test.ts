@@ -45,27 +45,18 @@ describe('signupAction', () => {
     formData.append('name', 'Test User');
 
     // Mock the success response for this specific test
-    vi.mocked(auth.api.signUpEmail).mockResolvedValue({ user: {  id: '123',
-          email: '',
-          emailVerified: false,
-          name: '',
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          image: undefined,
-          // banned: false,
-          // banReason: undefined,
+    vi.mocked(auth.api.signUpEmail).mockResolvedValue({
+      user: {
+        id: '123',
+        email: 'test@example.com',
+        emailVerified: false,
+        name: 'Test User',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        image: null
       },
-        session: {
-          id: 'session-123',
-          expiresAt: new Date(),
-          token: 'token-123',
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          ipAddress: undefined,
-          userAgent: undefined,
-          impersonatedBy: undefined,
-          userId: '123'
-        } });
+      token: 'token-123'
+    });
     try {
       await signupAction(formData);
     } catch (e) {

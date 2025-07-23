@@ -56,8 +56,10 @@ describe("Better Auth Configuration", () => {
 
     it("should have session cookie cache configured", () => {
         const config = auth.options;
-
+        console.log("Session Cookie Cache Enabled:", config.session?.cookieCache?.enabled);
         expect(config.session?.cookieCache?.enabled).toBe(true);
+        console.log("Session Cookie Cache Max Age:", config.session?.cookieCache?.maxAge);
         expect(config.session?.cookieCache?.maxAge).toBe(5 * 60);
+        console.log("Session cookie cache configured with max age:", config.session?.cookieCache?.maxAge);
     });
 });

@@ -27,11 +27,34 @@ describe("auth-utils", () => {
     describe("currentSessionUser", () => {
         it("should return user when session exists", async () => {
             const { auth } = await import("@/lib/auth/auth");
-            const mockUser = { id: "user123", email: "test@example.com" };
+            const mockUser = {
+                id: "user123",
+                email: "test@example.com",
+                emailVerified: true,
+                name: "Test User",
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                image: null,
+                banned: null,
+                banReason: null,
+                banExpires: null,
+                role: null,
+                isAnonymous: null
+            };
 
             vi.mocked(auth.api.getSession).mockResolvedValue({
                 user: mockUser,
-                session: { id: "session123" },
+                session: {
+                    id: "session123",
+                    expiresAt: new Date(),
+                    token: "token123",
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                    ipAddress: null,
+                    userAgent: null,
+                    userId: "user123",
+                    impersonatedBy: null
+                },
             });
 
             const result = await currentSessionUser();
@@ -54,7 +77,17 @@ describe("auth-utils", () => {
 
             vi.mocked(auth.api.getSession).mockResolvedValue({
                 user: null,
-                session: { id: "session123" },
+                session: {
+                    id: "session123",
+                    expiresAt: new Date(),
+                    token: "token123",
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                    ipAddress: null,
+                    userAgent: null,
+                    userId: "user123",
+                    impersonatedBy: null
+                },
             });
 
             const result = await currentSessionUser();
@@ -90,12 +123,31 @@ describe("auth-utils", () => {
             const mockUser = {
                 id: "user123",
                 email: "test@example.com",
+                emailVerified: true,
+                name: "Test User",
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                image: null,
+                banned: null,
+                banReason: null,
+                banExpires: null,
                 role: "admin",
+                isAnonymous: null
             };
 
             vi.mocked(auth.api.getSession).mockResolvedValue({
                 user: mockUser,
-                session: { id: "session123" },
+                session: {
+                    id: "session123",
+                    expiresAt: new Date(),
+                    token: "token123",
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                    ipAddress: null,
+                    userAgent: null,
+                    userId: "user123",
+                    impersonatedBy: null
+                },
             });
 
             const result = await sessionHasRole("admin");
@@ -108,12 +160,31 @@ describe("auth-utils", () => {
             const mockUser = {
                 id: "user123",
                 email: "test@example.com",
+                emailVerified: true,
+                name: "Test User",
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                image: null,
+                banned: null,
+                banReason: null,
+                banExpires: null,
                 role: "user",
+                isAnonymous: null
             };
 
             vi.mocked(auth.api.getSession).mockResolvedValue({
                 user: mockUser,
-                session: { id: "session123" },
+                session: {
+                    id: "session123",
+                    expiresAt: new Date(),
+                    token: "token123",
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                    ipAddress: null,
+                    userAgent: null,
+                    userId: "user123",
+                    impersonatedBy: null
+                },
             });
 
             const result = await sessionHasRole("admin");
@@ -156,11 +227,34 @@ describe("auth-utils", () => {
     describe("requireAuth", () => {
         it("should return user when authenticated", async () => {
             const { auth } = await import("@/lib/auth/auth");
-            const mockUser = { id: "user123", email: "test@example.com" };
+            const mockUser = {
+                id: "user123",
+                email: "test@example.com",
+                emailVerified: true,
+                name: "Test User",
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                image: null,
+                banned: null,
+                banReason: null,
+                banExpires: null,
+                role: null,
+                isAnonymous: null
+            };
 
             vi.mocked(auth.api.getSession).mockResolvedValue({
                 user: mockUser,
-                session: { id: "session123" },
+                session: {
+                    id: "session123",
+                    expiresAt: new Date(),
+                    token: "token123",
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                    ipAddress: null,
+                    userAgent: null,
+                    userId: "user123",
+                    impersonatedBy: null
+                },
             });
 
             const result = await requireAuth();
@@ -183,7 +277,17 @@ describe("auth-utils", () => {
 
             vi.mocked(auth.api.getSession).mockResolvedValue({
                 user: null,
-                session: { id: "session123" },
+                session: {
+                    id: "session123",
+                    expiresAt: new Date(),
+                    token: "token123",
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                    ipAddress: null,
+                    userAgent: null,
+                    userId: "user123",
+                    impersonatedBy: null
+                },
             });
 
             await expect(requireAuth()).rejects.toThrow(
@@ -198,12 +302,31 @@ describe("auth-utils", () => {
             const mockUser = {
                 id: "user123",
                 email: "test@example.com",
+                emailVerified: true,
+                name: "Test User",
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                image: null,
+                banned: null,
+                banReason: null,
+                banExpires: null,
                 role: "admin",
+                isAnonymous: null
             };
 
             vi.mocked(auth.api.getSession).mockResolvedValue({
                 user: mockUser,
-                session: { id: "session123" },
+                session: {
+                    id: "session123",
+                    expiresAt: new Date(),
+                    token: "token123",
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                    ipAddress: null,
+                    userAgent: null,
+                    userId: "user123",
+                    impersonatedBy: null
+                },
             });
 
             const result = await requireRole("admin");
@@ -216,12 +339,31 @@ describe("auth-utils", () => {
             const mockUser = {
                 id: "user123",
                 email: "test@example.com",
+                emailVerified: true,
+                name: "Test User",
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                image: null,
+                banned: null,
+                banReason: null,
+                banExpires: null,
                 role: "user",
+                isAnonymous: null
             };
 
             vi.mocked(auth.api.getSession).mockResolvedValue({
                 user: mockUser,
-                session: { id: "session123" },
+                session: {
+                    id: "session123",
+                    expiresAt: new Date(),
+                    token: "token123",
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                    ipAddress: null,
+                    userAgent: null,
+                    userId: "user123",
+                    impersonatedBy: null
+                },
             });
 
             await expect(requireRole("admin")).rejects.toThrow(

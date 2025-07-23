@@ -53,19 +53,46 @@ describe("/api/health", () => {
         );
         const { circuitBreakerManager } = await import("@/lib/circuit-breaker");
 
-        vi.mocked(db.execute).mockResolvedValue(undefined);
+        vi.mocked(db.execute).mockResolvedValue({} as any);
         vi.mocked(getRedisHealth).mockResolvedValue({
             status: "connected",
-            latency: 10,
+            latency: "10",
+            timestamp: new Date().toISOString()
         });
         vi.mocked(getOpenFoodFactsHealth).mockResolvedValue({
-            status: "healthy",
-            responseTime: 200,
+            rateLimit: {
+                enabled: true,
+                productLimit: "10",
+                searchLimit: "5"
+            },
+            cache: {
+                enabled: true,
+                productTTL: "3600",
+                searchTTL: "1800",
+                failureTTL: "300"
+            },
+            circuitBreaker: {
+                state: "CLOSED" as any,
+                healthy: true,
+                failures: 0,
+                successes: 10,
+                config: {
+                    failureThreshold: 5,
+                    recoveryTimeout: "60000",
+                    timeout: "30000"
+                }
+            },
+            timestamp: new Date().toISOString()
         });
         vi.mocked(circuitBreakerManager.getHealthSummary).mockResolvedValue({
             total: 2,
             healthy: 2,
             open: 0,
+            halfOpen: 0,
+            services: {
+                openfoodfacts: { status: "healthy" },
+                database: { status: "healthy" }
+            }
         });
 
         const request = new NextRequest("http://localhost:3000/api/health", {
@@ -96,16 +123,43 @@ describe("/api/health", () => {
         vi.mocked(db.execute).mockRejectedValue(new Error("Connection failed"));
         vi.mocked(getRedisHealth).mockResolvedValue({
             status: "connected",
-            latency: 10,
+            latency: "10",
+            timestamp: new Date().toISOString()
         });
         vi.mocked(getOpenFoodFactsHealth).mockResolvedValue({
-            status: "healthy",
-            responseTime: 200,
+            rateLimit: {
+                enabled: true,
+                productLimit: "10",
+                searchLimit: "5"
+            },
+            cache: {
+                enabled: true,
+                productTTL: "3600",
+                searchTTL: "1800",
+                failureTTL: "300"
+            },
+            circuitBreaker: {
+                state: "CLOSED" as any,
+                healthy: true,
+                failures: 0,
+                successes: 10,
+                config: {
+                    failureThreshold: 5,
+                    recoveryTimeout: "60000",
+                    timeout: "30000"
+                }
+            },
+            timestamp: new Date().toISOString()
         });
         vi.mocked(circuitBreakerManager.getHealthSummary).mockResolvedValue({
             total: 2,
             healthy: 2,
             open: 0,
+            halfOpen: 0,
+            services: {
+                openfoodfacts: { status: "healthy" },
+                database: { status: "healthy" }
+            }
         });
 
         const request = new NextRequest("http://localhost:3000/api/health", {
@@ -150,19 +204,46 @@ describe("/api/health", () => {
         );
         const { circuitBreakerManager } = await import("@/lib/circuit-breaker");
 
-        vi.mocked(db.execute).mockResolvedValue(undefined);
+        vi.mocked(db.execute).mockResolvedValue({} as any);
         vi.mocked(getRedisHealth).mockResolvedValue({
             status: "connected",
-            latency: 10,
+            latency: "10",
+            timestamp: new Date().toISOString()
         });
         vi.mocked(getOpenFoodFactsHealth).mockResolvedValue({
-            status: "healthy",
-            responseTime: 200,
+            rateLimit: {
+                enabled: true,
+                productLimit: "10",
+                searchLimit: "5"
+            },
+            cache: {
+                enabled: true,
+                productTTL: "3600",
+                searchTTL: "1800",
+                failureTTL: "300"
+            },
+            circuitBreaker: {
+                state: "CLOSED" as any,
+                healthy: true,
+                failures: 0,
+                successes: 10,
+                config: {
+                    failureThreshold: 5,
+                    recoveryTimeout: "60000",
+                    timeout: "30000"
+                }
+            },
+            timestamp: new Date().toISOString()
         });
         vi.mocked(circuitBreakerManager.getHealthSummary).mockResolvedValue({
             total: 2,
             healthy: 2,
             open: 0,
+            halfOpen: 0,
+            services: {
+                openfoodfacts: { status: "healthy" },
+                database: { status: "healthy" }
+            }
         });
 
         const request = new NextRequest("http://localhost:3000/api/health", {

@@ -5,6 +5,7 @@ import { renderHook } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { useCurrentUserImage } from "@/hooks/use-current-user-image";
+import { createMockUser, createMockSession } from "@/__tests__/utils/auth-mocks";
 
 // Mock auth client
 vi.mock("@/lib/auth/auth-client", async (importActual) => {
@@ -26,13 +27,17 @@ describe("useCurrentUserImage", () => {
         
         vi.mocked(useSession).mockReturnValue({
             data: {
-                user: {
+                user: createMockUser({
                     id: "123",
                     name: "John Doe",
                     email: "john@example.com",
                     image: "https://example.com/avatar.jpg",
-                },
+                }),
+                session: createMockSession({ userId: "123" }),
             },
+            isPending: false,
+            error: null,
+            refetch: vi.fn(),
         });
 
         const { result } = renderHook(() => useCurrentUserImage());

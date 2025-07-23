@@ -5,6 +5,7 @@ import { NextRequest } from "next/server";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
 import { PUT, DELETE } from "@/app/api/user/products/[id]/route";
+import { createMockAuthSession } from "@/__tests__/utils/auth-mocks";
 
 // Mock dependencies
 vi.mock("@/lib/auth/auth", () => ({
@@ -55,7 +56,9 @@ describe("/api/user/products/[id]", () => {
             const { auth } = await import("@/lib/auth/auth");
             const { db } = await import("@/lib/db");
 
-            const mockUser = { id: "user123", email: "test@example.com" };
+            const mockAuth = createMockAuthSession(
+                { id: "user123", email: "test@example.com" }
+            );
             const updatedProduct = {
                 id: "product123",
                 name: "Updated Product",
@@ -63,10 +66,7 @@ describe("/api/user/products/[id]", () => {
                 updatedAt: new Date(),
             };
 
-            vi.mocked(auth.api.getSession).mockResolvedValue({
-                user: mockUser,
-                session: { id: "session123" },
-            });
+            vi.mocked(auth.api.getSession).mockResolvedValue(mockAuth);
 
             const mockUpdate = {
                 set: vi.fn(() => ({
@@ -77,7 +77,7 @@ describe("/api/user/products/[id]", () => {
                     })),
                 })),
             };
-            vi.mocked(db.update).mockReturnValue(mockUpdate);
+            vi.mocked(db.update).mockReturnValue(mockUpdate as any);
 
             const request = new NextRequest(
                 "http://localhost:3000/api/user/products/product123",
@@ -123,11 +123,10 @@ describe("/api/user/products/[id]", () => {
             const { auth } = await import("@/lib/auth/auth");
             const { db } = await import("@/lib/db");
 
-            const mockUser = { id: "user123", email: "test@example.com" };
-            vi.mocked(auth.api.getSession).mockResolvedValue({
-                user: mockUser,
-                session: { id: "session123" },
-            });
+            const mockAuth = createMockAuthSession(
+                { id: "user123", email: "test@example.com" }
+            );
+            vi.mocked(auth.api.getSession).mockResolvedValue(mockAuth);
 
             const mockUpdate = {
                 set: vi.fn(() => ({
@@ -136,7 +135,7 @@ describe("/api/user/products/[id]", () => {
                     })),
                 })),
             };
-            vi.mocked(db.update).mockReturnValue(mockUpdate);
+            vi.mocked(db.update).mockReturnValue(mockUpdate as any);
 
             const request = new NextRequest(
                 "http://localhost:3000/api/user/products/nonexistent",
@@ -159,11 +158,10 @@ describe("/api/user/products/[id]", () => {
             const { auth } = await import("@/lib/auth/auth");
             const { db } = await import("@/lib/db");
 
-            const mockUser = { id: "user123", email: "test@example.com" };
-            vi.mocked(auth.api.getSession).mockResolvedValue({
-                user: mockUser,
-                session: { id: "session123" },
-            });
+            const mockAuth = createMockAuthSession(
+                { id: "user123", email: "test@example.com" }
+            );
+            vi.mocked(auth.api.getSession).mockResolvedValue(mockAuth);
 
             const mockUpdate = {
                 set: vi.fn(() => ({
@@ -174,7 +172,7 @@ describe("/api/user/products/[id]", () => {
                     })),
                 })),
             };
-            vi.mocked(db.update).mockReturnValue(mockUpdate);
+            vi.mocked(db.update).mockReturnValue(mockUpdate as any);
 
             const consoleSpy = vi
                 .spyOn(console, "error")
@@ -209,7 +207,9 @@ describe("/api/user/products/[id]", () => {
             const { auth } = await import("@/lib/auth/auth");
             const { db } = await import("@/lib/db");
 
-            const mockUser = { id: "user123", email: "test@example.com" };
+            const mockAuth = createMockAuthSession(
+                { id: "user123", email: "test@example.com" }
+            );
             const deletedProduct = {
                 id: "product123",
                 isDeleted: true,
@@ -217,10 +217,7 @@ describe("/api/user/products/[id]", () => {
                 updatedAt: new Date(),
             };
 
-            vi.mocked(auth.api.getSession).mockResolvedValue({
-                user: mockUser,
-                session: { id: "session123" },
-            });
+            vi.mocked(auth.api.getSession).mockResolvedValue(mockAuth);
 
             const mockUpdate = {
                 set: vi.fn(() => ({
@@ -231,7 +228,7 @@ describe("/api/user/products/[id]", () => {
                     })),
                 })),
             };
-            vi.mocked(db.update).mockReturnValue(mockUpdate);
+            vi.mocked(db.update).mockReturnValue(mockUpdate as any);
 
             const request = new NextRequest(
                 "http://localhost:3000/api/user/products/product123",
@@ -274,11 +271,10 @@ describe("/api/user/products/[id]", () => {
             const { auth } = await import("@/lib/auth/auth");
             const { db } = await import("@/lib/db");
 
-            const mockUser = { id: "user123", email: "test@example.com" };
-            vi.mocked(auth.api.getSession).mockResolvedValue({
-                user: mockUser,
-                session: { id: "session123" },
-            });
+            const mockAuth = createMockAuthSession(
+                { id: "user123", email: "test@example.com" }
+            );
+            vi.mocked(auth.api.getSession).mockResolvedValue(mockAuth);
 
             const mockUpdate = {
                 set: vi.fn(() => ({
@@ -287,7 +283,7 @@ describe("/api/user/products/[id]", () => {
                     })),
                 })),
             };
-            vi.mocked(db.update).mockReturnValue(mockUpdate);
+            vi.mocked(db.update).mockReturnValue(mockUpdate as any);
 
             const request = new NextRequest(
                 "http://localhost:3000/api/user/products/nonexistent",
@@ -309,11 +305,10 @@ describe("/api/user/products/[id]", () => {
             const { auth } = await import("@/lib/auth/auth");
             const { db } = await import("@/lib/db");
 
-            const mockUser = { id: "user123", email: "test@example.com" };
-            vi.mocked(auth.api.getSession).mockResolvedValue({
-                user: mockUser,
-                session: { id: "session123" },
-            });
+            const mockAuth = createMockAuthSession(
+                { id: "user123", email: "test@example.com" }
+            );
+            vi.mocked(auth.api.getSession).mockResolvedValue(mockAuth);
 
             const mockUpdate = {
                 set: vi.fn(() => ({
@@ -324,7 +319,7 @@ describe("/api/user/products/[id]", () => {
                     })),
                 })),
             };
-            vi.mocked(db.update).mockReturnValue(mockUpdate);
+            vi.mocked(db.update).mockReturnValue(mockUpdate as any);
 
             const consoleSpy = vi
                 .spyOn(console, "error")
@@ -356,17 +351,16 @@ describe("/api/user/products/[id]", () => {
             const { auth } = await import("@/lib/auth/auth");
             const { db } = await import("@/lib/db");
 
-            const mockUser = { id: "user123", email: "test@example.com" };
+            const mockAuth = createMockAuthSession(
+                { id: "user123", email: "test@example.com" }
+            );
             const deletedProduct = {
                 id: "product123",
                 isDeleted: true,
                 updatedAt: new Date(),
             };
 
-            vi.mocked(auth.api.getSession).mockResolvedValue({
-                user: mockUser,
-                session: { id: "session123" },
-            });
+            vi.mocked(auth.api.getSession).mockResolvedValue(mockAuth);
 
             let capturedSetValues: any;
             const mockUpdate = {
@@ -381,7 +375,7 @@ describe("/api/user/products/[id]", () => {
                     };
                 }),
             };
-            vi.mocked(db.update).mockReturnValue(mockUpdate);
+            vi.mocked(db.update).mockReturnValue(mockUpdate as any);
 
             const request = new NextRequest(
                 "http://localhost:3000/api/user/products/product123",
