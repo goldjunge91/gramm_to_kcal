@@ -4,7 +4,7 @@
  * This is a TDD Red Phase test to identify the specific protection issue
  */
 
-import { test, expect } from '@playwright/test'
+import { expect, test } from '@playwright/test';
 
 test.describe('Auth Route Protection', () => {
   test('unauthenticated user should access login page directly', async ({ page }) => {

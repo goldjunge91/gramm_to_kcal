@@ -1,5 +1,5 @@
-import { vi } from "vitest";
 import "@testing-library/jest-dom";
+import { vi } from "vitest";
 
 // Mock server-only module for Next.js server components
 vi.mock("server-only", () => ({}));
@@ -21,7 +21,23 @@ Object.defineProperty(globalThis, "crypto", {
         getRandomValues: vi.fn(),
     },
 });
-// Globales Redis-Mock für alle Tests
+
+// Type augmentation for globalThis to add mockRedis
+declare global {
+    // eslint-disable-next-line no-var
+    var mockRedis: {
+        get: typeof vi.fn;
+        setex: typeof vi.fn;
+        del: typeof vi.fn;
+        pipeline: typeof vi.fn;
+        exec: typeof vi.fn;
+        lpush: typeof vi.fn;
+        ltrim: typeof vi.fn;
+        expire: typeof vi.fn;
+        lrange: typeof vi.fn;
+    };
+}
+
 global.mockRedis = {
     get: vi.fn(),
     setex: vi.fn(),
