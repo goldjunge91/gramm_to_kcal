@@ -1,5 +1,26 @@
 import { vi } from 'vitest'
 import '@testing-library/jest-dom'
+
+// Mock server-only module for Next.js server components
+vi.mock('server-only', () => ({}));
+
+// Mock next/headers
+vi.mock('next/headers', () => ({
+    headers: vi.fn(() => Promise.resolve(new Headers())),
+    cookies: vi.fn(() => ({
+        get: vi.fn(),
+        set: vi.fn(),
+        delete: vi.fn(),
+    })),
+}));
+
+// Mock crypto for UUID generation
+Object.defineProperty(globalThis, 'crypto', {
+    value: {
+        randomUUID: vi.fn(() => 'test-uuid-123'),
+        getRandomValues: vi.fn(),
+    },
+});
 // Globales Redis-Mock für alle Tests
 global.mockRedis = {
   get: vi.fn(),
