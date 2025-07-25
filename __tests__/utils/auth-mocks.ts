@@ -2,7 +2,7 @@
  * Test utilities for creating properly typed auth mock objects
  */
 
-export const createMockUser = (overrides: Partial<{
+export function createMockUser(overrides: Partial<{
     id: string;
     email: string;
     emailVerified: boolean;
@@ -15,23 +15,25 @@ export const createMockUser = (overrides: Partial<{
     banExpires: Date | null;
     role: string | null;
     isAnonymous: boolean | null;
-}> = {}) => ({
-    id: "user123",
-    email: "test@example.com",
-    emailVerified: true,
-    name: "Test User",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    image: null,
-    banned: null,
-    banReason: null,
-    banExpires: null,
-    role: null,
-    isAnonymous: null,
-    ...overrides
-});
+}> = {}) {
+    return {
+        id: "user123",
+        email: "test@example.com",
+        emailVerified: true,
+        name: "Test User",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        image: null,
+        banned: null,
+        banReason: null,
+        banExpires: null,
+        role: null,
+        isAnonymous: null,
+        ...overrides,
+    };
+}
 
-export const createMockSession = (overrides: Partial<{
+export function createMockSession(overrides: Partial<{
     id: string;
     expiresAt: Date;
     token: string;
@@ -41,25 +43,27 @@ export const createMockSession = (overrides: Partial<{
     userAgent: string | null;
     userId: string;
     impersonatedBy: string | null;
-}> = {}) => ({
-    id: "session123",
-    expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours from now
-    token: "token123",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    ipAddress: null,
-    userAgent: null,
-    userId: "user123",
-    impersonatedBy: null,
-    ...overrides
-});
+}> = {}) {
+    return {
+        id: "session123",
+        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours from now
+        token: "token123",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        ipAddress: null,
+        userAgent: null,
+        userId: "user123",
+        impersonatedBy: null,
+        ...overrides,
+    };
+}
 
-export const createMockAuthSession = (userOverrides?: Parameters<typeof createMockUser>[0], sessionOverrides?: Parameters<typeof createMockSession>[0]) => {
+export function createMockAuthSession(userOverrides?: Parameters<typeof createMockUser>[0], sessionOverrides?: Parameters<typeof createMockSession>[0]) {
     const user = createMockUser(userOverrides);
     const session = createMockSession({ userId: user.id, ...sessionOverrides });
-    
+
     return {
         user,
-        session
+        session,
     };
-};
+}

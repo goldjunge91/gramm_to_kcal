@@ -17,6 +17,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
+import { createLogger } from "@/lib/utils/logger";
 
 // Typen direkt hier definieren, um Abhängigkeiten zu reduzieren
 type ScanMode = "camera" | "upload";
@@ -60,7 +61,11 @@ export function BarcodeScanner({
                 await scanner.clear();
             }
             catch (error_) {
-                console.warn("Error during scanner cleanup, ignoring:", error_);
+                const logger = createLogger();
+                logger.debug("Error during scanner cleanup, ignoring", {
+                    error: error_ instanceof Error ? error_.message : String(error_),
+                    scannerState: scanner.getState(),
+                });
             }
             finally {
                 scannerRef.current = null;
@@ -94,9 +99,11 @@ export function BarcodeScanner({
     const startScanning = useCallback(
         async (elementId: string) => {
             if (!document.querySelector<HTMLElement>(`#${elementId}`)) {
-                console.warn(
-                    `Scanner container #${elementId} not found in DOM.`,
-                );
+                const logger = createLogger();
+                logger.warn("Scanner container not found in DOM", {
+                    elementId,
+                    windowWidth: window.innerWidth,
+                });
                 return;
             }
 

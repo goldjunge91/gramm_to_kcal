@@ -8,11 +8,14 @@ import { createHash } from "node:crypto";
 import { auth } from "@/lib/auth/auth";
 import { db } from "@/lib/db";
 import { ingredients, recipes } from "@/lib/db/schemas";
+import { createRequestLogger } from "@/lib/utils/logger";
 
 export async function GET(
     request: NextRequest,
     { params }: { params: { id: string } },
 ) {
+    const logger = createRequestLogger(request);
+
     try {
         // Get user session
         const session = await auth.api.getSession({
@@ -20,6 +23,7 @@ export async function GET(
         });
 
         if (!session?.user) {
+            logger.warn("Unauthorized ingredients fetch attempt", { recipeId: params.id });
             return NextResponse.json(
                 { error: "Unauthorized" },
                 { status: 401 },
@@ -42,6 +46,10 @@ export async function GET(
             .limit(1);
 
         if (recipe.length === 0) {
+            logger.warn("Recipe not found for ingredients fetch", {
+                recipeId,
+                userId: session.user.id,
+            });
             return NextResponse.json(
                 { error: "Recipe not found" },
                 { status: 404 },
@@ -55,6 +63,13 @@ export async function GET(
             Math.max(Number.parseInt(url.searchParams.get("limit") || "20", 10), 1),
             100, // Max 100 ingredients per page
         );
+
+        logger.info("Fetching recipe ingredients", {
+            recipeId,
+            userId: session.user.id,
+            cursor,
+            limit,
+        });
 
         // Build query with cursor-based pagination
         const query = db
@@ -98,6 +113,12 @@ export async function GET(
         // Check if client has cached version
         const clientETag = request.headers.get("if-none-match");
         if (clientETag === etag) {
+            logger.debug("Returning cached ingredients response (304)", {
+                recipeId,
+                userId: session.user.id,
+                etag,
+                clientETag,
+            });
             return new NextResponse(null, {
                 status: 304,
                 headers: {
@@ -106,6 +127,14 @@ export async function GET(
                 },
             });
         }
+
+        logger.info("Ingredients fetched successfully", {
+            recipeId,
+            userId: session.user.id,
+            ingredientCount: recipeIngredients.length,
+            hasMore: nextCursor !== null,
+            etag,
+        });
 
         // Return data with caching headers
         return NextResponse.json(responseData, {
@@ -117,7 +146,11 @@ export async function GET(
         });
     }
     catch (error) {
-        console.error("Error fetching ingredients:", error);
+        logger.error("Error fetching ingredients", {
+            recipeId: params.id,
+            error: error instanceof Error ? error.message : "Unknown error",
+            stack: error instanceof Error ? error.stack : undefined,
+        });
         return NextResponse.json(
             { error: "Internal server error" },
             { status: 500 },
@@ -129,6 +162,8 @@ export async function POST(
     request: NextRequest,
     { params }: { params: { id: string } },
 ) {
+    const logger = createRequestLogger(request);
+
     try {
         // Get user session
         const session = await auth.api.getSession({
@@ -136,6 +171,7 @@ export async function POST(
         });
 
         if (!session?.user) {
+            logger.warn("Unauthorized ingredient creation attempt", { recipeId: params.id });
             return NextResponse.json(
                 { error: "Unauthorized" },
                 { status: 401 },
@@ -158,6 +194,10 @@ export async function POST(
             .limit(1);
 
         if (recipe.length === 0) {
+            logger.warn("Recipe not found for ingredient creation", {
+                recipeId,
+                userId: session.user.id,
+            });
             return NextResponse.json(
                 { error: "Recipe not found" },
                 { status: 404 },
@@ -165,6 +205,13 @@ export async function POST(
         }
 
         const ingredientData = await request.json();
+
+        logger.info("Creating new ingredient", {
+            recipeId,
+            userId: session.user.id,
+            ingredientName: ingredientData.name,
+            ingredientFields: Object.keys(ingredientData),
+        });
 
         // Insert new ingredient
         const inserted = await db
@@ -182,6 +229,11 @@ export async function POST(
             .returning();
 
         if (inserted.length === 0) {
+            logger.error("Failed to insert ingredient - no data returned", {
+                recipeId,
+                userId: session.user.id,
+                ingredientData,
+            });
             return NextResponse.json(
                 { error: "Failed to create ingredient" },
                 { status: 500 },
@@ -190,10 +242,22 @@ export async function POST(
 
         const newIngredient = inserted[0];
 
+        logger.info("Ingredient created successfully", {
+            recipeId,
+            userId: session.user.id,
+            ingredientId: newIngredient.id,
+            ingredientName: newIngredient.name,
+        });
+
         return NextResponse.json(newIngredient, { status: 201 });
     }
     catch (error) {
-        console.error("Error creating ingredient:", error);
+        logger.error("Error creating ingredient", {
+            recipeId: params.id,
+            error: error instanceof Error ? error.message : "Unknown error",
+            stack: error instanceof Error ? error.stack : undefined,
+            details: error instanceof Error ? error.message : "Unknown error",
+        });
         return NextResponse.json(
             {
                 error: "Internal server error",

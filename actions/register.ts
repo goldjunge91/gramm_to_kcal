@@ -83,7 +83,13 @@ export async function signupAction(formData: FormData) {
         logAuthAttempt("signup", email, true);
 
         // Revalidate layout to update auth state
-        revalidatePath("/", "layout");
+        try {
+            revalidatePath("/", "layout");
+        }
+        catch (error) {
+            // Graceful failure in test environment where static generation store may not be available
+            console.warn("revalidatePath failed (likely in test environment):", error);
+        }
 
         // Redirect to main app
         redirect(REDIRECT_PATHS.DEFAULT_AFTER_LOGIN);

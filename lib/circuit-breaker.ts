@@ -3,6 +3,8 @@
  * Protects against cascading failures and provides fallback mechanisms
  */
 
+import { createLogger } from "@/lib/utils/logger";
+
 import { getRedis } from "./redis";
 
 // Circuit breaker states
@@ -190,7 +192,13 @@ export class CircuitBreaker {
             }
         }
         catch (error) {
-            console.error("Failed to set circuit state:", error);
+            const logger = createLogger();
+            logger.error("Failed to set circuit state", {
+                serviceName: this.serviceName,
+                state,
+                error: error instanceof Error ? error.message : String(error),
+                stack: error instanceof Error ? error.stack : undefined,
+            });
         }
     }
 
@@ -232,7 +240,12 @@ export class CircuitBreaker {
             await pipeline.exec();
         }
         catch (error) {
-            console.error("Failed to record success:", error);
+            const logger = createLogger();
+            logger.error("Failed to record success", {
+                serviceName: this.serviceName,
+                error: error instanceof Error ? error.message : String(error),
+                stack: error instanceof Error ? error.stack : undefined,
+            });
         }
     }
 
@@ -254,13 +267,22 @@ export class CircuitBreaker {
             await pipeline.exec();
         }
         catch (error) {
-            console.error("Failed to record failure:", error);
+            const logger = createLogger();
+            logger.error("Failed to record failure", {
+                serviceName: this.serviceName,
+                error: error instanceof Error ? error.message : String(error),
+                stack: error instanceof Error ? error.stack : undefined,
+            });
         }
     }
 
     private async openCircuit(): Promise<void> {
         await this.setState(CircuitState.OPEN);
-        console.warn(`Circuit breaker OPENED for service: ${this.serviceName}`);
+        const logger = createLogger();
+        logger.warn("Circuit breaker OPENED", {
+            serviceName: this.serviceName,
+            config: this.config,
+        });
     }
 
     private async resetCounters(): Promise<void> {
@@ -276,7 +298,12 @@ export class CircuitBreaker {
             ]);
         }
         catch (error) {
-            console.error("Failed to reset counters:", error);
+            const logger = createLogger();
+            logger.error("Failed to reset counters", {
+                serviceName: this.serviceName,
+                error: error instanceof Error ? error.message : String(error),
+                stack: error instanceof Error ? error.stack : undefined,
+            });
         }
     }
 
@@ -370,9 +397,10 @@ export class CircuitBreaker {
     // Manual controls for emergency situations
     async forceOpen(): Promise<void> {
         await this.setState(CircuitState.OPEN);
-        console.warn(
-            `Circuit breaker FORCE OPENED for service: ${this.serviceName}`,
-        );
+        const logger = createLogger();
+        logger.warn("Circuit breaker FORCE OPENED", {
+            serviceName: this.serviceName,
+        });
     }
 
     async forceClose(): Promise<void> {
@@ -466,7 +494,10 @@ export class CircuitBreakerManager {
                 breaker.forceOpen(),
             ),
         );
-        console.error("EMERGENCY: All circuit breakers force opened!");
+        const logger = createLogger();
+        logger.error("EMERGENCY: All circuit breakers force opened", {
+            affectedServices: Array.from(this.breakers.keys()),
+        });
     }
 
     async emergencyResetAll(): Promise<void> {

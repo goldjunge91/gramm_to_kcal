@@ -30,7 +30,7 @@ describe("/api/products", () => {
         vi.clearAllMocks();
     });
 
-    describe("GET", () => {
+    describe("gET", () => {
         it("should validate barcode query parameter", async () => {
             const { validateRequest } = await import(
                 "../../../../lib/validations/request-validation"
@@ -181,7 +181,7 @@ describe("/api/products", () => {
         });
     });
 
-    describe("POST", () => {
+    describe("pOST", () => {
         it("should reject requests that are too large", async () => {
             const { validateRequestSize, getSecurityHeaders } = await import(
                 "../../../../lib/validations/request-validation"

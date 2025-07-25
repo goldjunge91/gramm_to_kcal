@@ -8,8 +8,11 @@ import { createHash } from "node:crypto";
 import { auth } from "@/lib/auth/auth";
 import { db } from "@/lib/db";
 import { products } from "@/lib/db/schemas";
+import { createRequestLogger } from "@/lib/utils/logger";
 
 export async function GET(request: NextRequest) {
+    const logger = createRequestLogger(request);
+
     try {
         // Get user session
         const session = await auth.api.getSession({
@@ -17,6 +20,7 @@ export async function GET(request: NextRequest) {
         });
 
         if (!session?.user) {
+            logger.warn("Unauthorized products fetch attempt");
             return NextResponse.json(
                 { error: "Unauthorized" },
                 { status: 401 },
@@ -30,6 +34,12 @@ export async function GET(request: NextRequest) {
             Math.max(Number.parseInt(url.searchParams.get("limit") || "20", 10), 1),
             50, // Max 50 items per page
         );
+
+        logger.info("Fetching user products", {
+            userId: session.user.id,
+            cursor,
+            limit,
+        });
 
         // Build query with cursor-based pagination
         const query = db
@@ -72,6 +82,11 @@ export async function GET(request: NextRequest) {
         // Check if client has cached version
         const clientETag = request.headers.get("if-none-match");
         if (clientETag === etag) {
+            logger.debug("Returning cached response (304)", {
+                userId: session.user.id,
+                etag,
+                clientETag,
+            });
             return new NextResponse(null, {
                 status: 304,
                 headers: {
@@ -80,6 +95,13 @@ export async function GET(request: NextRequest) {
                 },
             });
         }
+
+        logger.info("Products fetched successfully", {
+            userId: session.user.id,
+            productCount: userProducts.length,
+            hasMore: nextCursor !== null,
+            etag,
+        });
 
         // Return data with caching headers
         return NextResponse.json(responseData, {
@@ -91,7 +113,10 @@ export async function GET(request: NextRequest) {
         });
     }
     catch (error) {
-        console.error("Error fetching products:", error);
+        logger.error("Error fetching products", {
+            error: error instanceof Error ? error.message : "Unknown error",
+            stack: error instanceof Error ? error.stack : undefined,
+        });
         return NextResponse.json(
             { error: "Internal server error" },
             { status: 500 },
@@ -100,6 +125,8 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+    const logger = createRequestLogger(request);
+
     try {
         // Get user session
         const session = await auth.api.getSession({
@@ -107,6 +134,7 @@ export async function POST(request: NextRequest) {
         });
 
         if (!session?.user) {
+            logger.warn("Unauthorized product creation attempt");
             return NextResponse.json(
                 { error: "Unauthorized" },
                 { status: 401 },
@@ -114,8 +142,12 @@ export async function POST(request: NextRequest) {
         }
 
         const productData = await request.json();
-        console.log("Creating product with user ID:", session.user.id);
-        console.log("Product data:", productData);
+
+        logger.info("Creating new product", {
+            userId: session.user.id,
+            productName: productData.name,
+            productFields: Object.keys(productData),
+        });
 
         // Insert new product
         const inserted = await db
@@ -132,7 +164,10 @@ export async function POST(request: NextRequest) {
             .returning();
 
         if (inserted.length === 0) {
-            console.error("Failed to insert product, no data returned.");
+            logger.error("Failed to insert product - no data returned", {
+                userId: session.user.id,
+                productData,
+            });
             return NextResponse.json(
                 { error: "Failed to create product" },
                 { status: 500 },
@@ -141,14 +176,20 @@ export async function POST(request: NextRequest) {
 
         const newProduct = inserted[0];
 
+        logger.info("Product created successfully", {
+            userId: session.user.id,
+            productId: newProduct.id,
+            productName: newProduct.name,
+        });
+
         return NextResponse.json(newProduct, { status: 201 });
     }
     catch (error) {
-        console.error("Error creating product - full error:", error);
-        console.error(
-            "Error stack:",
-            error instanceof Error ? error.stack : "No stack",
-        );
+        logger.error("Error creating product", {
+            error: error instanceof Error ? error.message : "Unknown error",
+            stack: error instanceof Error ? error.stack : undefined,
+            details: error instanceof Error ? error.message : "Unknown error",
+        });
         return NextResponse.json(
             {
                 error: "Internal server error",

@@ -8,6 +8,12 @@ import { db } from "@/lib/db";
 import { env } from "@/lib/env";
 import { getURL } from "@/lib/get-url";
 import { getRedisHealth } from "@/lib/redis";
+import {
+    CacheStrategies,
+    createPublicCacheHeaders,
+    createTimestampETag,
+    handleETaggedResponse,
+} from "@/lib/utils/cache-headers";
 
 export async function GET(request: NextRequest) {
     // Log health check request for monitoring
@@ -56,7 +62,17 @@ export async function GET(request: NextRequest) {
             },
         };
 
-        return NextResponse.json(health);
+        // Create public cache headers for health status (short TTL)
+        const cacheHeaders = createPublicCacheHeaders(
+            CacheStrategies.SYSTEM_STATUS.maxAge,
+        );
+
+        // Use timestamp-based ETag that rounds to 30 seconds
+        // This ensures health checks can be cached briefly while staying current
+        const timestampETag = createTimestampETag(health, 30);
+
+        // Return cached response with ETag support
+        return handleETaggedResponse(request, health, cacheHeaders, timestampETag);
     }
     catch (error) {
         return NextResponse.json(

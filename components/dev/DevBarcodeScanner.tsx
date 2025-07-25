@@ -34,6 +34,7 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog";
 import { Progress } from "@/components/ui/progress";
+import { createLogger } from "@/lib/utils/logger";
 
 interface DevBarcodeScannerProps {
     isOpen: boolean;
@@ -50,6 +51,7 @@ export function DevBarcodeScanner({
     onScan,
     onError,
 }: DevBarcodeScannerProps): JSX.Element {
+    const logger = createLogger();
     // Core scanner state
     const [scanMode, setScanMode] = useState<ScanMode>("camera");
     const [isLoading, setIsLoading] = useState(true);
@@ -190,7 +192,12 @@ export function DevBarcodeScanner({
                 );
             }
             catch (enumError) {
-                console.warn("Could not enumerate cameras:", enumError);
+                logger.warn("Could not enumerate cameras", {
+                    error: enumError instanceof Error ? enumError.message : String(enumError),
+                    stack: enumError instanceof Error ? enumError.stack : undefined,
+                    userAgent: navigator.userAgent,
+                    context: "camera_enumeration",
+                });
             }
 
             // Configure scanner with performance monitoring
@@ -230,9 +237,14 @@ export function DevBarcodeScanner({
                     // stopScanning();
                 },
                 (errorMessage) => {
-                    // Error callback - don't spam console for scan attempts
+                    // Error callback - don't spam logs for scan attempts
                     if (!errorMessage.includes("NotFoundException")) {
-                        console.debug("Scan attempt:", errorMessage);
+                        logger.debug("Scan attempt", {
+                            errorMessage,
+                            scanMode,
+                            deviceInfo: deviceInfo?.userAgent,
+                            context: "camera_scan_attempt",
+                        });
                     }
                 },
             );
@@ -246,7 +258,14 @@ export function DevBarcodeScanner({
             }, 30000);
         }
         catch (error) {
-            console.error("Scanner start error:", error);
+            logger.error("Scanner start error", {
+                error: error instanceof Error ? error.message : String(error),
+                stack: error instanceof Error ? error.stack : undefined,
+                scanMode,
+                userAgent: navigator.userAgent,
+                deviceInfo: deviceInfo?.platform,
+                context: "scanner_initialization",
+            });
             const errorMessage
                 = error instanceof Error
                     ? error.message.includes("not found")
@@ -277,7 +296,12 @@ export function DevBarcodeScanner({
             setFps(0);
         }
         catch (error) {
-            console.error("Scanner stop error:", error);
+            logger.error("Scanner stop error", {
+                error: error instanceof Error ? error.message : String(error),
+                stack: error instanceof Error ? error.stack : undefined,
+                scanMode,
+                context: "scanner_cleanup",
+            });
         }
     }, []);
 
@@ -330,7 +354,15 @@ export function DevBarcodeScanner({
                 onClose();
             }
             catch (error) {
-                console.error("File scan error:", error);
+                logger.error("File scan error", {
+                    error: error instanceof Error ? error.message : String(error),
+                    stack: error instanceof Error ? error.stack : undefined,
+                    fileName: file.name,
+                    fileSize: file.size,
+                    fileType: file.type,
+                    scanMode,
+                    context: "file_scan",
+                });
                 const errorMessage
                     = error instanceof Error
                         ? error.message

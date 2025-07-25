@@ -22,9 +22,10 @@ test("BarcodeScanner erkennt Barcode aus real-product-barcode.png", async ({
     // Wechsle auf "Bild hochladen"
     await page.getByRole("button", { name: /bild hochladen/i }).click();
 
-    const fileInput = await page.$('input[type="file"]');
+    const fileInput = await page.$("input[type=\"file\"]");
     await page.pause();
-    if (!fileInput) throw new Error("Dateiupload-Feld nicht gefunden!");
+    if (!fileInput)
+        throw new Error("Dateiupload-Feld nicht gefunden!");
     await fileInput.setInputFiles(barcodeImagePath);
     await page.pause();
 
@@ -44,8 +45,9 @@ test("BarcodeScanner zeigt Fehler bei ungültigem Barcode", async ({ page }) => 
     await page.getByRole("button", { name: /scannen/i }).click();
     await page.getByRole("button", { name: /bild hochladen/i }).click();
 
-    const fileInput = await page.$('input[type="file"]');
-    if (!fileInput) throw new Error("Dateiupload-Feld nicht gefunden!");
+    const fileInput = await page.$("input[type=\"file\"]");
+    if (!fileInput)
+        throw new Error("Dateiupload-Feld nicht gefunden!");
     await fileInput.setInputFiles(invalidBarcodeImagePath);
 
     await expect(
@@ -66,8 +68,9 @@ test("BarcodeScanner erkennt Barcode aus Barcode-Scanner-API", async ({
     // Wechsle auf "Bild hochladen"
     await page.getByRole("button", { name: /bild hochladen/i }).click();
 
-    const fileInput = await page.$('input[type="file"]');
-    if (!fileInput) throw new Error("Dateiupload-Feld nicht gefunden!");
+    const fileInput = await page.$("input[type=\"file\"]");
+    if (!fileInput)
+        throw new Error("Dateiupload-Feld nicht gefunden!");
     await fileInput.setInputFiles(barcodeImagePath);
 
     // Warten auf Scan-Ergebnis

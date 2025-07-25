@@ -14,6 +14,12 @@ vi.mock("next/headers", () => ({
     })),
 }));
 
+// Mock next/cache
+vi.mock("next/cache", () => ({
+    revalidatePath: vi.fn(),
+    revalidateTag: vi.fn(),
+}));
+
 // Mock crypto for UUID generation
 Object.defineProperty(globalThis, "crypto", {
     value: {
@@ -24,8 +30,9 @@ Object.defineProperty(globalThis, "crypto", {
 
 // Type augmentation for globalThis to add mockRedis
 declare global {
-    // eslint-disable-next-line no-var
-    var mockRedis: {
+    // Augment globalThis, not Global
+
+    let mockRedis: {
         get: typeof vi.fn;
         setex: typeof vi.fn;
         del: typeof vi.fn;
@@ -38,7 +45,7 @@ declare global {
     };
 }
 
-global.mockRedis = {
+globalThis.mockRedis = {
     get: vi.fn(),
     setex: vi.fn(),
     del: vi.fn(),
@@ -52,7 +59,7 @@ global.mockRedis = {
 
 // Mock für @/lib/redis
 vi.mock("@/lib/redis", () => ({
-    getRedis: () => global.mockRedis,
+    getRedis: () => globalThis.mockRedis,
     initializeRedis: vi.fn(() => {
         const redisUrl = process.env.UPSTASH_REDIS_REST_URL;
         const redisToken = process.env.UPSTASH_REDIS_REST_TOKEN;
@@ -68,14 +75,14 @@ vi.mock("@/lib/redis", () => ({
             return null;
         }
         console.log("Redis initialized for rate limiting");
-        return global.mockRedis;
+        return globalThis.mockRedis;
     }),
 }));
 
 // Mock window.matchMedia
 Object.defineProperty(window, "matchMedia", {
     writable: true,
-    value: vi.fn().mockImplementation((query) => ({
+    value: vi.fn().mockImplementation(query => ({
         matches: false,
         media: query,
         onchange: null,
@@ -87,7 +94,7 @@ Object.defineProperty(window, "matchMedia", {
     })),
 });
 // Richtiger IntersectionObserver-Mock
-global.IntersectionObserver = class IntersectionObserver {
+globalThis.IntersectionObserver = class IntersectionObserver {
     root: Element | null = null;
     rootMargin: string = "";
     thresholds: number[] = [];

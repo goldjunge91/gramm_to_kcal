@@ -9,8 +9,8 @@ import { useCurrentUserImage } from "@/hooks/use-current-user-image";
 
 // Mock auth client
 vi.mock("@/lib/auth/auth-client", async (importActual) => {
-    const actual =
-        await importActual<typeof import("@/lib/auth/auth-client")>();
+    const actual
+        = await importActual<typeof import("@/lib/auth/auth-client")>();
     return {
         ...actual,
         useSession: vi.fn(),
@@ -24,7 +24,7 @@ describe("useCurrentUserImage", () => {
 
     it("should return user image when session exists", async () => {
         const { useSession } = await import("@/lib/auth/auth-client");
-        
+
         vi.mocked(useSession).mockReturnValue({
             data: {
                 user: createMockUser({
@@ -52,9 +52,9 @@ describe("useCurrentUserImage", () => {
             data: null,
             isPending: false,
             error: null,
-            refetch: function (): void {
+            refetch(): void {
                 throw new Error("Function not implemented.");
-            }
+            },
         });
 
         const { result } = renderHook(() => useCurrentUserImage());
@@ -101,7 +101,7 @@ describe("useCurrentUserImage", () => {
         const { useSession } = await import("@/lib/auth/auth-client");
 
         vi.mocked(useSession).mockReturnValue({
-            data: {    // @ts-ignore
+            data: { // @ts-ignore
                 user: {
                     id: "123",
                     name: "John Doe",
@@ -120,7 +120,7 @@ describe("useCurrentUserImage", () => {
         const { useSession } = await import("@/lib/auth/auth-client");
 
         vi.mocked(useSession).mockReturnValue({
-                // @ts-ignore
+            // @ts-ignore
             data: undefined,
         });
 

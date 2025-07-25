@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { auth } from "../lib/auth/auth";
 
-describe("Better Auth Configuration", () => {
+describe("better Auth Configuration", () => {
     it("should have IP address fallback configured for rate limiting", () => {
         // Test that the auth configuration includes IP address fallback
         // This ensures rate limiting works even when proxy headers are missing (like in test environments)

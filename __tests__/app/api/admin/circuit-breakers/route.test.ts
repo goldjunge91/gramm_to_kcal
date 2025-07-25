@@ -15,7 +15,7 @@ const mockCircuitBreaker = {
 };
 
 // Mock dependencies
-vi.mock("@/lib/circuit-breaker", async (importOriginal) => {
+vi.mock("@/lib/circuit-breaker", async (importOriginal: any) => {
     const actual = await importOriginal();
     return {
         ...actual,
@@ -47,7 +47,7 @@ vi.mock("@/lib/auth/auth", () => ({
                         email: "admin@test.com",
                         role: "admin",
                     },
-                })
+                }),
             ),
         },
     },
@@ -58,7 +58,7 @@ describe("/api/admin/circuit-breakers", () => {
         vi.clearAllMocks();
     });
 
-    describe("GET", () => {
+    describe("gET", () => {
         it("should return circuit breaker status", async () => {
             const { circuitBreakerManager } = await import(
                 "@/lib/circuit-breaker"
@@ -204,7 +204,7 @@ describe("/api/admin/circuit-breakers", () => {
         });
     });
 
-    describe("POST", () => {
+    describe("pOST", () => {
         it("should reject requests that are too large", async () => {
             const { validateRequestSize, getSecurityHeaders } = await import(
                 "@/lib/validations/request-validation"
@@ -400,7 +400,7 @@ describe("/api/admin/circuit-breakers", () => {
         });
     });
 
-    describe("HEAD", () => {
+    describe("hEAD", () => {
         it("should return healthy status when all circuit breakers are healthy", async () => {
             const { circuitBreakerManager } = await import(
                 "@/lib/circuit-breaker"

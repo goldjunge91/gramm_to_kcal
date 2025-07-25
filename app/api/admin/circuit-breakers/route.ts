@@ -6,6 +6,11 @@ import { z } from "zod";
 import { logAdminAction, withAdminAuth } from "@/lib/auth/admin-auth";
 import { circuitBreakerManager } from "@/lib/circuit-breaker";
 import {
+    CacheStrategies,
+    createPrivateCacheHeaders,
+    handleETaggedResponse,
+} from "@/lib/utils/cache-headers";
+import {
     getSecurityHeaders,
     validateContentType,
     validateRequest,
@@ -34,16 +39,25 @@ export const GET = withAdminAuth(async (request: NextRequest, authResult) => {
         const allStatus = await circuitBreakerManager.getAllStatus();
         const healthSummary = await circuitBreakerManager.getHealthSummary();
 
-        const headers = getSecurityHeaders();
+        const responseData = {
+            summary: healthSummary,
+            services: allStatus,
+            timestamp: new Date().toISOString(),
+        };
 
-        return NextResponse.json(
-            {
-                summary: healthSummary,
-                services: allStatus,
-                timestamp: new Date().toISOString(),
-            },
-            { headers },
+        // Create private cache headers for admin data (short TTL)
+        const cacheHeaders = createPrivateCacheHeaders(
+            CacheStrategies.ADMIN_DATA.maxAge,
         );
+
+        // Add security headers to cache headers
+        const securityHeaders = getSecurityHeaders();
+        for (const [key, value] of securityHeaders.entries()) {
+            cacheHeaders.set(key, value);
+        }
+
+        // Return cached response with ETag support
+        return handleETaggedResponse(request, responseData, cacheHeaders);
     }
     catch (error) {
         const headers = getSecurityHeaders();

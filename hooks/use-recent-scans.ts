@@ -9,6 +9,7 @@ import type { Product } from "@/lib/types/types";
 
 import { useAuth } from "@/app/providers";
 import { env } from "@/lib/env";
+import { createLogger } from "@/lib/utils/logger";
 import { MAX_RECENT_SCANS } from "@/server/config";
 
 export interface RecentScan {
@@ -34,6 +35,7 @@ function getStorageKey(userId: string): string {
  * Hook for managing recent scans for authenticated users
  */
 export function useRecentScans() {
+    const logger = createLogger();
     const { user } = useAuth();
     const [recentScans, setRecentScans] = useState<RecentScan[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -63,10 +65,13 @@ export function useRecentScans() {
             }
         }
         catch (error) {
-            console.warn(
-                "Failed to load recent scans from localStorage:",
-                error,
-            );
+            logger.warn("Failed to load recent scans from localStorage", {
+                error: error instanceof Error ? error.message : String(error),
+                stack: error instanceof Error ? error.stack : undefined,
+                userId: user?.id,
+                storageKey,
+                context: "recent_scans_load",
+            });
             setRecentScans([]);
         }
         finally {
@@ -94,10 +99,13 @@ export function useRecentScans() {
                 setRecentScans(limitedScans);
             }
             catch (error) {
-                console.error(
-                    "Failed to save recent scans to localStorage:",
-                    error,
-                );
+                logger.error("Failed to save recent scans to localStorage", {
+                    error: error instanceof Error ? error.message : String(error),
+                    stack: error instanceof Error ? error.stack : undefined,
+                    scanCount: scans.length,
+                    storageKey,
+                    context: "recent_scans_save",
+                });
             }
         },
         [storageKey],
@@ -152,10 +160,12 @@ export function useRecentScans() {
             setRecentScans([]);
         }
         catch (error) {
-            console.error(
-                "Failed to clear recent scans from localStorage:",
-                error,
-            );
+            logger.error("Failed to clear recent scans from localStorage", {
+                error: error instanceof Error ? error.message : String(error),
+                stack: error instanceof Error ? error.stack : undefined,
+                storageKey,
+                context: "recent_scans_clear",
+            });
         }
     }, [storageKey]);
 

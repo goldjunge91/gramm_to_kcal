@@ -23,8 +23,11 @@ import { ProductDetailView } from "@/components/dev/ProductDetailView";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { enhancedLookupProductByBarcode } from "@/lib/api/enhanced-product-lookup";
+import { createLogger } from "@/lib/utils/logger";
 
 export default function DevScannerPage(): JSX.Element {
+    const logger = createLogger();
+
     // Core state
     const [showScanner, setShowScanner] = useState(false);
     const [showSpeedTest, setShowSpeedTest] = useState(false);
@@ -69,10 +72,10 @@ export default function DevScannerPage(): JSX.Element {
             }
         }
         catch (error) {
-            console.warn(
-                "Failed to load diagnostics from sessionStorage:",
-                error,
-            );
+            logger.warn("Failed to load scanner diagnostics from sessionStorage", {
+                error: error instanceof Error ? error.message : String(error),
+                operation: "loadDiagnostics",
+            });
         }
     }, []);
 
@@ -85,10 +88,10 @@ export default function DevScannerPage(): JSX.Element {
             );
         }
         catch (error) {
-            console.error(
-                "Failed to save diagnostics to sessionStorage:",
-                error,
-            );
+            logger.error("Failed to save scanner diagnostics to sessionStorage", {
+                error: error instanceof Error ? error.message : String(error),
+                operation: "saveDiagnostics",
+            });
         }
     }, [diagnostics]);
 

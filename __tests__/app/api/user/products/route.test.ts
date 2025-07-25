@@ -2,10 +2,10 @@
  * Tests for user products API route
  */
 import { NextRequest } from "next/server";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { GET, POST } from "@/app/api/user/products/route";
 import { createMockAuthSession } from "@/__tests__/utils/auth-mocks";
+import { GET, POST } from "@/app/api/user/products/route";
 
 // Mock dependencies
 vi.mock("@/lib/auth/auth", () => ({
@@ -67,7 +67,7 @@ describe("/api/user/products", () => {
         vi.clearAllMocks();
     });
 
-    describe("GET", () => {
+    describe("gET", () => {
         it("should return user products when authenticated", async () => {
             const { auth } = await import("@/lib/auth/auth");
             const { db } = await import("@/lib/db");
@@ -94,7 +94,7 @@ describe("/api/user/products", () => {
             };
             vi.mocked(db.select).mockReturnValue(mockQuery);
 
-            const request = new Request('http://localhost:3000/api/user/products');
+            const request = new Request("http://localhost:3000/api/user/products");
             const response = await GET(request);
             const data = await response.json();
 
@@ -129,14 +129,14 @@ describe("/api/user/products", () => {
             };
             vi.mocked(db.select).mockReturnValue(mockQuery);
 
-            const request = new Request('http://localhost:3000/api/user/products?cursor=2024-01-01T00:00:00.000Z&limit=10');
+            const request = new Request("http://localhost:3000/api/user/products?cursor=2024-01-01T00:00:00.000Z&limit=10");
             const response = await GET(request);
             const data = await response.json();
 
             expect(response.status).toBe(200);
             expect(data.products).toEqual(mockProducts);
             expect(data.pagination.limit).toBe(10);
-            expect(data.pagination.cursor).toBe('2024-01-01T00:00:00.000Z');
+            expect(data.pagination.cursor).toBe("2024-01-01T00:00:00.000Z");
         });
 
         it("should return 401 when not authenticated", async () => {
@@ -144,7 +144,7 @@ describe("/api/user/products", () => {
 
             vi.mocked(auth.api.getSession).mockResolvedValue(null);
 
-            const request = new Request('http://localhost:3000/api/user/products');
+            const request = new Request("http://localhost:3000/api/user/products");
             const response = await GET(request);
             const data = await response.json();
 
@@ -157,7 +157,7 @@ describe("/api/user/products", () => {
             const { db } = await import("@/lib/db");
 
             const mockAuth = createMockAuthSession(
-                { id: "user123", email: "test@example.com" }
+                { id: "user123", email: "test@example.com" },
             );
             vi.mocked(auth.api.getSession).mockResolvedValue(mockAuth);
 
@@ -180,7 +180,7 @@ describe("/api/user/products", () => {
                 .spyOn(console, "error")
                 .mockImplementation(() => {});
 
-            const request = new Request('http://localhost:3000/api/user/products');
+            const request = new Request("http://localhost:3000/api/user/products");
             const response = await GET(request);
             const data = await response.json();
 
@@ -195,7 +195,7 @@ describe("/api/user/products", () => {
         });
     });
 
-    describe("POST", () => {
+    describe("pOST", () => {
         it("should create product when authenticated", async () => {
             const { auth } = await import("@/lib/auth/auth");
             const { db } = await import("@/lib/db");
@@ -204,7 +204,7 @@ describe("/api/user/products", () => {
             const productData = {
                 name: "New Product",
                 kcal: 100,
-                quantity: "1 piece",
+                quantity: 1,
             };
             const createdProduct = {
                 id: "test-uuid-123",
@@ -268,7 +268,7 @@ describe("/api/user/products", () => {
             const { db } = await import("@/lib/db");
 
             const mockAuth = createMockAuthSession(
-                { id: "user123", email: "test@example.com" }
+                { id: "user123", email: "test@example.com" },
             );
             vi.mocked(auth.api.getSession).mockResolvedValue(mockAuth);
 
@@ -308,7 +308,7 @@ describe("/api/user/products", () => {
             const { db } = await import("@/lib/db");
 
             const mockAuth = createMockAuthSession(
-                { id: "user123", email: "test@example.com" }
+                { id: "user123", email: "test@example.com" },
             );
             vi.mocked(auth.api.getSession).mockResolvedValue(mockAuth);
 

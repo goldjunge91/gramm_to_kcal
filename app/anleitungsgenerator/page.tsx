@@ -10,6 +10,7 @@ import type { ParsedRecipe, RecipeStep } from "@/lib/types/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { parseRecipeText } from "@/lib/parsing/recipeParser";
+import { createLogger } from "@/lib/utils/logger";
 
 import { RecipeCard } from "./components/RecipeCard";
 import { RecipePreview } from "./components/RecipePreview";
@@ -18,6 +19,7 @@ import { UnifiedStepEditor } from "./components/UnifiedStepEditor";
 
 /** Anleitungsgenerator page for converting recipe text to A4 formatted cards */
 export default function AnleitungsgeneratorPage(): JSX.Element {
+    const logger = createLogger();
     const [inputText, setInputText] = useState<string>("");
     const [parsedRecipe, setParsedRecipe] = useState<ParsedRecipe | null>(null);
     const [showPreview, setShowPreview] = useState<boolean>(false);
@@ -40,8 +42,12 @@ export default function AnleitungsgeneratorPage(): JSX.Element {
             toast.success("Rezept erfolgreich geparst!");
         }
         catch (error) {
+            logger.error("Recipe parsing failed", {
+                error: error instanceof Error ? error.message : String(error),
+                inputTextLength: inputText.length,
+                operation: "parseRecipe",
+            });
             toast.error("Fehler beim Parsen des Rezepts");
-            console.error("Parse error:", error);
         }
     };
 

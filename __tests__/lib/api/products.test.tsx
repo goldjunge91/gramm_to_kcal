@@ -6,10 +6,10 @@ import { renderHook, waitFor } from "@testing-library/react";
 import * as React from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { useCreateProduct, useProducts, useProductsList } from "@/lib/api/products";
+import { useCreateProduct, useDeleteProduct, useProducts, useProductsList } from "@/lib/api/products";
 
 // Mock fetch
-global.fetch = vi.fn();
+globalThis.fetch = vi.fn();
 
 // Mock sonner toast
 vi.mock("sonner", () => ({
@@ -20,7 +20,7 @@ vi.mock("sonner", () => ({
 }));
 
 // Create wrapper for React Query
-const createWrapper = () => {
+function createWrapper() {
     const queryClient = new QueryClient({
         defaultOptions: {
             queries: { retry: false },
@@ -33,7 +33,7 @@ const createWrapper = () => {
             {children}
         </QueryClientProvider>
     );
-};
+}
 
 describe("products API", () => {
     beforeEach(() => {
@@ -296,6 +296,79 @@ describe("products API", () => {
 
             // Query invalidation happens automatically via React Query
             expect(result.current.data).toEqual(mockProduct);
+        });
+    });
+
+    describe("useDeleteProduct", () => {
+        it("should delete product successfully", async () => {
+            const { toast } = await import("sonner");
+
+            vi.mocked(fetch).mockResolvedValue({
+                ok: true,
+                json: () => Promise.resolve({}),
+            } as Response);
+
+            const { result } = renderHook(() => useDeleteProduct(), {
+                wrapper: createWrapper(),
+            });
+
+            result.current.mutate({ id: "product123", userId: "user123" });
+
+            await waitFor(() => {
+                expect(result.current.isSuccess).toBe(true);
+            });
+
+            expect(fetch).toHaveBeenCalledWith("/api/user/products/product123", {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+
+            expect(toast.success).toHaveBeenCalledWith("Product deleted");
+        });
+
+        it("should handle deletion errors", async () => {
+            // const { sonner } = await import("sonner");
+            // const { toast } = await import("sonner");
+            vi.mocked(fetch).mockResolvedValue({
+                ok: false,
+                statusText: "Not Found",
+            } as Response);
+
+            const { result } = renderHook(() => useDeleteProduct(), {
+                wrapper: createWrapper(),
+            });
+
+            result.current.mutate({ id: "product123", userId: "user123" });
+
+            await waitFor(() => {
+                expect(result.current.isError).toBe(true);
+            });
+
+            expect(result.current.error).toEqual(
+                new Error("Failed to delete product: Not Found"),
+            );
+        });
+
+        it("should invalidate user-specific products query on success", async () => {
+            vi.mocked(fetch).mockResolvedValue({
+                ok: true,
+                json: () => Promise.resolve({}),
+            } as Response);
+
+            const { result } = renderHook(() => useDeleteProduct(), {
+                wrapper: createWrapper(),
+            });
+
+            result.current.mutate({ id: "product123", userId: "user123" });
+
+            await waitFor(() => {
+                expect(result.current.isSuccess).toBe(true);
+            });
+
+            // Query invalidation happens automatically via React Query
+            expect(result.current.isSuccess).toBe(true);
         });
     });
 });

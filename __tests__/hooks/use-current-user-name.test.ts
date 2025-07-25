@@ -1,7 +1,8 @@
-import { useCurrentUserName } from "@/hooks/use-current-user-name";
-import { useSession } from "@/lib/auth/auth-client";
 import { renderHook } from "@testing-library/react";
 import { vi } from "vitest";
+
+import { useCurrentUserName } from "@/hooks/use-current-user-name";
+import { useSession } from "@/lib/auth/auth-client";
 
 vi.mock("@/lib/auth/auth-client", () => ({
     useSession: vi.fn(),

@@ -24,6 +24,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { MlToGramConverter } from "@/components/unit-converter/MlToGramConverter";
 import { useRecentScans } from "@/hooks/use-recent-scans";
+import { createLogger } from "@/lib/utils/logger";
 
 interface ProductFormProps {
     onSubmit: (
@@ -49,6 +50,7 @@ export function ProductForm({
     isLoading = false,
     compact = false,
 }: ProductFormProps): JSX.Element {
+    const logger = createLogger();
     const [name, setName] = useState("");
     const [quantity, setQuantity] = useState("");
     const [kcal, setKcal] = useState("");
@@ -281,7 +283,11 @@ export function ProductForm({
                                 onClose={() => setShowScanner2(false)}
                                 onScan={handleBarcodeScan}
                                 onError={(error) => {
-                                    console.error("Scanner2 error:", error);
+                                    logger.error("Barcode scanner error in product form", {
+                                        error,
+                                        operation: "barcodeScan",
+                                        component: "ProductForm",
+                                    });
                                     toast.error(`Scanner2-Fehler: ${error}`);
                                     // Fenster bleibt offen, nur bei Fehler manuell schließen
                                 }}

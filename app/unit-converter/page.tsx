@@ -34,8 +34,11 @@ import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MlToGramConverter } from "@/components/unit-converter/MlToGramConverter";
 import { getDensityDataByCategory } from "@/lib/utils/density-database";
+import { createLogger } from "@/lib/utils/logger";
 
 export default function UnitConverterPage() {
+    const logger = createLogger();
+
     // State Management
     const [conversionHistory, setConversionHistory] = useState<
         ConversionResult[]
@@ -56,7 +59,10 @@ export default function UnitConverterPage() {
                     setConversionHistory(JSON.parse(savedHistory));
                 }
                 catch (error) {
-                    console.warn("Failed to load conversion history:", error);
+                    logger.warn("Failed to load conversion history from localStorage", {
+                        error: error instanceof Error ? error.message : String(error),
+                        operation: "loadConversionHistory",
+                    });
                 }
             }
 
@@ -65,7 +71,10 @@ export default function UnitConverterPage() {
                     setFavorites(JSON.parse(savedFavorites));
                 }
                 catch (error) {
-                    console.warn("Failed to load favorites:", error);
+                    logger.warn("Failed to load favorites from localStorage", {
+                        error: error instanceof Error ? error.message : String(error),
+                        operation: "loadFavorites",
+                    });
                 }
             }
         }
@@ -160,7 +169,10 @@ export default function UnitConverterPage() {
                 });
             }
             catch (error) {
-                console.log("Error sharing:", error);
+                logger.warn("Share API failed, falling back to clipboard", {
+                    error: error instanceof Error ? error.message : String(error),
+                    operation: "shareConverter",
+                });
             }
         }
         else {

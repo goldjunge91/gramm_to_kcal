@@ -14,6 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { signOut } from "@/lib/auth/auth-client";
+import { createLogger } from "@/lib/utils/logger";
 
 interface AccountFormProps {
     user: {
@@ -26,6 +27,7 @@ interface AccountFormProps {
 }
 
 export default function AccountForm({ user }: AccountFormProps) {
+    const logger = createLogger();
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
 
@@ -37,7 +39,11 @@ export default function AccountForm({ user }: AccountFormProps) {
             router.refresh();
         }
         catch (error) {
-            console.error("Sign out error:", error);
+            logger.error("User sign out failed", {
+                error: error instanceof Error ? error.message : String(error),
+                userId: user.id,
+                operation: "signOut",
+            });
         }
         finally {
             setIsLoading(false);

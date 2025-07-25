@@ -9,6 +9,7 @@ import { useCallback, useEffect, useState } from "react";
 import type { Product } from "@/lib/types/types";
 
 import { env } from "@/lib/env";
+import { createLogger } from "@/lib/utils/logger";
 
 const STORAGE_KEY = env.STORAGE_KEY!;
 
@@ -30,6 +31,7 @@ function generateLocalId(): string {
  * Uses sessionStorage so data is cleared on page reload/session end
  */
 export function useLocalProducts() {
+    const logger = createLogger();
     const [products, setProducts] = useState<LocalProduct[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -43,7 +45,12 @@ export function useLocalProducts() {
             }
         }
         catch (error) {
-            console.warn("Failed to load products from sessionStorage:", error);
+            logger.warn("Failed to load products from sessionStorage", {
+                error: error instanceof Error ? error.message : String(error),
+                stack: error instanceof Error ? error.stack : undefined,
+                storageKey: STORAGE_KEY,
+                context: "local_products_load",
+            });
             setProducts([]);
         }
         finally {
@@ -58,7 +65,13 @@ export function useLocalProducts() {
             setProducts(newProducts);
         }
         catch (error) {
-            console.error("Failed to save products to sessionStorage:", error);
+            logger.error("Failed to save products to sessionStorage", {
+                error: error instanceof Error ? error.message : String(error),
+                stack: error instanceof Error ? error.stack : undefined,
+                productCount: newProducts.length,
+                storageKey: STORAGE_KEY,
+                context: "local_products_save",
+            });
         }
     }, []);
 
@@ -105,10 +118,12 @@ export function useLocalProducts() {
             setProducts([]);
         }
         catch (error) {
-            console.error(
-                "Failed to clear products from sessionStorage:",
-                error,
-            );
+            logger.error("Failed to clear products from sessionStorage", {
+                error: error instanceof Error ? error.message : String(error),
+                stack: error instanceof Error ? error.stack : undefined,
+                storageKey: STORAGE_KEY,
+                context: "local_products_clear",
+            });
         }
     }, []);
 

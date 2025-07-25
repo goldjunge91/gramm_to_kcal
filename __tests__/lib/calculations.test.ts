@@ -1,6 +1,6 @@
-import type { Ingredient, Product } from "../../lib/types/types";
-
 import { describe, expect, it } from "vitest";
+
+import type { Ingredient, Product } from "../../lib/types/types";
 
 import { calculateKcalPer100g, scaleRecipe } from "../../lib/calculations";
 

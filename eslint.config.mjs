@@ -1,12 +1,9 @@
 import antfu from "@antfu/eslint-config";
 
-// export default antfu({
-//   formatters: true,
-// })
 export default antfu(
     {
-        react: true,
         type: "app",
+        react: true,
         typescript: true,
         unocss: false, // auto detection
         formatters: true,
@@ -18,10 +15,10 @@ export default antfu(
         ignores: [
             "**/migrations/*",
             "**/fixtures",
-            "**/tests/*",
-            "**/__tests__/*",
-            "**/__mocks__/*",
-            "**/__e2e__/*",
+            // "**/tests/*",
+            // "**/__tests__/setup.ts",
+            // "**/__mocks__/*",
+            // "**/__e2e__/*",
             "scripts/**",
             "**/db/migrations/*",
             "**/ui/*",

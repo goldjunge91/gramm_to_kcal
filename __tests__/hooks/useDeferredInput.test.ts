@@ -1,8 +1,8 @@
 /**
  * Tests for useDeferredInput hook
  */
-import { renderHook, act } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { act, renderHook } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { useDeferredInput } from "@/hooks/useDeferredInput";
 

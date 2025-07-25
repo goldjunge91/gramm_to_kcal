@@ -8,6 +8,13 @@ import {
     cachedSearchProductsByName,
 } from "@/lib/api/cached-product-lookup";
 import {
+    CacheStrategies,
+    createNoCacheHeaders,
+    createPublicCacheHeaders,
+    handleETaggedResponse,
+} from "@/lib/utils/cache-headers";
+import { createRequestLogger } from "@/lib/utils/logger";
+import {
     getSecurityHeaders,
     RequestSchemas,
     validateContentType,
@@ -16,6 +23,12 @@ import {
 } from "@/lib/validations/request-validation";
 
 export async function GET(request: NextRequest) {
+    const logger = createRequestLogger(request);
+    logger.info("Products API request received", {
+        method: "GET",
+        searchParams: Object.fromEntries(new URL(request.url).searchParams),
+    });
+
     // Note: Rate limiting handled by Better Auth middleware and cached-product-lookup internal limits
 
     // Validate query parameters if searching
@@ -31,6 +44,10 @@ export async function GET(request: NextRequest) {
         );
 
         if (!validation.success) {
+            logger.warn("Invalid barcode format in request", {
+                barcode,
+                validationError: validation.error,
+            });
             const securityHeaders = getSecurityHeaders();
             return NextResponse.json(
                 { error: "Invalid barcode format", details: validation.error },
@@ -40,6 +57,7 @@ export async function GET(request: NextRequest) {
 
         // Implement barcode lookup with cached API
         try {
+            logger.debug("Starting barcode lookup", { barcode: validation.data.barcode });
             const result = await cachedLookupProductByBarcode(
                 validation.data.barcode,
                 request,
@@ -48,30 +66,77 @@ export async function GET(request: NextRequest) {
             const securityHeaders = getSecurityHeaders();
 
             if (!result.success) {
+                logger.info("Product not found for barcode", {
+                    barcode: validation.data.barcode,
+                    error: result.error,
+                    source: result.source,
+                    cached: result.cached,
+                    rateLimit: result.rateLimit,
+                });
+
+                // Don't cache error responses, but add security headers
+                if (result.rateLimit) {
+                    securityHeaders.set(
+                        "X-RateLimit-Remaining",
+                        result.rateLimit.remaining.toString(),
+                    );
+                    const resetDate = new Date(result.rateLimit.reset);
+                    securityHeaders.set("X-RateLimit-Reset", resetDate.toUTCString());
+                }
                 return NextResponse.json(
                     {
                         error: result.error || "Product not found",
                         source: result.source,
                         cached: result.cached,
-                        rateLimit: result.rateLimit,
                     },
                     { status: 404, headers: securityHeaders },
                 );
             }
 
-            return NextResponse.json(
-                {
-                    success: true,
-                    product: result.product,
-                    source: result.source,
-                    cached: result.cached,
-                    rateLimit: result.rateLimit,
-                },
-                { headers: securityHeaders },
+            logger.info("Product found for barcode", {
+                barcode: validation.data.barcode,
+                productName: result.product?.name,
+                source: result.source,
+                cached: result.cached,
+            });
+
+            // Create response data for caching
+            const responseData = {
+                success: true,
+                product: result.product,
+                source: result.source,
+                cached: result.cached,
+            };
+
+            // Create public cache headers for successful product lookups
+            const cacheHeaders = createPublicCacheHeaders(
+                CacheStrategies.PUBLIC_API.maxAge,
+                CacheStrategies.PUBLIC_API.staleWhileRevalidate,
             );
+
+            // Add security headers to cache headers
+            for (const [key, value] of securityHeaders.entries()) {
+                cacheHeaders.set(key, value);
+            }
+
+            if (result.rateLimit) {
+                cacheHeaders.set(
+                    "X-RateLimit-Remaining",
+                    result.rateLimit.remaining.toString(),
+                );
+                const resetDate = new Date(result.rateLimit.reset);
+                cacheHeaders.set("X-RateLimit-Reset", resetDate.toUTCString());
+            }
+
+            // Return cached response with ETag support
+            return handleETaggedResponse(request, responseData, cacheHeaders);
         }
         catch (error) {
-            console.error("Barcode lookup error:", error);
+            logger.error("Barcode lookup error", {
+                barcode: validation.data.barcode,
+                error: error instanceof Error ? error.message : String(error),
+                stack: error instanceof Error ? error.stack : undefined,
+            });
             const securityHeaders = getSecurityHeaders();
             return NextResponse.json(
                 { error: "Internal server error during barcode lookup" },
@@ -82,6 +147,7 @@ export async function GET(request: NextRequest) {
 
     if (searchQuery !== null) {
         if (!searchQuery || searchQuery.trim() === "") {
+            logger.warn("Empty search query received");
             const securityHeaders = getSecurityHeaders();
             return NextResponse.json(
                 { error: "Invalid search query" },
@@ -95,6 +161,10 @@ export async function GET(request: NextRequest) {
         );
 
         if (!validation.success) {
+            logger.warn("Invalid search query validation", {
+                query: searchQuery,
+                validationError: validation.error,
+            });
             const securityHeaders = getSecurityHeaders();
             return NextResponse.json(
                 { error: "Invalid search query", details: validation.error },
@@ -111,6 +181,12 @@ export async function GET(request: NextRequest) {
                 0,
             );
 
+            logger.debug("Starting product search", {
+                query: validation.data.q,
+                limit: clampedLimit,
+                offset,
+            });
+
             const result = await cachedSearchProductsByName(
                 validation.data.q,
                 clampedLimit,
@@ -126,29 +202,61 @@ export async function GET(request: NextRequest) {
             const nextOffset = hasMore ? offset + clampedLimit : null;
             const prevOffset = offset > 0 ? Math.max(offset - clampedLimit, 0) : null;
 
-            return NextResponse.json(
-                {
-                    success: result.success,
-                    products: result.products,
-                    pagination: {
-                        limit: clampedLimit,
-                        offset,
-                        total: totalResults,
-                        hasMore,
-                        nextOffset,
-                        prevOffset,
-                        count: result.products?.length || 0,
-                    },
-                    source: result.source,
-                    cached: result.cached,
-                    rateLimit: result.rateLimit,
-                    query: validation.data.q,
+            logger.info("Product search completed", {
+                query: validation.data.q,
+                resultsFound: result.products?.length || 0,
+                totalResults,
+                source: result.source,
+                cached: result.cached,
+            });
+
+            // Create response data for caching
+            const responseData = {
+                success: result.success,
+                products: result.products,
+                pagination: {
+                    limit: clampedLimit,
+                    offset,
+                    total: totalResults,
+                    hasMore,
+                    nextOffset,
+                    prevOffset,
+                    count: result.products?.length || 0,
                 },
-                { headers: securityHeaders },
+                source: result.source,
+                cached: result.cached,
+                query: validation.data.q,
+            };
+
+            // Create public cache headers for search results
+            const cacheHeaders = createPublicCacheHeaders(
+                CacheStrategies.PUBLIC_API.maxAge,
+                CacheStrategies.PUBLIC_API.staleWhileRevalidate,
             );
+
+            // Add security headers to cache headers
+            for (const [key, value] of securityHeaders.entries()) {
+                cacheHeaders.set(key, value);
+            }
+
+            if (result.rateLimit) {
+                cacheHeaders.set(
+                    "X-RateLimit-Remaining",
+                    result.rateLimit.remaining.toString(),
+                );
+                const resetDate = new Date(result.rateLimit.reset);
+                cacheHeaders.set("X-RateLimit-Reset", resetDate.toUTCString());
+            }
+
+            // Return cached response with ETag support
+            return handleETaggedResponse(request, responseData, cacheHeaders);
         }
         catch (error) {
-            console.error("Product search error:", error);
+            logger.error("Product search error", {
+                query: validation.data.q,
+                error: error instanceof Error ? error.message : String(error),
+                stack: error instanceof Error ? error.stack : undefined,
+            });
             const securityHeaders = getSecurityHeaders();
             return NextResponse.json(
                 { error: "Internal server error during product search" },
@@ -162,9 +270,16 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+    const logger = createRequestLogger(request);
+    logger.info("Product creation request received", { method: "POST" });
+
     // Validate request size and content type
     if (!validateRequestSize(request, 1024 * 10)) {
         // 10KB limit
+        logger.warn("Request payload too large", {
+            contentLength: request.headers.get("content-length"),
+            limit: "10KB",
+        });
         const securityHeaders = getSecurityHeaders();
         return NextResponse.json(
             { error: "Request too large" },
@@ -173,6 +288,10 @@ export async function POST(request: NextRequest) {
     }
 
     if (!validateContentType(request, ["application/json"])) {
+        logger.warn("Invalid content type", {
+            contentType: request.headers.get("content-type"),
+            expected: "application/json",
+        });
         const securityHeaders = getSecurityHeaders();
         return NextResponse.json(
             { error: "Invalid content type" },
@@ -189,6 +308,9 @@ export async function POST(request: NextRequest) {
     );
 
     if (!validation.success) {
+        logger.warn("Invalid product creation data", {
+            validationError: validation.error,
+        });
         const securityHeaders = getSecurityHeaders();
 
         return NextResponse.json(
@@ -200,7 +322,19 @@ export async function POST(request: NextRequest) {
     // TODO: Implement actual product creation logic with validation.data
     const { name, quantity, kcal } = validation.data;
 
+    logger.info("Product creation validated", {
+        productName: name,
+        quantity,
+        kcal,
+    });
+
+    // Combine security headers with no-cache headers for POST response
     const headers = getSecurityHeaders();
+    const noCacheHeaders = createNoCacheHeaders();
+    for (const [key, value] of noCacheHeaders.entries()) {
+        headers.set(key, value);
+    }
+
     return NextResponse.json(
         {
             message: "Product created successfully",

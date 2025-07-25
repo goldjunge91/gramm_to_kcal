@@ -22,6 +22,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
+import { createLogger } from "@/lib/utils/logger";
 
 export function BarcodeScanner({
     isOpen,
@@ -29,6 +30,7 @@ export function BarcodeScanner({
     onScan,
     onError,
 }: BarcodeScannerProps): JSX.Element {
+    const logger = createLogger();
     const [scanMode, setScanMode] = useState<ScanMode>("camera");
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -46,11 +48,16 @@ export function BarcodeScanner({
     // Handle successful barcode detection
     const handleScanSuccess = useCallback(
         (decodedText: string, decodedResult: any) => {
-            console.log("Barcode detected:", decodedText, decodedResult);
+            logger.info("Barcode detected", {
+                barcode: decodedText,
+                scanMode,
+                resultFormat: decodedResult?.format,
+                context: "barcode_success",
+            });
             onScan(decodedText);
             onClose();
         },
-        [onScan, onClose],
+        [onScan, onClose, scanMode, logger],
     );
 
     // Handle scanning errors (non-critical, happens frequently)
@@ -95,7 +102,13 @@ export function BarcodeScanner({
                     // Scan the uploaded file
                     const result = await tempScanner.scanFile(file, false);
 
-                    console.log("File scan result:", result);
+                    logger.info("File scan result", {
+                        barcode: result,
+                        fileName: file.name,
+                        fileSize: file.size,
+                        fileType: file.type,
+                        context: "file_scan_success",
+                    });
 
                     // Success - call the callback and close modal
                     onScan(result);
@@ -111,11 +124,14 @@ export function BarcodeScanner({
                             ? "Kein Barcode im Bild gefunden. Bitte versuche es mit einem anderen, klareren Bild."
                             : "Kein Barcode im Bild gefunden. Versuche es mit einem anderen Bild.";
                     setUploadError(friendlyMessage);
-                    console.error("File scan failed:", scanError);
-                    console.error("File scan failed:", scanError);
-                    setUploadError(
-                        "Kein Barcode im Bild gefunden. Versuche es mit einem anderen Bild.",
-                    );
+                    logger.error("File scan failed", {
+                        error: scanError instanceof Error ? scanError.message : String(scanError),
+                        stack: scanError instanceof Error ? scanError.stack : undefined,
+                        fileName: file.name,
+                        fileSize: file.size,
+                        fileType: file.type,
+                        context: "file_scan_failure",
+                    });
                 }
                 finally {
                     // Cleanup temp scanner
@@ -124,7 +140,14 @@ export function BarcodeScanner({
                 }
             }
             catch (error) {
-                console.error("File processing error:", error);
+                logger.error("File processing error", {
+                    error: error instanceof Error ? error.message : String(error),
+                    stack: error instanceof Error ? error.stack : undefined,
+                    fileName: file.name,
+                    fileSize: file.size,
+                    fileType: file.type,
+                    context: "file_processing",
+                });
                 setUploadError(
                     "Fehler beim Verarbeiten der Datei. Versuche es erneut.",
                 );
@@ -200,7 +223,12 @@ export function BarcodeScanner({
                     }
                 }
 
-                console.log("Selected camera:", selectedCamera.label);
+                logger.info("Selected camera", {
+                    cameraLabel: selectedCamera.label,
+                    cameraId: selectedCamera.id,
+                    totalCameras: cameras.length,
+                    context: "camera_selection",
+                });
 
                 // iOS-optimized configuration
                 const config = {
@@ -227,14 +255,27 @@ export function BarcodeScanner({
 
                 setIsLoading(false);
 
-                console.log("Scanner started successfully");
+                logger.info("Scanner started successfully", {
+                    scanMode,
+                    elementId,
+                    config: config.fps,
+                    userAgent: navigator.userAgent,
+                    context: "scanner_startup",
+                });
             }
             catch (error_) {
                 const errorMessage
                     = error_ instanceof Error
                         ? error_.message
                         : "Failed to start camera";
-                console.error("Scanner initialization failed:", error_);
+                logger.error("Scanner initialization failed", {
+                    error: error_ instanceof Error ? error_.message : String(error_),
+                    stack: error_ instanceof Error ? error_.stack : undefined,
+                    scanMode,
+                    elementId,
+                    userAgent: navigator.userAgent,
+                    context: "scanner_initialization",
+                });
                 setError(errorMessage);
                 setIsLoading(false);
                 onError?.(errorMessage);
@@ -254,7 +295,12 @@ export function BarcodeScanner({
                 await scannerRef.current.clear();
             }
             catch (error) {
-                console.error("Error stopping scanner:", error);
+                logger.error("Error stopping scanner", {
+                    error: error instanceof Error ? error.message : String(error),
+                    stack: error instanceof Error ? error.stack : undefined,
+                    scanMode,
+                    context: "scanner_stop",
+                });
             }
             scannerRef.current = null;
         }

@@ -18,9 +18,9 @@ async function loginUser(
     user: { email: any; password: any; name?: string },
 ) {
     await page.goto("/auth/login");
-    await page.fill('input[name="email"]', user.email);
-    await page.fill('input[name="password"]', user.password);
-    await page.click('button[type="submit"]');
+    await page.fill("input[name=\"email\"]", user.email);
+    await page.fill("input[name=\"password\"]", user.password);
+    await page.click("button[type=\"submit\"]");
     // Wait for login to complete - check for redirect away from login page
     await page.waitForURL("/", { timeout: 5000 });
 }
@@ -37,9 +37,9 @@ test.describe("Signup Flow", () => {
         await page.goto("/auth/sign-up");
 
         // Verify signup form is visible
-        await expect(page.locator('input[name="email"]')).toBeVisible();
-        await expect(page.locator('input[name="password"]')).toBeVisible();
-        await expect(page.locator('button[type="submit"]')).toBeVisible();
+        await expect(page.locator("input[name=\"email\"]")).toBeVisible();
+        await expect(page.locator("input[name=\"password\"]")).toBeVisible();
+        await expect(page.locator("button[type=\"submit\"]")).toBeVisible();
 
         // Generate unique email for this test run
         const uniqueEmail = `test-${Date.now()}@example.com`;
@@ -49,11 +49,11 @@ test.describe("Signup Flow", () => {
         };
 
         // Fill and submit the form
-        await page.fill('input[name="name"]', testUser.name);
-        await page.fill('input[name="email"]', testUser.email);
-        await page.fill('input[name="password"]', testUser.password);
-        await page.fill('input[name="confirmPassword"]', testUser.password);
-        await page.click('button[type="submit"]');
+        await page.fill("input[name=\"name\"]", testUser.name);
+        await page.fill("input[name=\"email\"]", testUser.email);
+        await page.fill("input[name=\"password\"]", testUser.password);
+        await page.fill("input[name=\"confirmPassword\"]", testUser.password);
+        await page.click("button[type=\"submit\"]");
 
         // Should be on success page
         await expect(page).toHaveURL("/auth/sign-up-success");
@@ -69,19 +69,19 @@ test.describe("Signup Flow", () => {
     test("should show error for existing email", async ({ page }) => {
         await page.goto("/auth/sign-up");
         // Verify signup form is visible
-        await expect(page.locator('input[name="email"]')).toBeVisible();
-        await expect(page.locator('input[name="password"]')).toBeVisible();
-        await expect(page.locator('button[type="submit"]')).toBeVisible();
+        await expect(page.locator("input[name=\"email\"]")).toBeVisible();
+        await expect(page.locator("input[name=\"password\"]")).toBeVisible();
+        await expect(page.locator("button[type=\"submit\"]")).toBeVisible();
 
-        await page.fill('input[name="name"]', testUsers.validUser.name);
-        await page.fill('input[name="email"]', testUsers.validUser.email);
-        await page.fill('input[name="password"]', testUsers.validUser.password);
+        await page.fill("input[name=\"name\"]", testUsers.validUser.name);
+        await page.fill("input[name=\"email\"]", testUsers.validUser.email);
+        await page.fill("input[name=\"password\"]", testUsers.validUser.password);
         await page.fill(
-            'input[name="confirmPassword"]',
+            "input[name=\"confirmPassword\"]",
             testUsers.validUser.password,
         );
 
-        await page.click('button[type="submit"]');
+        await page.click("button[type=\"submit\"]");
 
         // Should show error for existing email
         const errorMessage = page
@@ -91,8 +91,8 @@ test.describe("Signup Flow", () => {
             .or(page.locator("text=User already registered"))
             .or(page.locator("text=Email already exists"))
             .or(page.locator("text=Benutzer bereits registriert"))
-            .or(page.locator('[data-testid="signup-error"]'))
-            .or(page.locator(".error").or(page.locator('[role="alert"]')));
+            .or(page.locator("[data-testid=\"signup-error\"]"))
+            .or(page.locator(".error").or(page.locator("[role=\"alert\"]")));
 
         await expect(errorMessage.first()).toBeVisible({ timeout: 5000 });
 
@@ -107,15 +107,15 @@ test.describe("Signup Flow", () => {
         await page.goto("/auth/sign-up");
 
         // Fill invalid email format
-        await page.fill('input[name="email"]', "invalid-email");
-        await page.fill('input[name="password"]', "ValidPassword123!");
-        await page.click('button[type="submit"]');
+        await page.fill("input[name=\"email\"]", "invalid-email");
+        await page.fill("input[name=\"password\"]", "ValidPassword123!");
+        await page.click("button[type=\"submit\"]");
 
         // Should show email format validation error
         const emailFormatError = page
             .locator("text=Invalid email")
             .or(page.locator("text=Ungültige E-Mail"))
-            .or(page.locator('input[name="email"]:invalid'));
+            .or(page.locator("input[name=\"email\"]:invalid"));
 
         await expect(emailFormatError.first()).toBeVisible();
     });
@@ -124,16 +124,16 @@ test.describe("Signup Flow", () => {
         await page.goto("/auth/sign-up");
 
         // Fill valid email but weak password and leave name empty
-        await page.fill('input[name="email"]', "test@example.com");
-        await page.fill('input[name="password"]', "123"); // Too weak
-        await page.click('button[type="submit"]');
+        await page.fill("input[name=\"email\"]", "test@example.com");
+        await page.fill("input[name=\"password\"]", "123"); // Too weak
+        await page.click("button[type=\"submit\"]");
 
         // Should show password strength error
         const passwordError = page
             .locator("text=Password too short")
             .or(page.locator("text=Passwort zu kurz"))
             .or(page.locator("text=Password must be"))
-            .or(page.locator('input[name="password"]:invalid'));
+            .or(page.locator("input[name=\"password\"]:invalid"));
 
         await expect(passwordError.first()).toBeVisible();
 
@@ -141,7 +141,7 @@ test.describe("Signup Flow", () => {
         const nameError = page
             .locator("text=Name is required")
             .or(page.locator("text=Name ist erforderlich"))
-            .or(page.locator('input[name="name"]:invalid'));
+            .or(page.locator("input[name=\"name\"]:invalid"));
 
         await expect(nameError.first()).toBeVisible();
     });
@@ -189,11 +189,11 @@ test.describe("Signup Flow", () => {
         });
 
         // Try to signup
-        await page.fill('input[name="name"]', "Network Test");
-        await page.fill('input[name="email"]', "networktest@example.com");
-        await page.fill('input[name="password"]', "NetworkTest123!");
-        await page.fill('input[name="confirmPassword"]', "NetworkTest123!");
-        await page.click('button[type="submit"]');
+        await page.fill("input[name=\"name\"]", "Network Test");
+        await page.fill("input[name=\"email\"]", "networktest@example.com");
+        await page.fill("input[name=\"password\"]", "NetworkTest123!");
+        await page.fill("input[name=\"confirmPassword\"]", "NetworkTest123!");
+        await page.click("button[type=\"submit\"]");
 
         // Should show error message (any error will do for network failure)
         const errorMessage = page
@@ -213,11 +213,11 @@ test.describe("Signup Flow", () => {
 
         // Fill form
         const uniqueEmail = `loading-test-${Date.now()}@example.com`;
-        await page.fill('input[name="email"]', uniqueEmail);
-        await page.fill('input[name="password"]', "LoadingTest123!");
+        await page.fill("input[name=\"email\"]", uniqueEmail);
+        await page.fill("input[name=\"password\"]", "LoadingTest123!");
 
         // Submit form and check for loading state
-        const submitButton = page.locator('button[type="submit"]');
+        const submitButton = page.locator("button[type=\"submit\"]");
         await submitButton.click();
 
         // Button should show loading state or be disabled
@@ -225,7 +225,7 @@ test.describe("Signup Flow", () => {
             .locator("button[disabled]")
             .or(page.locator("text=Loading"))
             .or(page.locator("text=Wird geladen"))
-            .or(page.locator('[data-testid="loading"]'));
+            .or(page.locator("[data-testid=\"loading\"]"));
 
         // Note: This might be very quick, so we use a short timeout
         await expect(loadingIndicator)

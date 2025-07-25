@@ -1,7 +1,7 @@
 /**
  * Tests for utility functions
  */
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import { cn } from "@/lib/utils";
 
@@ -31,7 +31,7 @@ describe("utils", () => {
         it("should handle objects with conditional classes", () => {
             expect(
                 cn({
-                    btn: true,
+                    "btn": true,
                     "btn-primary": true,
                     "btn-disabled": false,
                 }),
@@ -50,7 +50,7 @@ describe("utils", () => {
                 cn(
                     "btn",
                     ["btn-primary", "text-white"],
-                    { "shadow-lg": true, disabled: false },
+                    { "shadow-lg": true, "disabled": false },
                     "rounded",
                 ),
             ).toBe("btn btn-primary text-white shadow-lg rounded");

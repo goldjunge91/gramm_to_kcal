@@ -1,12 +1,10 @@
-function DashboardPage() {
+import RecipeList from "@/components/recipes/RecipeList";
+
+export default function DashboardPage() {
     return (
-        <div className="grid gap-8">
-            <h1 className="text-3xl font-bold">Dashboard</h1>
-            <p className="text-gray-500">
-                Hier werden bald deine gespeicherten und konvertierten Rezepte angezeigt.
-            </p>
+        <div>
+            <h1 className="text-2xl font-bold">Dashboard</h1>
+            <RecipeList />
         </div>
     );
 }
-
-export default DashboardPage;

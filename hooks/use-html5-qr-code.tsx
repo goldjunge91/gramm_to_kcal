@@ -5,6 +5,8 @@ import type { QrcodeSuccessCallback } from "html5-qrcode";
 import { Html5Qrcode, Html5QrcodeScannerState } from "html5-qrcode";
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { createLogger } from "@/lib/utils/logger";
+
 // Props for the custom hook
 interface UseHtml5QrCodeProps {
     onScanSuccess: QrcodeSuccessCallback;
@@ -76,7 +78,12 @@ export function useHtml5QrCode({
         }
         catch (error_) {
             // This single catch block handles errors from both stop() and clear().
-            console.error("Error during scanner cleanup:", error_);
+            const logger = createLogger();
+            logger.error("Error during scanner cleanup", {
+                error: error_ instanceof Error ? error_.message : String(error_),
+                scannerState: scannerRef.current?.getState(),
+                isStoppingRef: isStoppingRef.current,
+            });
         }
         finally {
             // Reset state at the very end.
@@ -127,7 +134,12 @@ export function useHtml5QrCode({
                     = error_ instanceof Error
                         ? error_.message
                         : "Failed to start camera.";
-                console.error("Scanner initialization failed:", error_);
+                const logger = createLogger();
+                logger.error("Scanner initialization failed", {
+                    error: error_ instanceof Error ? error_.message : String(error_),
+                    stack: error_ instanceof Error ? error_.stack : undefined,
+                    camerasCount: cameras?.length || 0,
+                });
                 setError(errorMessage);
                 setIsLoading(false);
                 if (onError) {

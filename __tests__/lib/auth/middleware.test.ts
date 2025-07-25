@@ -1,3 +1,10 @@
+// Hinweis: Die Next.js-Testumgebung muss eine Web-API-kompatible Headers-Klasse bereitstellen.
+/**
+ * Tests für auth middleware
+ */
+// Verwende die native Headers-Klasse von globalThis
+import { describe, expect, it, vi } from "vitest";
+
 import { evaluateAuthRoute } from "../../../lib/auth/middleware";
 
 describe("evaluateAuthRoute", () => {
@@ -63,12 +70,6 @@ describe("evaluateAuthRoute", () => {
         expect(result.status).toBe(200);
     });
 });
-// Hinweis: Die Next.js-Testumgebung muss eine Web-API-kompatible Headers-Klasse bereitstellen.
-/**
- * Tests für auth middleware
- */
-// Verwende die native Headers-Klasse von globalThis
-import { describe, expect, it, vi } from "vitest";
 
 // Mock better-auth/cookies
 vi.mock("better-auth/cookies", () => ({

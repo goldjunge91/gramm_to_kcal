@@ -15,11 +15,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
+import { createLogger } from "@/lib/utils/logger";
 
 export function UpdatePasswordForm({
     className,
     ...props
 }: React.ComponentPropsWithoutRef<"div">) {
+    const logger = createLogger();
     const [password, setPassword] = useState("");
     const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
@@ -73,7 +75,12 @@ export function UpdatePasswordForm({
         catch (error: unknown) {
             const errorMessage = getErrorMessage(error);
             setError(errorMessage);
-            console.error("Password update error:", error);
+            logger.error("Password update error", {
+                error: error instanceof Error ? error.message : String(error),
+                stack: error instanceof Error ? error.stack : undefined,
+                userAgent: navigator.userAgent,
+                context: "password_update",
+            });
         }
         finally {
             setIsLoading(false);

@@ -68,7 +68,10 @@ export function useProductsUnified(): UnifiedProductsReturn {
             },
 
             deleteProduct: async (id: string) => {
-                await deleteDatabaseProduct.mutateAsync(id);
+                if (!user)
+                    throw new Error("User not authenticated");
+
+                await deleteDatabaseProduct.mutateAsync({ id, userId: user.id });
                 await databaseQuery.refetch();
             },
 

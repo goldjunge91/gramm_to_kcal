@@ -33,10 +33,11 @@ function createEnv() {
     const requiredEnvVars = [
         // 'NEXT_PUBLIC_SUPABASE_URL',
         // 'NEXT_PUBLIC_SUPABASE_ANON_KEY',
-        // 'NODE_ENV',
-        // 'NEXT_PUBLIC_NODE_ENV',
-        // 'STORAGE_KEY',
-        // 'RECENT_SCANS_KEY',
+        "NODE_ENV",
+        "NEXT_PUBLIC_NODE_ENV",
+        "STORAGE_KEY",
+        "RECENT_SCANS_KEY",
+        "NEXT_PUBLIC_URL",
     ] as const;
 
     // Optional environment variables - features will be disabled if missing

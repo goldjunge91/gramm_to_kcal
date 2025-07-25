@@ -1,16 +1,23 @@
 import { Redis } from "@upstash/redis";
 
+import { createLogger } from "@/lib/utils/logger";
+
 // Redis configuration
 let redis: Redis | null = null;
 
 // Initialize Redis connection
 export function initializeRedis() {
+    const logger = createLogger();
+
     // Only initialize if we have the required environment variables
     const redisUrl = process.env.UPSTASH_REDIS_REST_URL;
     const redisToken = process.env.UPSTASH_REDIS_REST_TOKEN;
 
     if (!redisUrl || !redisToken) {
-        console.warn("Redis not configured - using in-memory rate limiting");
+        logger.warn("Redis not configured - using in-memory rate limiting", {
+            hasUrl: !!redisUrl,
+            hasToken: !!redisToken,
+        });
         return null;
     }
 
@@ -20,11 +27,16 @@ export function initializeRedis() {
             token: redisToken,
         });
 
-        console.log("Redis initialized successfully");
+        logger.info("Redis initialized successfully", {
+            redisUrl: redisUrl.replace(/\/\/.*@/, "//***@"), // Mask credentials
+        });
         return redis;
     }
     catch (error) {
-        console.error("Failed to initialize Redis:", error);
+        logger.error("Failed to initialize Redis", {
+            error: error instanceof Error ? error.message : String(error),
+            stack: error instanceof Error ? error.stack : undefined,
+        });
         return null;
     }
 }
@@ -49,7 +61,11 @@ export async function testRedisConnection(): Promise<boolean> {
         return true;
     }
     catch (error) {
-        console.error("Redis connection test failed:", error);
+        const logger = createLogger();
+        logger.error("Redis connection test failed", {
+            error: error instanceof Error ? error.message : String(error),
+            stack: error instanceof Error ? error.stack : undefined,
+        });
         return false;
     }
 }

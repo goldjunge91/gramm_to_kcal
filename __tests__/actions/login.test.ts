@@ -1,6 +1,7 @@
 /**
  * Tests for login action
  */
+import { logger } from "better-auth";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 // Mock dependencies
@@ -68,16 +69,17 @@ describe("login action", () => {
 
         vi.mocked(auth.api.signInEmail).mockResolvedValue({
             user: {
-                id: "123", email: "test@example.com",
+                id: "123",
+                email: "test@example.com",
                 name: "",
                 image: undefined,
                 emailVerified: false,
                 createdAt: new Date(),
-                updatedAt: new Date()
+                updatedAt: new Date(),
             },
             redirect: false,
             token: "",
-            url: undefined
+            url: undefined,
         });
 
         const formData = new FormData();
@@ -121,16 +123,17 @@ describe("login action", () => {
 
         vi.mocked(auth.api.signInEmail).mockResolvedValue({
             user: {
-                id: "123", email: "test@example.com",
+                id: "123",
+                email: "test@example.com",
                 name: "",
                 image: undefined,
                 emailVerified: false,
                 createdAt: new Date(),
-                updatedAt: new Date()
+                updatedAt: new Date(),
             },
             redirect: false,
             token: "",
-            url: undefined
+            url: undefined,
         });
 
         const formData = new FormData();
@@ -139,10 +142,17 @@ describe("login action", () => {
 
         try {
             await loginAction(formData);
-        } catch (error) {
-            // Expected redirect error
         }
-
+        // catch (_error) {
+        //     // Expected redirect error
+        // }
+        catch (error) {
+            // next/navigation redirect throws an error
+            logger.error("Unexpected error during signup", {
+                error: error instanceof Error ? error.message : String(error),
+                stack: error instanceof Error ? error.stack : undefined,
+            });
+        }
         expect(consoleSpy).toHaveBeenCalledWith(
             expect.stringContaining(
                 "[BETTER_AUTH] SIGNIN - test@example.com - SUCCESS",

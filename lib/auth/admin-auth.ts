@@ -9,6 +9,7 @@ import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 
 import { auth } from "@/lib/auth/auth";
+import { createRequestLogger } from "@/lib/utils/logger";
 
 // Admin role configuration
 export const ADMIN_ROLES = ["admin", "super_admin"] as const;
@@ -34,8 +35,9 @@ function generateCorrelationId(): string {
 /**
  * Verify if user has admin privileges
  */
-export async function verifyAdminAccess(_request: NextRequest): Promise<AdminAuthResult> {
+export async function verifyAdminAccess(request: NextRequest): Promise<AdminAuthResult> {
     const correlationId = generateCorrelationId();
+    const logger = createRequestLogger(request);
 
     try {
         // Extract session from Better Auth server-side
@@ -44,6 +46,7 @@ export async function verifyAdminAccess(_request: NextRequest): Promise<AdminAut
         });
 
         if (!session?.user) {
+            logger.debug("Admin access denied - no active session", { correlationId });
             return {
                 authorized: false,
                 error: "No active session",
@@ -56,7 +59,12 @@ export async function verifyAdminAccess(_request: NextRequest): Promise<AdminAut
         // Check if user has admin role
         if (!user.role || !ADMIN_ROLES.includes(user.role as AdminRole)) {
             // Log unauthorized access attempt
-            console.warn(`[ADMIN-AUTH] Unauthorized admin access attempt: ${user.email} (Role: ${user.role || "none"}) - Correlation: ${correlationId}`);
+            logger.warn("Unauthorized admin access attempt", {
+                userEmail: user.email,
+                userRole: user.role || "none",
+                correlationId,
+                requiredRoles: ADMIN_ROLES,
+            });
 
             return {
                 authorized: false,
@@ -66,7 +74,11 @@ export async function verifyAdminAccess(_request: NextRequest): Promise<AdminAut
         }
 
         // Log successful admin access
-        console.info(`[ADMIN-AUTH] Admin access granted: ${user.email} (Role: ${user.role}) - Correlation: ${correlationId}`);
+        logger.info("Admin access granted", {
+            userEmail: user.email,
+            userRole: user.role,
+            correlationId,
+        });
 
         return {
             authorized: true,
@@ -79,7 +91,11 @@ export async function verifyAdminAccess(_request: NextRequest): Promise<AdminAut
         };
     }
     catch (error) {
-        console.error(`[ADMIN-AUTH] Authorization check failed - Correlation: ${correlationId}`, error);
+        logger.error("Authorization check failed", {
+            correlationId,
+            error: error instanceof Error ? error.message : String(error),
+            stack: error instanceof Error ? error.stack : undefined,
+        });
 
         return {
             authorized: false,
@@ -101,12 +117,19 @@ export function withAdminAuth<T extends any[]>(
 
         if (!authResult.authorized) {
             // Log the unauthorized attempt with request details
+            const logger = createRequestLogger(request);
             const ip = request.headers.get("x-forwarded-for")
                 || request.headers.get("x-real-ip")
                 || "unknown";
             const userAgent = request.headers.get("user-agent") || "unknown";
 
-            console.warn(`[ADMIN-AUTH] Blocked unauthorized admin request from IP: ${ip}, UA: ${userAgent}, Path: ${request.nextUrl.pathname} - Correlation: ${authResult.correlationId}`);
+            logger.warn("Blocked unauthorized admin request", {
+                ip,
+                userAgent,
+                pathname: request.nextUrl.pathname,
+                correlationId: authResult.correlationId,
+                error: authResult.error,
+            });
 
             return NextResponse.json(
                 {
@@ -150,6 +173,7 @@ export function logAdminAction(
     if (!authResult.user)
         return;
 
+    const logger = createRequestLogger(request);
     const auditLog: AdminAuditLog = {
         correlationId: authResult.correlationId,
         adminUserId: authResult.user.id,
@@ -165,6 +189,6 @@ export function logAdminAction(
         userAgent: request.headers.get("user-agent") || "unknown",
     };
 
-    // For now, log to console - in production, this should go to a secure audit log system
-    console.info(`[ADMIN-AUDIT] ${JSON.stringify(auditLog)}`);
+    // For now, log to structured logging - in production, this should go to a secure audit log system
+    logger.info("Admin action audit log", { auditLog });
 }

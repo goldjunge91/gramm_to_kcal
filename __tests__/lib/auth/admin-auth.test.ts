@@ -19,7 +19,7 @@ vi.mock("next/headers", () => ({
     headers: vi.fn(() => Promise.resolve(new Headers())),
 }));
 
-describe("Admin Authorization", () => {
+describe("admin Authorization", () => {
     beforeEach(() => {
         vi.clearAllMocks();
     });
@@ -35,8 +35,8 @@ describe("Admin Authorization", () => {
             };
 
             const { auth } = await import("@/lib/auth/auth");
-    // @ts-ignore
-    // @ts-ignore
+            // @ts-ignore
+            // @ts-ignore
             vi.mocked(auth.api.getSession).mockResolvedValue(mockSession);
 
             const request = new NextRequest("http://localhost:3000/api/admin/test");
@@ -61,8 +61,8 @@ describe("Admin Authorization", () => {
             };
 
             const { auth } = await import("@/lib/auth/auth");
-                // @ts-ignore
-                // @ts-ignore
+            // @ts-ignore
+            // @ts-ignore
             vi.mocked(auth.api.getSession).mockResolvedValue(mockSession);
 
             const request = new NextRequest("http://localhost:3000/api/admin/test");
@@ -169,7 +169,7 @@ describe("Admin Authorization", () => {
                         email: "admin@example.com",
                         role: "admin",
                     }),
-                })
+                }),
             );
         });
 
@@ -246,15 +246,15 @@ describe("Admin Authorization", () => {
                 "TEST_ACTION",
                 "test-resource",
                 true,
-                { key: "value" }
+                { key: "value" },
             );
 
             expect(consoleSpy).toHaveBeenCalledWith(
-                expect.stringContaining('[ADMIN-AUDIT]')
+                expect.stringContaining("[ADMIN-AUDIT]"),
             );
 
             const logCall = consoleSpy.mock.calls[0][0];
-            const logData = JSON.parse(logCall.replace('[ADMIN-AUDIT] ', ''));
+            const logData = JSON.parse(logCall.replace("[ADMIN-AUDIT] ", ""));
 
             expect(logData).toMatchObject({
                 correlationId: "test-correlation-123",
@@ -288,7 +288,7 @@ describe("Admin Authorization", () => {
                 request,
                 "TEST_ACTION",
                 "test-resource",
-                true
+                true,
             );
 
             expect(consoleSpy).not.toHaveBeenCalled();
@@ -297,9 +297,9 @@ describe("Admin Authorization", () => {
         });
     });
 
-    describe("ADMIN_ROLES configuration", () => {
+    describe("aDMIN_ROLES configuration", () => {
         it("should contain expected admin roles", () => {
-            expect(ADMIN_ROLES).toEqual(['admin', 'super_admin']);
+            expect(ADMIN_ROLES).toEqual(["admin", "super_admin"]);
         });
     });
 });

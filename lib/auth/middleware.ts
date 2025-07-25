@@ -8,6 +8,7 @@ import { getSessionCookie } from "better-auth/cookies";
 import { NextResponse } from "next/server";
 
 import { isAuthRoute, isPublicRoute, REDIRECT_PATHS } from "@/lib/auth/routes";
+import { createRequestLogger } from "@/lib/utils/logger";
 
 export function evaluateAuthRoute({
     pathname,
@@ -81,7 +82,12 @@ export async function updateSession(request: NextRequest) {
         return response;
     }
     catch (error) {
-        console.error("Better Auth middleware error:", error);
+        const logger = createRequestLogger(request);
+        logger.error("Better Auth middleware error", {
+            error: error instanceof Error ? error.message : String(error),
+            stack: error instanceof Error ? error.stack : undefined,
+            pathname: request.nextUrl.pathname,
+        });
         return response;
     }
 }

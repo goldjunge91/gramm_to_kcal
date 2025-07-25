@@ -19,6 +19,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useRecentScans } from "@/hooks/use-recent-scans";
 import { lookupProductByBarcode } from "@/lib/api/product-lookup";
+import { createLogger } from "@/lib/utils/logger";
 
 /** Form component for adding new products to compare */
 export function ProductForm({
@@ -28,6 +29,7 @@ export function ProductForm({
     enableBarcode = false,
     enableBarcode2 = false, // Zweiter Button wiederhergestellt
 }: ProductFormProps): JSX.Element {
+    const logger = createLogger();
     const [name, setName] = useState("");
     const [quantity, setQuantity] = useState("");
     const [kcal, setKcal] = useState("");
@@ -314,7 +316,11 @@ export function ProductForm({
                     onClose={() => setShowScanner(false)}
                     onScan={handleBarcodeScan}
                     onError={(error: string) => {
-                        console.error("Scanner error:", error);
+                        logger.error("Classic barcode scanner error", {
+                            error,
+                            scannerType: "classic",
+                            operation: "barcodeScan",
+                        });
                         toast.error(`Scanner-Fehler: ${error}`);
                         // Fenster bleibt offen, nur bei Fehler manuell schließen
                     }}
@@ -328,7 +334,11 @@ export function ProductForm({
                     onClose={() => setShowScanner2(false)}
                     onScan={handleBarcodeScan}
                     onError={(error) => {
-                        console.error("Scanner2 error:", error);
+                        logger.error("New barcode scanner error", {
+                            error,
+                            scannerType: "new",
+                            operation: "barcodeScan",
+                        });
                         toast.error(`Scanner2-Fehler: ${error}`);
                         // Fenster bleibt offen, nur bei Fehler manuell schließen
                     }}

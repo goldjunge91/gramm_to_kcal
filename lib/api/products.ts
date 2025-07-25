@@ -135,7 +135,7 @@ export function useDeleteProduct() {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: async (id: string): Promise<void> => {
+        mutationFn: async ({ id, userId }: { id: string; userId: string }): Promise<{ userId: string }> => {
             const response = await fetch(`/api/user/products/${id}`, {
                 method: "DELETE",
                 headers: {
@@ -150,11 +150,12 @@ export function useDeleteProduct() {
             }
 
             toast.success("Product deleted");
+            return { userId };
         },
-        onSuccess: () => {
-            // Invalidate all products queries to refresh pagination
+        onSuccess: (data) => {
+            // Invalidate all products queries for this user to refresh pagination
             queryClient.invalidateQueries({
-                queryKey: ["products"],
+                queryKey: ["products", data.userId],
             });
         },
     });

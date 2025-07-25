@@ -23,6 +23,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useRecentScans } from "@/hooks/use-recent-scans";
 import { lookupProductByBarcode } from "@/lib/api/product-lookup";
+import { createLogger } from "@/lib/utils/logger";
 
 interface ProductFormProps {
     onSubmit: (product: Omit<Product, "id">) => Promise<void>;
@@ -354,7 +355,11 @@ export function ProductForm({
                     onClose={() => setShowScanner(false)}
                     onScan={handleBarcodeScan}
                     onError={(error) => {
-                        console.error("Scanner error:", error);
+                        const logger = createLogger();
+                        logger.error("Scanner error", {
+                            error,
+                            userAgent: navigator.userAgent,
+                        });
                         toast.error(`Scanner-Fehler: ${error}`);
                     }}
                 />

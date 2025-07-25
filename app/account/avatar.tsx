@@ -3,6 +3,7 @@ import Image from "next/image";
 import React, { useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { createLogger } from "@/lib/utils/logger";
 
 export default function Avatar({
     url,
@@ -14,6 +15,7 @@ export default function Avatar({
     size: number;
     onUpload: (url: string) => void;
 }) {
+    const logger = createLogger();
     const [avatarUrl, setAvatarUrl] = useState<string | null>(url);
     const [uploading, setUploading] = useState(false);
 
@@ -36,7 +38,12 @@ export default function Avatar({
             onUpload(imageUrl);
         }
         catch (error) {
-            console.error("Error uploading avatar:", error);
+            logger.error("Avatar upload failed", {
+                error: error instanceof Error ? error.message : String(error),
+                operation: "uploadAvatar",
+                fileSize: file?.size,
+                fileType: file?.type,
+            });
         }
         finally {
             setUploading(false);

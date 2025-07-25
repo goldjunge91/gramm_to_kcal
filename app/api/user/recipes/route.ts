@@ -8,8 +8,11 @@ import { createHash } from "node:crypto";
 import { auth } from "@/lib/auth/auth";
 import { db } from "@/lib/db";
 import { recipes } from "@/lib/db/schemas";
+import { createRequestLogger } from "@/lib/utils/logger";
 
 export async function GET(request: NextRequest) {
+    const logger = createRequestLogger(request);
+
     try {
         // Get user session
         const session = await auth.api.getSession({
@@ -17,6 +20,7 @@ export async function GET(request: NextRequest) {
         });
 
         if (!session?.user) {
+            logger.warn("Unauthorized recipes fetch attempt");
             return NextResponse.json(
                 { error: "Unauthorized" },
                 { status: 401 },
@@ -30,6 +34,12 @@ export async function GET(request: NextRequest) {
             Math.max(Number.parseInt(url.searchParams.get("limit") || "20", 10), 1),
             50, // Max 50 items per page
         );
+
+        logger.info("Fetching user recipes", {
+            userId: session.user.id,
+            cursor,
+            limit,
+        });
 
         // Build query with cursor-based pagination
         const query = db
@@ -72,6 +82,11 @@ export async function GET(request: NextRequest) {
         // Check if client has cached version
         const clientETag = request.headers.get("if-none-match");
         if (clientETag === etag) {
+            logger.debug("Returning cached recipes response (304)", {
+                userId: session.user.id,
+                etag,
+                clientETag,
+            });
             return new NextResponse(null, {
                 status: 304,
                 headers: {
@@ -80,6 +95,13 @@ export async function GET(request: NextRequest) {
                 },
             });
         }
+
+        logger.info("Recipes fetched successfully", {
+            userId: session.user.id,
+            recipeCount: userRecipes.length,
+            hasMore: nextCursor !== null,
+            etag,
+        });
 
         // Return data with caching headers
         return NextResponse.json(responseData, {
@@ -91,7 +113,10 @@ export async function GET(request: NextRequest) {
         });
     }
     catch (error) {
-        console.error("Error fetching recipes:", error);
+        logger.error("Error fetching recipes", {
+            error: error instanceof Error ? error.message : "Unknown error",
+            stack: error instanceof Error ? error.stack : undefined,
+        });
         return NextResponse.json(
             { error: "Internal server error" },
             { status: 500 },
@@ -100,6 +125,8 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+    const logger = createRequestLogger(request);
+
     try {
         // Get user session
         const session = await auth.api.getSession({
@@ -107,6 +134,7 @@ export async function POST(request: NextRequest) {
         });
 
         if (!session?.user) {
+            logger.warn("Unauthorized recipe creation attempt");
             return NextResponse.json(
                 { error: "Unauthorized" },
                 { status: 401 },
@@ -114,6 +142,12 @@ export async function POST(request: NextRequest) {
         }
 
         const recipeData = await request.json();
+
+        logger.info("Creating new recipe", {
+            userId: session.user.id,
+            recipeName: recipeData.name,
+            recipeFields: Object.keys(recipeData),
+        });
 
         // Insert new recipe
         const inserted = await db
@@ -130,6 +164,10 @@ export async function POST(request: NextRequest) {
             .returning();
 
         if (inserted.length === 0) {
+            logger.error("Failed to insert recipe - no data returned", {
+                userId: session.user.id,
+                recipeData,
+            });
             return NextResponse.json(
                 { error: "Failed to create recipe" },
                 { status: 500 },
@@ -138,10 +176,20 @@ export async function POST(request: NextRequest) {
 
         const newRecipe = inserted[0];
 
+        logger.info("Recipe created successfully", {
+            userId: session.user.id,
+            recipeId: newRecipe.id,
+            recipeName: newRecipe.name,
+        });
+
         return NextResponse.json(newRecipe, { status: 201 });
     }
     catch (error) {
-        console.error("Error creating recipe:", error);
+        logger.error("Error creating recipe", {
+            error: error instanceof Error ? error.message : "Unknown error",
+            stack: error instanceof Error ? error.stack : undefined,
+            details: error instanceof Error ? error.message : "Unknown error",
+        });
         return NextResponse.json(
             {
                 error: "Internal server error",

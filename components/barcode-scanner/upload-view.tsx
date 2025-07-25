@@ -10,8 +10,10 @@ import type { UploadViewProps } from "@/lib/types/scanner-types";
 
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import { createLogger } from "@/lib/utils/logger";
 
 export function UploadView({ onScan, onClose }: UploadViewProps) {
+    const logger = createLogger();
     const [isProcessing, setIsProcessing] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -37,7 +39,14 @@ export function UploadView({ onScan, onClose }: UploadViewProps) {
                 onClose();
             }
             catch (error_) {
-                console.error("File scan failed:", error_);
+                logger.error("File scan failed", {
+                    error: error_ instanceof Error ? error_.message : String(error_),
+                    stack: error_ instanceof Error ? error_.stack : undefined,
+                    fileName: file.name,
+                    fileSize: file.size,
+                    fileType: file.type,
+                    context: "barcode_file_scan",
+                });
                 setError(
                     "Kein Barcode im Bild gefunden. Versuche es mit einem anderen Bild.",
                 );

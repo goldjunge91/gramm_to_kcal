@@ -1,7 +1,7 @@
 /**
  * Tests for auth client configuration
  */
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 // Mock better-auth/react
 vi.mock("better-auth/react", () => ({

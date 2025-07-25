@@ -15,11 +15,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
+import { createLogger } from "@/lib/utils/logger";
 
 export function ForgotPasswordForm({
     className,
     ...props
 }: React.ComponentPropsWithoutRef<"div">) {
+    const logger = createLogger();
     const [email, setEmail] = useState("");
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
@@ -65,7 +67,13 @@ export function ForgotPasswordForm({
         catch (error: unknown) {
             const errorMessage = getErrorMessage(error);
             setError(errorMessage);
-            console.error("Password reset error:", error);
+            logger.error("Password reset error", {
+                error: error instanceof Error ? error.message : String(error),
+                stack: error instanceof Error ? error.stack : undefined,
+                email: `${email.substring(0, 3)}***`, // Partially mask email for privacy
+                userAgent: navigator.userAgent,
+                context: "password_reset",
+            });
         }
         finally {
             setIsLoading(false);

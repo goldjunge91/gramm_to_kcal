@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { env } from "@/lib/env";
+import { createLogger } from "@/lib/utils/logger";
 
 interface RouteDebugInfo {
     pathname: string;
@@ -40,6 +41,7 @@ interface TestResult {
 }
 
 export default function MiddlewareDebugPage() {
+    const logger = createLogger();
     const isDev = env.NEXT_PUBLIC_NODE_ENV === "development";
     if (!isDev) {
         return (
@@ -71,7 +73,11 @@ export default function MiddlewareDebugPage() {
             setTestResults(data.testResults);
         }
         catch (error) {
-            console.error("Failed to fetch debug info:", error);
+            logger.error("Failed to fetch middleware debug info", {
+                error: error instanceof Error ? error.message : String(error),
+                path,
+                operation: "fetchDebugInfo",
+            });
         }
         finally {
             setLoading(false);

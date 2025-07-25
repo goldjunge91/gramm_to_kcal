@@ -143,7 +143,7 @@ describe("auth routes", () => {
         });
     });
 
-    describe("ROUTE_GROUPS configuration", () => {
+    describe("rOUTE_GROUPS configuration", () => {
         it("should have all required route groups", () => {
             expect(ROUTE_GROUPS.PUBLIC).toBeDefined();
             expect(ROUTE_GROUPS.AUTH).toBeDefined();
@@ -162,7 +162,7 @@ describe("auth routes", () => {
         });
     });
 
-    describe("REDIRECT_PATHS configuration", () => {
+    describe("rEDIRECT_PATHS configuration", () => {
         it("should have all required redirect paths", () => {
             expect(REDIRECT_PATHS.LOGIN).toBe("/auth/login");
             expect(REDIRECT_PATHS.HOME).toBe("/");
@@ -179,13 +179,13 @@ describe("auth routes", () => {
             const protectedRoutes = new Set(ROUTE_GROUPS.PROTECTED);
 
             // Check for overlaps between page route groups
-            const publicAuthOverlap = [...publicRoutes].filter((route) =>
+            const publicAuthOverlap = [...publicRoutes].filter(route =>
                 authRoutes.has(route),
             );
-            const publicProtectedOverlap = [...publicRoutes].filter((route) =>
+            const publicProtectedOverlap = [...publicRoutes].filter(route =>
                 protectedRoutes.has(route),
             );
-            const authProtectedOverlap = [...authRoutes].filter((route) =>
+            const authProtectedOverlap = [...authRoutes].filter(route =>
                 protectedRoutes.has(route),
             );
 
@@ -205,11 +205,11 @@ describe("auth routes", () => {
                 ...ROUTE_GROUPS.PROTECTED,
             ];
 
-            const apiInPages = allPageRoutes.filter((route) =>
+            const apiInPages = allPageRoutes.filter(route =>
                 route.startsWith("/api/"),
             );
             const pagesInApi = allApiRoutes.filter(
-                (route) => !route.startsWith("/api/"),
+                route => !route.startsWith("/api/"),
             );
 
             expect(apiInPages).toEqual([]);

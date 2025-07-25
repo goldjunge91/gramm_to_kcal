@@ -1,6 +1,7 @@
 import "server-only";
 
 import { auth } from "@/lib/auth/auth";
+import { createLogger } from "@/lib/utils/logger";
 
 /**
  * Retrieves the current user from session in server components
@@ -21,7 +22,11 @@ export async function currentSessionUser() {
         return session.user;
     }
     catch (error) {
-        console.error("Error getting current session user:", error);
+        const logger = createLogger();
+        logger.error("Error getting current session user", {
+            error: error instanceof Error ? error.message : String(error),
+            stack: error instanceof Error ? error.stack : undefined,
+        });
         return null;
     }
 }
@@ -49,7 +54,12 @@ export async function sessionHasRole(role: string): Promise<boolean> {
         return userRole === role;
     }
     catch (error) {
-        console.error("Error checking user role:", error);
+        const logger = createLogger();
+        logger.error("Error checking user role", {
+            role,
+            error: error instanceof Error ? error.message : String(error),
+            stack: error instanceof Error ? error.stack : undefined,
+        });
         return false;
     }
 }

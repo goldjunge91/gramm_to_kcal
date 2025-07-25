@@ -39,7 +39,7 @@ describe("auth-utils", () => {
                 banReason: null,
                 banExpires: null,
                 role: null,
-                isAnonymous: null
+                isAnonymous: null,
             };
 
             vi.mocked(auth.api.getSession).mockResolvedValue({
@@ -53,7 +53,7 @@ describe("auth-utils", () => {
                     ipAddress: null,
                     userAgent: null,
                     userId: "user123",
-                    impersonatedBy: null
+                    impersonatedBy: null,
                 },
             });
 
@@ -87,7 +87,7 @@ describe("auth-utils", () => {
                     ipAddress: null,
                     userAgent: null,
                     userId: "user123",
-                    impersonatedBy: null
+                    impersonatedBy: null,
                 },
             });
 
@@ -133,7 +133,7 @@ describe("auth-utils", () => {
                 banReason: null,
                 banExpires: null,
                 role: "admin",
-                isAnonymous: null
+                isAnonymous: null,
             };
 
             vi.mocked(auth.api.getSession).mockResolvedValue({
@@ -147,7 +147,7 @@ describe("auth-utils", () => {
                     ipAddress: null,
                     userAgent: null,
                     userId: "user123",
-                    impersonatedBy: null
+                    impersonatedBy: null,
                 },
             });
 
@@ -170,7 +170,7 @@ describe("auth-utils", () => {
                 banReason: null,
                 banExpires: null,
                 role: "user",
-                isAnonymous: null
+                isAnonymous: null,
             };
 
             vi.mocked(auth.api.getSession).mockResolvedValue({
@@ -184,7 +184,7 @@ describe("auth-utils", () => {
                     ipAddress: null,
                     userAgent: null,
                     userId: "user123",
-                    impersonatedBy: null
+                    impersonatedBy: null,
                 },
             });
 
@@ -240,7 +240,7 @@ describe("auth-utils", () => {
                 banReason: null,
                 banExpires: null,
                 role: null,
-                isAnonymous: null
+                isAnonymous: null,
             };
 
             vi.mocked(auth.api.getSession).mockResolvedValue({
@@ -254,7 +254,7 @@ describe("auth-utils", () => {
                     ipAddress: null,
                     userAgent: null,
                     userId: "user123",
-                    impersonatedBy: null
+                    impersonatedBy: null,
                 },
             });
 
@@ -288,7 +288,7 @@ describe("auth-utils", () => {
                     ipAddress: null,
                     userAgent: null,
                     userId: "user123",
-                    impersonatedBy: null
+                    impersonatedBy: null,
                 },
             });
 
@@ -313,7 +313,7 @@ describe("auth-utils", () => {
                 banReason: null,
                 banExpires: null,
                 role: "admin",
-                isAnonymous: null
+                isAnonymous: null,
             };
 
             vi.mocked(auth.api.getSession).mockResolvedValue({
@@ -327,7 +327,7 @@ describe("auth-utils", () => {
                     ipAddress: null,
                     userAgent: null,
                     userId: "user123",
-                    impersonatedBy: null
+                    impersonatedBy: null,
                 },
             });
 
@@ -350,7 +350,7 @@ describe("auth-utils", () => {
                 banReason: null,
                 banExpires: null,
                 role: "user",
-                isAnonymous: null
+                isAnonymous: null,
             };
 
             vi.mocked(auth.api.getSession).mockResolvedValue({
@@ -364,7 +364,7 @@ describe("auth-utils", () => {
                     ipAddress: null,
                     userAgent: null,
                     userId: "user123",
-                    impersonatedBy: null
+                    impersonatedBy: null,
                 },
             });
 
@@ -390,7 +390,8 @@ describe("auth-utils", () => {
 
             try {
                 await requireRole("admin");
-            } catch (error) {
+            }
+            catch (error) {
                 expect((error as Error).message).toBe(
                     "Authentication required",
                 );
