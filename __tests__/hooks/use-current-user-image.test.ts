@@ -4,8 +4,8 @@
 import { renderHook } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import { createMockSession, createMockUser } from "@/__tests__/utils/auth-mocks";
 import { useCurrentUserImage } from "@/hooks/use-current-user-image";
-import { createMockUser, createMockSession } from "@/__tests__/utils/auth-mocks";
 
 // Mock auth client
 vi.mock("@/lib/auth/auth-client", async (importActual) => {
@@ -50,6 +50,11 @@ describe("useCurrentUserImage", () => {
 
         vi.mocked(useSession).mockReturnValue({
             data: null,
+            isPending: false,
+            error: null,
+            refetch: function (): void {
+                throw new Error("Function not implemented.");
+            }
         });
 
         const { result } = renderHook(() => useCurrentUserImage());
@@ -62,6 +67,7 @@ describe("useCurrentUserImage", () => {
 
         vi.mocked(useSession).mockReturnValue({
             data: {
+                // @ts-ignore
                 user: null,
             },
         });
@@ -76,6 +82,7 @@ describe("useCurrentUserImage", () => {
 
         vi.mocked(useSession).mockReturnValue({
             data: {
+            // @ts-ignore
                 user: {
                     id: "123",
                     name: "John Doe",
@@ -94,7 +101,7 @@ describe("useCurrentUserImage", () => {
         const { useSession } = await import("@/lib/auth/auth-client");
 
         vi.mocked(useSession).mockReturnValue({
-            data: {
+            data: {    // @ts-ignore
                 user: {
                     id: "123",
                     name: "John Doe",
@@ -113,6 +120,7 @@ describe("useCurrentUserImage", () => {
         const { useSession } = await import("@/lib/auth/auth-client");
 
         vi.mocked(useSession).mockReturnValue({
+                // @ts-ignore
             data: undefined,
         });
 

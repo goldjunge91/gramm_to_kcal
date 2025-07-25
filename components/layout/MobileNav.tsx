@@ -1,7 +1,7 @@
-import type { MainNavItem } from "@/types";
-
 import Link from "next/link";
 import * as React from "react";
+
+import type { MainNavItem } from "@/types";
 
 import { Icons } from "@/components/icons";
 import { useLockBodyScroll } from "@/hooks/use-lock-body-scroll";

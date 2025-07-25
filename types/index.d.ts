@@ -7,7 +7,7 @@ export interface NavItem {
 export interface MainNavItem extends NavItem {}
 
 export interface SidebarNavItem extends NavItem {
-  icon: keyof typeof import("lucide-react").icons;
+    icon: keyof typeof import("lucide-react").icons;
 }
 
 export interface DashboardConfig {

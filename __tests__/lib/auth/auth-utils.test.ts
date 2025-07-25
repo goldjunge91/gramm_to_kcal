@@ -1,13 +1,13 @@
 /**
  * Tests for auth utilities (server-side auth helpers)
  */
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
     currentSessionUser,
-    sessionHasRole,
     requireAuth,
     requireRole,
+    sessionHasRole,
 } from "@/lib/auth/auth-utils";
 
 // Mock auth module
@@ -76,6 +76,7 @@ describe("auth-utils", () => {
             const { auth } = await import("@/lib/auth/auth");
 
             vi.mocked(auth.api.getSession).mockResolvedValue({
+                // @ts-ignore
                 user: null,
                 session: {
                     id: "session123",
@@ -276,6 +277,7 @@ describe("auth-utils", () => {
             const { auth } = await import("@/lib/auth/auth");
 
             vi.mocked(auth.api.getSession).mockResolvedValue({
+                // @ts-ignore
                 user: null,
                 session: {
                     id: "session123",

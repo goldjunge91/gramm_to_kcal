@@ -4,7 +4,7 @@
 import { NextRequest } from "next/server";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { verifyAdminAccess, withAdminAuth, logAdminAction, ADMIN_ROLES } from "@/lib/auth/admin-auth";
+import { ADMIN_ROLES, logAdminAction, verifyAdminAccess, withAdminAuth } from "@/lib/auth/admin-auth";
 
 // Mock Better Auth
 vi.mock("@/lib/auth/auth", () => ({
@@ -35,6 +35,8 @@ describe("Admin Authorization", () => {
             };
 
             const { auth } = await import("@/lib/auth/auth");
+    // @ts-ignore
+    // @ts-ignore
             vi.mocked(auth.api.getSession).mockResolvedValue(mockSession);
 
             const request = new NextRequest("http://localhost:3000/api/admin/test");
@@ -59,6 +61,8 @@ describe("Admin Authorization", () => {
             };
 
             const { auth } = await import("@/lib/auth/auth");
+                // @ts-ignore
+                // @ts-ignore
             vi.mocked(auth.api.getSession).mockResolvedValue(mockSession);
 
             const request = new NextRequest("http://localhost:3000/api/admin/test");
@@ -90,6 +94,7 @@ describe("Admin Authorization", () => {
             };
 
             const { auth } = await import("@/lib/auth/auth");
+            // @ts-ignore
             vi.mocked(auth.api.getSession).mockResolvedValue(mockSession);
 
             const request = new NextRequest("http://localhost:3000/api/admin/test");
@@ -110,6 +115,7 @@ describe("Admin Authorization", () => {
             };
 
             const { auth } = await import("@/lib/auth/auth");
+            // @ts-ignore
             vi.mocked(auth.api.getSession).mockResolvedValue(mockSession);
 
             const request = new NextRequest("http://localhost:3000/api/admin/test");
@@ -143,6 +149,8 @@ describe("Admin Authorization", () => {
             };
 
             const { auth } = await import("@/lib/auth/auth");
+            // @ts-ignore
+            // @ts-ignore
             vi.mocked(auth.api.getSession).mockResolvedValue(mockSession);
 
             const mockHandler = vi.fn().mockResolvedValue(new Response("Success"));
@@ -193,6 +201,7 @@ describe("Admin Authorization", () => {
             };
 
             const { auth } = await import("@/lib/auth/auth");
+            // @ts-ignore
             vi.mocked(auth.api.getSession).mockResolvedValue(mockSession);
 
             const mockHandler = vi.fn();

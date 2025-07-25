@@ -81,6 +81,7 @@ describe('signupAction', () => {
     formData.append('name', 'Test User');
 
     // Mock the failure response for this specific test
+    // @ts-ignore
     vi.mocked(auth.api.signUpEmail).mockResolvedValue({ user: null });
 
     try {

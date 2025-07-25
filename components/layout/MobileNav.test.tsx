@@ -1,24 +1,24 @@
 import { render, screen } from "@testing-library/react";
-import { describe, expect, test } from "vitest";
+import { describe, expect } from "vitest";
 
 import { MobileNav } from "./MobileNav";
 
-describe("MobileNav", () => {
-    test("should render items", () => {
+describe("mobileNav", () => {
+    it("should render items", () => {
         const items = [
             { title: "Dashboard", href: "/dashboard" },
             { title: "Settings", href: "/settings" },
         ];
 
         render(<MobileNav items={items} />);
-        
+
         expect(screen.getByText("Dashboard")).toBeInTheDocument();
         expect(screen.getByText("Settings")).toBeInTheDocument();
     });
 
-    test("should render CalorieTracker brand", () => {
+    it("should render CalorieTracker brand", () => {
         const items = [{ title: "Test", href: "/test" }];
-        
+
         render(<MobileNav items={items} />);
         expect(screen.getByText("CalorieTracker")).toBeInTheDocument();
     });
