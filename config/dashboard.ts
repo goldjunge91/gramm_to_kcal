@@ -16,17 +16,17 @@ export const dashboardConfig: DashboardConfig = {
         {
             title: "Dashboard",
             href: "/dashboard",
-            icon: "dashboard",
+            icon: "LayoutDashboard",
         },
         {
             title: "Recipes",
             href: "/dashboard/recipes",
-            icon: "post",
+            icon: "FileText",
         },
         {
             title: "Settings",
             href: "/dashboard/settings",
-            icon: "settings",
+            icon: "Settings",
         },
     ],
 };

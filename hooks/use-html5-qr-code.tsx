@@ -107,10 +107,20 @@ export function useHtml5QrCode({
             });
             scannerRef.current = html5QrCode;
 
+            let cameras: any[] = []; // Declare cameras here to ensure it's in scope for the catch block
+
             try {
-                const cameras = await Html5Qrcode.getCameras();
-                if (!cameras || cameras.length === 0) {
-                    throw new Error("No cameras found on this device.");
+                try {
+                    cameras = await Html5Qrcode.getCameras();
+                    if (!cameras || cameras.length === 0) {
+                        throw new Error("No cameras found on this device.");
+                    }
+                }
+                catch (cameraError) {
+                    // Log the camera error but don't rethrow, allow the rest of the logic to handle it
+                    const logger = createLogger();
+                    logger.error("Failed to get cameras", { error: cameraError });
+                    throw new Error("No cameras found on this device."); // Re-throw to be caught by the outer catch
                 }
 
                 const rearCamera = cameras.find(camera =>

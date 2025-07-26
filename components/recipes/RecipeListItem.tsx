@@ -1,4 +1,8 @@
-function RecipeListItem({ recipe }) {
+"use client";
+
+import type { Recipe } from "@/lib/types/types";
+
+function RecipeListItem({ recipe }: { recipe: Recipe }) {
     return (
         <div className="flex justify-between items-center p-4 border-b border-gray-200">
             <h3 className="text-lg font-medium">{recipe.name}</h3>

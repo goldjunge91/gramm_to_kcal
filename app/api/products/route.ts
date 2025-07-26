@@ -80,7 +80,7 @@ export async function GET(request: NextRequest) {
                         "X-RateLimit-Remaining",
                         result.rateLimit.remaining.toString(),
                     );
-                    const resetDate = new Date(result.rateLimit.reset);
+                    const resetDate = new Date(result.rateLimit.resetTime);
                     securityHeaders.set("X-RateLimit-Reset", resetDate.toUTCString());
                 }
                 return NextResponse.json(
@@ -124,7 +124,7 @@ export async function GET(request: NextRequest) {
                     "X-RateLimit-Remaining",
                     result.rateLimit.remaining.toString(),
                 );
-                const resetDate = new Date(result.rateLimit.reset);
+                const resetDate = new Date(result.rateLimit.resetTime);
                 cacheHeaders.set("X-RateLimit-Reset", resetDate.toUTCString());
             }
 
@@ -244,7 +244,7 @@ export async function GET(request: NextRequest) {
                     "X-RateLimit-Remaining",
                     result.rateLimit.remaining.toString(),
                 );
-                const resetDate = new Date(result.rateLimit.reset);
+                const resetDate = new Date(result.rateLimit.resetTime);
                 cacheHeaders.set("X-RateLimit-Reset", resetDate.toUTCString());
             }
 

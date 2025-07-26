@@ -1,18 +1,18 @@
 "use client";
 
-import type { User } from "next-auth";
+import type { User } from "better-auth";
 
 import Link from "next/link";
-import { signOut } from "@/lib/auth/auth-client";
 
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { UserAvatar } from "@/components/user-avatar";
+import { signOut } from "@/lib/auth/auth-client";
 
 interface UserAccountNavProps extends React.HTMLAttributes<HTMLDivElement> {
     user: Pick<User, "name" | "image" | "email">;
@@ -23,7 +23,10 @@ export function UserAccountNav({ user }: UserAccountNavProps) {
         <DropdownMenu>
             <DropdownMenuTrigger>
                 <UserAvatar
-                    user={{ name: user.name || null, image: user.image || null }}
+                    user={{
+                        name: user.name ?? "",
+                        image: user.image ?? "",
+                    }}
                     className="h-8 w-8"
                 />
             </DropdownMenuTrigger>
@@ -51,7 +54,9 @@ export function UserAccountNav({ user }: UserAccountNavProps) {
                     onSelect={(event) => {
                         event.preventDefault();
                         signOut({
-                            callbackUrl: `${window.location.origin}/login`,
+                            query: {
+                                callbackUrl: `${window.location.origin}/login`,
+                            },
                         });
                     }}
                 >

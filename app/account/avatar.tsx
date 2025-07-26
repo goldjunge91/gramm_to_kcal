@@ -19,9 +19,8 @@ export default function Avatar({
     const [avatarUrl, setAvatarUrl] = useState<string | null>(url);
     const [uploading, setUploading] = useState(false);
 
-    const uploadAvatar: React.ChangeEventHandler<HTMLInputElement> = (
-        event,
-    ) => {
+    const uploadAvatar: React.ChangeEventHandler<HTMLInputElement> = (event) => {
+        let file: File | undefined;
         try {
             setUploading(true);
 
@@ -29,7 +28,7 @@ export default function Avatar({
                 throw new Error("You must select an image to upload.");
             }
 
-            const file = event.target.files[0];
+            file = event.target.files[0];
 
             // For Better Auth, we'll just create a local URL for now
             // In a real implementation, you'd upload to your preferred storage service

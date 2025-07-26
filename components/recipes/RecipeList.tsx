@@ -6,9 +6,24 @@ import AddRecipeForm from "./AddRecipeForm";
 import RecipeListItem from "./RecipeListItem";
 
 const dummyRecipes = [
-    { id: 1, name: "Spaghetti Carbonara" },
-    { id: 2, name: "Chicken Tikka Masala" },
-    { id: 3, name: "Classic Beef Burgers" },
+    {
+        id: "1",
+        name: "Spaghetti Carbonara",
+        originalPortions: 2,
+        ingredients: [],
+    },
+    {
+        id: "2",
+        name: "Chicken Tikka Masala",
+        originalPortions: 2,
+        ingredients: [],
+    },
+    {
+        id: "3",
+        name: "Classic Beef Burgers",
+        originalPortions: 2,
+        ingredients: [],
+    },
 ];
 
 function RecipeList() {

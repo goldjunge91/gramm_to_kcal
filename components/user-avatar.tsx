@@ -1,4 +1,4 @@
-import type { User } from "next-auth";
+import type { User } from "better-auth";
 
 import { Icons } from "@/components/icons";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";

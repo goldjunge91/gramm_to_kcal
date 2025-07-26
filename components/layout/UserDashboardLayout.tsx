@@ -1,4 +1,4 @@
-import type { User } from "next-auth";
+import type { User } from "better-auth";
 
 import { UserDashboardNavbar } from "@/components/layout/UserDashboardNavbar";
 import { SiteFooter } from "@/components/site-footer";
