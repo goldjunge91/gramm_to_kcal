@@ -5,29 +5,32 @@
 
 "use client";
 
-import dynamic from "next/dynamic";
 import type { JSX } from "react";
+
 import { Loader2, Moon, Sun } from "lucide-react";
+import dynamic from "next/dynamic";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 // Simple loading component that shows a static toggle
-const ThemeToggleLoading = ({ 
-    className 
-}: { 
-    className?: string 
-}): JSX.Element => (
-    <Button
-        variant="ghost"
-        size="icon"
-        className={cn("h-9 w-9", className)}
-        disabled
-    >
-        <Loader2 className="h-4 w-4 animate-spin" />
-        <span className="sr-only">Theme wird geladen...</span>
-    </Button>
-);
+function ThemeToggleLoading({
+    className,
+}: {
+    className?: string;
+}): JSX.Element {
+    return (
+        <Button
+            variant="ghost"
+            size="icon"
+            className={cn("h-9 w-9", className)}
+            disabled
+        >
+            <Loader2 className="h-4 w-4 animate-spin" />
+            <span className="sr-only">Theme wird geladen...</span>
+        </Button>
+    );
+}
 
 // Dynamic import with loading state
 const DynamicThemeToggle = dynamic(
@@ -35,7 +38,7 @@ const DynamicThemeToggle = dynamic(
     {
         loading: () => <ThemeToggleLoading />,
         ssr: false, // Theme toggle needs client-side theme detection
-    }
+    },
 );
 
 /**
@@ -47,11 +50,11 @@ export function ThemeToggle(props: { className?: string }): JSX.Element {
 }
 
 // Also export the static version for cases where animation isn't needed
-export function StaticThemeToggle({ 
+export function StaticThemeToggle({
     className,
     checked,
-    onToggle 
-}: { 
+    onToggle,
+}: {
     className?: string;
     checked?: boolean;
     onToggle?: (checked: boolean) => void;

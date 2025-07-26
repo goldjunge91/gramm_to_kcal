@@ -8,13 +8,13 @@ import {
     cachedLookupProductByBarcode,
     cachedSearchProductsByName,
 } from "@/lib/api/cached-product-lookup";
+import { createApiErrorResponse } from "@/lib/utils/api-error-response";
 import {
     CacheStrategies,
     createNoCacheHeaders,
     createPublicCacheHeaders,
     handleETaggedResponse,
 } from "@/lib/utils/cache-headers";
-import { createApiErrorResponse } from "@/lib/utils/api-error-response";
 import { extractErrorMessage } from "@/lib/utils/error-utils";
 import { createRequestLogger } from "@/lib/utils/logger";
 import {
