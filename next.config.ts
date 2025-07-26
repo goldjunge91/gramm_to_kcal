@@ -90,6 +90,13 @@ const baseConfig: NextConfig = {
         "http://localhost:3000",
         env.NEXT_PUBLIC_URL!,
     ],
+    serverExternalPackages: [
+        "thread-stream",
+        "pino",
+        "pino-worker",
+        "pino-file",
+        "pino-pretty",
+    ],
     /* config options here */
     images: {
         remotePatterns: [

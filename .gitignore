@@ -52,3 +52,5 @@ node_modules/
 /playwright/.cache/
 .claude/tdd-guard/data/**
 *.log
+build-error.txt
+.gitignore

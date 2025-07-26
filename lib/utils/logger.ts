@@ -51,14 +51,32 @@ export interface Logger {
 
 // Runtime detection utilities
 function detectRuntime(): "edge" | "nodejs" | "browser" {
+    // Check NEXT_RUNTIME environment variable first (most reliable for Next.js)
+    if (typeof process !== "undefined" && process.env?.NEXT_RUNTIME === "edge") {
+        return "edge";
+    }
+
+    if (typeof process !== "undefined" && process.env?.NEXT_RUNTIME === "nodejs") {
+        return "nodejs";
+    }
+
+    // Fallback to global checks
     // Edge runtime check - Next.js specific
     if (typeof (globalThis as any).EdgeRuntime !== "undefined") {
         return "edge";
     }
 
-    // Node.js runtime check
-    if (typeof process !== "undefined" && process.versions && process.versions.node) {
-        return "nodejs";
+    // Node.js runtime check - but avoid process.versions in Edge Runtime
+    if (typeof process !== "undefined" && typeof (globalThis as any).EdgeRuntime === "undefined") {
+        try {
+            // Only access process.versions if we're not in Edge Runtime
+            if (process.versions && process.versions.node) {
+                return "nodejs";
+            }
+        }
+        catch {
+            // Ignore errors and continue
+        }
     }
 
     // Browser/client-side
@@ -173,6 +191,63 @@ async function getPino() {
     return pinoInstance;
 }
 
+// Set max listeners to prevent warnings during builds with multiple loggers
+// Only do this in Node.js runtime, not Edge Runtime
+if (typeof process !== "undefined" && 
+    process.env?.NEXT_RUNTIME !== "edge" && 
+    typeof (globalThis as any).EdgeRuntime === "undefined" &&
+    process.setMaxListeners) {
+    process.setMaxListeners(20); // Increase from default 10 to handle multiple logger instances
+}
+
+// Singleton Pino instance to prevent multiple loggers and exit listeners
+let globalPinoLogger: any = null;
+let pinoInitialized = false;
+
+async function getGlobalPinoLogger(level: LogLevel = "info", context: Record<string, unknown> = {}): Promise<any> {
+    if (!globalPinoLogger && !pinoInitialized) {
+        pinoInitialized = true;
+        try {
+            const pino = await getPino();
+            const usePretty = process.env.LOG_FORMAT === "pretty";
+            const environment = getEnvironment();
+
+            globalPinoLogger = pino({
+                level,
+                base: {
+                    environment,
+                    runtime: "nodejs",
+                    ...context,
+                },
+                formatters: {
+                    level(label: string, number: number) {
+                        return {
+                            level: number,
+                            levelName: label,
+                        };
+                    },
+                },
+                timestamp: () => `,"timestamp":"${new Date().toISOString()}"`,
+                transport: usePretty
+                    ? {
+                            target: "pino-pretty",
+                            options: {
+                                colorize: true,
+                                singleLine: true,
+                                ignore: "pid,hostname,environment,runtime,context",
+                            },
+                        }
+                    : undefined,
+            });
+        }
+        catch (error) {
+            console.error("Failed to initialize global Pino logger:", error);
+            globalPinoLogger = null;
+        }
+    }
+    return globalPinoLogger;
+}
+
 // Node.js Runtime Logger Implementation with Pino
 class NodeLogger implements Logger {
     private level: LogLevel;
@@ -194,39 +269,10 @@ class NodeLogger implements Logger {
 
     private async initializePino(): Promise<void> {
         try {
-            const pino = await getPino();
-            const usePretty = process.env.LOG_FORMAT === "pretty";
-            this.pino = pino({
-                level: this.level,
-                base: {
-                    environment: this.environment,
-                    runtime: this.runtime,
-                    ...this.context,
-                },
-                formatters: {
-                    level(label: string, number: number) {
-                        return {
-                            level: number,
-                            levelName: label,
-                        };
-                    },
-                },
-                timestamp: () => `,"timestamp":"${new Date().toISOString()}"`,
-                transport: usePretty
-                    ? {
-                            target: "pino-pretty",
-                            options: {
-                                colorize: true,
-                                singleLine: true,
-                                ignore: "pid,hostname,environment,runtime,context", // Felder, die du nicht brauchst
-                            },
-                        }
-                    : undefined,
-            });
-            this.initialized = true;
+            this.pino = await getGlobalPinoLogger(this.level, this.context);
+            this.initialized = !!this.pino;
         }
         catch (error) {
-            // Fallback to console if Pino fails to initialize
             console.error("Failed to initialize Pino, falling back to console:", error);
             this.initialized = false;
         }
@@ -286,7 +332,7 @@ class NodeLogger implements Logger {
 
     child(bindings: Record<string, unknown>): Logger {
         if (this.initialized && this.pino) {
-            // Create Pino child logger
+            // Create Pino child logger from the shared instance
             const childPino = this.pino.child(bindings);
             const childLogger = new NodeLogger(this.level, { ...this.context, ...bindings });
             childLogger.pino = childPino;

@@ -5,15 +5,9 @@ import { Geist, Geist_Mono } from "next/font/google";
 import FlyingSchnitzel from "@/components/FlyingSchnitzel";
 import { Navbar } from "@/components/layout/Navbar";
 import { Toaster } from "@/components/ui/sonner";
-import { initializeRedis } from "@/lib/redis";
 
 import "./globals.css";
 import { Providers } from "./providers";
-
-// Initialize Redis on app startup
-if (typeof window === "undefined") {
-    initializeRedis();
-}
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
