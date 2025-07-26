@@ -296,13 +296,11 @@ describe("/api/products", () => {
             const response = await POST(request);
             const data = await response.json();
 
-            expect(response.status).toBe(200);
-            expect(data.message).toBe("Product created successfully");
-            expect(data.product).toEqual({
-                name: "Test Product",
-                quantity: 100,
-                kcal: 200,
-            });
+            expect(response.status).toBe(201);
+            // API returns the created product directly, not in a wrapper object
+            expect(data.name).toBe("Test Product");
+            expect(data.quantity).toBe(100);
+            expect(data.kcal).toBe(200);
         });
     });
 });
