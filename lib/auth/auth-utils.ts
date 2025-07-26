@@ -27,6 +27,8 @@ export async function currentSessionUser() {
             error: error instanceof Error ? error.message : String(error),
             stack: error instanceof Error ? error.stack : undefined,
         });
+        // Fallback für Tests: Logging auch an console.error
+        console.error("Error getting current session user:", error);
         return null;
     }
 }
@@ -60,6 +62,8 @@ export async function sessionHasRole(role: string): Promise<boolean> {
             error: error instanceof Error ? error.message : String(error),
             stack: error instanceof Error ? error.stack : undefined,
         });
+        // Fallback für Tests: Logging auch an console.error
+        console.error("Error checking user role:", error);
         return false;
     }
 }
