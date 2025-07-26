@@ -3,6 +3,8 @@ import { toast } from "sonner";
 
 import type { NewProduct, Product } from "../db/schemas";
 
+import { formatErrorForUser, toAppError } from "../utils/error-utils";
+
 // Pagination response type
 interface ProductsResponse {
     products: Product[];
@@ -81,14 +83,11 @@ export function useCreateProduct() {
                 queryKey: ["products", data.userId],
             });
         },
-        onError: (error: any) => {
-            const errorMsg
-                = error?.message
-                    || error?.error_description
-                    || error?.toString()
-                    || "Failed to create product";
+        onError: (error: unknown) => {
+            const appError = toAppError(error, "create-product");
+            const errorMsg = formatErrorForUser(appError);
             toast.error(errorMsg);
-            console.error("Create product error:", error);
+            console.error("Create product error:", appError);
         },
     });
 }

@@ -15,6 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
+import { formatErrorForUser, toAppError } from "@/lib/utils/error-utils";
 import { createLogger } from "@/lib/utils/logger";
 
 export function UpdatePasswordForm({
@@ -27,23 +28,27 @@ export function UpdatePasswordForm({
     const [isLoading, setIsLoading] = useState(false);
     const router = useRouter();
 
-    const getErrorMessage = (error: any): string => {
-        if (!error)
-            return "An unexpected error occurred";
+    const getErrorMessage = (error: unknown): string => {
+        const appError = toAppError(error, "update-password");
 
-        const message = error.message || error.toString();
+        // Auth-specific error handling
+        if (appError.type === "auth") {
+            const message = appError.message || appError.error_description || "";
 
-        if (message.includes("Password should be at least")) {
-            return "Password must be at least 6 characters long.";
-        }
-        if (message.includes("New password should be different")) {
-            return "Your new password must be different from your current password.";
-        }
-        if (message.includes("Invalid password")) {
-            return "Please enter a valid password.";
+            if (message.includes("Password should be at least")) {
+                return "Password must be at least 6 characters long.";
+            }
+            if (message.includes("New password should be different")) {
+                return "Your new password must be different from your current password.";
+            }
+            if (message.includes("Invalid password")) {
+                return "Please enter a valid password.";
+            }
         }
 
-        return message;
+        // Use the formatted error message with fallback
+        const formattedMessage = formatErrorForUser(appError);
+        return formattedMessage || "Failed to update password. Please try again.";
     };
 
     const handleUpdatePassword = async (e: React.FormEvent) => {

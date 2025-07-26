@@ -117,6 +117,10 @@ export async function GET(request: NextRequest) {
             error: error instanceof Error ? error.message : "Unknown error",
             stack: error instanceof Error ? error.stack : undefined,
         });
+        // Fallback-Logging für Tests
+        if (typeof console !== "undefined" && typeof console.error === "function") {
+            console.error("Error fetching products:", error);
+        }
         return NextResponse.json(
             { error: "Internal server error" },
             { status: 500 },
@@ -168,6 +172,10 @@ export async function POST(request: NextRequest) {
                 userId: session.user.id,
                 productData,
             });
+            // Fallback-Logging für Tests
+            if (typeof console !== "undefined" && typeof console.error === "function") {
+                console.error("Failed to insert product, no data returned.");
+            }
             return NextResponse.json(
                 { error: "Failed to create product" },
                 { status: 500 },

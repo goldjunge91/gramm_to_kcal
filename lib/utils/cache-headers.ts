@@ -11,7 +11,7 @@ import { createHash } from "node:crypto";
 /**
  * Creates an MD5 ETag from data
  */
-export function createETag(data: any): string {
+export function createETag(data: unknown): string {
     return createHash("md5")
         .update(JSON.stringify(data))
         .digest("hex");
@@ -21,11 +21,11 @@ export function createETag(data: any): string {
  * Creates an ETag from data with a timestamp rounded to specified seconds
  * Useful for time-sensitive data that should cache for specific intervals
  */
-export function createTimestampETag(data: any, roundToSeconds = 30): string {
-    const now = new Date();
-    const roundedTime = Math.floor(now.getTime() / (roundToSeconds * 1000)) * roundToSeconds * 1000;
+export function createTimestampETag(data: unknown, roundToSeconds = 30): string {
+    const now = Date.now();
+    const roundedTime = Math.floor(now / (roundToSeconds * 1000)) * roundToSeconds * 1000;
     const timestampedData = {
-        ...data,
+        ...(typeof data === "object" && data !== null ? data : { value: data }),
         _timestamp: roundedTime,
     };
     return createETag(timestampedData);

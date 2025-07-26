@@ -10,7 +10,7 @@ import { createLogger } from "@/lib/utils/logger";
 // Props for the custom hook
 interface UseHtml5QrCodeProps {
     onScanSuccess: QrcodeSuccessCallback;
-    onScanFailure?: (error: any) => void;
+    onScanFailure?: (error: unknown) => void;
     onError?: (errorMessage: string) => void;
 }
 
@@ -46,7 +46,7 @@ export function useHtml5QrCode({
     const isStoppingRef = useRef(false); // Ref to prevent race conditions on stop
 
     const handleScanFailure = useCallback(
-        (err: any) => {
+        (err: unknown) => {
             if (onScanFailure) {
                 onScanFailure(err);
             }

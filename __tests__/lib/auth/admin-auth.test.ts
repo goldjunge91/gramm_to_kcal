@@ -27,16 +27,35 @@ describe("admin Authorization", () => {
     describe("verifyAdminAccess", () => {
         it("should authorize user with admin role", async () => {
             const mockSession = {
+                session: {
+                    id: "session-1",
+                    userId: "admin-123",
+                    expiresAt: new Date(),
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                    token: "mock-token",
+                    ipAddress: "127.0.0.1",
+                    userAgent: "test-agent",
+                    impersonatedBy: null,
+                    revokedAt: null,
+                },
                 user: {
                     id: "admin-123",
                     email: "admin@example.com",
+                    emailVerified: true,
+                    name: "Admin User",
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                    image: null,
+                    banned: false,
                     role: "admin",
+                    banReason: null,
+                    banExpires: null,
+                    isAnonymous: false,
                 },
             };
 
             const { auth } = await import("@/lib/auth/auth");
-            // @ts-ignore
-            // @ts-ignore
             vi.mocked(auth.api.getSession).mockResolvedValue(mockSession);
 
             const request = new NextRequest("http://localhost:3000/api/admin/test");
@@ -53,10 +72,31 @@ describe("admin Authorization", () => {
 
         it("should authorize user with super_admin role", async () => {
             const mockSession = {
+                session: {
+                    id: "session-2",
+                    userId: "super-123",
+                    expiresAt: new Date(),
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                    token: "mock-token-super",
+                    ipAddress: "127.0.0.1",
+                    userAgent: "test-agent",
+                    impersonatedBy: null,
+                    revokedAt: null,
+                },
                 user: {
                     id: "super-123",
                     email: "super@example.com",
+                    emailVerified: true,
+                    name: "Super Admin",
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                    image: null,
+                    banned: false,
                     role: "super_admin",
+                    banReason: null,
+                    banExpires: null,
+                    isAnonymous: false,
                 },
             };
 
@@ -86,10 +126,31 @@ describe("admin Authorization", () => {
 
         it("should reject user without admin role", async () => {
             const mockSession = {
+                session: {
+                    id: "session-3",
+                    userId: "user-123",
+                    expiresAt: new Date(),
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                    token: "mock-token-user",
+                    ipAddress: "127.0.0.1",
+                    userAgent: "test-agent",
+                    impersonatedBy: null,
+                    revokedAt: null,
+                },
                 user: {
                     id: "user-123",
                     email: "user@example.com",
+                    emailVerified: true,
+                    name: "Normal User",
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                    image: null,
+                    banned: false,
                     role: "user",
+                    banReason: null,
+                    banExpires: null,
+                    isAnonymous: false,
                 },
             };
 
@@ -107,10 +168,31 @@ describe("admin Authorization", () => {
 
         it("should reject user with no role", async () => {
             const mockSession = {
+                session: {
+                    id: "session-4",
+                    userId: "user-123",
+                    expiresAt: new Date(),
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                    token: "mock-token-norole",
+                    ipAddress: "127.0.0.1",
+                    userAgent: "test-agent",
+                    impersonatedBy: null,
+                    revokedAt: null,
+                },
                 user: {
                     id: "user-123",
                     email: "user@example.com",
+                    emailVerified: true,
+                    name: "No Role User",
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                    image: null,
+                    banned: false,
                     role: null,
+                    banReason: null,
+                    banExpires: null,
+                    isAnonymous: false,
                 },
             };
 
@@ -141,10 +223,31 @@ describe("admin Authorization", () => {
     describe("withAdminAuth middleware", () => {
         it("should call handler when user is authorized", async () => {
             const mockSession = {
+                session: {
+                    id: "session-5",
+                    userId: "admin-123",
+                    expiresAt: new Date(),
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                    token: "mock-token-admin",
+                    ipAddress: "127.0.0.1",
+                    userAgent: "test-agent",
+                    impersonatedBy: null,
+                    revokedAt: null,
+                },
                 user: {
                     id: "admin-123",
                     email: "admin@example.com",
+                    emailVerified: true,
+                    name: "Admin User",
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                    image: null,
+                    banned: false,
                     role: "admin",
+                    banReason: null,
+                    banExpires: null,
+                    isAnonymous: false,
                 },
             };
 
@@ -193,10 +296,31 @@ describe("admin Authorization", () => {
 
         it("should return 403 when user has insufficient privileges", async () => {
             const mockSession = {
+                session: {
+                    id: "session-6",
+                    userId: "user-123",
+                    expiresAt: new Date(),
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                    token: "mock-token-user2",
+                    ipAddress: "127.0.0.1",
+                    userAgent: "test-agent",
+                    impersonatedBy: null,
+                    revokedAt: null,
+                },
                 user: {
                     id: "user-123",
                     email: "user@example.com",
+                    emailVerified: true,
+                    name: "Normal User",
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                    image: null,
+                    banned: false,
                     role: "user",
+                    banReason: null,
+                    banExpires: null,
+                    isAnonymous: false,
                 },
             };
 

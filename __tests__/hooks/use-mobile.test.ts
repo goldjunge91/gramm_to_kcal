@@ -71,8 +71,11 @@ describe("useIsMobile", () => {
 
     it("should detect iPhone user agent", () => {
         window.innerWidth = 1024; // Desktop size
-        navigator.userAgent
-            = "Mozilla/5.0 (iPhone; CPU iPhone OS 14_7_1 like Mac OS X)";
+        Object.defineProperty(navigator, "userAgent", {
+            writable: true,
+            configurable: true,
+            value: "Mozilla/5.0 (iPhone; CPU iPhone OS 14_7_1 like Mac OS X)",
+        });
         const mockMQL = createMockMediaQueryList(false);
         mockWindow.matchMedia.mockReturnValue(mockMQL);
 
@@ -83,7 +86,11 @@ describe("useIsMobile", () => {
 
     it("should detect iPad user agent", () => {
         window.innerWidth = 1024;
-        navigator.userAgent = "Mozilla/5.0 (iPad; CPU OS 14_7_1 like Mac OS X)";
+        Object.defineProperty(navigator, "userAgent", {
+            writable: true,
+            configurable: true,
+            value: "Mozilla/5.0 (iPad; CPU OS 14_7_1 like Mac OS X)",
+        });
         const mockMQL = createMockMediaQueryList(false);
         mockWindow.matchMedia.mockReturnValue(mockMQL);
 
@@ -94,7 +101,11 @@ describe("useIsMobile", () => {
 
     it("should detect Android user agent", () => {
         window.innerWidth = 1024;
-        navigator.userAgent = "Mozilla/5.0 (Linux; Android 11; SM-G991B)";
+        Object.defineProperty(navigator, "userAgent", {
+            writable: true,
+            configurable: true,
+            value: "Mozilla/5.0 (Linux; Android 11; SM-G991B)",
+        });
         const mockMQL = createMockMediaQueryList(false);
         mockWindow.matchMedia.mockReturnValue(mockMQL);
 
@@ -105,8 +116,11 @@ describe("useIsMobile", () => {
 
     it("should not detect desktop user agent as mobile", () => {
         window.innerWidth = 1024;
-        navigator.userAgent
-            = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36";
+        Object.defineProperty(navigator, "userAgent", {
+            writable: true,
+            configurable: true,
+            value: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+        });
         const mockMQL = createMockMediaQueryList(false);
         mockWindow.matchMedia.mockReturnValue(mockMQL);
 
@@ -188,10 +202,13 @@ describe("useIsMobile", () => {
     });
 
     it("should return true when either condition is met", () => {
-        // Desktop size but mobile user agent
+        // Desktop size aber mobile user agent
         window.innerWidth = 1024;
-        navigator.userAgent
-            = "Mozilla/5.0 (iPhone; CPU iPhone OS 14_7_1 like Mac OS X)";
+        Object.defineProperty(navigator, "userAgent", {
+            writable: true,
+            configurable: true,
+            value: "Mozilla/5.0 (iPhone; CPU iPhone OS 14_7_1 like Mac OS X)",
+        });
         const mockMQL = createMockMediaQueryList(false);
         mockWindow.matchMedia.mockReturnValue(mockMQL);
 

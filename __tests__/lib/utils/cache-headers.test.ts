@@ -47,10 +47,11 @@ describe("cache-headers utilities", () => {
 
             // Mock Date.now() to control time
             const originalNow = Date.now;
+
             Date.now = () => 1000000; // 1000 seconds
             const etag1 = createTimestampETag(data, 30);
 
-            Date.now = () => 1020000; // 1020 seconds (within 30s window)
+            Date.now = () => 1019999; // 1019.999s (letzter ms im selben Fenster)
             const etag2 = createTimestampETag(data, 30);
 
             Date.now = originalNow;

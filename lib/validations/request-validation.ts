@@ -73,9 +73,11 @@ export const CommonSchemas = {
 export const RequestSchemas = {
     // Product API schemas
     createProduct: z.object({
+        id: z.string().min(1, "Product ID required"),
         name: CommonSchemas.productName,
         quantity: CommonSchemas.positiveNumber,
         kcal: CommonSchemas.positiveNumber,
+        unit: z.string().min(1, "Unit required"),
     }),
 
     updateProduct: z.object({
@@ -251,7 +253,7 @@ export async function validateRequest<T>(
     const { source = "body", sanitize = true } = options;
 
     try {
-        let data: any;
+        let data: unknown;
 
         switch (source) {
             case "body":
@@ -268,12 +270,13 @@ export async function validateRequest<T>(
 
             case "query": {
                 const url = new URL(request.url);
-                data = Object.fromEntries(url.searchParams.entries());
+                const rawData: Record<string, string | number> = Object.fromEntries(url.searchParams.entries());
                 // Konvertiere numerische Query-Parameter
-                if (data.limit !== undefined) {
-                    const parsed = Number(data.limit);
-                    data.limit = Number.isNaN(parsed) ? data.limit : parsed;
+                if (rawData.limit !== undefined && typeof rawData.limit === "string") {
+                    const parsed = Number(rawData.limit);
+                    rawData.limit = Number.isNaN(parsed) ? rawData.limit : parsed;
                 }
+                data = rawData;
                 break;
             }
 
@@ -312,7 +315,7 @@ export async function validateRequest<T>(
 }
 
 // Recursive object sanitization
-function sanitizeObject(obj: any): any {
+function sanitizeObject(obj: unknown): unknown {
     if (typeof obj === "string") {
         return sanitizeString(obj);
     }
@@ -322,7 +325,7 @@ function sanitizeObject(obj: any): any {
     }
 
     if (obj && typeof obj === "object") {
-        const sanitized: any = {};
+        const sanitized: Record<string, unknown> = {};
         for (const [key, value] of Object.entries(obj)) {
             sanitized[key] = sanitizeObject(value);
         }

@@ -88,8 +88,8 @@ export async function getRedisHealth() {
         const latency = Date.now() - start;
 
         return {
-            status: "healthy",
-            latency: `${latency}ms`,
+            status: "connected",
+            latency,
             timestamp: new Date().toISOString(),
         };
     }

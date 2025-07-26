@@ -28,21 +28,23 @@ Object.defineProperty(globalThis, "crypto", {
     },
 });
 
+// Mock Redis interface
+interface MockRedis {
+    get: ReturnType<typeof vi.fn>;
+    setex: ReturnType<typeof vi.fn>;
+    del: ReturnType<typeof vi.fn>;
+    pipeline: ReturnType<typeof vi.fn>;
+    exec: ReturnType<typeof vi.fn>;
+    lpush: ReturnType<typeof vi.fn>;
+    ltrim: ReturnType<typeof vi.fn>;
+    expire: ReturnType<typeof vi.fn>;
+    lrange: ReturnType<typeof vi.fn>;
+}
+
 // Type augmentation for globalThis to add mockRedis
 declare global {
-    // Augment globalThis, not Global
-
-    let mockRedis: {
-        get: typeof vi.fn;
-        setex: typeof vi.fn;
-        del: typeof vi.fn;
-        pipeline: typeof vi.fn;
-        exec: typeof vi.fn;
-        lpush: typeof vi.fn;
-        ltrim: typeof vi.fn;
-        expire: typeof vi.fn;
-        lrange: typeof vi.fn;
-    };
+    // eslint-disable-next-line vars-on-top
+    var mockRedis: MockRedis;
 }
 
 globalThis.mockRedis = {

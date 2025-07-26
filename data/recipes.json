@@ -1,0 +1,56 @@
+[
+    {
+        "id": "test-id-1",
+        "title": "Testrezept",
+        "description": "Ein Testrezept für Coverage.",
+        "ingredients": [
+            "Mehl",
+            "Wasser"
+        ]
+    },
+    {
+        "id": "test-id-1",
+        "title": "Testrezept",
+        "description": "Ein Testrezept für Coverage.",
+        "ingredients": [
+            "Mehl",
+            "Wasser"
+        ]
+    },
+    {
+        "id": "test-id-1",
+        "title": "Testrezept",
+        "description": "Ein Testrezept für Coverage.",
+        "ingredients": [
+            "Mehl",
+            "Wasser"
+        ]
+    },
+    {
+        "id": "test-id-1",
+        "title": "Testrezept",
+        "description": "Ein Testrezept für Coverage.",
+        "ingredients": [
+            "Mehl",
+            "Wasser"
+        ]
+    },
+    {
+        "id": "test-id-1",
+        "title": "Testrezept",
+        "description": "Ein Testrezept für Coverage.",
+        "ingredients": [
+            "Mehl",
+            "Wasser"
+        ]
+    },
+    {
+        "id": "test-id-1",
+        "title": "Testrezept",
+        "description": "Ein Testrezept für Coverage.",
+        "ingredients": [
+            "Mehl",
+            "Wasser"
+        ]
+    }
+]

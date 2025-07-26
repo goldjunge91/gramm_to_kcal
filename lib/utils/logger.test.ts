@@ -21,6 +21,9 @@ describe("logger System", () => {
         vi.spyOn(console, "error").mockImplementation(() => {});
         vi.spyOn(console, "warn").mockImplementation(() => {});
         vi.spyOn(console, "debug").mockImplementation(() => {});
+        // Kontext-Log für Teststart
+
+        console.info("[TEST] logger System: Testlauf gestartet", { timestamp: new Date().toISOString() });
     });
 
     afterEach(() => {
@@ -32,6 +35,9 @@ describe("logger System", () => {
         else {
             delete (globalThis as any).EdgeRuntime;
         }
+        // Kontext-Log für Testende
+
+        console.info("[TEST] logger System: Testlauf beendet", { timestamp: new Date().toISOString() });
     });
 
     describe("logger Factory", () => {

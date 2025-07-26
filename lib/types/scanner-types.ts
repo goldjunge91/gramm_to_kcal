@@ -33,7 +33,7 @@ export interface BarcodeScannerProps {
  */
 export interface UseHtml5QrCodeProps {
     onScanSuccess: QrcodeSuccessCallback;
-    onScanFailure?: (error: any) => void;
+    onScanFailure?: (error: unknown) => void;
     onError?: (errorMessage: string) => void;
 }
 

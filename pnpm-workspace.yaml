@@ -1,9 +1,15 @@
+ignoredBuiltDependencies:
+  - '@prisma/client'
+  - '@prisma/engines'
+  - prisma
+
 onlyBuiltDependencies:
-    - "@pkgr/core"
-    - "@tailwindcss/oxide"
-    - esbuild
-    - eslint-config-prettier
-    - node
-    - sharp
-    - synckit
-    - unrs-resolver
+  - '@pkgr/core'
+  - '@tailwindcss/oxide'
+  - better-sqlite3
+  - esbuild
+  - eslint-config-prettier
+  - node
+  - sharp
+  - synckit
+  - unrs-resolver

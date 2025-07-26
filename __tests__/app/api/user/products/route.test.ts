@@ -72,7 +72,15 @@ describe("/api/user/products", () => {
             const { auth } = await import("@/lib/auth/auth");
             const { db } = await import("@/lib/db");
 
-            const mockUser = { id: "user123", email: "test@example.com" };
+            const mockUser = {
+                id: "user123",
+                email: "test@example.com",
+                emailVerified: true,
+                name: "Test User",
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                banned: false,
+            };
             const mockProducts = [
                 { id: "1", name: "Test Product", userId: "user123", createdAt: "2024-01-01T00:00:00.000Z" },
                 { id: "2", name: "Another Product", userId: "user123", createdAt: "2024-01-02T00:00:00.000Z" },
@@ -80,7 +88,14 @@ describe("/api/user/products", () => {
 
             vi.mocked(auth.api.getSession).mockResolvedValue({
                 user: mockUser,
-                session: { id: "session123" },
+                session: {
+                    id: "session123",
+                    userId: "user123",
+                    expiresAt: new Date(),
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                    token: "test-token",
+                },
             });
 
             const mockQuery = {
@@ -91,10 +106,15 @@ describe("/api/user/products", () => {
                         })),
                     })),
                 })),
-            };
+                fields: {},
+                session: undefined,
+                dialect: {},
+                withList: [],
+                distinct: undefined,
+            } as any;
             vi.mocked(db.select).mockReturnValue(mockQuery);
 
-            const request = new Request("http://localhost:3000/api/user/products");
+            const request = new NextRequest("http://localhost:3000/api/user/products");
             const response = await GET(request);
             const data = await response.json();
 
@@ -108,14 +128,29 @@ describe("/api/user/products", () => {
             const { auth } = await import("@/lib/auth/auth");
             const { db } = await import("@/lib/db");
 
-            const mockUser = { id: "user123", email: "test@example.com" };
+            const mockUser = {
+                id: "user123",
+                email: "test@example.com",
+                emailVerified: true,
+                name: "Test User",
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                banned: false,
+            };
             const mockProducts = [
                 { id: "3", name: "Older Product", userId: "user123", createdAt: "2023-12-31T00:00:00.000Z" },
             ];
 
             vi.mocked(auth.api.getSession).mockResolvedValue({
                 user: mockUser,
-                session: { id: "session123" },
+                session: {
+                    id: "session123",
+                    userId: "user123",
+                    expiresAt: new Date(),
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                    token: "test-token",
+                },
             });
 
             const mockQuery = {
@@ -126,10 +161,15 @@ describe("/api/user/products", () => {
                         })),
                     })),
                 })),
-            };
+                fields: {},
+                session: undefined,
+                dialect: {},
+                withList: [],
+                distinct: undefined,
+            } as any;
             vi.mocked(db.select).mockReturnValue(mockQuery);
 
-            const request = new Request("http://localhost:3000/api/user/products?cursor=2024-01-01T00:00:00.000Z&limit=10");
+            const request = new NextRequest("http://localhost:3000/api/user/products?cursor=2024-01-01T00:00:00.000Z&limit=10");
             const response = await GET(request);
             const data = await response.json();
 
@@ -144,7 +184,7 @@ describe("/api/user/products", () => {
 
             vi.mocked(auth.api.getSession).mockResolvedValue(null);
 
-            const request = new Request("http://localhost:3000/api/user/products");
+            const request = new NextRequest("http://localhost:3000/api/user/products");
             const response = await GET(request);
             const data = await response.json();
 
@@ -156,9 +196,15 @@ describe("/api/user/products", () => {
             const { auth } = await import("@/lib/auth/auth");
             const { db } = await import("@/lib/db");
 
-            const mockAuth = createMockAuthSession(
-                { id: "user123", email: "test@example.com" },
-            );
+            const mockAuth = createMockAuthSession({
+                id: "user123",
+                email: "test@example.com",
+                emailVerified: true,
+                name: "Test User",
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                banned: false,
+            });
             vi.mocked(auth.api.getSession).mockResolvedValue(mockAuth);
 
             const mockQuery = {
@@ -173,14 +219,19 @@ describe("/api/user/products", () => {
                         })),
                     })),
                 })),
-            };
+                fields: {},
+                session: undefined,
+                dialect: {},
+                withList: [],
+                distinct: undefined,
+            } as any;
             vi.mocked(db.select).mockReturnValue(mockQuery);
 
             const consoleSpy = vi
                 .spyOn(console, "error")
                 .mockImplementation(() => {});
 
-            const request = new Request("http://localhost:3000/api/user/products");
+            const request = new NextRequest("http://localhost:3000/api/user/products");
             const response = await GET(request);
             const data = await response.json();
 
@@ -200,7 +251,15 @@ describe("/api/user/products", () => {
             const { auth } = await import("@/lib/auth/auth");
             const { db } = await import("@/lib/db");
 
-            const mockUser = { id: "user123", email: "test@example.com" };
+            const mockUser = {
+                id: "user123",
+                email: "test@example.com",
+                emailVerified: true,
+                name: "Test User",
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                banned: false,
+            };
             const productData = {
                 name: "New Product",
                 kcal: 100,
@@ -216,7 +275,14 @@ describe("/api/user/products", () => {
 
             vi.mocked(auth.api.getSession).mockResolvedValue({
                 user: mockUser,
-                session: { id: "session123" },
+                session: {
+                    id: "session123",
+                    userId: "user123",
+                    expiresAt: new Date(),
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                    token: "test-token",
+                },
             });
 
             const mockInsert = {
@@ -267,9 +333,15 @@ describe("/api/user/products", () => {
             const { auth } = await import("@/lib/auth/auth");
             const { db } = await import("@/lib/db");
 
-            const mockAuth = createMockAuthSession(
-                { id: "user123", email: "test@example.com" },
-            );
+            const mockAuth = createMockAuthSession({
+                id: "user123",
+                email: "test@example.com",
+                emailVerified: true,
+                name: "Test User",
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                banned: false,
+            });
             vi.mocked(auth.api.getSession).mockResolvedValue(mockAuth);
 
             const mockInsert = {
@@ -307,9 +379,15 @@ describe("/api/user/products", () => {
             const { auth } = await import("@/lib/auth/auth");
             const { db } = await import("@/lib/db");
 
-            const mockAuth = createMockAuthSession(
-                { id: "user123", email: "test@example.com" },
-            );
+            const mockAuth = createMockAuthSession({
+                id: "user123",
+                email: "test@example.com",
+                emailVerified: true,
+                name: "Test User",
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                banned: false,
+            });
             vi.mocked(auth.api.getSession).mockResolvedValue(mockAuth);
 
             const mockInsert = {

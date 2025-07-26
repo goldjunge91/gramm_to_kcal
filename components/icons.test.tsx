@@ -5,7 +5,7 @@ import { Icons } from "./icons";
 
 describe("icons", () => {
     it("should render icon with name prop", () => {
-        const { container } = render(<Icons name="Home" />);
+        const { container } = render(<Icons name="User" />);
         expect(container.firstChild).toBeInTheDocument();
     });
 

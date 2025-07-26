@@ -195,6 +195,7 @@ class NodeLogger implements Logger {
     private async initializePino(): Promise<void> {
         try {
             const pino = await getPino();
+            const usePretty = process.env.LOG_FORMAT === "pretty";
             this.pino = pino({
                 level: this.level,
                 base: {
@@ -211,6 +212,16 @@ class NodeLogger implements Logger {
                     },
                 },
                 timestamp: () => `,"timestamp":"${new Date().toISOString()}"`,
+                transport: usePretty
+                    ? {
+                            target: "pino-pretty",
+                            options: {
+                                colorize: true,
+                                singleLine: true,
+                                ignore: "pid,hostname,environment,runtime,context", // Felder, die du nicht brauchst
+                            },
+                        }
+                    : undefined,
             });
             this.initialized = true;
         }

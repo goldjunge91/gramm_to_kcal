@@ -177,7 +177,7 @@ describe("/api/products", () => {
             const data = await response.json();
 
             expect(response.status).toBe(200);
-            expect(data.message).toBe("Products API endpoint");
+            expect(Array.isArray(data)).toBe(true);
         });
     });
 

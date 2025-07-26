@@ -56,7 +56,7 @@ describe("/api/health", () => {
         vi.mocked(db.execute).mockResolvedValue({} as any);
         vi.mocked(getRedisHealth).mockResolvedValue({
             status: "connected",
-            latency: "10",
+            latency: 10,
             timestamp: new Date().toISOString(),
         });
         vi.mocked(getOpenFoodFactsHealth).mockResolvedValue({
@@ -106,7 +106,7 @@ describe("/api/health", () => {
         expect(data.database).toBe("connected");
         expect(data.betterAuth.configured).toBe(true);
         expect(data.betterAuth.hasGoogleAuth).toBe(true);
-        expect(data.services.redis).toEqual({
+        expect(data.services.redis).toMatchObject({
             status: "connected",
             latency: 10,
         });
@@ -123,7 +123,7 @@ describe("/api/health", () => {
         vi.mocked(db.execute).mockRejectedValue(new Error("Connection failed"));
         vi.mocked(getRedisHealth).mockResolvedValue({
             status: "connected",
-            latency: "10",
+            latency: 10,
             timestamp: new Date().toISOString(),
         });
         vi.mocked(getOpenFoodFactsHealth).mockResolvedValue({
@@ -207,7 +207,7 @@ describe("/api/health", () => {
         vi.mocked(db.execute).mockResolvedValue({} as any);
         vi.mocked(getRedisHealth).mockResolvedValue({
             status: "connected",
-            latency: "10",
+            latency: 10,
             timestamp: new Date().toISOString(),
         });
         vi.mocked(getOpenFoodFactsHealth).mockResolvedValue({

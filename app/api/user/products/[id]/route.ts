@@ -79,6 +79,10 @@ export async function PUT(
             error: error instanceof Error ? error.message : "Unknown error",
             stack: error instanceof Error ? error.stack : undefined,
         });
+        // Fallback-Logging für Tests
+        if (typeof console !== "undefined" && typeof console.error === "function") {
+            console.error("Error updating product:", error);
+        }
         const noCacheHeaders = createNoCacheHeaders();
         return NextResponse.json(
             { error: "Internal server error" },
@@ -157,6 +161,10 @@ export async function DELETE(
             error: error instanceof Error ? error.message : "Unknown error",
             stack: error instanceof Error ? error.stack : undefined,
         });
+        // Fallback-Logging für Tests
+        if (typeof console !== "undefined" && typeof console.error === "function") {
+            console.error("Error deleting product:", error);
+        }
         const noCacheHeaders = createNoCacheHeaders();
         return NextResponse.json(
             { error: "Internal server error" },

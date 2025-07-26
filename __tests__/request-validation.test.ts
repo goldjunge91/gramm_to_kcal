@@ -113,7 +113,7 @@ describe("commonSchemas", () => {
 // RequestSchemas tests
 describe("requestSchemas", () => {
     it("validates createProduct schema", () => {
-        const valid = { name: "Apple", quantity: 1, kcal: 52 };
+        const valid = { id: "test-id", name: "Apple", quantity: 1, kcal: 52, unit: "piece" };
         expect(RequestSchemas.createProduct.safeParse(valid).success).toBe(
             true,
         );
@@ -311,7 +311,7 @@ describe("validateRequest", () => {
     it("validates body source with valid data", async () => {
         const req = new MockRequest({
             url: "http://test",
-            body: { name: "Apple", quantity: 1, kcal: 52 },
+            body: { id: "test-id", name: "Apple", quantity: 1, kcal: 52, unit: "piece" },
         });
         const result = await validateRequest(
             req as unknown as import("next/server").NextRequest,
@@ -340,7 +340,7 @@ describe("validateRequest", () => {
 
     it("validates query source", async () => {
         const req = new MockRequest({
-            url: "http://test?q=apple&limit=5",
+            url: "http://test?q=test-query&limit=5",
         });
         const result = await validateRequest(
             req as unknown as import("next/server").NextRequest,
@@ -348,7 +348,7 @@ describe("validateRequest", () => {
             { source: "query" },
         );
         expect(result.success).toBe(true);
-        expect((result as any).data.q).toBe("apple");
+        expect((result as any).data.q).toBe("test-query");
         expect((result as any).data.limit).toBe(5);
     });
 

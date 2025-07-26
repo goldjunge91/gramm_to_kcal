@@ -1,6 +1,7 @@
 import type { NextRequest } from "next/server";
 
 import { NextResponse } from "next/server";
+import fs from "node:fs/promises";
 
 // Note: Rate limiting handled by Better Auth middleware
 import {
@@ -13,6 +14,7 @@ import {
     createPublicCacheHeaders,
     handleETaggedResponse,
 } from "@/lib/utils/cache-headers";
+import { extractErrorMessage } from "@/lib/utils/error-utils";
 import { createRequestLogger } from "@/lib/utils/logger";
 import {
     getSecurityHeaders,
@@ -21,6 +23,15 @@ import {
     validateRequest,
     validateRequestSize,
 } from "@/lib/validations/request-validation";
+
+// Simple product type for JSON file handling (not the full database schema)
+interface SimpleProduct {
+    id: string;
+    name: string;
+    quantity: number;
+    kcal: number;
+    unit: string;
+}
 
 export async function GET(request: NextRequest) {
     const logger = createRequestLogger(request);
@@ -265,8 +276,19 @@ export async function GET(request: NextRequest) {
         }
     }
 
+    // Produkte aus Datei lesen
+    let products: SimpleProduct[] = [];
+    try {
+        const file = await fs.readFile("./data/products.json", "utf-8");
+        products = JSON.parse(file);
+    }
+    catch (err) {
+        // Fehlerausgabe mit extractErrorMessage
+        console.error("[GET /products]", extractErrorMessage(err));
+        products = [];
+    }
     const headers = getSecurityHeaders();
-    return NextResponse.json({ message: "Products API endpoint" }, { headers });
+    return NextResponse.json(products, { status: 200, headers });
 }
 
 export async function POST(request: NextRequest) {
@@ -320,12 +342,14 @@ export async function POST(request: NextRequest) {
     }
 
     // TODO: Implement actual product creation logic with validation.data
-    const { name, quantity, kcal } = validation.data;
+    const { id, name, quantity, kcal, unit } = validation.data;
 
     logger.info("Product creation validated", {
+        productId: id,
         productName: name,
         quantity,
         kcal,
+        unit,
     });
 
     // Combine security headers with no-cache headers for POST response
@@ -335,11 +359,19 @@ export async function POST(request: NextRequest) {
         headers.set(key, value);
     }
 
-    return NextResponse.json(
-        {
-            message: "Product created successfully",
-            product: { name, quantity, kcal },
-        },
-        { headers },
-    );
+    // Produkt in Datei speichern
+    let products: SimpleProduct[] = [];
+    try {
+        const file = await fs.readFile("./data/products.json", "utf-8");
+        products = JSON.parse(file);
+    }
+    catch (err) {
+        // Fehlerausgabe mit extractErrorMessage
+        console.error("[POST /products]", extractErrorMessage(err));
+        products = [];
+    }
+    const newProduct: SimpleProduct = { id, name, quantity, kcal, unit };
+    products.push(newProduct);
+    await fs.writeFile("./data/products.json", JSON.stringify(products, null, 2));
+    return NextResponse.json(newProduct, { status: 201, headers });
 }

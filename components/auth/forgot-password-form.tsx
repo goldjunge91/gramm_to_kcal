@@ -15,6 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
+import { formatErrorForUser, toAppError } from "@/lib/utils/error-utils";
 import { createLogger } from "@/lib/utils/logger";
 
 export function ForgotPasswordForm({
@@ -27,23 +28,27 @@ export function ForgotPasswordForm({
     const [success, setSuccess] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
-    const getErrorMessage = (error: any): string => {
-        if (!error)
-            return "An unexpected error occurred";
+    const getErrorMessage = (error: unknown): string => {
+        const appError = toAppError(error, "forgot-password");
 
-        const message = error.message || error.toString();
+        // Auth-specific error handling
+        if (appError.type === "auth") {
+            const message = appError.message || appError.error_description || "";
 
-        if (message.includes("Invalid email")) {
-            return "Please enter a valid email address.";
-        }
-        if (message.includes("User not found")) {
-            return "No account found with this email address.";
-        }
-        if (message.includes("Too many requests")) {
-            return "Too many password reset attempts. Please wait a few minutes before trying again.";
+            if (message.includes("Invalid email")) {
+                return "Please enter a valid email address.";
+            }
+            if (message.includes("User not found")) {
+                return "No account found with this email address.";
+            }
+            if (message.includes("Too many requests")) {
+                return "Too many password reset attempts. Please wait a few minutes before trying again.";
+            }
         }
 
-        return message;
+        // Use the formatted error message with fallback
+        const formattedMessage = formatErrorForUser(appError);
+        return formattedMessage || "Failed to send password reset email. Please try again.";
     };
 
     const handleForgotPassword = async (e: React.FormEvent) => {
