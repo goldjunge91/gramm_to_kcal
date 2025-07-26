@@ -11,25 +11,26 @@ import { createRequestLogger } from "@/lib/utils/logger";
 
 export async function GET(
     request: NextRequest,
-    { params }: { params: { id: string } },
+    { params }: { params: Promise<{ id: string }> },
 ) {
     const logger = createRequestLogger(request);
 
     try {
+        // Await params in Next.js 15
+        const { id } = await params;
+
         // Get user session
         const session = await auth.api.getSession({
             headers: await headers(),
         });
 
         if (!session?.user) {
-            logger.warn("Unauthorized recipe fetch attempt", { recipeId: params.id });
+            logger.warn("Unauthorized recipe fetch attempt", { recipeId: id });
             return NextResponse.json(
                 { error: "Unauthorized" },
                 { status: 401 },
             );
         }
-
-        const { id } = params;
 
         logger.info("Fetching recipe with ingredients", {
             recipeId: id,
@@ -86,7 +87,7 @@ export async function GET(
     }
     catch (error) {
         logger.error("Error fetching recipe", {
-            recipeId: params.id,
+            recipeId: (await params).id,
             error: error instanceof Error ? error.message : "Unknown error",
             stack: error instanceof Error ? error.stack : undefined,
         });
@@ -99,18 +100,21 @@ export async function GET(
 
 export async function PUT(
     request: NextRequest,
-    { params }: { params: { id: string } },
+    { params }: { params: Promise<{ id: string }> },
 ) {
     const logger = createRequestLogger(request);
 
     try {
+        // Await params in Next.js 15
+        const { id } = await params;
+
         // Get user session
         const session = await auth.api.getSession({
             headers: await headers(),
         });
 
         if (!session?.user) {
-            logger.warn("Unauthorized recipe update attempt", { recipeId: params.id });
+            logger.warn("Unauthorized recipe update attempt", { recipeId: id });
             return NextResponse.json(
                 { error: "Unauthorized" },
                 { status: 401 },
@@ -118,7 +122,6 @@ export async function PUT(
         }
 
         const updates = await request.json();
-        const { id } = params;
 
         logger.info("Updating recipe", {
             recipeId: id,
@@ -161,7 +164,7 @@ export async function PUT(
     }
     catch (error) {
         logger.error("Error updating recipe", {
-            recipeId: params.id,
+            recipeId: (await params).id,
             error: error instanceof Error ? error.message : "Unknown error",
             stack: error instanceof Error ? error.stack : undefined,
         });
@@ -174,25 +177,26 @@ export async function PUT(
 
 export async function DELETE(
     request: NextRequest,
-    { params }: { params: { id: string } },
+    { params }: { params: Promise<{ id: string }> },
 ) {
     const logger = createRequestLogger(request);
 
     try {
+        // Await params in Next.js 15
+        const { id } = await params;
+
         // Get user session
         const session = await auth.api.getSession({
             headers: await headers(),
         });
 
         if (!session?.user) {
-            logger.warn("Unauthorized recipe deletion attempt", { recipeId: params.id });
+            logger.warn("Unauthorized recipe deletion attempt", { recipeId: id });
             return NextResponse.json(
                 { error: "Unauthorized" },
                 { status: 401 },
             );
         }
-
-        const { id } = params;
 
         logger.info("Deleting recipe and associated ingredients", {
             recipeId: id,
@@ -239,7 +243,7 @@ export async function DELETE(
     }
     catch (error) {
         logger.error("Error deleting recipe", {
-            recipeId: params.id,
+            recipeId: (await params).id,
             error: error instanceof Error ? error.message : "Unknown error",
             stack: error instanceof Error ? error.stack : undefined,
         });

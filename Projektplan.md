@@ -173,8 +173,3 @@ interface Recipe {
 - **Mocking:** `msw`, `vi.mock()`
 - **Test command:** `pnpm test`
 - Tests organisiert in `/tests` oder co-located mit Komponenten
-
-```
-
----
-```

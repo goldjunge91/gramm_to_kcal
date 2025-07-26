@@ -11,7 +11,7 @@
 # ============================================================================
 
 # Disable all hooks for this project
-# export CLAUDE_HOOKS_ENABLED=false
+export CLAUDE_HOOKS_ENABLED=true
 
 # Enable debug output for troubleshooting
 # export CLAUDE_HOOKS_DEBUG=1
@@ -24,11 +24,11 @@
 # ============================================================================
 
 # Disable checks for specific languages
-export CLAUDE_HOOKS_GO_ENABLED=true
-export CLAUDE_HOOKS_PYTHON_ENABLED=true
-export CLAUDE_HOOKS_JS_ENABLED=false
-export CLAUDE_HOOKS_RUST_ENABLED=true
-export CLAUDE_HOOKS_NIX_ENABLED=true
+export CLAUDE_HOOKS_GO_ENABLED=false
+export CLAUDE_HOOKS_PYTHON_ENABLED=false
+export CLAUDE_HOOKS_JS_ENABLED=true
+export CLAUDE_HOOKS_RUST_ENABLED=false
+export CLAUDE_HOOKS_NIX_ENABLED=false
 
 
 # ============================================================================
@@ -36,7 +36,7 @@ export CLAUDE_HOOKS_NIX_ENABLED=true
 # ============================================================================
 
 # Disable notifications for this project
-export CLAUDE_HOOKS_NTFY_ENABLED=false
+export CLAUDE_HOOKS_NTFY_ENABLED=true
 
 # ============================================================================
 # PERFORMANCE TUNING
@@ -88,10 +88,10 @@ export CLAUDE_HOOKS_USE_PROJECT_COMMANDS=true
 # Per-language opt-out of project commands
 # export CLAUDE_HOOKS_GO_USE_PROJECT_COMMANDS=false     # Use direct go tools instead
 # export CLAUDE_HOOKS_PYTHON_USE_PROJECT_COMMANDS=false # Use direct python tools instead
-export CLAUDE_HOOKS_JAVASCRIPT_USE_PROJECT_COMMANDS=false
+export CLAUDE_HOOKS_JAVASCRIPT_USE_PROJECT_COMMANDS=true
 # export CLAUDE_HOOKS_RUST_USE_PROJECT_COMMANDS=false
 # export CLAUDE_HOOKS_NIX_USE_PROJECT_COMMANDS=false
-export CLAUDE_HOOKS_SHELL_USE_PROJECT_COMMANDS=false
+export CLAUDE_HOOKS_SHELL_USE_PROJECT_COMMANDS=true
 # export CLAUDE_HOOKS_TILT_USE_PROJECT_COMMANDS=false
 
 # ============================================================================

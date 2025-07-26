@@ -12,18 +12,21 @@ import { createRequestLogger } from "@/lib/utils/logger";
 
 export async function PUT(
     request: NextRequest,
-    { params }: { params: { id: string } },
+    { params }: { params: Promise<{ id: string }> },
 ) {
     const logger = createRequestLogger(request);
 
     try {
+        // Await params in Next.js 15
+        const { id } = await params;
+
         // Get user session
         const session = await auth.api.getSession({
             headers: await headers(),
         });
 
         if (!session?.user) {
-            logger.warn("Unauthorized product update attempt", { productId: params.id });
+            logger.warn("Unauthorized product update attempt", { productId: id });
             const noCacheHeaders = createNoCacheHeaders();
             return NextResponse.json(
                 { error: "Unauthorized" },
@@ -32,7 +35,6 @@ export async function PUT(
         }
 
         const updates = await request.json();
-        const { id } = params;
 
         logger.info("Updating product", {
             productId: id,
@@ -75,7 +77,7 @@ export async function PUT(
     }
     catch (error) {
         logger.error("Error updating product", {
-            productId: params.id,
+            productId: (await params).id,
             error: error instanceof Error ? error.message : "Unknown error",
             stack: error instanceof Error ? error.stack : undefined,
         });
@@ -93,26 +95,27 @@ export async function PUT(
 
 export async function DELETE(
     request: NextRequest,
-    { params }: { params: { id: string } },
+    { params }: { params: Promise<{ id: string }> },
 ) {
     const logger = createRequestLogger(request);
 
     try {
+        // Await params in Next.js 15
+        const { id } = await params;
+
         // Get user session
         const session = await auth.api.getSession({
             headers: await headers(),
         });
 
         if (!session?.user) {
-            logger.warn("Unauthorized product deletion attempt", { productId: params.id });
+            logger.warn("Unauthorized product deletion attempt", { productId: id });
             const noCacheHeaders = createNoCacheHeaders();
             return NextResponse.json(
                 { error: "Unauthorized" },
                 { status: 401, headers: noCacheHeaders },
             );
         }
-
-        const { id } = params;
 
         logger.info("Deleting product", {
             productId: id,
@@ -157,7 +160,7 @@ export async function DELETE(
     }
     catch (error) {
         logger.error("Error deleting product", {
-            productId: params.id,
+            productId: (await params).id,
             error: error instanceof Error ? error.message : "Unknown error",
             stack: error instanceof Error ? error.stack : undefined,
         });

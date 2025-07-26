@@ -88,7 +88,7 @@ describe("/api/user/products/[id]", () => {
             );
 
             const response = await PUT(request, {
-                params: { id: "product123" },
+                params: Promise.resolve({ id: "product123" }),
             });
             const data = await response.json();
 
@@ -111,7 +111,7 @@ describe("/api/user/products/[id]", () => {
             );
 
             const response = await PUT(request, {
-                params: { id: "product123" },
+                params: Promise.resolve({ id: "product123" }),
             });
             const data = await response.json();
 
@@ -146,7 +146,7 @@ describe("/api/user/products/[id]", () => {
             );
 
             const response = await PUT(request, {
-                params: { id: "nonexistent" },
+                params: Promise.resolve({ id: "nonexistent" }),
             });
             const data = await response.json();
 
@@ -187,7 +187,7 @@ describe("/api/user/products/[id]", () => {
             );
 
             const response = await PUT(request, {
-                params: { id: "product123" },
+                params: Promise.resolve({ id: "product123" }),
             });
             const data = await response.json();
 
@@ -238,7 +238,7 @@ describe("/api/user/products/[id]", () => {
             );
 
             const response = await DELETE(request, {
-                params: { id: "product123" },
+                params: Promise.resolve({ id: "product123" }),
             });
             const data = await response.json();
 
@@ -259,7 +259,7 @@ describe("/api/user/products/[id]", () => {
             );
 
             const response = await DELETE(request, {
-                params: { id: "product123" },
+                params: Promise.resolve({ id: "product123" }),
             });
             const data = await response.json();
 
@@ -293,7 +293,7 @@ describe("/api/user/products/[id]", () => {
             );
 
             const response = await DELETE(request, {
-                params: { id: "nonexistent" },
+                params: Promise.resolve({ id: "nonexistent" }),
             });
             const data = await response.json();
 
@@ -333,7 +333,7 @@ describe("/api/user/products/[id]", () => {
             );
 
             const response = await DELETE(request, {
-                params: { id: "product123" },
+                params: Promise.resolve({ id: "product123" }),
             });
             const data = await response.json();
 
@@ -384,7 +384,7 @@ describe("/api/user/products/[id]", () => {
                 },
             );
 
-            await DELETE(request, { params: { id: "product123" } });
+            await DELETE(request, { params: Promise.resolve({ id: "product123" }) });
 
             expect(capturedSetValues.isDeleted).toBe(true);
             expect(capturedSetValues.updatedAt).toBeInstanceOf(Date);

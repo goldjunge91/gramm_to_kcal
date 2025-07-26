@@ -19,6 +19,7 @@ export default antfu(
             // "**/__tests__/setup.ts",
             // "**/__mocks__/*",
             // "**/__e2e__/*",
+            "**/.next/*",
             "scripts/**",
             "**/db/migrations/*",
             "**/ui/*",

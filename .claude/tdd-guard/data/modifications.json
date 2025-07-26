@@ -1,11 +1,35 @@
 {
-    "session_id": "faabe45f-2a0c-46cc-8c2a-49e1cfbb0faf",
-    "transcript_path": "/Users/marco/.claude/projects/-Users-marco-Github-tmp-gramm-to-kcal/faabe45f-2a0c-46cc-8c2a-49e1cfbb0faf.jsonl",
-    "hook_event_name": "PreToolUse",
-    "tool_name": "Edit",
-    "tool_input": {
-        "file_path": "/Users/marco/Github.tmp/gramm_to_kcal/lib/db/schemas/products.ts",
-        "old_string": "import {\n    boolean,\n    integer,\n    pgEnum,\n    pgTable,\n    real,\n    text,\n    timestamp,\n    uuid,\n} from \"drizzle-orm/pg-core\";",
-        "new_string": "import {\n    boolean,\n    index,\n    integer,\n    pgEnum,\n    pgTable,\n    real,\n    text,\n    timestamp,\n    uuid,\n} from \"drizzle-orm/pg-core\";"
-    }
+  "session_id": "f1e641b1-d316-4645-99ec-74ee64829809",
+  "transcript_path": "/Users/marco/.claude/projects/-Users-marco-Github-tmp-gramm-to-kcal/f1e641b1-d316-4645-99ec-74ee64829809.jsonl",
+  "hook_event_name": "PreToolUse",
+  "tool_name": "MultiEdit",
+  "tool_input": {
+    "file_path": "/Users/marco/Github.tmp/gramm_to_kcal/app/api/products/route.ts",
+    "edits": [
+      {
+        "old_string": "            return createApiErrorResponse(validation.error, \"Invalid barcode format\");",
+        "new_string": "            return createApiErrorResponse(validation.error, \"Invalid barcode format\", 400);"
+      },
+      {
+        "old_string": "            return createApiErrorResponse(\"Empty search query\", \"Invalid search query\");",
+        "new_string": "            return createApiErrorResponse(\"Empty search query\", \"Invalid search query\", 400);"
+      },
+      {
+        "old_string": "            return createApiErrorResponse(validation.error, \"Invalid search query\");",
+        "new_string": "            return createApiErrorResponse(validation.error, \"Invalid search query\", 400);"
+      },
+      {
+        "old_string": "        return createApiErrorResponse(\"Request payload too large\", \"Request too large\");",
+        "new_string": "        return createApiErrorResponse(\"Request payload too large\", \"Request too large\", 413);"
+      },
+      {
+        "old_string": "        return createApiErrorResponse(\"Invalid content type\", \"Content type must be application/json\");",
+        "new_string": "        return createApiErrorResponse(\"Invalid content type\", \"Content type must be application/json\", 415);"
+      },
+      {
+        "old_string": "        return createApiErrorResponse(validation.error, \"Invalid product creation data\");",
+        "new_string": "        return createApiErrorResponse(validation.error, \"Invalid product creation data\", 400);"
+      }
+    ]
+  }
 }

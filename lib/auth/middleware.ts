@@ -10,6 +10,66 @@ import { NextResponse } from "next/server";
 import { isAuthRoute, isPublicRoute, REDIRECT_PATHS } from "@/lib/auth/routes";
 import { createRequestLogger } from "@/lib/utils/logger";
 
+/**
+ * Validates the Origin header for CSRF protection
+ */
+function validateOrigin(request: NextRequest): boolean {
+    const origin = request.headers.get("origin");
+    const host = request.headers.get("host");
+    const protocol = request.headers.get("x-forwarded-proto") || "http";
+
+    // If no origin header, check if it's a same-site request
+    if (!origin) {
+        // Allow requests without origin for same-site navigation
+        const referer = request.headers.get("referer");
+        if (referer) {
+            const refererUrl = new URL(referer);
+            return refererUrl.host === host;
+        }
+        // Allow GET requests without origin (browser navigation)
+        return request.method === "GET";
+    }
+
+    // List of trusted origins (should match auth.ts configuration)
+    const trustedOrigins = [
+        `${protocol}://${host}`,
+        "http://localhost:3000",
+        "http://localhost:3001",
+        "https://localhost:3000",
+        process.env.NEXT_PUBLIC_URL,
+    ].filter(Boolean);
+
+    return trustedOrigins.includes(origin);
+}
+
+/**
+ * Enhanced CSRF protection for state-changing requests
+ */
+function validateCSRF(request: NextRequest): boolean {
+    // Only validate CSRF for state-changing methods
+    const stateMethods = ["POST", "PUT", "DELETE", "PATCH"];
+    if (!stateMethods.includes(request.method)) {
+        return true;
+    }
+
+    // Validate origin for state-changing requests
+    if (!validateOrigin(request)) {
+        return false;
+    }
+
+    // Additional validation for API routes
+    if (request.nextUrl.pathname.startsWith("/api/")) {
+        const contentType = request.headers.get("content-type");
+
+        // Ensure API requests use proper content type
+        if (contentType && !contentType.includes("application/json")) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 export function evaluateAuthRoute({
     pathname,
     sessionCookie,
@@ -46,6 +106,24 @@ export async function updateSession(request: NextRequest) {
 
     try {
         const pathname = request.nextUrl.pathname;
+        const logger = createRequestLogger(request);
+
+        // CSRF Protection: Validate origin for state-changing requests
+        if (!validateCSRF(request)) {
+            logger.warn("CSRF validation failed", {
+                origin: request.headers.get("origin"),
+                method: request.method,
+                pathname,
+                userAgent: request.headers.get("user-agent"),
+            });
+
+            return new NextResponse("Forbidden: Invalid origin", {
+                status: 403,
+                headers: {
+                    "Content-Type": "text/plain",
+                },
+            });
+        }
 
         // Use Better Auth's helper to check for session cookie
         const sessionCookie = getSessionCookie(request);
@@ -57,8 +135,14 @@ export async function updateSession(request: NextRequest) {
             return NextResponse.redirect(url);
         }
 
-        // Skip API routes completely
+        // For API routes, add security headers
         if (pathname.startsWith("/api/")) {
+            // Add security headers to API responses
+            response.headers.set("X-Content-Type-Options", "nosniff");
+            response.headers.set("X-Frame-Options", "DENY");
+            response.headers.set("X-XSS-Protection", "1; mode=block");
+            response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
+
             return response;
         }
 

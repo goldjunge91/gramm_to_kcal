@@ -1,34 +1,52 @@
 {
-    "session_id": "faabe45f-2a0c-46cc-8c2a-49e1cfbb0faf",
-    "transcript_path": "/Users/marco/.claude/projects/-Users-marco-Github-tmp-gramm-to-kcal/faabe45f-2a0c-46cc-8c2a-49e1cfbb0faf.jsonl",
-    "hook_event_name": "PreToolUse",
-    "tool_name": "TodoWrite",
-    "tool_input": {
-        "todos": [
-            {
-                "content": "Add database indexes for products and recipes tables (Performance: 50-90% query speed improvement)",
-                "status": "in_progress",
-                "priority": "high",
-                "id": "db-indexes"
-            },
-            {
-                "content": "Implement barcode lookup API functionality in /api/products/route.ts",
-                "status": "pending",
-                "priority": "high",
-                "id": "barcode-api"
-            },
-            {
-                "content": "Implement product search API functionality in /api/products/route.ts",
-                "status": "pending",
-                "priority": "high",
-                "id": "search-api"
-            },
-            {
-                "content": "Fix production build configuration - remove ignoreBuildErrors and ignoreDuringBuilds",
-                "status": "pending",
-                "priority": "high",
-                "id": "build-config"
-            }
-        ]
-    }
+  "session_id": "f1e641b1-d316-4645-99ec-74ee64829809",
+  "transcript_path": "/Users/marco/.claude/projects/-Users-marco-Github-tmp-gramm-to-kcal/f1e641b1-d316-4645-99ec-74ee64829809.jsonl",
+  "hook_event_name": "PreToolUse",
+  "tool_name": "TodoWrite",
+  "tool_input": {
+    "todos": [
+      {
+        "content": "Create standardized API error response system (lib/utils/api-error-response.ts)",
+        "status": "completed",
+        "priority": "high",
+        "id": "1"
+      },
+      {
+        "content": "Update /api/products/route.ts to use standardized error handling",
+        "status": "completed",
+        "priority": "high",
+        "id": "2"
+      },
+      {
+        "content": "Update /api/user/products/[id]/route.ts to use standardized error handling",
+        "status": "in_progress",
+        "priority": "high",
+        "id": "3"
+      },
+      {
+        "content": "Update /api/user/recipes/[id]/route.ts to use standardized error handling",
+        "status": "pending",
+        "priority": "high",
+        "id": "4"
+      },
+      {
+        "content": "Update remaining 6 API routes to use standardized error handling",
+        "status": "pending",
+        "priority": "medium",
+        "id": "5"
+      },
+      {
+        "content": "Update test files to expect new error format",
+        "status": "pending",
+        "priority": "medium",
+        "id": "6"
+      },
+      {
+        "content": "Run test suite and verify consistency across all endpoints",
+        "status": "pending",
+        "priority": "medium",
+        "id": "7"
+      }
+    ]
+  }
 }

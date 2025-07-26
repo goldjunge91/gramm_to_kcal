@@ -36,6 +36,17 @@ export const auth = betterAuth({
             maxAge: 5 * 60, // 5 minutes cache
         },
     },
+    // CSRF Protection Configuration
+    trustedOrigins: [
+        env.NEXT_PUBLIC_URL || "http://localhost:3000", // Main application URL
+        "http://localhost:3000", // Development
+        "http://localhost:3001", // Alternative development port
+        "https://localhost:3000", // HTTPS development
+        // Add production domains here when deploying
+        ...(env.NODE_ENV === "production" && env.NEXT_PUBLIC_URL
+            ? [env.NEXT_PUBLIC_URL]
+            : []),
+    ],
     advanced: {
         ipAddress: {
             ipAddressHeaders: [
@@ -44,6 +55,14 @@ export const auth = betterAuth({
                 "cf-connecting-ip",
             ],
             fallbackToRemoteAddress: true,
+        },
+        // Enhanced cookie security
+        useSecureCookies: env.NODE_ENV === "production",
+        cookiePrefix: "gramm-auth",
+        defaultCookieAttributes: {
+            sameSite: "strict", // Strict CSRF protection
+            secure: env.NODE_ENV === "production",
+            httpOnly: true,
         },
     },
     rateLimit: {

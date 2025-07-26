@@ -23,8 +23,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with th
 
 **Script Options:**
 
-- `bash .claude/functions/task/task_stats.sh` - Auto-detects and analyzes most recent Task session
-- `bash .claude/functions/task/task_stats.sh session_id.jsonl` - Analyzes specific session file
+- `bash ./task_stats.sh` - Auto-detects and analyzes most recent Task session
+- `bash ./task_stats.sh session_id.jsonl` - Analyzes specific session file
 
 ### IMPORTANT RULES:
 

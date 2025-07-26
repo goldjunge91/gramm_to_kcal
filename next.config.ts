@@ -83,6 +83,20 @@ const withBundleAnalyzerConfig = withBundleAnalyzer({
     enabled: env.ANALYZE === "true",
 });
 
+const cspHeader = `
+    default-src 'self';
+    script-src 'self';
+    style-src 'self' 'unsafe-inline';
+    img-src 'self' blob: data: https://images.unsplash.com https://googleusercontent.com https://lh3.googleusercontent.com https://avatars.githubusercontent.com https://images.openfoodfacts.org;
+    font-src 'self' data:;
+    connect-src 'self' https://api.openfoodfacts.org;
+    object-src 'none';
+    base-uri 'self';
+    form-action 'self';
+    frame-ancestors 'none';
+    upgrade-insecure-requests;
+`;
+
 const baseConfig: NextConfig = {
     reactStrictMode: true,
     allowedDevOrigins: [
@@ -97,6 +111,26 @@ const baseConfig: NextConfig = {
         "pino-file",
         "pino-pretty",
     ],
+    // Optimize heavy packages for better performance
+    experimental: {
+        optimizePackageImports: [
+            "@radix-ui/react-icons",
+            "lucide-react",
+        ],
+    },
+    async headers() {
+        return [
+            {
+                source: "/(.*)",
+                headers: [
+                    {
+                        key: "Content-Security-Policy",
+                        value: cspHeader.replace(/\s{2,}/g, " ").trim(),
+                    },
+                ],
+            },
+        ];
+    },
     /* config options here */
     images: {
         remotePatterns: [

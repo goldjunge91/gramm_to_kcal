@@ -193,10 +193,10 @@ async function getPino() {
 
 // Set max listeners to prevent warnings during builds with multiple loggers
 // Only do this in Node.js runtime, not Edge Runtime
-if (typeof process !== "undefined" && 
-    process.env?.NEXT_RUNTIME !== "edge" && 
-    typeof (globalThis as any).EdgeRuntime === "undefined" &&
-    process.setMaxListeners) {
+if (typeof process !== "undefined"
+    && process.env?.NEXT_RUNTIME !== "edge"
+    && typeof (globalThis as any).EdgeRuntime === "undefined"
+    && process.setMaxListeners) {
     process.setMaxListeners(20); // Increase from default 10 to handle multiple logger instances
 }
 

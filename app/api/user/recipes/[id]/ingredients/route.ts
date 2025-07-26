@@ -12,25 +12,26 @@ import { createRequestLogger } from "@/lib/utils/logger";
 
 export async function GET(
     request: NextRequest,
-    { params }: { params: { id: string } },
+    { params }: { params: Promise<{ id: string }> },
 ) {
     const logger = createRequestLogger(request);
 
     try {
+        // Await params in Next.js 15
+        const { id: recipeId } = await params;
+
         // Get user session
         const session = await auth.api.getSession({
             headers: await headers(),
         });
 
         if (!session?.user) {
-            logger.warn("Unauthorized ingredients fetch attempt", { recipeId: params.id });
+            logger.warn("Unauthorized ingredients fetch attempt", { recipeId });
             return NextResponse.json(
                 { error: "Unauthorized" },
                 { status: 401 },
             );
         }
-
-        const { id: recipeId } = params;
 
         // Verify recipe exists and belongs to user
         const recipe = await db
@@ -147,7 +148,7 @@ export async function GET(
     }
     catch (error) {
         logger.error("Error fetching ingredients", {
-            recipeId: params.id,
+            recipeId: (await params).id,
             error: error instanceof Error ? error.message : "Unknown error",
             stack: error instanceof Error ? error.stack : undefined,
         });
@@ -160,25 +161,26 @@ export async function GET(
 
 export async function POST(
     request: NextRequest,
-    { params }: { params: { id: string } },
+    { params }: { params: Promise<{ id: string }> },
 ) {
     const logger = createRequestLogger(request);
 
     try {
+        // Await params in Next.js 15
+        const { id: recipeId } = await params;
+
         // Get user session
         const session = await auth.api.getSession({
             headers: await headers(),
         });
 
         if (!session?.user) {
-            logger.warn("Unauthorized ingredient creation attempt", { recipeId: params.id });
+            logger.warn("Unauthorized ingredient creation attempt", { recipeId });
             return NextResponse.json(
                 { error: "Unauthorized" },
                 { status: 401 },
             );
         }
-
-        const { id: recipeId } = params;
 
         // Verify recipe exists and belongs to user
         const recipe = await db
@@ -253,7 +255,7 @@ export async function POST(
     }
     catch (error) {
         logger.error("Error creating ingredient", {
-            recipeId: params.id,
+            recipeId: (await params).id,
             error: error instanceof Error ? error.message : "Unknown error",
             stack: error instanceof Error ? error.stack : undefined,
             details: error instanceof Error ? error.message : "Unknown error",

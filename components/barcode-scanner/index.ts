@@ -1,2 +1,3 @@
 // components/barcode-scanner/index.ts
-export * from "./barcode-scanner";
+// Export dynamic version for better performance
+export { BarcodeScanner } from "../BarcodeScanner.dynamic";

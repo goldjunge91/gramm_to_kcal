@@ -14,6 +14,7 @@ import {
     createPublicCacheHeaders,
     handleETaggedResponse,
 } from "@/lib/utils/cache-headers";
+import { createApiErrorResponse } from "@/lib/utils/api-error-response";
 import { extractErrorMessage } from "@/lib/utils/error-utils";
 import { createRequestLogger } from "@/lib/utils/logger";
 import {
@@ -59,11 +60,7 @@ export async function GET(request: NextRequest) {
                 barcode,
                 validationError: validation.error,
             });
-            const securityHeaders = getSecurityHeaders();
-            return NextResponse.json(
-                { error: "Invalid barcode format", details: validation.error },
-                { status: 400, headers: securityHeaders },
-            );
+            return createApiErrorResponse(validation.error, "Invalid barcode format", 400);
         }
 
         // Implement barcode lookup with cached API
@@ -148,22 +145,14 @@ export async function GET(request: NextRequest) {
                 error: error instanceof Error ? error.message : String(error),
                 stack: error instanceof Error ? error.stack : undefined,
             });
-            const securityHeaders = getSecurityHeaders();
-            return NextResponse.json(
-                { error: "Internal server error during barcode lookup" },
-                { status: 500, headers: securityHeaders },
-            );
+            return createApiErrorResponse(error, "Internal server error during barcode lookup");
         }
     }
 
     if (searchQuery !== null) {
         if (!searchQuery || searchQuery.trim() === "") {
             logger.warn("Empty search query received");
-            const securityHeaders = getSecurityHeaders();
-            return NextResponse.json(
-                { error: "Invalid search query" },
-                { status: 400, headers: securityHeaders },
-            );
+            return createApiErrorResponse("Empty search query", "Invalid search query", 400);
         }
         const validation = await validateRequest(
             request,
@@ -176,11 +165,7 @@ export async function GET(request: NextRequest) {
                 query: searchQuery,
                 validationError: validation.error,
             });
-            const securityHeaders = getSecurityHeaders();
-            return NextResponse.json(
-                { error: "Invalid search query", details: validation.error },
-                { status: 400, headers: securityHeaders },
-            );
+            return createApiErrorResponse(validation.error, "Invalid search query", 400);
         }
 
         // Implement product search with pagination
@@ -268,11 +253,7 @@ export async function GET(request: NextRequest) {
                 error: error instanceof Error ? error.message : String(error),
                 stack: error instanceof Error ? error.stack : undefined,
             });
-            const securityHeaders = getSecurityHeaders();
-            return NextResponse.json(
-                { error: "Internal server error during product search" },
-                { status: 500, headers: securityHeaders },
-            );
+            return createApiErrorResponse(error, "Internal server error during product search");
         }
     }
 
@@ -302,11 +283,7 @@ export async function POST(request: NextRequest) {
             contentLength: request.headers.get("content-length"),
             limit: "10KB",
         });
-        const securityHeaders = getSecurityHeaders();
-        return NextResponse.json(
-            { error: "Request too large" },
-            { status: 413, headers: securityHeaders },
-        );
+        return createApiErrorResponse("Request payload too large", "Request too large", 413);
     }
 
     if (!validateContentType(request, ["application/json"])) {
@@ -314,11 +291,7 @@ export async function POST(request: NextRequest) {
             contentType: request.headers.get("content-type"),
             expected: "application/json",
         });
-        const securityHeaders = getSecurityHeaders();
-        return NextResponse.json(
-            { error: "Invalid content type" },
-            { status: 415, headers: securityHeaders },
-        );
+        return createApiErrorResponse("Invalid content type", "Content type must be application/json", 415);
     }
 
     // Note: Rate limiting handled by Better Auth middleware
@@ -333,12 +306,7 @@ export async function POST(request: NextRequest) {
         logger.warn("Invalid product creation data", {
             validationError: validation.error,
         });
-        const securityHeaders = getSecurityHeaders();
-
-        return NextResponse.json(
-            { error: "Invalid request data", details: validation.error },
-            { status: 400, headers: securityHeaders },
-        );
+        return createApiErrorResponse(validation.error, "Invalid product creation data", 400);
     }
 
     // TODO: Implement actual product creation logic with validation.data
