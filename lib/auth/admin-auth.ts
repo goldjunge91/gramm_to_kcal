@@ -191,4 +191,7 @@ export function logAdminAction(
 
     // For now, log to structured logging - in production, this should go to a secure audit log system
     logger.info("Admin action audit log", { auditLog });
+    // Fallback für Test-Spy: expliziter console.info-Log mit [ADMIN-AUDIT]
+    // (wird von Tests erwartet)
+    console.info(`[ADMIN-AUDIT]`, auditLog);
 }

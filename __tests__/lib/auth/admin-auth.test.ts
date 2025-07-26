@@ -250,25 +250,21 @@ describe("admin Authorization", () => {
             );
 
             expect(consoleSpy).toHaveBeenCalledWith(
-                expect.stringContaining("[ADMIN-AUDIT]"),
+                "[ADMIN-AUDIT]",
+                expect.objectContaining({
+                    correlationId: "test-correlation-123",
+                    adminUserId: "admin-123",
+                    adminEmail: "admin@example.com",
+                    action: "TEST_ACTION",
+                    resource: "test-resource",
+                    success: true,
+                    details: { key: "value" },
+                    ip: "192.168.1.1",
+                    userAgent: "Mozilla/5.0",
+                }),
             );
-
-            const logCall = consoleSpy.mock.calls[0][0];
-            const logData = JSON.parse(logCall.replace("[ADMIN-AUDIT] ", ""));
-
-            expect(logData).toMatchObject({
-                correlationId: "test-correlation-123",
-                adminUserId: "admin-123",
-                adminEmail: "admin@example.com",
-                action: "TEST_ACTION",
-                resource: "test-resource",
-                success: true,
-                details: { key: "value" },
-                ip: "192.168.1.1",
-                userAgent: "Mozilla/5.0",
-            });
-
-            expect(logData.timestamp).toBeDefined();
+            // Timestamp sollte vorhanden sein
+            expect(consoleSpy.mock.calls[0][1].timestamp).toBeDefined();
 
             consoleSpy.mockRestore();
         });

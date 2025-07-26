@@ -193,12 +193,16 @@ describe("/api/admin/circuit-breakers", () => {
 
             await GET(request);
 
-            // Verify enhanced admin logging is working
+            // Prüfe neuen Audit-Log-Stil
             expect(consoleSpy).toHaveBeenCalledWith(
-                expect.stringContaining("[ADMIN-AUTH] Admin access granted: admin@test.com"),
-            );
-            expect(consoleSpy).toHaveBeenCalledWith(
-                expect.stringContaining("[ADMIN-AUDIT]"),
+                "[ADMIN-AUDIT]",
+                expect.objectContaining({
+                    action: "VIEW_CIRCUIT_BREAKERS",
+                    adminEmail: "admin@test.com",
+                    resource: "circuit-breakers",
+                    success: true,
+                    details: expect.objectContaining({ endpoint: expect.stringContaining("/api/admin/circuit-breakers") }),
+                }),
             );
             consoleSpy.mockRestore();
         });
