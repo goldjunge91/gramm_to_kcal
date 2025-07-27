@@ -2,7 +2,7 @@
  * Enhanced types for developer scanner with detailed OpenFoodFacts data
  */
 
-import type { Product } from "@/lib/types/types";
+import type { Product } from "@/types/types";
 
 export interface ExtendedOpenFoodFactsProduct {
     code: string;
