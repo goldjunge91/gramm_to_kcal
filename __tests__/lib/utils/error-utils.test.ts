@@ -3,7 +3,7 @@
  */
 import { describe, expect, it } from "vitest";
 
-import type { AppError, AuthError, FileSystemError, HttpError, ValidationError } from "@/lib/types/errors";
+import type { AppError, AuthError, FileSystemError, HttpError, ValidationError } from "@/types/errors";
 
 import {
     extractErrorMessage,

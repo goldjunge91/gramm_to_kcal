@@ -3,24 +3,76 @@
  * Tests standardized error handling with security headers and proper status codes
  */
 
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { auth } from "@/lib/auth/auth";
-import { db } from "@/lib/db";
-import { createApiErrorResponse } from "@/lib/utils/api-error-response";
+import { createMockAuthSession } from "@/__tests__/utils/auth-mocks";
 
 // Mock dependencies
-vi.mock("@/lib/auth/auth");
-vi.mock("@/lib/db");
-vi.mock("@/lib/utils/api-error-response");
-vi.mock("next/headers", () => ({
-    headers: vi.fn().mockResolvedValue(new Headers()),
+vi.mock("@/lib/auth/auth", () => ({
+    auth: {
+        api: {
+            getSession: vi.fn(),
+        },
+    },
 }));
 
-const mockAuth = vi.mocked(auth);
-const mockDb = vi.mocked(db);
-const mockCreateApiErrorResponse = vi.mocked(createApiErrorResponse);
+vi.mock("@/lib/db", () => ({
+    db: {
+        select: vi.fn(() => ({
+            from: vi.fn(() => ({
+                where: vi.fn(() => ({
+                    limit: vi.fn(() => Promise.resolve([])),
+                })),
+            })),
+        })),
+        update: vi.fn(() => ({
+            set: vi.fn(() => ({
+                where: vi.fn(() => ({
+                    returning: vi.fn(() => Promise.resolve([])),
+                })),
+            })),
+        })),
+        transaction: vi.fn(),
+    },
+}));
+
+vi.mock("@/lib/db/schemas", () => ({
+    recipes: {
+        id: "id",
+        userId: "userId",
+        isDeleted: "isDeleted",
+        updatedAt: "updatedAt",
+    },
+    ingredients: {
+        recipeId: "recipeId",
+        userId: "userId",
+        isDeleted: "isDeleted",
+        order: "order",
+        updatedAt: "updatedAt",
+    },
+}));
+
+vi.mock("drizzle-orm", () => ({
+    and: vi.fn(),
+    eq: vi.fn(),
+}));
+
+vi.mock("@/lib/utils/api-error-response", () => ({
+    createApiErrorResponse: vi.fn(),
+}));
+
+vi.mock("next/headers", () => ({
+    headers: vi.fn(() => Promise.resolve(new Headers())),
+}));
+
+vi.mock("@/lib/utils/logger", () => ({
+    createRequestLogger: vi.fn(() => ({
+        info: vi.fn(),
+        warn: vi.fn(),
+        error: vi.fn(),
+    })),
+}));
 
 // Import route handlers after mocking
 let GET: any, PUT: any, DELETE: any;
@@ -40,23 +92,26 @@ beforeEach(async () => {
 
 describe("/api/user/recipes/[id] - GET", () => {
     it("should return standardized error response for unauthorized access", async () => {
+        const { auth } = await import("@/lib/auth/auth");
+        const { createApiErrorResponse } = await import("@/lib/utils/api-error-response");
+
         // Arrange
         const request = new NextRequest("http://localhost:3000/api/user/recipes/test-id");
         const params = Promise.resolve({ id: "test-id" });
 
-        mockAuth.api.getSession.mockResolvedValue(null);
-        mockCreateApiErrorResponse.mockReturnValue(
-            new Response(JSON.stringify({
+        (auth.api.getSession as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(null);
+        (createApiErrorResponse as unknown as ReturnType<typeof vi.fn>).mockReturnValue(
+            NextResponse.json({
                 success: false,
                 error: { type: "AUTH_ERROR", message: "Unauthorized" },
-            }), { status: 401 }),
+            }, { status: 401 }),
         );
 
         // Act
         const _response = await GET(request, { params });
 
         // Assert
-        expect(mockCreateApiErrorResponse).toHaveBeenCalledWith(
+        expect(createApiErrorResponse).toHaveBeenCalledWith(
             expect.objectContaining({
                 type: "AUTH_ERROR",
                 message: "Unauthorized",
@@ -67,35 +122,41 @@ describe("/api/user/recipes/[id] - GET", () => {
     });
 
     it("should return standardized error response for recipe not found", async () => {
+        const { auth } = await import("@/lib/auth/auth");
+        const { db } = await import("@/lib/db");
+        const { createApiErrorResponse } = await import("@/lib/utils/api-error-response");
+
         // Arrange
         const request = new NextRequest("http://localhost:3000/api/user/recipes/nonexistent-id");
         const params = Promise.resolve({ id: "nonexistent-id" });
 
-        mockAuth.api.getSession.mockResolvedValue({
-            user: { id: "user-123" },
-        });
+        const mockAuth = createMockAuthSession(
+            { id: "user-123", email: "test@example.com" },
+        );
+        (auth.api.getSession as any).mockResolvedValue(mockAuth);
 
         // Mock empty recipe result
-        mockDb.select.mockReturnValue({
-            from: vi.fn().mockReturnValue({
-                where: vi.fn().mockReturnValue({
-                    limit: vi.fn().mockResolvedValue([]),
-                }),
-            }),
-        });
+        const mockSelect = {
+            from: vi.fn(() => ({
+                where: vi.fn(() => ({
+                    limit: vi.fn(() => Promise.resolve([])),
+                })),
+            })),
+        };
+        vi.mocked(db.select).mockReturnValue(mockSelect as any);
 
-        mockCreateApiErrorResponse.mockReturnValue(
-            new Response(JSON.stringify({
+        (createApiErrorResponse as unknown as ReturnType<typeof vi.fn>).mockReturnValue(
+            NextResponse.json({
                 success: false,
                 error: { type: "NOT_FOUND_ERROR", message: "Recipe not found" },
-            }), { status: 404 }),
+            }, { status: 404 }),
         );
 
         // Act
         const _response = await GET(request, { params });
 
         // Assert
-        expect(mockCreateApiErrorResponse).toHaveBeenCalledWith(
+        expect(createApiErrorResponse).toHaveBeenCalledWith(
             expect.objectContaining({
                 type: "NOT_FOUND_ERROR",
                 message: "Recipe not found",
@@ -108,6 +169,9 @@ describe("/api/user/recipes/[id] - GET", () => {
 
 describe("/api/user/recipes/[id] - PUT", () => {
     it("should return standardized error response for unauthorized update", async () => {
+        const { auth } = await import("@/lib/auth/auth");
+        const { createApiErrorResponse } = await import("@/lib/utils/api-error-response");
+
         // Arrange
         const request = new NextRequest("http://localhost:3000/api/user/recipes/test-id", {
             method: "PUT",
@@ -116,19 +180,19 @@ describe("/api/user/recipes/[id] - PUT", () => {
         });
         const params = Promise.resolve({ id: "test-id" });
 
-        mockAuth.api.getSession.mockResolvedValue(null);
-        mockCreateApiErrorResponse.mockReturnValue(
-            new Response(JSON.stringify({
+        (auth.api.getSession as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(null);
+        (createApiErrorResponse as unknown as ReturnType<typeof vi.fn>).mockReturnValue(
+            NextResponse.json({
                 success: false,
                 error: { type: "AUTH_ERROR", message: "Unauthorized" },
-            }), { status: 401 }),
+            }, { status: 401 }),
         );
 
         // Act
         const _response = await PUT(request, { params });
 
         // Assert
-        expect(mockCreateApiErrorResponse).toHaveBeenCalledWith(
+        expect(createApiErrorResponse).toHaveBeenCalledWith(
             expect.objectContaining({
                 type: "AUTH_ERROR",
                 message: "Unauthorized",
@@ -141,25 +205,28 @@ describe("/api/user/recipes/[id] - PUT", () => {
 
 describe("/api/user/recipes/[id] - DELETE", () => {
     it("should return standardized error response for unauthorized deletion", async () => {
+        const { auth } = await import("@/lib/auth/auth");
+        const { createApiErrorResponse } = await import("@/lib/utils/api-error-response");
+
         // Arrange
         const request = new NextRequest("http://localhost:3000/api/user/recipes/test-id", {
             method: "DELETE",
         });
         const params = Promise.resolve({ id: "test-id" });
 
-        mockAuth.api.getSession.mockResolvedValue(null);
-        mockCreateApiErrorResponse.mockReturnValue(
-            new Response(JSON.stringify({
+        (auth.api.getSession as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(null);
+        (createApiErrorResponse as unknown as ReturnType<typeof vi.fn>).mockReturnValue(
+            NextResponse.json({
                 success: false,
                 error: { type: "AUTH_ERROR", message: "Unauthorized" },
-            }), { status: 401 }),
+            }, { status: 401 }),
         );
 
         // Act
         const _response = await DELETE(request, { params });
 
         // Assert
-        expect(mockCreateApiErrorResponse).toHaveBeenCalledWith(
+        expect(createApiErrorResponse).toHaveBeenCalledWith(
             expect.objectContaining({
                 type: "AUTH_ERROR",
                 message: "Unauthorized",
