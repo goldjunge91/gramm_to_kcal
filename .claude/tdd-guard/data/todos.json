@@ -1,51 +1,63 @@
 {
-  "session_id": "f1e641b1-d316-4645-99ec-74ee64829809",
-  "transcript_path": "/Users/marco/.claude/projects/-Users-marco-Github-tmp-gramm-to-kcal/f1e641b1-d316-4645-99ec-74ee64829809.jsonl",
+  "session_id": "804831dd-7fdb-469c-b4b0-8d6e805d36d5",
+  "transcript_path": "/Users/marco/.claude/projects/-Users-marco-Github-tmp-gramm-to-kcal/804831dd-7fdb-469c-b4b0-8d6e805d36d5.jsonl",
   "hook_event_name": "PreToolUse",
   "tool_name": "TodoWrite",
   "tool_input": {
     "todos": [
       {
-        "content": "Create standardized API error response system (lib/utils/api-error-response.ts)",
+        "content": "Remove __tests__/hello-world.test.ts dummy test file",
         "status": "completed",
         "priority": "high",
-        "id": "1"
+        "id": "remove-hello-world-test"
       },
       {
-        "content": "Update /api/products/route.ts to use standardized error handling",
+        "content": "Remove __tests__/hooks/Untitled-1.ts misplaced file",
         "status": "completed",
         "priority": "high",
-        "id": "2"
+        "id": "remove-untitled-file"
       },
       {
-        "content": "Update /api/user/products/[id]/route.ts to use standardized error handling",
+        "content": "Remove /app/debug/middleware/page.tsx debug page",
         "status": "completed",
         "priority": "high",
-        "id": "3"
+        "id": "remove-debug-pages"
       },
       {
-        "content": "Update /api/user/recipes/[id]/route.ts to use standardized error handling",
-        "status": "completed",
+        "content": "Create /lib/utils/auth-logging.ts with shared logAuthAttempt function",
+        "status": "in_progress",
         "priority": "high",
-        "id": "4"
+        "id": "create-auth-logging-utility"
       },
       {
-        "content": "Update remaining 6 API routes to use standardized error handling",
-        "status": "completed",
+        "content": "Update actions/login.ts to use shared auth logging utility",
+        "status": "pending",
+        "priority": "high",
+        "id": "update-login-action"
+      },
+      {
+        "content": "Update actions/register.ts to use shared auth logging utility",
+        "status": "pending",
+        "priority": "high",
+        "id": "update-register-action"
+      },
+      {
+        "content": "Remove duplicate API route tests in /app/api/ directory",
+        "status": "pending",
         "priority": "medium",
-        "id": "5"
+        "id": "consolidate-api-tests"
       },
       {
-        "content": "Update test files to expect new error format",
-        "status": "completed",
-        "priority": "medium",
-        "id": "6"
+        "content": "Analyze /types/types.ts for unused interfaces and type definitions",
+        "status": "pending",
+        "priority": "low",
+        "id": "analyze-type-definitions"
       },
       {
-        "content": "Run test suite and verify consistency across all endpoints",
-        "status": "completed",
-        "priority": "medium",
-        "id": "7"
+        "content": "Review API route patterns for consolidation opportunities",
+        "status": "pending",
+        "priority": "low",
+        "id": "review-api-patterns"
       }
     ]
   }
