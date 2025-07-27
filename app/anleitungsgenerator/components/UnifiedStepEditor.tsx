@@ -2,7 +2,7 @@
 
 import type { JSX } from "react";
 
-import type { ImageSettings, RecipeStep } from "@/lib/types/types";
+import type { ImageSettings, RecipeStep } from "@/types/types";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";

@@ -6,7 +6,7 @@ import { ChevronDown, Scan } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
-import type { ProductFormProps } from "@/lib/types/types";
+import type { ProductFormProps } from "@/types/types";
 
 // Den neuen, verbesserten Scanner importieren
 import { BarcodeScanner } from "@/components/barcode-scanner";

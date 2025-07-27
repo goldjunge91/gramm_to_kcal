@@ -5,7 +5,7 @@ import { ArrowUpDown, Trash2, TrendingUp, Weight } from "lucide-react";
 import { useMemo } from "react";
 
 import type { TableColumn } from "@/components/enhanced-table";
-import type { Product } from "@/lib/types/types";
+import type { Product } from "@/types/types";
 
 import { EnhancedTable } from "@/components/enhanced-table";
 import { Button } from "@/components/ui/button";

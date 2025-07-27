@@ -15,7 +15,7 @@ import type {
     DevScannerStats,
     EnhancedProductLookupResult,
     ScanDiagnostics,
-} from "@/lib/types/dev-scanner";
+} from "@/types/dev-scanner";
 
 import { DevBarcodeScanner } from "@/components/dev/DevBarcodeScanner";
 import { DevToolsPanel } from "@/components/dev/DevToolsPanel";

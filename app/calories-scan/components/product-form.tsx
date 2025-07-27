@@ -12,7 +12,7 @@ import {
 import { useState } from "react";
 import { toast } from "sonner";
 
-import type { Product } from "@/lib/types/types";
+import type { Product } from "@/types/types";
 
 import { BarcodeScanner } from "@/components/BarcodeScanner";
 import { RecentScansDropdown } from "@/components/dev/RecentScansDropdown";

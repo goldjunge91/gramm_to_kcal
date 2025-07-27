@@ -4,8 +4,8 @@ import path from "node:path";
 
 import type { Recipe } from "@/lib/db/schemas";
 
-import { isFileSystemError } from "@/lib/types/errors";
 import { toAppError } from "@/lib/utils/error-utils";
+import { isFileSystemError } from "@/types/errors";
 
 const dbPath = path.join(process.cwd(), "data", "recipes.json");
 

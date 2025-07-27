@@ -1,6 +1,6 @@
 import type { JSX } from "react";
 
-import type { ParsedRecipe } from "@/lib/types/types";
+import type { ParsedRecipe } from "@/types/types";
 
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";

@@ -4,10 +4,10 @@
 import { NextRequest } from "next/server";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { GET, POST } from "../../../../app/api/products/route";
+import { GET, POST } from "../../../app/api/products/route";
 
 // Mock validation module
-vi.mock("../../../../lib/validations/request-validation", () => ({
+vi.mock("../../../lib/validations/request-validation", () => ({
     validateRequest: vi.fn(),
     validateRequestSize: vi.fn(),
     validateContentType: vi.fn(),
@@ -33,10 +33,10 @@ describe("/api/products", () => {
     describe("gET", () => {
         it("should validate barcode query parameter", async () => {
             const { validateRequest } = await import(
-                "../../../../lib/validations/request-validation"
+                "../../../lib/validations/request-validation"
             );
             const { cachedLookupProductByBarcode } = await import(
-                "../../../../lib/api/cached-product-lookup"
+                "../../../lib/api/cached-product-lookup"
             );
 
             vi.mocked(validateRequest).mockResolvedValue({
@@ -75,7 +75,7 @@ describe("/api/products", () => {
 
         it("should return error for invalid barcode", async () => {
             const { validateRequest, getSecurityHeaders } = await import(
-                "../../../../lib/validations/request-validation"
+                "../../../lib/validations/request-validation"
             );
 
             vi.mocked(validateRequest).mockResolvedValue({
@@ -97,10 +97,10 @@ describe("/api/products", () => {
 
         it("should validate search query parameter", async () => {
             const { validateRequest } = await import(
-                "../../../../lib/validations/request-validation"
+                "../../../lib/validations/request-validation"
             );
             const { cachedSearchProductsByName } = await import(
-                "../../../../lib/api/cached-product-lookup"
+                "../../../lib/api/cached-product-lookup"
             );
 
             vi.mocked(validateRequest).mockResolvedValue({
@@ -146,7 +146,7 @@ describe("/api/products", () => {
 
         it("should return error for invalid search query", async () => {
             const { validateRequest, getSecurityHeaders } = await import(
-                "../../../../lib/validations/request-validation"
+                "../../../lib/validations/request-validation"
             );
 
             vi.mocked(validateRequest).mockResolvedValue({
@@ -168,7 +168,7 @@ describe("/api/products", () => {
 
         it("should return success response without parameters", async () => {
             const { getSecurityHeaders } = await import(
-                "../../../../lib/validations/request-validation"
+                "../../../lib/validations/request-validation"
             );
             vi.mocked(getSecurityHeaders).mockReturnValue(new Headers());
 
@@ -186,7 +186,7 @@ describe("/api/products", () => {
     describe("pOST", () => {
         it("should reject requests that are too large", async () => {
             const { validateRequestSize, getSecurityHeaders } = await import(
-                "../../../../lib/validations/request-validation"
+                "../../../lib/validations/request-validation"
             );
 
             vi.mocked(validateRequestSize).mockReturnValue(false);
@@ -213,7 +213,7 @@ describe("/api/products", () => {
                 validateRequestSize,
                 validateContentType,
                 getSecurityHeaders,
-            } = await import("../../../../lib/validations/request-validation");
+            } = await import("../../../lib/validations/request-validation");
 
             vi.mocked(validateRequestSize).mockReturnValue(true);
             vi.mocked(validateContentType).mockReturnValue(false);
@@ -242,7 +242,7 @@ describe("/api/products", () => {
                 validateContentType,
                 validateRequest,
                 getSecurityHeaders,
-            } = await import("../../../../lib/validations/request-validation");
+            } = await import("../../../lib/validations/request-validation");
 
             vi.mocked(validateRequestSize).mockReturnValue(true);
             vi.mocked(validateContentType).mockReturnValue(true);
@@ -275,7 +275,7 @@ describe("/api/products", () => {
                 validateContentType,
                 validateRequest,
                 getSecurityHeaders,
-            } = await import("../../../../lib/validations/request-validation");
+            } = await import("../../../lib/validations/request-validation");
 
             vi.mocked(validateRequestSize).mockReturnValue(true);
             vi.mocked(validateContentType).mockReturnValue(true);

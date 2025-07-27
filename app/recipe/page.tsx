@@ -5,7 +5,7 @@ import type { JSX } from "react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
-import type { Ingredient } from "@/lib/types/types";
+import type { Ingredient } from "@/types/types";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";

@@ -6,7 +6,7 @@ import { Plus, RefreshCw, Scan } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
-import type { Product } from "@/lib/types/types";
+import type { Product } from "@/types/types";
 
 // import { MobileOfflineStatus } from "@/components/MobileOfflineStatus";
 import { Button } from "@/components/ui/button";
