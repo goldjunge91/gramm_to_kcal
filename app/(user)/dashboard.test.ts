@@ -1,6 +1,6 @@
 import { describe, expect } from "vitest";
 
-import { dashboardConfig } from "./dashboard";
+import { dashboardConfig } from "@/app/(user)/dashboard";
 
 describe("dashboardConfig", () => {
     it("should have mainNav items", () => {
