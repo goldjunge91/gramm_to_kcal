@@ -11,7 +11,7 @@ import type {
     HttpError,
     NetworkError,
     ValidationError,
-} from "../types/errors";
+} from "../../types/errors";
 
 /**
  * Safely extracts an error message from unknown error types

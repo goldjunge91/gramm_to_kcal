@@ -4,7 +4,7 @@
  * Implements the recommended 30 req/min for products and 10 req/s for search
  */
 
-import type { Product } from "@/lib/types/types";
+import type { Product } from "@/types/types";
 
 import { getRedis } from "@/lib/redis";
 

@@ -1,6 +1,6 @@
 /* eslint-disable regexp/optimal-quantifier-concatenation */
 /* eslint-disable regexp/no-super-linear-backtracking */
-import type { Ingredient, ParsedRecipe, RecipeStep } from "@/lib/types/types";
+import type { Ingredient, ParsedRecipe, RecipeStep } from "@/types/types";
 
 /** Extract clean title by removing emojis and extra whitespace */
 function extractTitle(text: string): string {

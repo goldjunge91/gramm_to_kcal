@@ -4,7 +4,7 @@
  * - Unauthenticated users: localStorage only
  */
 
-import type { Product } from "@/lib/types/types";
+import type { Product } from "@/types/types";
 
 import { useAuth } from "@/app/providers";
 import {

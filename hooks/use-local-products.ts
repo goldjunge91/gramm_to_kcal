@@ -6,7 +6,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 
-import type { Product } from "@/lib/types/types";
+import type { Product } from "@/types/types";
 
 import { env } from "@/lib/env";
 import { createLogger } from "@/lib/utils/logger";

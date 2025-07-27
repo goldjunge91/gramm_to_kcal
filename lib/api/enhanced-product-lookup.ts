@@ -10,8 +10,8 @@ import type {
     ExtendedOpenFoodFactsProduct,
     ProductImages,
     TestBarcode,
-} from "@/lib/types/dev-scanner";
-import type { Product } from "@/lib/types/types";
+} from "@/types/dev-scanner";
+import type { Product } from "@/types/types";
 
 const OPENFOODFACTS_API_BASE = "https://world.openfoodfacts.org/api/v2";
 const USER_AGENT = "CalorieTracker-Dev/1.0 (https://gramm-to-kcal.vercel.app)";

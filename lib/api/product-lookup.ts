@@ -3,7 +3,7 @@
  * https://world.openfoodfacts.org/api/v2/
  */
 
-import type { Product } from "@/lib/types/types";
+import type { Product } from "@/types/types";
 
 const OPENFOODFACTS_API_BASE = "https://world.openfoodfacts.org/api/v2";
 
