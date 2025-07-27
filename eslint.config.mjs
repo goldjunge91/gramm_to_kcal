@@ -13,8 +13,6 @@ export default antfu(
             quotes: "double",
         },
         ignores: [
-            "**/migrations/*",
-            "**/fixtures",
             // "**/tests/*",
             // "**/__tests__/setup.ts",
             // "**/__mocks__/*",
@@ -29,18 +27,20 @@ export default antfu(
             ".github/",
             "*.yml",
             "*.yaml",
+            "**/*.md",
+            ".docs/**",
         ],
     },
     {
         rules: {
-            "react-dom/no-dangerously-set-innerhtml": "off",
-            "react-web-api/no-leaked-timeout": "off",
-            "ts/no-use-before-define": "off",
+            "react-dom/no-dangerously-set-innerhtml": "warn",
+            "react-web-api/no-leaked-timeout": "warn",
+            "ts/no-use-before-define": "warn",
             "react-dom/no-missing-button-type": "off",
             "react-refresh/only-export-components": "off",
             "ts/ban-ts-comment": "off",
-            "react-hooks/exhaustive-deps": "off",
-            "react-hooks/rules-of-hooks": "off",
+            "react-hooks/exhaustive-deps": "warn",
+            "react-hooks/rules-of-hooks": "warn",
             "react-hooks-extra/no-direct-set-state-in-use-effect": "off",
             "react/no-array-index-key": "off",
             "style/multiline-ternary": "off",
@@ -70,6 +70,30 @@ export default antfu(
         },
     },
     {
+        files: ["**/*.md"],
+        rules: {
+            "unicorn/filename-case": "off",
+            "react-dom/no-dangerously-set-innerhtml": "off",
+            "react-web-api/no-leaked-timeout": "off",
+            "ts/no-use-before-define": "off",
+            "react-dom/no-missing-button-type": "off",
+            "react-refresh/only-export-components": "off",
+            "ts/ban-ts-comment": "off",
+            "react-hooks/exhaustive-deps": "off",
+            "react-hooks/rules-of-hooks": "off",
+            "react-hooks-extra/no-direct-set-state-in-use-effect": "off",
+            "react/no-array-index-key": "off",
+            "style/multiline-ternary": "off",
+            "react/no-danger": "off",
+            // alte regeln
+            "no-console": ["off"],
+            "antfu/no-top-level-await": ["off"],
+            "node/prefer-global/process": ["off"],
+            "node/no-process-env": "off",
+            "import/no-default-export": "off",
+        },
+    },
+    {
         files: ["scripts/**"],
         rules: {
             "unused-imports/no-unused-vars": "off",
@@ -82,5 +106,6 @@ export default antfu(
         rules: {
             "unicorn/filename-case": "off",
         },
+
     },
 );
