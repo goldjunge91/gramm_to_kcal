@@ -2,34 +2,10 @@
   "session_id": "f1e641b1-d316-4645-99ec-74ee64829809",
   "transcript_path": "/Users/marco/.claude/projects/-Users-marco-Github-tmp-gramm-to-kcal/f1e641b1-d316-4645-99ec-74ee64829809.jsonl",
   "hook_event_name": "PreToolUse",
-  "tool_name": "MultiEdit",
+  "tool_name": "Edit",
   "tool_input": {
-    "file_path": "/Users/marco/Github.tmp/gramm_to_kcal/app/api/products/route.ts",
-    "edits": [
-      {
-        "old_string": "            return createApiErrorResponse(validation.error, \"Invalid barcode format\");",
-        "new_string": "            return createApiErrorResponse(validation.error, \"Invalid barcode format\", 400);"
-      },
-      {
-        "old_string": "            return createApiErrorResponse(\"Empty search query\", \"Invalid search query\");",
-        "new_string": "            return createApiErrorResponse(\"Empty search query\", \"Invalid search query\", 400);"
-      },
-      {
-        "old_string": "            return createApiErrorResponse(validation.error, \"Invalid search query\");",
-        "new_string": "            return createApiErrorResponse(validation.error, \"Invalid search query\", 400);"
-      },
-      {
-        "old_string": "        return createApiErrorResponse(\"Request payload too large\", \"Request too large\");",
-        "new_string": "        return createApiErrorResponse(\"Request payload too large\", \"Request too large\", 413);"
-      },
-      {
-        "old_string": "        return createApiErrorResponse(\"Invalid content type\", \"Content type must be application/json\");",
-        "new_string": "        return createApiErrorResponse(\"Invalid content type\", \"Content type must be application/json\", 415);"
-      },
-      {
-        "old_string": "        return createApiErrorResponse(validation.error, \"Invalid product creation data\");",
-        "new_string": "        return createApiErrorResponse(validation.error, \"Invalid product creation data\", 400);"
-      }
-    ]
+    "file_path": "/Users/marco/Github.tmp/gramm_to_kcal/__tests__/app/api/user/recipes/[id]/route.test.ts",
+    "old_string": "        // Act\n        const response = await DELETE(request, { params });",
+    "new_string": "        // Act\n        const _response = await DELETE(request, { params });"
   }
 }

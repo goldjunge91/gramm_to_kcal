@@ -27,9 +27,14 @@ export async function PUT(
 
         if (!session?.user) {
             logger.warn("Unauthorized product update attempt", { productId: id });
+            // Create auth error for standardized response
+            const authError = {
+                type: "AUTH_ERROR" as const,
+                message: "Unauthorized",
+            };
             const noCacheHeaders = createNoCacheHeaders();
             return NextResponse.json(
-                { error: "Unauthorized" },
+                { success: false, error: authError },
                 { status: 401, headers: noCacheHeaders },
             );
         }
@@ -59,9 +64,14 @@ export async function PUT(
                 productId: id,
                 userId: session.user.id,
             });
+            // Create not found error for standardized response
+            const notFoundError = {
+                type: "NOT_FOUND_ERROR" as const,
+                message: "Product not found",
+            };
             const noCacheHeaders = createNoCacheHeaders();
             return NextResponse.json(
-                { error: "Product not found" },
+                { success: false, error: notFoundError },
                 { status: 404, headers: noCacheHeaders },
             );
         }
@@ -85,9 +95,14 @@ export async function PUT(
         if (typeof console !== "undefined" && typeof console.error === "function") {
             console.error("Error updating product:", error);
         }
+        // Create internal error for standardized response
+        const internalError = {
+            type: "INTERNAL_ERROR" as const,
+            message: error instanceof Error ? error.message : "Internal server error",
+        };
         const noCacheHeaders = createNoCacheHeaders();
         return NextResponse.json(
-            { error: "Internal server error" },
+            { success: false, error: internalError },
             { status: 500, headers: noCacheHeaders },
         );
     }
@@ -110,9 +125,14 @@ export async function DELETE(
 
         if (!session?.user) {
             logger.warn("Unauthorized product deletion attempt", { productId: id });
+            // Create auth error for standardized response
+            const authError = {
+                type: "AUTH_ERROR" as const,
+                message: "Unauthorized",
+            };
             const noCacheHeaders = createNoCacheHeaders();
             return NextResponse.json(
-                { error: "Unauthorized" },
+                { success: false, error: authError },
                 { status: 401, headers: noCacheHeaders },
             );
         }
@@ -139,9 +159,14 @@ export async function DELETE(
                 productId: id,
                 userId: session.user.id,
             });
+            // Create not found error for standardized response
+            const notFoundError = {
+                type: "NOT_FOUND_ERROR" as const,
+                message: "Product not found",
+            };
             const noCacheHeaders = createNoCacheHeaders();
             return NextResponse.json(
-                { error: "Product not found" },
+                { success: false, error: notFoundError },
                 { status: 404, headers: noCacheHeaders },
             );
         }
@@ -168,9 +193,14 @@ export async function DELETE(
         if (typeof console !== "undefined" && typeof console.error === "function") {
             console.error("Error deleting product:", error);
         }
+        // Create internal error for standardized response
+        const internalError = {
+            type: "INTERNAL_ERROR" as const,
+            message: error instanceof Error ? error.message : "Internal server error",
+        };
         const noCacheHeaders = createNoCacheHeaders();
         return NextResponse.json(
-            { error: "Internal server error" },
+            { success: false, error: internalError },
             { status: 500, headers: noCacheHeaders },
         );
     }

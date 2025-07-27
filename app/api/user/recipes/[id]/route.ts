@@ -7,6 +7,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth/auth";
 import { db } from "@/lib/db";
 import { ingredients, recipes } from "@/lib/db/schemas";
+import { createApiErrorResponse } from "@/lib/utils/api-error-response";
 import { createRequestLogger } from "@/lib/utils/logger";
 
 export async function GET(
@@ -26,10 +27,11 @@ export async function GET(
 
         if (!session?.user) {
             logger.warn("Unauthorized recipe fetch attempt", { recipeId: id });
-            return NextResponse.json(
-                { error: "Unauthorized" },
-                { status: 401 },
-            );
+            const authError = {
+                type: "AUTH_ERROR" as const,
+                message: "Unauthorized",
+            };
+            return createApiErrorResponse(authError, "Recipe access denied", 401);
         }
 
         logger.info("Fetching recipe with ingredients", {
@@ -55,10 +57,11 @@ export async function GET(
                 recipeId: id,
                 userId: session.user.id,
             });
-            return NextResponse.json(
-                { error: "Recipe not found" },
-                { status: 404 },
-            );
+            const notFoundError = {
+                type: "NOT_FOUND_ERROR" as const,
+                message: "Recipe not found",
+            };
+            return createApiErrorResponse(notFoundError, "Recipe retrieval failed", 404);
         }
 
         // Get ingredients for this recipe
@@ -91,10 +94,7 @@ export async function GET(
             error: error instanceof Error ? error.message : "Unknown error",
             stack: error instanceof Error ? error.stack : undefined,
         });
-        return NextResponse.json(
-            { error: "Internal server error" },
-            { status: 500 },
-        );
+        return createApiErrorResponse(error, "Recipe fetch operation failed");
     }
 }
 
@@ -115,10 +115,11 @@ export async function PUT(
 
         if (!session?.user) {
             logger.warn("Unauthorized recipe update attempt", { recipeId: id });
-            return NextResponse.json(
-                { error: "Unauthorized" },
-                { status: 401 },
-            );
+            const authError = {
+                type: "AUTH_ERROR" as const,
+                message: "Unauthorized",
+            };
+            return createApiErrorResponse(authError, "Recipe update denied", 401);
         }
 
         const updates = await request.json();
@@ -149,10 +150,11 @@ export async function PUT(
                 recipeId: id,
                 userId: session.user.id,
             });
-            return NextResponse.json(
-                { error: "Recipe not found" },
-                { status: 404 },
-            );
+            const notFoundError = {
+                type: "NOT_FOUND_ERROR" as const,
+                message: "Recipe not found",
+            };
+            return createApiErrorResponse(notFoundError, "Recipe update failed", 404);
         }
 
         logger.info("Recipe updated successfully", {
@@ -168,10 +170,7 @@ export async function PUT(
             error: error instanceof Error ? error.message : "Unknown error",
             stack: error instanceof Error ? error.stack : undefined,
         });
-        return NextResponse.json(
-            { error: "Internal server error" },
-            { status: 500 },
-        );
+        return createApiErrorResponse(error, "Recipe update operation failed");
     }
 }
 
@@ -192,10 +191,11 @@ export async function DELETE(
 
         if (!session?.user) {
             logger.warn("Unauthorized recipe deletion attempt", { recipeId: id });
-            return NextResponse.json(
-                { error: "Unauthorized" },
-                { status: 401 },
-            );
+            const authError = {
+                type: "AUTH_ERROR" as const,
+                message: "Unauthorized",
+            };
+            return createApiErrorResponse(authError, "Recipe deletion denied", 401);
         }
 
         logger.info("Deleting recipe and associated ingredients", {
@@ -247,9 +247,6 @@ export async function DELETE(
             error: error instanceof Error ? error.message : "Unknown error",
             stack: error instanceof Error ? error.stack : undefined,
         });
-        return NextResponse.json(
-            { error: "Internal server error" },
-            { status: 500 },
-        );
+        return createApiErrorResponse(error, "Recipe deletion operation failed");
     }
 }

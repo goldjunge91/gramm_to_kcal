@@ -116,7 +116,9 @@ describe("/api/user/products/[id]", () => {
             const data = await response.json();
 
             expect(response.status).toBe(401);
-            expect(data.error).toBe("Unauthorized");
+            expect(data.success).toBe(false);
+            expect(data.error.type).toBe("AUTH_ERROR");
+            expect(data.error.message).toBe("Unauthorized");
         });
 
         it("should return 404 when product not found or not owned by user", async () => {
@@ -151,7 +153,9 @@ describe("/api/user/products/[id]", () => {
             const data = await response.json();
 
             expect(response.status).toBe(404);
-            expect(data.error).toBe("Product not found");
+            expect(data.success).toBe(false);
+            expect(data.error.type).toBe("NOT_FOUND_ERROR");
+            expect(data.error.message).toBe("Product not found");
         });
 
         it("should handle database errors during update", async () => {
@@ -192,7 +196,9 @@ describe("/api/user/products/[id]", () => {
             const data = await response.json();
 
             expect(response.status).toBe(500);
-            expect(data.error).toBe("Internal server error");
+            expect(data.success).toBe(false);
+            expect(data.error.type).toBe("INTERNAL_ERROR");
+            expect(data.error.message).toBe("Database update failed");
             expect(consoleSpy).toHaveBeenCalledWith(
                 "Error updating product:",
                 expect.any(Error),
@@ -264,7 +270,9 @@ describe("/api/user/products/[id]", () => {
             const data = await response.json();
 
             expect(response.status).toBe(401);
-            expect(data.error).toBe("Unauthorized");
+            expect(data.success).toBe(false);
+            expect(data.error.type).toBe("AUTH_ERROR");
+            expect(data.error.message).toBe("Unauthorized");
         });
 
         it("should return 404 when product not found or not owned by user", async () => {
@@ -298,7 +306,9 @@ describe("/api/user/products/[id]", () => {
             const data = await response.json();
 
             expect(response.status).toBe(404);
-            expect(data.error).toBe("Product not found");
+            expect(data.success).toBe(false);
+            expect(data.error.type).toBe("NOT_FOUND_ERROR");
+            expect(data.error.message).toBe("Product not found");
         });
 
         it("should handle database errors during deletion", async () => {
@@ -338,7 +348,9 @@ describe("/api/user/products/[id]", () => {
             const data = await response.json();
 
             expect(response.status).toBe(500);
-            expect(data.error).toBe("Internal server error");
+            expect(data.success).toBe(false);
+            expect(data.error.type).toBe("INTERNAL_ERROR");
+            expect(data.error.message).toBe("Database delete failed");
             expect(consoleSpy).toHaveBeenCalledWith(
                 "Error deleting product:",
                 expect.any(Error),
