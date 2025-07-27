@@ -11,7 +11,7 @@ import { Html5Qrcode, Html5QrcodeScannerState } from "html5-qrcode";
 import { Camera, Loader2, Upload, X } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import type { BarcodeScannerProps, ScanMode } from "@/lib/types/scanner-types";
+import type { BarcodeScannerProps, ScanMode } from "@/types/scanner-types";
 
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";

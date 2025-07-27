@@ -1,6 +1,6 @@
 "use client";
 
-import type { Recipe } from "@/lib/types/types";
+import type { Recipe } from "@/types/types";
 
 function RecipeListItem({ recipe }: { recipe: Recipe }) {
     return (

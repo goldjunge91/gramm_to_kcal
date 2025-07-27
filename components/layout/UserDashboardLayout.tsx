@@ -1,9 +1,9 @@
 import type { User } from "better-auth";
 
+import { dashboardConfig } from "@/app/(user)/dashboard";
 import { UserDashboardNavbar } from "@/components/layout/UserDashboardNavbar";
 import { SiteFooter } from "@/components/site-footer";
 import { UserAccountNav } from "@/components/user-account-nav";
-import { dashboardConfig } from "@/config/dashboard";
 
 interface DashboardLayoutProps {
     children: React.ReactNode;

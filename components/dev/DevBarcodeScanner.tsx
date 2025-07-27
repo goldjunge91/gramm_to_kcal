@@ -20,7 +20,7 @@ import {
 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import type { ScanDiagnostics } from "@/lib/types/dev-scanner";
+import type { ScanDiagnostics } from "@/types/dev-scanner";
 
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";

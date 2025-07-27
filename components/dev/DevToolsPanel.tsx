@@ -20,7 +20,7 @@ import {
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
 
-import type { DevScannerStats, ScanDiagnostics } from "@/lib/types/dev-scanner";
+import type { DevScannerStats, ScanDiagnostics } from "@/types/dev-scanner";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";

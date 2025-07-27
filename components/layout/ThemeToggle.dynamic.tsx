@@ -6,12 +6,20 @@
 "use client";
 
 import type { JSX } from "react";
+import type * as React from "react";
 
 import { Loader2, Moon, Sun } from "lucide-react";
 import dynamic from "next/dynamic";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+
+interface ThemeToggleProps {
+    className?: string;
+    defaultChecked?: boolean;
+    checked?: boolean;
+    onToggle?: (checked: boolean) => void;
+}
 
 // Simple loading component that shows a static toggle
 function ThemeToggleLoading({
@@ -34,7 +42,7 @@ function ThemeToggleLoading({
 
 // Dynamic import with loading state
 const DynamicThemeToggle = dynamic(
-    () => import("./ThemeToggle").then(mod => ({ default: mod.default })),
+    () => import("./ThemeToggle").then(mod => ({ default: mod.ThemeToggle })),
     {
         loading: () => <ThemeToggleLoading />,
         ssr: false, // Theme toggle needs client-side theme detection
@@ -45,8 +53,22 @@ const DynamicThemeToggle = dynamic(
  * Dynamic wrapper for animated ThemeToggle component
  * Only loads framer-motion when the component is rendered
  */
-export function ThemeToggle(props: { className?: string }): JSX.Element {
-    return <DynamicThemeToggle {...props} />;
+export function ThemeToggle({
+    className,
+    defaultChecked,
+    checked,
+    onToggle,
+}: ThemeToggleProps): JSX.Element {
+    // Type assertion to resolve the onToggle conflict between HTMLAttributes and our custom prop
+    const Component = DynamicThemeToggle as React.ComponentType<ThemeToggleProps>;
+    return (
+        <Component
+            className={className}
+            defaultChecked={defaultChecked}
+            checked={checked}
+            onToggle={onToggle}
+        />
+    );
 }
 
 // Also export the static version for cases where animation isn't needed

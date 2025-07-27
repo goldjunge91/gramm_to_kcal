@@ -6,7 +6,7 @@ import { Html5Qrcode } from "html5-qrcode";
 import { Loader2, Upload } from "lucide-react";
 import { useCallback, useRef, useState } from "react";
 
-import type { UploadViewProps } from "@/lib/types/scanner-types";
+import type { UploadViewProps } from "@/types/scanner-types";
 
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";

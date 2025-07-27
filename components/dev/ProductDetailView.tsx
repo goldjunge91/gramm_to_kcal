@@ -21,7 +21,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { toast } from "sonner";
 
-import type { EnhancedProductLookupResult } from "@/lib/types/dev-scanner";
+import type { EnhancedProductLookupResult } from "@/types/dev-scanner";
 
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";

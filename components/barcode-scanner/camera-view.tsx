@@ -5,7 +5,7 @@
 import { Loader2 } from "lucide-react";
 import { useEffect } from "react";
 
-import type { CameraViewProps } from "@/lib/types/scanner-types";
+import type { CameraViewProps } from "@/types/scanner-types";
 
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";

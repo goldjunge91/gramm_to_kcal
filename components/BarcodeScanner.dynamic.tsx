@@ -10,7 +10,7 @@ import type { JSX } from "react";
 import { Loader2 } from "lucide-react";
 import dynamic from "next/dynamic";
 
-import type { BarcodeScannerProps } from "@/lib/types/scanner-types";
+import type { BarcodeScannerProps } from "@/types/scanner-types";
 
 // Loading component
 function ScannerLoading(): JSX.Element {
